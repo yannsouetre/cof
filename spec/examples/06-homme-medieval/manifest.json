@@ -22,7 +22,7 @@
       "adult",
       "multi-view",
       "image-only",
-      "vector-face"
+      "line-maps"
     ],
     "manual": [
       "fiction",
@@ -39,12 +39,19 @@
   },
   "sections": {
     "appearance": {
-      "face_vec": "appearance/face.vec.json"
+      "lines": [
+        "appearance/lines/head.front.canny.png",
+        "appearance/lines/head.front.lineart.png",
+        "appearance/lines/head.front.softedge.png",
+        "appearance/lines/body.front.canny.png",
+        "appearance/lines/body.front.lineart.png",
+        "appearance/lines/body.front.softedge.png"
+      ]
     }
   },
   "profiles": {},
   "mapping_vocabularies": {
-    "face_model": "COF-Vector-0.1"
+    "line_maps": "controlnet-preprocessors"
   },
   "assets": [
     {
@@ -145,22 +152,112 @@
       "derived_from": "appearance/views/body.front.jpg"
     },
     {
-      "path": "appearance/face.vec.F.svg",
-      "role": "other",
-      "mediaType": "image/svg+xml",
-      "bytes": 5001,
-      "sha256": "e19d3325a5d44bc5c8d45afccea55940d70105501f1ff6b2c97f64921b8142a8",
+      "path": "appearance/lines/head.front.canny.png",
+      "role": "line-map",
+      "method": "canny",
+      "source_view": "appearance/views/head.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 5909,
+      "sha256": "2d12df46d322fce6b79d0fb0118366983501611c29dee5539dceefd28cbacba1",
       "license": "CC-BY-4.0",
-      "derived_from": "appearance/face.vec.json"
+      "width": 1024,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "appearance/views/head.front.jpg"
     },
     {
-      "path": "appearance/face.vec.flat.svg",
-      "role": "other",
+      "path": "appearance/lines/head.front.canny.svg",
+      "role": "line-map",
+      "method": "canny",
+      "format": "svg",
+      "source_view": "appearance/views/head.front.jpg",
       "mediaType": "image/svg+xml",
-      "bytes": 5031,
-      "sha256": "70865ab394ef02d5cbbd5e3e40140b48fdbfdf51c2732be1c8d68563a85963aa",
+      "bytes": 25360,
+      "sha256": "7c658eeba0eda65050f0ec51a7856f1e3bc710e3725ac25610a28d2e8d00d458",
       "license": "CC-BY-4.0",
-      "derived_from": "appearance/face.vec.json"
+      "derived_from": "appearance/lines/head.front.canny.png"
+    },
+    {
+      "path": "appearance/lines/head.front.lineart.png",
+      "role": "line-map",
+      "method": "lineart",
+      "source_view": "appearance/views/head.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 6371,
+      "sha256": "fc39b9777cfa8ec019087a2fb6db7d3858f925acb8d3e63fe715d8bbf3d12778",
+      "license": "CC-BY-4.0",
+      "width": 1024,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "appearance/views/head.front.jpg"
+    },
+    {
+      "path": "appearance/lines/head.front.lineart.svg",
+      "role": "line-map",
+      "method": "lineart",
+      "format": "svg",
+      "source_view": "appearance/views/head.front.jpg",
+      "mediaType": "image/svg+xml",
+      "bytes": 36335,
+      "sha256": "1e425613e33ad7177eeeb6adebc5fb2af0db88a1aaed699c68ce31f32228acb4",
+      "license": "CC-BY-4.0",
+      "derived_from": "appearance/lines/head.front.lineart.png"
+    },
+    {
+      "path": "appearance/lines/head.front.softedge.png",
+      "role": "line-map",
+      "method": "softedge",
+      "source_view": "appearance/views/head.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 29554,
+      "sha256": "867c4929bccf50e5d5febd409c7bf31b1f366a66edcddd021c2d2daee580c5a1",
+      "license": "CC-BY-4.0",
+      "width": 512,
+      "height": 512,
+      "bits": 4,
+      "derived_from": "appearance/views/head.front.jpg"
+    },
+    {
+      "path": "appearance/lines/body.front.canny.png",
+      "role": "line-map",
+      "method": "canny",
+      "source_view": "appearance/views/body.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 5621,
+      "sha256": "1eb933bec919b5d97155aa14cffa19f00371a6eb10cc6b23560b1d81c1c009b6",
+      "license": "CC-BY-4.0",
+      "width": 512,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "appearance/views/body.front.jpg"
+    },
+    {
+      "path": "appearance/lines/body.front.lineart.png",
+      "role": "line-map",
+      "method": "lineart",
+      "source_view": "appearance/views/body.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 7994,
+      "sha256": "c5436c2cd2c48bc0c7083f0291269cebbe230a5ef878e6992dd6622e71c0518a",
+      "license": "CC-BY-4.0",
+      "width": 512,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "appearance/views/body.front.jpg"
+    },
+    {
+      "path": "appearance/lines/body.front.softedge.png",
+      "role": "line-map",
+      "method": "softedge",
+      "source_view": "appearance/views/body.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 11240,
+      "sha256": "fdad61f6d5d907d1bcabce57171a8b24ce4134bb4fbe5114cfafdf5e1eea7e9e",
+      "license": "CC-BY-4.0",
+      "width": 256,
+      "height": 512,
+      "bits": 4,
+      "derived_from": "appearance/views/body.front.jpg"
     }
   ],
   "size_class": "lite",
@@ -191,7 +288,7 @@
   "provenance": {
     "created": "2026-10-09T20:30:00Z",
     "modified": "2026-10-09T20:30:00Z",
-    "generator": "cof-vector/0.1 sheet_split + face_vec",
+    "generator": "cof-vector/0.2 sheet_split + edges",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/06-homme-medieval"
     ],
@@ -227,6 +324,6 @@
       "archive"
     ],
     "computed_by": "cof-cli/0.2.0",
-    "computed_at": "2026-10-09T20:37:49Z"
+    "computed_at": "2026-10-09T20:54:53Z"
   }
 }

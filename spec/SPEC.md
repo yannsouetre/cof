@@ -6,7 +6,7 @@
 > **Auteur** : Yann Souetre.
 > **Nom** : *COF — Character Open File*, extension `.cof`, type MIME `application/vnd.cof.character+zip`.
 > Ce document s'appuie sur l'état de l'art joint (`01_Etat_de_l_art.md`). Chaque choix renvoie à une brique existante quand elle existe ; les parties « à inventer » sont marquées **[NOUVEAU]**.
-> **v0.2** : ajoute les usages cibles (§ 0.1), les niveaux de représentation et le code vectoriel (§ 0.2, § 4.0, doc `04_COF-Vector_concept.md`), le KPI de complétude et les tags (§ 2.2), la portée morphologique (§ 0.3), le code vocal (§ 6.3), le builder et la compression (§ 11.1).
+> **v0.2** : ajoute les usages cibles (§ 0.1), les niveaux de représentation et les cartes de traits COF-Vector (§ 0.2, § 4.0, doc `vector/SPEC.md`), le KPI de complétude et les tags (§ 2.2), la portée morphologique (§ 0.3), le code vocal (§ 6.3), le builder et la compression (§ 11.1).
 
 > **Sur l'extension `.cof`.** Elle n'est utilisée que par un fichier de debug de l'IDE Microchip MPLAB (format COFF) — usage de niche en électronique embarquée, sans association système grand public. Les extensions de fichiers ne sont pas réservées (des dizaines de formats partagent `.dat`, `.bin`, `.pak`) ; ce qui identifie un format est son **type MIME** et sa **signature** : ici l'en-tête ZIP `PK` + le fichier `mimetype` en première entrée. Le nom est donc tenable. Noms de repli si besoin : `.cofx`, `.charf`.
 
@@ -58,10 +58,10 @@ Le manifeste déclare `targets_ready[]` (calculé par le validateur à partir de
 | Niveau | Nature | Poids typique | Précision | Qui le produit |
 |---|---|---|---|---|
 | **L0 — Descriptif** | vocabulaire fermé + phrase générée (FDV, HAIR-1, Fashionpedia, profil vocal canonique, LMA) | 0,2–2 Ko | faible à moyenne | l'utilisateur, ou le builder depuis les niveaux supérieurs |
-| **L1 — Code vectoriel / paramétrique** **[NOUVEAU]** | courbes normalisées du visage et du corps (COF-Vector), paramètres FLAME/Anny, texture procédurale, code vocal acoustique | 1–20 Ko | élevée (géométrie, proportions, teintes) | le builder depuis une photo/un WAV (MediaPipe, DECA, analyse acoustique), ou un éditeur |
+| **L1 — Cartes de traits / paramétrique** **[NOUVEAU]** | cartes de contours de chaque vue (COF-Vector : canny, lineart, softedge), paramètres FLAME/Anny optionnels, code vocal acoustique | 6–40 Ko par vue | élevée (forme exacte, ressemblance) | le builder depuis une photo/un WAV (OpenCV, analyse acoustique) |
 | **L2 — Média** | photos, planches multi-vues, WAV, vidéos, VRM, splats | 100 Ko – 100 Mo | maximale (mais figée, non éditable) | l'utilisateur |
 
-Analogie : L2 est le JPEG, L1 est le SVG ; L2 est le maillage, L1 est la CSG/NURBS. Un `.cof` peut porter les trois ; un lecteur utilise le plus riche qu'il sait exploiter et **doit** pouvoir se rabattre sur L1 puis L0. Le code vectoriel (L1) a sa propre page de conception (`04_COF-Vector_concept.md`) et son propre dépôt (`cof-vector`), parce que c'est une innovation en soi, utilisable hors de COF.
+Analogie : L2 est la photo, L1 est le croquis au trait qui en garde la forme exacte pour 1/20 du poids. Un `.cof` peut porter les trois ; un lecteur utilise le plus riche qu'il sait exploiter et **doit** pouvoir se rabattre sur L1 puis L0. COF-Vector (L1) a sa propre note de conception (`vector/SPEC.md`), utilisable hors de COF.
 
 ### 0.3 Portée : quels personnages ?
 
@@ -100,9 +100,8 @@ character/
   SOUL.md  IDENTITY.md            ← projections Markdown (générées ou maintenues à la main)
 appearance/
   face.json                       ← code visage : FLAME + vocabulaire descriptif + expressions-types (§ 4.1)
-  face.vec.json                   ← code vectoriel visage COF-Vector : courbes + texture procédurale (§ 4.0)
+  lines/<vue>.<method>.png        ← cartes de traits COF-Vector : canny / lineart / softedge (§ 4.0)
   body.json                       ← code corps : Anny + β SMPL-X + mesures + teint (§ 4.2)
-  body.vec.json                   ← code vectoriel corps : silhouette face/profil normalisée (§ 4.0)
   hair.json                       ← code cheveux / pilosité (§ 4.3)
   outfits/<id>.json               ← tenues : Fashionpedia + GarmentCode (§ 4.4)
   views/<sujet>.<angle>.<ext>     ← vues multiples : head.front.jpg, body.left34.png… (§ 4.5)
@@ -200,6 +199,7 @@ Validé par `schemas/manifest.schema.json` (JSON Schema 2020-12). Exemple comple
     "visemes": "ARKit-52",                       // ou "Oculus-15", "PrestonBlair-AX"
     "face_model": "FLAME-2023-Open",
     "body_model": "Anny-1.0",
+    "line_maps": "controlnet-preprocessors",
     "movement_notation": "LMA-Effort-1.0"
   },
 
@@ -325,18 +325,16 @@ Chaque trait, but et crainte porte un **identifiant** (`trait:…`, `goal:…`, 
 
 Principe : les trois niveaux de représentation du § 0.2 — L0 descriptif, L1 code vectoriel/paramétrique, L2 médias — chacun optionnel et cohérent avec les autres. Un lecteur qui n'a que L0 ou L1 doit pouvoir régénérer une apparence plausible et **stable d'un outil à l'autre** ; c'est la raison d'être de L1.
 
-### 4.0 Code vectoriel COF-Vector (L1) **[NOUVEAU — page dédiée `04_COF-Vector_concept.md`]**
+### 4.0 Cartes de traits COF-Vector (L1) **[NOUVEAU — page dédiée `vector/SPEC.md`]**
 
-Fichiers `appearance/face.vec.json`, `body.vec.json`, `garment.vec.json`. Résumé :
+Fichiers `appearance/lines/<sujet>.<angle>.<method>.png` (+ `.svg` optionnel), déclarés dans `sections.appearance.lines[]` et dans `assets[]` (`role: "line-map"`, `method`, `source_view`, `bits`). Résumé :
 
-- **Géométrie en courbes** : les contours du visage (ovale, mâchoire, sourcils, paupières, nez, lèvres, oreilles, ligne de cheveux) sont des **courbes de Bézier cubiques** en coordonnées **normalisées** (origine entre les yeux, unité = distance inter-pupillaire), en vue de face *et* de profil ; idem pour la silhouette du corps (unité = stature) et les contours de vêtements. C'est le « SVG du visage » : ~2–6 Ko, éditable, indépendant de la résolution.
-- **Texture en procédural** : la peau n'est pas une image mais des paramètres (teinte Monk + hex, sous-ton, rugosité, densité/zone de taches, rides par région 0–9, grain, brillance, cernes, pilosité) ; idem cheveux (HAIR-1 + direction des mèches) et tissus (couleur, motif, maille, brillance).
-- **Rendu** : le code se *rend* en un **dessin au trait SVG** (face/profil) + une **carte de teintes** ; ces deux sorties alimentent directement les générateurs d'images (ControlNet lineart/canny, IP-Adapter), ce qui donne de la **cohérence de personnage entre outils** sans transporter de photo.
-- **Extraction** : depuis une photo via détection de 478 points de repère (MediaPipe Face Landmarker, Apache 2.0, dans le navigateur) → ajustement de Bézier → normalisation ; depuis un VRM/FLAME via projection des sommets. Le builder le fait automatiquement.
-- **Cohérence** : `face.vec.json` et `face.json` (FLAME) décrivent le même visage ; le validateur compare quelques mesures (largeur du nez, écart des yeux, hauteur des lèvres) et avertit au-delà d'un seuil.
-- **Exploitabilité dans l'inférence** (question légitime) : aucun modèle génératif ne lit des courbes JSON. Un code L1 n'est utile que par ses **trois rendus** : (1) une *image de contrainte* (trait SVG → PNG pour ControlNet lineart/canny ; bonhomme OpenPose pour la pose ; silhouette pour le corps), (2) un *texte* (`renderings.sentence`, injecté dans le prompt ou le contexte d'un LLM), (3) des *mesures structurées* (comparaison, recherche, contrôle de cohérence, retargeting vers FLAME/Anny). Le validateur exige que tout fichier `.vec.json` ait ses rendus à jour ; un lecteur qui ne connaît pas COF-Vector utilise simplement le PNG et la phrase.
-- **Périmètre par priorité** : visage (v0.1 opérationnel : contours, iris, mesures, couleurs), corps (v0.2 : silhouette + points-clés + mesures), **vêtements : expérimental et réduit** — uniquement la silhouette habillée, les lignes de coupe (encolure, ourlet, manches, ceinture) et la texture procédurale du tissu ; le reste du vêtement reste porté par les attributs Fashionpedia, le prompt et, s'il existe, le patron GarmentCode. Les tissus complexes ne sont pas vectorisés en v1.
-- **Limite connue (a priori humain)** : le maillage facial est un modèle *humain* ; sur un visage non humain (alien, animal) il projette une topologie humaine (crâne, oreilles ignorés), sur un robot il échoue et le fichier retombe sur L0 + L2. Les profils de contours pour d'autres morphologies viendront par `applies_to`.
+- **Trois cartes par vue**, toutes de la famille des préprocesseurs ControlNet : `canny` (contours nets, PNG 1 bit), `lineart` (dessin au trait, PNG 1 bit), `softedge` (contours doux, PNG 4 bits, demi-résolution). Tailles mesurées sur une tête 1024² : **6–16 Ko** pour `canny`/`lineart`, 25–40 Ko pour `softedge`, contre ~190 Ko pour la photo. Versions neuronales (`hed`, `pidinet`, `teed`, `lineart-anime`) acceptées avec le même schéma.
+- **Pourquoi des cartes et pas des courbes** : les contours extraits des pixels gardent la ressemblance (cheveux, lunettes, oreilles, créatures, robots) là où un maillage facial reconstruit un visage générique (approche v0.1, abandonnée et archivée).
+- **Exploitabilité** : la carte est directement l'image de contrainte des générateurs (ControlNet et équivalents vidéo) ; `lineart` se lit comme un croquis (vignette) ; `canny` sert de métrique de ressemblance ; le SVG potrace permet l'édition.
+- **Compression** : le builder peut retirer les vues photo et ne garder que les cartes (+ descriptif L0) — c'est la « substitution médias → code » de l'option *Compresser*.
+- **Extraction** : algorithmes sans modèle (OpenCV / OpenCV.js) ; aucun téléchargement nécessaire. Les points-clés (MediaPipe) restent un sous-produit optionnel pour les mesures, couleurs et la phrase descriptive (L0), jamais pour un rendu.
+- **Cohérence** : le validateur vérifie que chaque carte a sa vue source déclarée et que `method`/`bits` sont cohérents avec le PNG.
 
 ### 4.1 `face.json`
 
@@ -395,7 +393,7 @@ Fichiers `appearance/face.vec.json`, `body.vec.json`, `garment.vec.json`. Résum
 
 Le bloc `intimate`, s'il est présent, suit le même schéma *composant → caractéristique → descripteur* que FDV et est **ignoré par défaut** par les lecteurs tant que `permissions.allowSexualUsage` n'est pas vrai ; sa simple présence quand `age < 18` rend le fichier **invalide**.
 
-**4.2.1 Morphologie estimée sous les vêtements (`body.estimated`) [NOUVEAU, optionnel].** Les vues sont presque toujours habillées ; pour alimenter `phenotypes`, `measurements` et `body.vec` sans photo déshabillée, le builder peut **déduire** une morphologie de base : points-clés de pose (largeur d'épaules, de hanches, longueurs de segments, rapport tête/stature) + silhouette habillée corrigée d'un *offset vestimentaire* par catégorie de vêtement (Fashionpedia : une veste ample ajoute plus qu'un t-shirt) + a priori anthropométriques (ISO 7250 par sexe/âge apparents). Règles strictes :
+**4.2.1 Morphologie estimée sous les vêtements (`body.estimated`) [NOUVEAU, optionnel].** Les vues sont presque toujours habillées ; pour alimenter `phenotypes` et `measurements` sans photo déshabillée, le builder peut **déduire** une morphologie de base : points-clés de pose (largeur d'épaules, de hanches, longueurs de segments, rapport tête/stature) + silhouette habillée corrigée d'un *offset vestimentaire* par catégorie de vêtement (Fashionpedia : une veste ample ajoute plus qu'un t-shirt) + a priori anthropométriques (ISO 7250 par sexe/âge apparents). Règles strictes :
 - la sortie est marquée `"estimated": true` avec une `confidence`, et ne contient **jamais** de descripteur intime ;
 - **désactivé et interdit si `age < 18`** (le validateur rejette tout `body.estimated` sur un mineur) ;
 - **non appliqué** si `morphology.class` ∈ {`mechanical`, `amorphous`} ou si aucune pose humaine n'est détectée (sans intérêt pour un robot, une armure, une créature exotique) ;
@@ -727,7 +725,7 @@ Options du **Build** :
 - **Compression** : PNG → JPEG/WebP à qualité choisie ; redimensionnement des vues ; **substitution** des médias par leur code L1 (garder ou non les photos source) ; voix : WAV → Opus/FLAC pour les échantillons longs, WAV conservé pour l'échantillon de 8 s ; externalisation des assets lourds (URL + hash) ;
 - Exports annexes : PNG ccv3, `.charx`, `SOUL.md`/`IDENTITY.md`, `.vrm` seul, JSON du manifeste.
 
-Pile technique visée (tout open source, côté client) : `fflate` (ZIP), WebCrypto (SHA-256), `ajv` (JSON Schema), MediaPipe Tasks Vision (points de repère + 52 blendshapes), Web Audio + un petit module de mesures acoustiques (F0, débit, pauses), `three-vrm` (aperçu de l'avatar), `fitting-curves` ou équivalent (Bézier). Une version Python du même pipeline existe dans `cof-cli` pour l'automatisation.
+Pile technique visée (tout open source, côté client) : `fflate` (ZIP), WebCrypto (SHA-256), `ajv` (JSON Schema), OpenCV.js (Canny, flou, Sobel → cartes de traits), `potrace` JS (SVG), MediaPipe Tasks Vision (points de repère + 52 blendshapes, pour les mesures et la pose), Web Audio + un petit module de mesures acoustiques (F0, débit, pauses), `three-vrm` (aperçu de l'avatar). Une version Python du même pipeline existe dans `cof-cli` pour l'automatisation.
 
 ---
 
@@ -751,7 +749,7 @@ Pile technique visée (tout open source, côté client) : `fflate` (ZIP), WebCry
 | ARKit 52, Unified Expressions, FACS (nomenclature), EmotionML, SSML | Signed Agent Card A2A → signature du manifeste | **Table FACS ↔ ARKit** |
 | Fashionpedia (noms), GarmentCode, Monk Skin Tone, ISO 7250 (noms) | OCI Artifacts (Docker Model Runner) → mode registre | **Signature de mouvement** (LMA + BAP + BML assemblés) |
 | SPDX, IPTC digitalSourceType, C2PA, JSON Schema, ULID, RFC 8785 | EPUB `mimetype`, USDZ alignement 64 → conteneur | **Profils de tokens** et **classes de taille** déclarés |
-| MediaPipe Face Landmarker (478 pts + 52 blendshapes), Bézier cubiques (SVG) | Mesures phonétiques standard (F0, débit, HNR…) → `acoustic` | **COF-Vector** (visage/corps/vêtements en courbes + texture procédurale) et **COF-Voice** (code vocal) |
+| Préprocesseurs ControlNet (Canny, lineart_standard, HED/PiDiNet), potrace, MediaPipe (points-clés) | Mesures phonétiques standard (F0, débit, HNR…) → `acoustic` | **COF-Vector** (cartes de traits 1/4 bits par vue, découpage de planches) et **COF-Voice** (code vocal) |
 | — | — | **KPI de complétude**, **slots de tags** (`auto`/`manual`/`content`/`ip`), **cibles** `targets_ready` |
 | OpenPose BODY_25 / COCO-18 / COCO-WholeBody (DWPose), MediaPipe Pose 33 ; squelettes VRM, Unity/Mixamo, Unreal/MetaHuman, SMPL-X, Anny, MHR | squelette canonique COF = noms humanoïdes VRM 1.0 | **`skeletons-1.0.json`** (tables de correspondance), **poses OpenPose normalisées**, liaison splat ↔ avatar riggé |
 

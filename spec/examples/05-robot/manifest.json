@@ -21,7 +21,8 @@
       "mechanical",
       "child",
       "multi-view",
-      "image-only"
+      "image-only",
+      "line-maps"
     ],
     "manual": [
       "fiction",
@@ -38,10 +39,21 @@
     }
   },
   "sections": {
-    "appearance": {}
+    "appearance": {
+      "lines": [
+        "appearance/lines/head.front.canny.png",
+        "appearance/lines/head.front.lineart.png",
+        "appearance/lines/head.front.softedge.png",
+        "appearance/lines/body.front.canny.png",
+        "appearance/lines/body.front.lineart.png",
+        "appearance/lines/body.front.softedge.png"
+      ]
+    }
   },
   "profiles": {},
-  "mapping_vocabularies": {},
+  "mapping_vocabularies": {
+    "line_maps": "controlnet-preprocessors"
+  },
   "assets": [
     {
       "path": "appearance/views/body.front.jpg",
@@ -144,6 +156,114 @@
       "height": 1024,
       "confidence": 0.7,
       "derived_from": "appearance/views/body.front.jpg"
+    },
+    {
+      "path": "appearance/lines/head.front.canny.png",
+      "role": "line-map",
+      "method": "canny",
+      "source_view": "appearance/views/head.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 13127,
+      "sha256": "94f18f9465807bef199a94af6ffd54cc0cb6d8920c1ef01c068974f30637c3ee",
+      "license": "CC-BY-4.0",
+      "width": 1024,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "appearance/views/head.front.jpg"
+    },
+    {
+      "path": "appearance/lines/head.front.canny.svg",
+      "role": "line-map",
+      "method": "canny",
+      "format": "svg",
+      "source_view": "appearance/views/head.front.jpg",
+      "mediaType": "image/svg+xml",
+      "bytes": 99300,
+      "sha256": "b4a1678f34d380cb22c2df1f232e96a1b5266eb93ae48e79f898c93e9801ca4b",
+      "license": "CC-BY-4.0",
+      "derived_from": "appearance/lines/head.front.canny.png"
+    },
+    {
+      "path": "appearance/lines/head.front.lineart.png",
+      "role": "line-map",
+      "method": "lineart",
+      "source_view": "appearance/views/head.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 11768,
+      "sha256": "f96f61ed0283812606122b69f1e449384f495f0275f79faa60b2f458aae79627",
+      "license": "CC-BY-4.0",
+      "width": 1024,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "appearance/views/head.front.jpg"
+    },
+    {
+      "path": "appearance/lines/head.front.lineart.svg",
+      "role": "line-map",
+      "method": "lineart",
+      "format": "svg",
+      "source_view": "appearance/views/head.front.jpg",
+      "mediaType": "image/svg+xml",
+      "bytes": 92244,
+      "sha256": "b1bf57cd2ff159d23405dfd293c3265fb75946d8a17297d97d2f9631a18be3f0",
+      "license": "CC-BY-4.0",
+      "derived_from": "appearance/lines/head.front.lineart.png"
+    },
+    {
+      "path": "appearance/lines/head.front.softedge.png",
+      "role": "line-map",
+      "method": "softedge",
+      "source_view": "appearance/views/head.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 26946,
+      "sha256": "1a1d875ff9f611a4705d8b76889ea46b37fc06e3bb162e9d2394213cf10aa49f",
+      "license": "CC-BY-4.0",
+      "width": 512,
+      "height": 512,
+      "bits": 4,
+      "derived_from": "appearance/views/head.front.jpg"
+    },
+    {
+      "path": "appearance/lines/body.front.canny.png",
+      "role": "line-map",
+      "method": "canny",
+      "source_view": "appearance/views/body.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 10614,
+      "sha256": "92bcab2c3d2d7b25d8595b0f8b83a97d262d6cf9bc52c47f4b5586b38957a38c",
+      "license": "CC-BY-4.0",
+      "width": 512,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "appearance/views/body.front.jpg"
+    },
+    {
+      "path": "appearance/lines/body.front.lineart.png",
+      "role": "line-map",
+      "method": "lineart",
+      "source_view": "appearance/views/body.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 11359,
+      "sha256": "cf48329d241c07036b5bdf636fc96621814aefb593e859304505c4ec0287bd6f",
+      "license": "CC-BY-4.0",
+      "width": 512,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "appearance/views/body.front.jpg"
+    },
+    {
+      "path": "appearance/lines/body.front.softedge.png",
+      "role": "line-map",
+      "method": "softedge",
+      "source_view": "appearance/views/body.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 14468,
+      "sha256": "62294dcc4dce39191382bc99eeed1bb56e6013934e8da9010a4bdc746aa52711",
+      "license": "CC-BY-4.0",
+      "width": 256,
+      "height": 512,
+      "bits": 4,
+      "derived_from": "appearance/views/body.front.jpg"
     }
   ],
   "size_class": "lite",
@@ -174,7 +294,7 @@
   "provenance": {
     "created": "2026-10-09T20:30:00Z",
     "modified": "2026-10-09T20:30:00Z",
-    "generator": "cof-vector/0.1 sheet_split + face_vec",
+    "generator": "cof-vector/0.2 sheet_split + edges",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/05-robot"
     ],
@@ -193,12 +313,12 @@
   },
   "extensions": {},
   "completeness": {
-    "score": 31,
+    "score": 34,
     "level": "D",
     "layers": {
       "identity": 100,
       "personality": 0,
-      "appearance": 40,
+      "appearance": 55,
       "physique": 0,
       "voice": 0,
       "volume": 0,
@@ -210,6 +330,6 @@
       "archive"
     ],
     "computed_by": "cof-cli/0.2.0",
-    "computed_at": "2026-10-09T20:38:36Z"
+    "computed_at": "2026-10-09T20:54:53Z"
   }
 }
