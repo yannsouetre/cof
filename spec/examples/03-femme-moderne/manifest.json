@@ -22,7 +22,7 @@
       "adult",
       "multi-view",
       "image-only",
-      "vector-face"
+      "line-maps"
     ],
     "manual": [
       "fiction",
@@ -39,12 +39,19 @@
   },
   "sections": {
     "appearance": {
-      "face_vec": "appearance/face.vec.json"
+      "lines": [
+        "appearance/lines/head.front.canny.png",
+        "appearance/lines/head.front.lineart.png",
+        "appearance/lines/head.front.softedge.png",
+        "appearance/lines/body.front.canny.png",
+        "appearance/lines/body.front.lineart.png",
+        "appearance/lines/body.front.softedge.png"
+      ]
     }
   },
   "profiles": {},
   "mapping_vocabularies": {
-    "face_model": "COF-Vector-0.1"
+    "line_maps": "controlnet-preprocessors"
   },
   "assets": [
     {
@@ -145,22 +152,112 @@
       "derived_from": "appearance/views/body.front.jpg"
     },
     {
-      "path": "appearance/face.vec.F.svg",
-      "role": "other",
-      "mediaType": "image/svg+xml",
-      "bytes": 5001,
-      "sha256": "36e19cc849b418f5b7e1614cfc6354f5a765c97f845ba76003eaef441a344b95",
+      "path": "appearance/lines/head.front.canny.png",
+      "role": "line-map",
+      "method": "canny",
+      "source_view": "appearance/views/head.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 7543,
+      "sha256": "692ddb8ef172d12b104e931cd46f3711d6369c937ca327172b5549e59b42f5b9",
       "license": "CC-BY-4.0",
-      "derived_from": "appearance/face.vec.json"
+      "width": 1024,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "appearance/views/head.front.jpg"
     },
     {
-      "path": "appearance/face.vec.flat.svg",
-      "role": "other",
+      "path": "appearance/lines/head.front.canny.svg",
+      "role": "line-map",
+      "method": "canny",
+      "format": "svg",
+      "source_view": "appearance/views/head.front.jpg",
       "mediaType": "image/svg+xml",
-      "bytes": 5031,
-      "sha256": "89a0bd7b00715259da2438f1a43696c9b89cdf4dab3155e9637d3ede4efa6975",
+      "bytes": 32968,
+      "sha256": "f2002a1dede98214157d443fd835f21e1b6482c97a444cd89b44713430e5e20c",
       "license": "CC-BY-4.0",
-      "derived_from": "appearance/face.vec.json"
+      "derived_from": "appearance/lines/head.front.canny.png"
+    },
+    {
+      "path": "appearance/lines/head.front.lineart.png",
+      "role": "line-map",
+      "method": "lineart",
+      "source_view": "appearance/views/head.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 8458,
+      "sha256": "dd5123634d2ff0335fdbbc35a26cad332deafab3ae1c47025ba81a3bfb415742",
+      "license": "CC-BY-4.0",
+      "width": 1024,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "appearance/views/head.front.jpg"
+    },
+    {
+      "path": "appearance/lines/head.front.lineart.svg",
+      "role": "line-map",
+      "method": "lineart",
+      "format": "svg",
+      "source_view": "appearance/views/head.front.jpg",
+      "mediaType": "image/svg+xml",
+      "bytes": 52382,
+      "sha256": "b57a92b760ac041571f2295abd82f410800e5b1a8528912ea9bcc9af536367c7",
+      "license": "CC-BY-4.0",
+      "derived_from": "appearance/lines/head.front.lineart.png"
+    },
+    {
+      "path": "appearance/lines/head.front.softedge.png",
+      "role": "line-map",
+      "method": "softedge",
+      "source_view": "appearance/views/head.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 32355,
+      "sha256": "bba44211bda88e276711dcda0a054c7948fae46ddd5f57e994bcd23327a514ba",
+      "license": "CC-BY-4.0",
+      "width": 512,
+      "height": 512,
+      "bits": 4,
+      "derived_from": "appearance/views/head.front.jpg"
+    },
+    {
+      "path": "appearance/lines/body.front.canny.png",
+      "role": "line-map",
+      "method": "canny",
+      "source_view": "appearance/views/body.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 4392,
+      "sha256": "8fb7d4ecfebcf8d76d408e25dd3fb9929a796b95622a9fa0ccb6a27890bff5c1",
+      "license": "CC-BY-4.0",
+      "width": 512,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "appearance/views/body.front.jpg"
+    },
+    {
+      "path": "appearance/lines/body.front.lineart.png",
+      "role": "line-map",
+      "method": "lineart",
+      "source_view": "appearance/views/body.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 6804,
+      "sha256": "0a551d9f6d6b278191780db46d62470ce5f40d14180ff95969abef26beb73e2c",
+      "license": "CC-BY-4.0",
+      "width": 512,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "appearance/views/body.front.jpg"
+    },
+    {
+      "path": "appearance/lines/body.front.softedge.png",
+      "role": "line-map",
+      "method": "softedge",
+      "source_view": "appearance/views/body.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 10034,
+      "sha256": "b740035184cc84d9439fbbf8396330c02ad0273d6625fec0109ee618e1968434",
+      "license": "CC-BY-4.0",
+      "width": 256,
+      "height": 512,
+      "bits": 4,
+      "derived_from": "appearance/views/body.front.jpg"
     }
   ],
   "size_class": "lite",
@@ -191,7 +288,7 @@
   "provenance": {
     "created": "2026-10-09T20:30:00Z",
     "modified": "2026-10-09T20:30:00Z",
-    "generator": "cof-vector/0.1 sheet_split + face_vec",
+    "generator": "cof-vector/0.2 sheet_split + edges",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/03-femme-moderne"
     ],
@@ -227,6 +324,6 @@
       "archive"
     ],
     "computed_by": "cof-cli/0.2.0",
-    "computed_at": "2026-10-09T20:37:48Z"
+    "computed_at": "2026-10-09T20:54:52Z"
   }
 }

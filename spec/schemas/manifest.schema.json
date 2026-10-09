@@ -174,11 +174,12 @@
                 "$ref": "#/$defs/path"
               }
             },
-            "face_vec": {
-              "$ref": "#/$defs/path"
-            },
-            "body_vec": {
-              "$ref": "#/$defs/path"
+            "lines": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/path"
+              },
+              "description": "cartes de traits (COF-Vector v0.2) : canny / lineart / softedge…"
             }
           }
         },
@@ -627,6 +628,7 @@
             "document",
             "engine-artifact",
             "expression",
+            "line-map",
             "motion-clip",
             "motion-reference",
             "other",
@@ -770,6 +772,36 @@
         "estimated": {
           "type": "boolean",
           "description": "valeur déduite (ex. morphologie sous les vêtements), pas observée"
+        },
+        "method": {
+          "enum": [
+            "canny",
+            "lineart",
+            "lineart-anime",
+            "softedge",
+            "hed",
+            "pidinet",
+            "teed",
+            "depth",
+            "normal",
+            "openpose",
+            "segmentation",
+            "other"
+          ]
+        },
+        "source_view": {
+          "$ref": "#/$defs/path"
+        },
+        "bits": {
+          "enum": [
+            1,
+            2,
+            4,
+            8
+          ]
+        },
+        "format": {
+          "type": "string"
         }
       },
       "allOf": [
@@ -785,6 +817,21 @@
             "required": [
               "duration_s",
               "transcript"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "role": {
+                "const": "line-map"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "method",
+              "source_view"
             ]
           }
         }

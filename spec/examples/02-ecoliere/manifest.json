@@ -22,7 +22,7 @@
       "child",
       "multi-view",
       "image-only",
-      "vector-face"
+      "line-maps"
     ],
     "manual": [
       "fiction",
@@ -40,12 +40,19 @@
   },
   "sections": {
     "appearance": {
-      "face_vec": "appearance/face.vec.json"
+      "lines": [
+        "appearance/lines/head.front.canny.png",
+        "appearance/lines/head.front.lineart.png",
+        "appearance/lines/head.front.softedge.png",
+        "appearance/lines/body.front.canny.png",
+        "appearance/lines/body.front.lineart.png",
+        "appearance/lines/body.front.softedge.png"
+      ]
     }
   },
   "profiles": {},
   "mapping_vocabularies": {
-    "face_model": "COF-Vector-0.1"
+    "line_maps": "controlnet-preprocessors"
   },
   "assets": [
     {
@@ -146,22 +153,112 @@
       "derived_from": "appearance/views/body.front.jpg"
     },
     {
-      "path": "appearance/face.vec.F.svg",
-      "role": "other",
-      "mediaType": "image/svg+xml",
-      "bytes": 5001,
-      "sha256": "59691fbe32c9b0cf3fa7f7eaee57c5d16bcd86ba3143c248236bfaff3040cd23",
+      "path": "appearance/lines/head.front.canny.png",
+      "role": "line-map",
+      "method": "canny",
+      "source_view": "appearance/views/head.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 7366,
+      "sha256": "53e9c25d77803575accf44a4a2dc2d0d037d6843bc1a834b446ea40d1f7c075d",
       "license": "CC-BY-4.0",
-      "derived_from": "appearance/face.vec.json"
+      "width": 1024,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "appearance/views/head.front.jpg"
     },
     {
-      "path": "appearance/face.vec.flat.svg",
-      "role": "other",
+      "path": "appearance/lines/head.front.canny.svg",
+      "role": "line-map",
+      "method": "canny",
+      "format": "svg",
+      "source_view": "appearance/views/head.front.jpg",
       "mediaType": "image/svg+xml",
-      "bytes": 5031,
-      "sha256": "1698d13fd5744355a1e95414ba4100b33b9b92472a62bc7aa2edbc174e0194bb",
+      "bytes": 19690,
+      "sha256": "791c980e751f6dbe0af98b55474d41941388a5f5fe5890a5f166151d854b578f",
       "license": "CC-BY-4.0",
-      "derived_from": "appearance/face.vec.json"
+      "derived_from": "appearance/lines/head.front.canny.png"
+    },
+    {
+      "path": "appearance/lines/head.front.lineart.png",
+      "role": "line-map",
+      "method": "lineart",
+      "source_view": "appearance/views/head.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 6530,
+      "sha256": "fb96e9b7d6cf209f5342a2033bbc3e341bac1ff6131837c64a5b27978eb13163",
+      "license": "CC-BY-4.0",
+      "width": 1024,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "appearance/views/head.front.jpg"
+    },
+    {
+      "path": "appearance/lines/head.front.lineart.svg",
+      "role": "line-map",
+      "method": "lineart",
+      "format": "svg",
+      "source_view": "appearance/views/head.front.jpg",
+      "mediaType": "image/svg+xml",
+      "bytes": 31100,
+      "sha256": "de6f33de5f51568de27c89aa3529d019cf7884aa3ef0f824f58bde50d957585a",
+      "license": "CC-BY-4.0",
+      "derived_from": "appearance/lines/head.front.lineart.png"
+    },
+    {
+      "path": "appearance/lines/head.front.softedge.png",
+      "role": "line-map",
+      "method": "softedge",
+      "source_view": "appearance/views/head.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 29316,
+      "sha256": "8348a6c3e385315b687eafe644cb0b32361e53d6df75f29b293815f66b939b6d",
+      "license": "CC-BY-4.0",
+      "width": 512,
+      "height": 512,
+      "bits": 4,
+      "derived_from": "appearance/views/head.front.jpg"
+    },
+    {
+      "path": "appearance/lines/body.front.canny.png",
+      "role": "line-map",
+      "method": "canny",
+      "source_view": "appearance/views/body.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 4220,
+      "sha256": "ceca4cf2e7bb685686b55be8ce7339b2eaf290032f628f0fd2a27422124c83a1",
+      "license": "CC-BY-4.0",
+      "width": 512,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "appearance/views/body.front.jpg"
+    },
+    {
+      "path": "appearance/lines/body.front.lineart.png",
+      "role": "line-map",
+      "method": "lineart",
+      "source_view": "appearance/views/body.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 5073,
+      "sha256": "4836d0aa1b39c1da81fa92812d11d6c1a8219bcabcfc445347c7d638727876d3",
+      "license": "CC-BY-4.0",
+      "width": 512,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "appearance/views/body.front.jpg"
+    },
+    {
+      "path": "appearance/lines/body.front.softedge.png",
+      "role": "line-map",
+      "method": "softedge",
+      "source_view": "appearance/views/body.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 10055,
+      "sha256": "eca16fc4c9ba4a2eaf88a27af3b75d2fdf7ee5e5bf53f800a359d6e66c4de1fd",
+      "license": "CC-BY-4.0",
+      "width": 256,
+      "height": 512,
+      "bits": 4,
+      "derived_from": "appearance/views/body.front.jpg"
     }
   ],
   "size_class": "lite",
@@ -192,7 +289,7 @@
   "provenance": {
     "created": "2026-10-09T20:30:00Z",
     "modified": "2026-10-09T20:30:00Z",
-    "generator": "cof-vector/0.1 sheet_split + face_vec",
+    "generator": "cof-vector/0.2 sheet_split + edges",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/02-ecoliere"
     ],
@@ -228,6 +325,6 @@
       "archive"
     ],
     "computed_by": "cof-cli/0.2.0",
-    "computed_at": "2026-10-09T20:37:48Z"
+    "computed_at": "2026-10-09T20:54:52Z"
   }
 }

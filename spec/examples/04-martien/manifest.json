@@ -22,7 +22,7 @@
       "adult",
       "multi-view",
       "image-only",
-      "vector-face"
+      "line-maps"
     ],
     "manual": [
       "fiction",
@@ -40,12 +40,19 @@
   },
   "sections": {
     "appearance": {
-      "face_vec": "appearance/face.vec.json"
+      "lines": [
+        "appearance/lines/head.front.canny.png",
+        "appearance/lines/head.front.lineart.png",
+        "appearance/lines/head.front.softedge.png",
+        "appearance/lines/body.front.canny.png",
+        "appearance/lines/body.front.lineart.png",
+        "appearance/lines/body.front.softedge.png"
+      ]
     }
   },
   "profiles": {},
   "mapping_vocabularies": {
-    "face_model": "COF-Vector-0.1"
+    "line_maps": "controlnet-preprocessors"
   },
   "assets": [
     {
@@ -147,22 +154,112 @@
       "derived_from": "appearance/views/body.front.jpg"
     },
     {
-      "path": "appearance/face.vec.F.svg",
-      "role": "other",
-      "mediaType": "image/svg+xml",
-      "bytes": 5001,
-      "sha256": "f7239f728a9c4cf0f10a000f2bbf414e9bd268b7b0388d3f6e6b5227cf0dfe14",
+      "path": "appearance/lines/head.front.canny.png",
+      "role": "line-map",
+      "method": "canny",
+      "source_view": "appearance/views/head.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 8315,
+      "sha256": "043c39f30a9e57a51f3c12accd3f8872771be2de4832db2e779f270d77934d80",
       "license": "CC-BY-4.0",
-      "derived_from": "appearance/face.vec.json"
+      "width": 1024,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "appearance/views/head.front.jpg"
     },
     {
-      "path": "appearance/face.vec.flat.svg",
-      "role": "other",
+      "path": "appearance/lines/head.front.canny.svg",
+      "role": "line-map",
+      "method": "canny",
+      "format": "svg",
+      "source_view": "appearance/views/head.front.jpg",
       "mediaType": "image/svg+xml",
-      "bytes": 5031,
-      "sha256": "503fb0ae75afe4736855706f16725f4ebb50254da136b281ad191cb52a3884fe",
+      "bytes": 26763,
+      "sha256": "474a68a2f0cd2fa3b0cbdfdc666c1233043b22754304d17e61fbeff5e994f0d3",
       "license": "CC-BY-4.0",
-      "derived_from": "appearance/face.vec.json"
+      "derived_from": "appearance/lines/head.front.canny.png"
+    },
+    {
+      "path": "appearance/lines/head.front.lineart.png",
+      "role": "line-map",
+      "method": "lineart",
+      "source_view": "appearance/views/head.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 9628,
+      "sha256": "41c74c8446005b19d7c1010494883a1ae214149d879103627e2883c7cd64bb57",
+      "license": "CC-BY-4.0",
+      "width": 1024,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "appearance/views/head.front.jpg"
+    },
+    {
+      "path": "appearance/lines/head.front.lineart.svg",
+      "role": "line-map",
+      "method": "lineart",
+      "format": "svg",
+      "source_view": "appearance/views/head.front.jpg",
+      "mediaType": "image/svg+xml",
+      "bytes": 63190,
+      "sha256": "cd68f9bfdc5b35771e8159fc0d1f1d3b76e691afa988aa405945d9180f995cc4",
+      "license": "CC-BY-4.0",
+      "derived_from": "appearance/lines/head.front.lineart.png"
+    },
+    {
+      "path": "appearance/lines/head.front.softedge.png",
+      "role": "line-map",
+      "method": "softedge",
+      "source_view": "appearance/views/head.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 33907,
+      "sha256": "034a12479534dccff3b41288f1bc82543a2000210edfee5e4621dbcb38af327e",
+      "license": "CC-BY-4.0",
+      "width": 512,
+      "height": 512,
+      "bits": 4,
+      "derived_from": "appearance/views/head.front.jpg"
+    },
+    {
+      "path": "appearance/lines/body.front.canny.png",
+      "role": "line-map",
+      "method": "canny",
+      "source_view": "appearance/views/body.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 6398,
+      "sha256": "e642be415d3daaf637cb9b1a3811c5448558800144f9bd17967ff8edfb0197eb",
+      "license": "CC-BY-4.0",
+      "width": 512,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "appearance/views/body.front.jpg"
+    },
+    {
+      "path": "appearance/lines/body.front.lineart.png",
+      "role": "line-map",
+      "method": "lineart",
+      "source_view": "appearance/views/body.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 8584,
+      "sha256": "1d54684623f4bcf50e0070376d9a1c91d6f78a229eb2eeef14e6bae88343aea6",
+      "license": "CC-BY-4.0",
+      "width": 512,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "appearance/views/body.front.jpg"
+    },
+    {
+      "path": "appearance/lines/body.front.softedge.png",
+      "role": "line-map",
+      "method": "softedge",
+      "source_view": "appearance/views/body.front.jpg",
+      "mediaType": "image/png",
+      "bytes": 12088,
+      "sha256": "c93da0168881e173359276add050cdeb948826d92b563aaeea9a542aaca230c0",
+      "license": "CC-BY-4.0",
+      "width": 256,
+      "height": 512,
+      "bits": 4,
+      "derived_from": "appearance/views/body.front.jpg"
     }
   ],
   "size_class": "lite",
@@ -193,7 +290,7 @@
   "provenance": {
     "created": "2026-10-09T20:30:00Z",
     "modified": "2026-10-09T20:30:00Z",
-    "generator": "cof-vector/0.1 sheet_split + face_vec",
+    "generator": "cof-vector/0.2 sheet_split + edges",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/04-martien"
     ],
@@ -229,6 +326,6 @@
       "archive"
     ],
     "computed_by": "cof-cli/0.2.0",
-    "computed_at": "2026-10-09T20:38:10Z"
+    "computed_at": "2026-10-09T20:54:52Z"
   }
 }
