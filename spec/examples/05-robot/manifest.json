@@ -1,0 +1,215 @@
+{
+  "cof": "0.2",
+  "id": "01K72R1A2B3C4D5E6F7G8H9J3K",
+  "name": "Robot",
+  "age": {
+    "value": 3,
+    "unit": "years",
+    "basis": "declared"
+  },
+  "languages": [
+    "fr"
+  ],
+  "summary": "Robot humanoïde de style japonais, armure blanche, rouge et bleue, yeux verts lumineux.",
+  "fictional": true,
+  "morphology": {
+    "class": "mechanical",
+    "species": "mecha (fictional)"
+  },
+  "tags": {
+    "auto": [
+      "mechanical",
+      "child",
+      "multi-view",
+      "image-only"
+    ],
+    "manual": [
+      "fiction",
+      "mecha",
+      "robot"
+    ],
+    "content": [
+      "none"
+    ],
+    "ip": {
+      "original": true,
+      "franchise": null,
+      "based_on": null
+    }
+  },
+  "sections": {
+    "appearance": {}
+  },
+  "profiles": {},
+  "mapping_vocabularies": {},
+  "assets": [
+    {
+      "path": "appearance/views/body.front.jpg",
+      "role": "view",
+      "subject": "body",
+      "angle": "front",
+      "framing": "full",
+      "mediaType": "image/jpeg",
+      "bytes": 286843,
+      "sha256": "5e41d2a68505591327d6ff079adc63514d2e10c95c35bf642b5c39481694e4a9",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 2048,
+      "confidence": 1.0,
+      "human_confirmed": true
+    },
+    {
+      "path": "appearance/views/body.right.jpg",
+      "role": "view",
+      "subject": "body",
+      "angle": "right",
+      "framing": "full",
+      "mediaType": "image/jpeg",
+      "bytes": 218459,
+      "sha256": "4713c7ba2727f9037619826cca3a4c99dd2051c990cf24f9faa0fd94c3a152fd",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 2048,
+      "confidence": 1.0,
+      "human_confirmed": true
+    },
+    {
+      "path": "appearance/views/body.back.jpg",
+      "role": "view",
+      "subject": "body",
+      "angle": "back",
+      "framing": "full",
+      "mediaType": "image/jpeg",
+      "bytes": 278072,
+      "sha256": "79eb93e3cd5b20bc7c9105814b36fcaedce53d9d3403991f69daa1bbe4bc406e",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 2048,
+      "confidence": 1.0,
+      "human_confirmed": true
+    },
+    {
+      "path": "appearance/views/head.front.closeup.jpg",
+      "role": "view",
+      "subject": "head",
+      "angle": "front",
+      "framing": "closeup",
+      "mediaType": "image/jpeg",
+      "bytes": 124282,
+      "sha256": "6aadf5b4bab5c6654c1f9ad31f88b86be34223b879f9ce002f7bce36c6ca9bf4",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 1024,
+      "confidence": 1.0,
+      "human_confirmed": true
+    },
+    {
+      "path": "appearance/views/head.right.closeup.jpg",
+      "role": "view",
+      "subject": "head",
+      "angle": "right",
+      "framing": "closeup",
+      "mediaType": "image/jpeg",
+      "bytes": 307389,
+      "sha256": "544a4b0144e7967bd07d80ee79411f066a466bd9d62fa1137a98033c6a616e4c",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 2048,
+      "confidence": 1.0,
+      "human_confirmed": true
+    },
+    {
+      "path": "appearance/views/head.front.jpg",
+      "role": "view",
+      "subject": "head",
+      "angle": "front",
+      "framing": "head",
+      "mediaType": "image/jpeg",
+      "bytes": 111586,
+      "sha256": "ac7163fda2323cc03418302f08192a4d91ae9391c6dac2f3871fff89decd910a",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 1024,
+      "confidence": 0.7,
+      "derived_from": "appearance/views/body.front.jpg"
+    }
+  ],
+  "size_class": "lite",
+  "container": {
+    "aligned": 0,
+    "executableContent": "none"
+  },
+  "rights": {
+    "permissions": {
+      "avatarPermission": "everyone",
+      "commercialUsage": "personalNonProfit",
+      "modification": "allowModification",
+      "allowRedistribution": true,
+      "creditNotation": "required",
+      "allowExcessivelyViolentUsage": false,
+      "allowSexualUsage": false,
+      "allowPoliticalOrReligiousUsage": false,
+      "allowAntisocialOrHateUsage": false,
+      "allowVoiceCloning": false,
+      "allowTraining": "none",
+      "allowImpersonationOfRealPerson": false,
+      "ageRating": "PEGI-3",
+      "minUserAge": 0,
+      "aiDisclosure": true
+    },
+    "consent": null
+  },
+  "provenance": {
+    "created": "2026-10-09T20:30:00Z",
+    "modified": "2026-10-09T20:30:00Z",
+    "generator": "cof-vector/0.1 sheet_split + face_vec",
+    "source": [
+      "https://github.com/yannsouetre/cof/tree/main/spec/examples/05-robot"
+    ],
+    "c2pa": null,
+    "signatures": []
+  },
+  "metadata": {
+    "@context": {
+      "dc": "http://purl.org/dc/elements/1.1/"
+    },
+    "dc:creator": [
+      "Yann Souetre"
+    ],
+    "dc:rights": "CC-BY-4.0",
+    "dc:description": "Exemple COF « apparence seule » : vues extraites automatiquement d'une planche de personnage générée (Gemini) ; code vectoriel visage COF-Vector v0.1 quand un maillage facial est détecté."
+  },
+  "extensions": {},
+  "completeness": {
+    "score": 31,
+    "level": "D",
+    "layers": {
+      "identity": 100,
+      "personality": 0,
+      "appearance": 40,
+      "physique": 0,
+      "voice": 0,
+      "volume": 0,
+      "motion": 0,
+      "rights": 85
+    },
+    "targets_ready": [
+      "image-video-gen",
+      "archive"
+    ],
+    "computed_by": "cof-cli/0.2.0",
+    "computed_at": "2026-10-09T20:38:36Z"
+  }
+}
