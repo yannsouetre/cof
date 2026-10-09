@@ -1,0 +1,264 @@
+{
+  "cof": "0.2",
+  "id": "01J9ZK5Y7Q4W8R2M3N6P0T1V9X",
+  "name": "Léa Marchand",
+  "nickname": "Léa",
+  "age": {
+    "value": 34,
+    "unit": "years",
+    "basis": "declared"
+  },
+  "languages": [
+    "fr",
+    "en"
+  ],
+  "summary": "Ingénieure acoustique devenue archiviste sonore ; sceptique, drôle, loyale.",
+  "fictional": true,
+  "morphology": {
+    "class": "humanoid",
+    "species": "human"
+  },
+  "completeness": {
+    "score": 62,
+    "level": "B",
+    "layers": {
+      "identity": 100,
+      "personality": 90,
+      "appearance": 70,
+      "physique": 40,
+      "voice": 55,
+      "volume": 60,
+      "motion": 20,
+      "rights": 80
+    },
+    "targets_ready": [
+      "chat-text",
+      "chat-voice",
+      "agent-persona",
+      "image-video-gen"
+    ],
+    "computed_by": "cof-cli/0.2.0",
+    "computed_at": "2026-10-09T09:12:00Z"
+  },
+  "tags": {
+    "auto": [
+      "humanoid",
+      "adult",
+      "female-presenting",
+      "contemporary",
+      "has-voice",
+      "has-3d",
+      "vector-face",
+      "fr",
+      "en"
+    ],
+    "manual": [
+      "fiction",
+      "mentor",
+      "archiviste",
+      "sound-design"
+    ],
+    "content": [
+      "none"
+    ],
+    "ip": {
+      "original": true,
+      "franchise": null,
+      "based_on": null
+    }
+  },
+  "sections": {
+    "character": "character/card.json",
+    "psyche": "character/psyche.json",
+    "story": "character/story.md",
+    "appearance": {
+      "face": "appearance/face.json",
+      "body": "appearance/body.json",
+      "hair": "appearance/hair.json",
+      "outfits": [
+        "appearance/outfits/daily.json"
+      ],
+      "face_vec": "appearance/face.vec.json"
+    },
+    "physique": "physique/attitude.json",
+    "voice": "voice/profile.json",
+    "volume": {
+      "avatar": "volume/avatar.vrm"
+    },
+    "motion": {
+      "visemes": "motion/visemes.json"
+    },
+    "voice_vec": "voice/voice.vec.json"
+  },
+  "profiles": {
+    "summary": {
+      "tokens": 380,
+      "tokenizer": "cl100k_base",
+      "blocks": [
+        "name",
+        "summary",
+        "psyche.core"
+      ]
+    },
+    "standard": {
+      "tokens": 1650,
+      "tokenizer": "cl100k_base",
+      "blocks": [
+        "card.description",
+        "card.personality",
+        "card.scenario",
+        "psyche"
+      ]
+    },
+    "full": {
+      "tokens": 3900,
+      "tokenizer": "cl100k_base",
+      "blocks": [
+        "standard",
+        "story.md",
+        "physique.summary",
+        "voice.summary"
+      ]
+    },
+    "lore": {
+      "tokens": 21000,
+      "tokenizer": "cl100k_base",
+      "activation": "per-entry"
+    }
+  },
+  "injection_order": [
+    "identity",
+    "rules",
+    "lore",
+    "history",
+    "identity_recap"
+  ],
+  "mapping_vocabularies": {
+    "skeleton": "VRMC_vrm-1.0/humanoid",
+    "expressions": "ARKit-52",
+    "visemes": "ARKit-52",
+    "face_model": "FLAME-2023-Open",
+    "body_model": "Anny-1.0",
+    "movement_notation": "LMA-Effort-1.0"
+  },
+  "assets": [
+    {
+      "path": "appearance/views/head.front.jpg",
+      "role": "view",
+      "subject": "head",
+      "angle": "front",
+      "mediaType": "image/jpeg",
+      "bytes": 184322,
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "FLUX.1-dev",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "appearance/views/body.left34.jpg",
+      "role": "view",
+      "subject": "body",
+      "angle": "left34",
+      "mediaType": "image/jpeg",
+      "bytes": 240113,
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "width": 1024,
+      "height": 2048
+    },
+    {
+      "path": "voice/samples/calm-30s.wav",
+      "role": "voice-sample",
+      "emotion": "contentment",
+      "mediaType": "audio/wav",
+      "bytes": 1440044,
+      "duration_s": 30.0,
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "license": "LicenseRef-COF-Internal",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "transcript": "voice/samples/calm-30s.txt"
+    },
+    {
+      "path": "volume/avatar.vrm",
+      "role": "avatar",
+      "rig": "VRMC_vrm-1.0",
+      "mediaType": "model/gltf-binary",
+      "bytes": 14233990,
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "license": "CC-BY-4.0"
+    },
+    {
+      "path": "motion/clips/idle-think.bvh",
+      "role": "motion-clip",
+      "rig": "VRMC_vrm-1.0",
+      "fps": 30,
+      "duration_s": 6.5,
+      "labels": [
+        "BABEL:stand",
+        "BABEL:touch_face"
+      ],
+      "mediaType": "application/x-bvh",
+      "bytes": 310224,
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "license": "CC-BY-4.0"
+    },
+    {
+      "role": "splat",
+      "uri": "https://example.org/lea/splat.spz",
+      "mediaType": "application/octet-stream",
+      "bytes": 48213990,
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "license": "CC-BY-4.0"
+    }
+  ],
+  "size_class": "standard",
+  "container": {
+    "aligned": 0,
+    "executableContent": "none"
+  },
+  "rights": {
+    "permissions": {
+      "avatarPermission": "everyone",
+      "commercialUsage": "personalNonProfit",
+      "modification": "allowModification",
+      "allowRedistribution": true,
+      "creditNotation": "required",
+      "allowExcessivelyViolentUsage": false,
+      "allowSexualUsage": false,
+      "allowPoliticalOrReligiousUsage": false,
+      "allowAntisocialOrHateUsage": false,
+      "allowVoiceCloning": true,
+      "allowTraining": "finetune-private",
+      "allowImpersonationOfRealPerson": false,
+      "ageRating": "PEGI-12",
+      "minUserAge": 13,
+      "aiDisclosure": true
+    },
+    "consent": null
+  },
+  "provenance": {
+    "created": "2026-10-09T09:12:00Z",
+    "modified": "2026-10-09T09:12:00Z",
+    "generator": "cof-cli/0.1.0",
+    "source": [
+      "https://github.com/yannsouetre/cof/examples/lea"
+    ],
+    "c2pa": null,
+    "signatures": []
+  },
+  "metadata": {
+    "@context": {
+      "dc": "http://purl.org/dc/elements/1.1/",
+      "schema": "https://schema.org/"
+    },
+    "dc:creator": [
+      "Yann Souetre"
+    ],
+    "dc:rights": "CC-BY-4.0",
+    "schema:version": "1.0.0"
+  },
+  "extensions": {}
+}
