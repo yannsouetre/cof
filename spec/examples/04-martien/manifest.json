@@ -1,0 +1,234 @@
+{
+  "cof": "0.2",
+  "id": "01K72R1A2B3C4D5E6F7G8H9J2K",
+  "name": "Martien",
+  "age": {
+    "value": 40,
+    "unit": "years",
+    "basis": "apparent"
+  },
+  "languages": [
+    "fr"
+  ],
+  "summary": "Humanoïde extraterrestre à la peau verte, grands yeux noirs, oreilles pointues, combinaison argentée.",
+  "fictional": true,
+  "morphology": {
+    "class": "humanoid",
+    "species": "martian (fictional)"
+  },
+  "tags": {
+    "auto": [
+      "humanoid",
+      "adult",
+      "multi-view",
+      "image-only",
+      "vector-face"
+    ],
+    "manual": [
+      "fiction",
+      "science-fiction",
+      "alien"
+    ],
+    "content": [
+      "none"
+    ],
+    "ip": {
+      "original": true,
+      "franchise": null,
+      "based_on": null
+    }
+  },
+  "sections": {
+    "appearance": {
+      "face_vec": "appearance/face.vec.json"
+    }
+  },
+  "profiles": {},
+  "mapping_vocabularies": {
+    "face_model": "COF-Vector-0.1"
+  },
+  "assets": [
+    {
+      "path": "appearance/views/body.front.jpg",
+      "role": "view",
+      "subject": "body",
+      "angle": "front",
+      "framing": "full",
+      "mediaType": "image/jpeg",
+      "bytes": 225753,
+      "sha256": "2e1c21bf0dece1c5e998eff5e008beda4681c6e65ee98699f74356b9843f9faf",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 2048,
+      "confidence": 0.9
+    },
+    {
+      "path": "appearance/views/body.left.jpg",
+      "role": "view",
+      "subject": "body",
+      "angle": "left",
+      "framing": "full",
+      "mediaType": "image/jpeg",
+      "bytes": 148854,
+      "sha256": "a580d62cf86e6524d843c3ad0d8cd63f8873963712f1341c7ee806ce1a42da8b",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 2048,
+      "confidence": 0.5
+    },
+    {
+      "path": "appearance/views/body.back.jpg",
+      "role": "view",
+      "subject": "body",
+      "angle": "back",
+      "framing": "full",
+      "mediaType": "image/jpeg",
+      "bytes": 229807,
+      "sha256": "64540e2536c9fa382635c38b7e71a99d591cbc4669fa0bd26624e09e860d1fbc",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 2048,
+      "confidence": 0.6
+    },
+    {
+      "path": "appearance/views/head.front.closeup.jpg",
+      "role": "view",
+      "subject": "head",
+      "angle": "front",
+      "framing": "closeup",
+      "mediaType": "image/jpeg",
+      "bytes": 114211,
+      "sha256": "a7627cc277ab0d235fadd49444d810f1c05f11c91db87a3f4e284f38de3f9721",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 1024,
+      "confidence": 0.9
+    },
+    {
+      "path": "appearance/views/head.right.closeup.jpg",
+      "role": "view",
+      "subject": "head",
+      "angle": "right",
+      "framing": "closeup",
+      "mediaType": "image/jpeg",
+      "bytes": 98273,
+      "sha256": "1e733e55f8de9e8059a1ceed475a43bc3a17482c523fad5a4197be5cc9b93bcb",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 1024,
+      "confidence": 1.0,
+      "human_confirmed": true
+    },
+    {
+      "path": "appearance/views/head.front.jpg",
+      "role": "view",
+      "subject": "head",
+      "angle": "front",
+      "framing": "head",
+      "mediaType": "image/jpeg",
+      "bytes": 100736,
+      "sha256": "560378a67e4f486e7ec103739c32aeba14554cdcf94860a7ffa4459781a36405",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 1024,
+      "confidence": 0.8,
+      "derived_from": "appearance/views/body.front.jpg"
+    },
+    {
+      "path": "appearance/face.vec.F.svg",
+      "role": "other",
+      "mediaType": "image/svg+xml",
+      "bytes": 5001,
+      "sha256": "f7239f728a9c4cf0f10a000f2bbf414e9bd268b7b0388d3f6e6b5227cf0dfe14",
+      "license": "CC-BY-4.0",
+      "derived_from": "appearance/face.vec.json"
+    },
+    {
+      "path": "appearance/face.vec.flat.svg",
+      "role": "other",
+      "mediaType": "image/svg+xml",
+      "bytes": 5031,
+      "sha256": "503fb0ae75afe4736855706f16725f4ebb50254da136b281ad191cb52a3884fe",
+      "license": "CC-BY-4.0",
+      "derived_from": "appearance/face.vec.json"
+    }
+  ],
+  "size_class": "lite",
+  "container": {
+    "aligned": 0,
+    "executableContent": "none"
+  },
+  "rights": {
+    "permissions": {
+      "avatarPermission": "everyone",
+      "commercialUsage": "personalNonProfit",
+      "modification": "allowModification",
+      "allowRedistribution": true,
+      "creditNotation": "required",
+      "allowExcessivelyViolentUsage": false,
+      "allowSexualUsage": false,
+      "allowPoliticalOrReligiousUsage": false,
+      "allowAntisocialOrHateUsage": false,
+      "allowVoiceCloning": false,
+      "allowTraining": "none",
+      "allowImpersonationOfRealPerson": false,
+      "ageRating": "PEGI-3",
+      "minUserAge": 0,
+      "aiDisclosure": true
+    },
+    "consent": null
+  },
+  "provenance": {
+    "created": "2026-10-09T20:30:00Z",
+    "modified": "2026-10-09T20:30:00Z",
+    "generator": "cof-vector/0.1 sheet_split + face_vec",
+    "source": [
+      "https://github.com/yannsouetre/cof/tree/main/spec/examples/04-martien"
+    ],
+    "c2pa": null,
+    "signatures": []
+  },
+  "metadata": {
+    "@context": {
+      "dc": "http://purl.org/dc/elements/1.1/"
+    },
+    "dc:creator": [
+      "Yann Souetre"
+    ],
+    "dc:rights": "CC-BY-4.0",
+    "dc:description": "Exemple COF « apparence seule » : vues extraites automatiquement d'une planche de personnage générée (Gemini) ; code vectoriel visage COF-Vector v0.1 quand un maillage facial est détecté."
+  },
+  "extensions": {},
+  "completeness": {
+    "score": 34,
+    "level": "D",
+    "layers": {
+      "identity": 100,
+      "personality": 0,
+      "appearance": 55,
+      "physique": 0,
+      "voice": 0,
+      "volume": 0,
+      "motion": 0,
+      "rights": 85
+    },
+    "targets_ready": [
+      "image-video-gen",
+      "archive"
+    ],
+    "computed_by": "cof-cli/0.2.0",
+    "computed_at": "2026-10-09T20:38:10Z"
+  }
+}

@@ -334,6 +334,9 @@ Fichiers `appearance/face.vec.json`, `body.vec.json`, `garment.vec.json`. Résum
 - **Rendu** : le code se *rend* en un **dessin au trait SVG** (face/profil) + une **carte de teintes** ; ces deux sorties alimentent directement les générateurs d'images (ControlNet lineart/canny, IP-Adapter), ce qui donne de la **cohérence de personnage entre outils** sans transporter de photo.
 - **Extraction** : depuis une photo via détection de 478 points de repère (MediaPipe Face Landmarker, Apache 2.0, dans le navigateur) → ajustement de Bézier → normalisation ; depuis un VRM/FLAME via projection des sommets. Le builder le fait automatiquement.
 - **Cohérence** : `face.vec.json` et `face.json` (FLAME) décrivent le même visage ; le validateur compare quelques mesures (largeur du nez, écart des yeux, hauteur des lèvres) et avertit au-delà d'un seuil.
+- **Exploitabilité dans l'inférence** (question légitime) : aucun modèle génératif ne lit des courbes JSON. Un code L1 n'est utile que par ses **trois rendus** : (1) une *image de contrainte* (trait SVG → PNG pour ControlNet lineart/canny ; bonhomme OpenPose pour la pose ; silhouette pour le corps), (2) un *texte* (`renderings.sentence`, injecté dans le prompt ou le contexte d'un LLM), (3) des *mesures structurées* (comparaison, recherche, contrôle de cohérence, retargeting vers FLAME/Anny). Le validateur exige que tout fichier `.vec.json` ait ses rendus à jour ; un lecteur qui ne connaît pas COF-Vector utilise simplement le PNG et la phrase.
+- **Périmètre par priorité** : visage (v0.1 opérationnel : contours, iris, mesures, couleurs), corps (v0.2 : silhouette + points-clés + mesures), **vêtements : expérimental et réduit** — uniquement la silhouette habillée, les lignes de coupe (encolure, ourlet, manches, ceinture) et la texture procédurale du tissu ; le reste du vêtement reste porté par les attributs Fashionpedia, le prompt et, s'il existe, le patron GarmentCode. Les tissus complexes ne sont pas vectorisés en v1.
+- **Limite connue (a priori humain)** : le maillage facial est un modèle *humain* ; sur un visage non humain (alien, animal) il projette une topologie humaine (crâne, oreilles ignorés), sur un robot il échoue et le fichier retombe sur L0 + L2. Les profils de contours pour d'autres morphologies viendront par `applies_to`.
 
 ### 4.1 `face.json`
 
@@ -392,6 +395,13 @@ Fichiers `appearance/face.vec.json`, `body.vec.json`, `garment.vec.json`. Résum
 
 Le bloc `intimate`, s'il est présent, suit le même schéma *composant → caractéristique → descripteur* que FDV et est **ignoré par défaut** par les lecteurs tant que `permissions.allowSexualUsage` n'est pas vrai ; sa simple présence quand `age < 18` rend le fichier **invalide**.
 
+**4.2.1 Morphologie estimée sous les vêtements (`body.estimated`) [NOUVEAU, optionnel].** Les vues sont presque toujours habillées ; pour alimenter `phenotypes`, `measurements` et `body.vec` sans photo déshabillée, le builder peut **déduire** une morphologie de base : points-clés de pose (largeur d'épaules, de hanches, longueurs de segments, rapport tête/stature) + silhouette habillée corrigée d'un *offset vestimentaire* par catégorie de vêtement (Fashionpedia : une veste ample ajoute plus qu'un t-shirt) + a priori anthropométriques (ISO 7250 par sexe/âge apparents). Règles strictes :
+- la sortie est marquée `"estimated": true` avec une `confidence`, et ne contient **jamais** de descripteur intime ;
+- **désactivé et interdit si `age < 18`** (le validateur rejette tout `body.estimated` sur un mineur) ;
+- **non appliqué** si `morphology.class` ∈ {`mechanical`, `amorphous`} ou si aucune pose humaine n'est détectée (sans intérêt pour un robot, une armure, une créature exotique) ;
+- jamais appliqué à une personne réelle sans `consent.scope` incluant `likeness-3d`.
+Les premiers résultats seront grossiers ; l'objet de la v1 est de fixer l'architecture et le flux, les spécialistes (anthropométrie) affineront en phase 2.
+
 ### 4.3 `hair.json` — COF-HAIR-1 **[NOUVEAU]**
 
 Aucun standard ouvert n'existe (Walker 1A–4C est commercial et contesté). Code compact, licence CC0 :
@@ -432,7 +442,20 @@ Nommage normatif `<sujet>.<angle>.<ext>` :
 - fond neutre recommandé, 1024² (tête) ou 1024×2048 (corps) ; carré 1024² obligatoire pour `head.front` (vignette VRM/PNG) ;
 - `ext` : `jpg`, `png`, `webp`, `avif`.
 
-Un *character sheet* (planche) est accepté en complément sous `views/sheet.<n>.<ext>` avec, dans `assets[]`, une liste `regions` (boîtes englobantes nommées) si l'on veut l'exploiter automatiquement.
+**Décision — vues séparées ou planche ?** Les deux sont acceptées, mais la forme **canonique est la vue séparée**, et la planche est une *source* conservée en option :
+
+| | Vues séparées (`views/<sujet>.<angle>`) | Planche (`role: sheet` + `regions[]`) |
+|---|---|---|
+| Générateurs d'images/vidéo | Dénominateur commun : chaque outil accepte 1 à N images de référence (Kling 1+3, Veo ≤ 3, Midjourney, Runway ≤ 3, ControlNet 1 par contrainte) — une planche *fonctionne* aussi mais gaspille l'emplacement d'une seule image | Fonctionne comme image unique ; moins précise par vue |
+| Vignette du fichier, applis de dialogue vidéo | `head.front` chargé directement, sans que l'outil ait à localiser le visage | Nécessite un découpage |
+| Fidélité | Pleine résolution par vue | Résolution divisée par le nombre de panneaux |
+| Builder | Produites automatiquement depuis une planche (détection des panneaux, suppression des titres, classification face/profil/dos, cadrage canonique) ou déposées une à une | Conservée telle quelle avec ses `regions` (cadres normalisés) pour traçabilité et ré-extraction |
+
+Le fichier stocke donc les vues séparées **et** peut garder la planche avec ses cadres : `assets[]` → `{ "role": "sheet", "path": "appearance/sheets/sheet.1.jpg", "regions": [ { "box": [x0,y0,x1,y1], "subject": "head", "angle": "front", "framing": "closeup", "file": "appearance/views/head.front.closeup.jpg", "confidence": 0.9 } ] }`. Les coordonnées des cadres sont normalisées (0–1) ; `confidence` vient du classifieur automatique, `human_confirmed: true` quand l'auteur a validé dans le builder (les robots et créatures sans visage détectable passent par cette confirmation).
+
+**Cadrages (`framing`).** `head.front` canonique = cadrage **`head`** : tête entière du sommet des cheveux au menton, carré 1024², visage centré sur le milieu des pupilles, ~55–65 % de la hauteur. Un zoom plus serré (haut du crâne coupé, comme dans beaucoup de planches générées) est accepté comme vue supplémentaire `head.front.closeup` (`framing: closeup`) ; le builder dérive alors le `head.front` canonique de la vue de corps de face (boîte de détection du visage × 2,5). Les extrémités coupées ne sont jamais « inventées » : un cadrage `closeup` dit explicitement ce qu'il ne montre pas.
+
+Chaque vue est ensuite identifiée par ses points-clés (MediaPipe 478 pts) et sa silhouette ; profil gauche/droit déclaré par l'orientation réelle, pas par la position dans la planche (les planches générées mélangent souvent les deux côtés).
 
 ### 4.6 Jeu de référence génératif (`references/`)
 

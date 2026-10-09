@@ -1,0 +1,232 @@
+{
+  "cof": "0.2",
+  "id": "01K72R1A2B3C4D5E6F7G8H9J4K",
+  "name": "Homme médiéval",
+  "age": {
+    "value": 35,
+    "unit": "years",
+    "basis": "apparent"
+  },
+  "languages": [
+    "fr"
+  ],
+  "summary": "Homme du Moyen Âge, moustache, gilet de cuir brun sur chemise de lin, bottes.",
+  "fictional": true,
+  "morphology": {
+    "class": "humanoid",
+    "species": "human"
+  },
+  "tags": {
+    "auto": [
+      "humanoid",
+      "adult",
+      "multi-view",
+      "image-only",
+      "vector-face"
+    ],
+    "manual": [
+      "fiction",
+      "medieval"
+    ],
+    "content": [
+      "none"
+    ],
+    "ip": {
+      "original": true,
+      "franchise": null,
+      "based_on": null
+    }
+  },
+  "sections": {
+    "appearance": {
+      "face_vec": "appearance/face.vec.json"
+    }
+  },
+  "profiles": {},
+  "mapping_vocabularies": {
+    "face_model": "COF-Vector-0.1"
+  },
+  "assets": [
+    {
+      "path": "appearance/views/body.front.jpg",
+      "role": "view",
+      "subject": "body",
+      "angle": "front",
+      "framing": "full",
+      "mediaType": "image/jpeg",
+      "bytes": 236206,
+      "sha256": "d61733b6067062fe173b8151ebe2f221f2125b808fbce83c76b2def6c479ddac",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 2048,
+      "confidence": 0.9
+    },
+    {
+      "path": "appearance/views/body.left.jpg",
+      "role": "view",
+      "subject": "body",
+      "angle": "left",
+      "framing": "full",
+      "mediaType": "image/jpeg",
+      "bytes": 160989,
+      "sha256": "8f6136309db7c325db5d7c0b2c76d95b652d8c3570f75f979503a965e7ef1cdd",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 2048,
+      "confidence": 0.9
+    },
+    {
+      "path": "appearance/views/body.back.jpg",
+      "role": "view",
+      "subject": "body",
+      "angle": "back",
+      "framing": "full",
+      "mediaType": "image/jpeg",
+      "bytes": 240097,
+      "sha256": "739b22ee908ecebec8c848d22e2e30d923683420aef2cc293641b6a2bb1ca8e1",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 2048,
+      "confidence": 0.6
+    },
+    {
+      "path": "appearance/views/head.front.closeup.jpg",
+      "role": "view",
+      "subject": "head",
+      "angle": "front",
+      "framing": "closeup",
+      "mediaType": "image/jpeg",
+      "bytes": 120235,
+      "sha256": "965f680c3c6107dfdc4cb0632bc8a2243b0eb54929e93a6e1acb64a607f12ab7",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 1024,
+      "confidence": 0.9
+    },
+    {
+      "path": "appearance/views/head.right.closeup.jpg",
+      "role": "view",
+      "subject": "head",
+      "angle": "right",
+      "framing": "closeup",
+      "mediaType": "image/jpeg",
+      "bytes": 108372,
+      "sha256": "4c5c1f2f9f18f8a66843e4432ca434139e281145150085434d468c5dddc118fb",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 1024,
+      "confidence": 0.7
+    },
+    {
+      "path": "appearance/views/head.front.jpg",
+      "role": "view",
+      "subject": "head",
+      "angle": "front",
+      "framing": "head",
+      "mediaType": "image/jpeg",
+      "bytes": 108802,
+      "sha256": "cef861cab8cda8cc49f4bad01cf649396589afd8c17b47181592d757074a34fb",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 1024,
+      "confidence": 0.8,
+      "derived_from": "appearance/views/body.front.jpg"
+    },
+    {
+      "path": "appearance/face.vec.F.svg",
+      "role": "other",
+      "mediaType": "image/svg+xml",
+      "bytes": 5001,
+      "sha256": "e19d3325a5d44bc5c8d45afccea55940d70105501f1ff6b2c97f64921b8142a8",
+      "license": "CC-BY-4.0",
+      "derived_from": "appearance/face.vec.json"
+    },
+    {
+      "path": "appearance/face.vec.flat.svg",
+      "role": "other",
+      "mediaType": "image/svg+xml",
+      "bytes": 5031,
+      "sha256": "70865ab394ef02d5cbbd5e3e40140b48fdbfdf51c2732be1c8d68563a85963aa",
+      "license": "CC-BY-4.0",
+      "derived_from": "appearance/face.vec.json"
+    }
+  ],
+  "size_class": "lite",
+  "container": {
+    "aligned": 0,
+    "executableContent": "none"
+  },
+  "rights": {
+    "permissions": {
+      "avatarPermission": "everyone",
+      "commercialUsage": "personalNonProfit",
+      "modification": "allowModification",
+      "allowRedistribution": true,
+      "creditNotation": "required",
+      "allowExcessivelyViolentUsage": false,
+      "allowSexualUsage": false,
+      "allowPoliticalOrReligiousUsage": false,
+      "allowAntisocialOrHateUsage": false,
+      "allowVoiceCloning": false,
+      "allowTraining": "none",
+      "allowImpersonationOfRealPerson": false,
+      "ageRating": "PEGI-3",
+      "minUserAge": 0,
+      "aiDisclosure": true
+    },
+    "consent": null
+  },
+  "provenance": {
+    "created": "2026-10-09T20:30:00Z",
+    "modified": "2026-10-09T20:30:00Z",
+    "generator": "cof-vector/0.1 sheet_split + face_vec",
+    "source": [
+      "https://github.com/yannsouetre/cof/tree/main/spec/examples/06-homme-medieval"
+    ],
+    "c2pa": null,
+    "signatures": []
+  },
+  "metadata": {
+    "@context": {
+      "dc": "http://purl.org/dc/elements/1.1/"
+    },
+    "dc:creator": [
+      "Yann Souetre"
+    ],
+    "dc:rights": "CC-BY-4.0",
+    "dc:description": "Exemple COF « apparence seule » : vues extraites automatiquement d'une planche de personnage générée (Gemini) ; code vectoriel visage COF-Vector v0.1 quand un maillage facial est détecté."
+  },
+  "extensions": {},
+  "completeness": {
+    "score": 34,
+    "level": "D",
+    "layers": {
+      "identity": 100,
+      "personality": 0,
+      "appearance": 55,
+      "physique": 0,
+      "voice": 0,
+      "volume": 0,
+      "motion": 0,
+      "rights": 85
+    },
+    "targets_ready": [
+      "image-video-gen",
+      "archive"
+    ],
+    "computed_by": "cof-cli/0.2.0",
+    "computed_at": "2026-10-09T20:37:49Z"
+  }
+}

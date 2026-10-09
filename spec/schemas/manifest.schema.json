@@ -142,9 +142,7 @@
     },
     "sections": {
       "type": "object",
-      "required": [
-        "character"
-      ],
+      "required": [],
       "properties": {
         "character": {
           "$ref": "#/$defs/path"
@@ -214,8 +212,22 @@
         },
         "voice_vec": {
           "$ref": "#/$defs/path"
+        },
+        "poses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/path"
+          }
+        },
+        "sheets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/path"
+          },
+          "description": "planches (character sheets) d'origine, avec regions dans assets[]"
         }
-      }
+      },
+      "description": "Toutes les sections sont optionnelles : un personnage « texte seul », « apparence seule » ou « voix seule » est valide ; la complétude (§ 2.2) mesure la couverture."
     },
     "profiles": {
       "type": "object",
@@ -611,19 +623,21 @@
         },
         "role": {
           "enum": [
-            "view",
-            "expression",
-            "reference",
-            "voice-sample",
-            "voice-consent",
-            "engine-artifact",
             "avatar",
-            "splat",
-            "print",
+            "document",
+            "engine-artifact",
+            "expression",
             "motion-clip",
             "motion-reference",
-            "document",
-            "other"
+            "other",
+            "print",
+            "reference",
+            "sheet",
+            "splat",
+            "view",
+            "view-closeup",
+            "voice-consent",
+            "voice-sample"
           ]
         },
         "mediaType": {
@@ -702,6 +716,60 @@
           "items": {
             "type": "string"
           }
+        },
+        "framing": {
+          "enum": [
+            "closeup",
+            "head",
+            "bust",
+            "full"
+          ]
+        },
+        "regions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "box",
+              "subject",
+              "angle"
+            ],
+            "properties": {
+              "box": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "minItems": 4,
+                "maxItems": 4,
+                "description": "[x0,y0,x1,y1] normalisés"
+              },
+              "subject": {
+                "type": "string"
+              },
+              "angle": {
+                "type": "string"
+              },
+              "framing": {
+                "type": "string"
+              },
+              "file": {
+                "$ref": "#/$defs/path"
+              },
+              "confidence": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "derived_from": {
+          "$ref": "#/$defs/path"
+        },
+        "estimated": {
+          "type": "boolean",
+          "description": "valeur déduite (ex. morphologie sous les vêtements), pas observée"
         }
       },
       "allOf": [
