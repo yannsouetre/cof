@@ -7,3 +7,4 @@ dist/
 Thumbs.db
 *.cof
 !spec/examples/**/*.cof
+*.egg-info/

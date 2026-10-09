@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cof-cli"
+version = "0.2.0"
+description = "COF — Character Open File: validate, pack, unpack and convert .cof character containers"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Yann Souetre" }]
+requires-python = ">=3.11"
+dependencies = ["jsonschema>=4.20"]
+
+[project.optional-dependencies]
+tokens = ["tiktoken>=0.7"]
+png = ["Pillow>=10"]
+dev = ["pytest>=8", "Pillow>=10"]
+
+[project.scripts]
+cof = "cof_cli.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["cof_cli*"]
+
+[tool.setuptools.package-data]
+cof_cli = ["schemas/*.json"]
