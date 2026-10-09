@@ -1,0 +1,146 @@
+{
+  "cof": "0.2",
+  "id": "01K72Q3F8M9W1X4Z6B7N2P5R8T",
+  "name": "Léa Marchand",
+  "nickname": "Léa",
+  "age": {
+    "value": 34,
+    "unit": "years",
+    "basis": "declared"
+  },
+  "languages": [
+    "fr",
+    "en"
+  ],
+  "summary": "Ingénieure acoustique devenue archiviste sonore ; sceptique, drôle, loyale.",
+  "fictional": true,
+  "morphology": {
+    "class": "humanoid",
+    "species": "human"
+  },
+  "tags": {
+    "auto": [
+      "humanoid",
+      "adult",
+      "contemporary",
+      "fr",
+      "en",
+      "text-only"
+    ],
+    "manual": [
+      "fiction",
+      "mentor",
+      "archiviste"
+    ],
+    "content": [
+      "none"
+    ],
+    "ip": {
+      "original": true,
+      "franchise": null,
+      "based_on": null
+    }
+  },
+  "sections": {
+    "character": "character/card.json",
+    "psyche": "character/psyche.json"
+  },
+  "profiles": {
+    "summary": {
+      "tokens": 120,
+      "tokenizer": "heuristic-chars",
+      "blocks": [
+        "name",
+        "summary",
+        "psyche.core"
+      ]
+    },
+    "standard": {
+      "tokens": 420,
+      "tokenizer": "heuristic-chars",
+      "blocks": [
+        "card.description",
+        "card.personality",
+        "card.scenario",
+        "psyche"
+      ]
+    }
+  },
+  "injection_order": [
+    "identity",
+    "rules",
+    "lore",
+    "history",
+    "identity_recap"
+  ],
+  "mapping_vocabularies": {},
+  "assets": [],
+  "size_class": "lite",
+  "container": {
+    "aligned": 0,
+    "executableContent": "none"
+  },
+  "rights": {
+    "permissions": {
+      "avatarPermission": "everyone",
+      "commercialUsage": "personalNonProfit",
+      "modification": "allowModification",
+      "allowRedistribution": true,
+      "creditNotation": "required",
+      "allowExcessivelyViolentUsage": false,
+      "allowSexualUsage": false,
+      "allowPoliticalOrReligiousUsage": false,
+      "allowAntisocialOrHateUsage": false,
+      "allowVoiceCloning": false,
+      "allowTraining": "finetune-private",
+      "allowImpersonationOfRealPerson": false,
+      "ageRating": "PEGI-12",
+      "minUserAge": 13,
+      "aiDisclosure": true
+    },
+    "consent": null
+  },
+  "provenance": {
+    "created": "2026-10-09T19:40:00Z",
+    "modified": "2026-10-09T19:40:00Z",
+    "generator": "cof-cli/0.2.0",
+    "source": [
+      "https://github.com/yannsouetre/cof/tree/main/spec/examples/01-lea-text-only"
+    ],
+    "c2pa": null,
+    "signatures": []
+  },
+  "metadata": {
+    "@context": {
+      "dc": "http://purl.org/dc/elements/1.1/",
+      "schema": "https://schema.org/"
+    },
+    "dc:creator": [
+      "Yann Souetre"
+    ],
+    "dc:rights": "CC-BY-4.0",
+    "schema:version": "1.0.0"
+  },
+  "extensions": {},
+  "completeness": {
+    "score": 41,
+    "level": "C",
+    "layers": {
+      "identity": 100,
+      "personality": 90,
+      "appearance": 0,
+      "physique": 0,
+      "voice": 0,
+      "volume": 0,
+      "motion": 0,
+      "rights": 85
+    },
+    "targets_ready": [
+      "chat-text",
+      "agent-persona",
+      "archive"
+    ],
+    "computed_by": "cof-cli/0.2.0",
+    "computed_at": "2026-10-09T19:35:27Z"
+  }
+}
