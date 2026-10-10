@@ -107,9 +107,9 @@ def test_presets_resolve_and_inherit():
     from cof_cli.model import resolved, lowest_age
     m = json.loads((MODULAR / "manifest.json").read_text("utf-8"))
     d = resolved(m, "default"); y = resolved(m, "young")
-    assert d["personality"]["_id"] == "p1" and y["personality"]["_id"] == "p2"
-    assert y["face"]["_id"] == "f1"                      # inherited via extends
-    assert y["personality"].get("psyche")                 # inherited via derives_from
+    assert d["personality"][0]["_id"] == "p1" and y["personality"][0]["_id"] == "p2"
+    assert "f1" in [v["_id"] for v in y["appearance"]]      # inherited via extends
+    assert y["personality"][0].get("psyche")               # inherited via derives_from
     assert lowest_age(m) == 14
 
 
@@ -125,7 +125,7 @@ def test_lowest_age_blocks_sexual_permission(tmp_path):
 def test_unknown_slot_variant_is_error(tmp_path):
     d = tmp_path / "m"; shutil.copytree(MODULAR, d)
     m = json.loads((d / "manifest.json").read_text("utf-8"))
-    m["presets"]["default"]["slots"]["face"] = "f9"
+    m["presets"]["default"]["slots"]["appearance"] = ["f9"]
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep)
     assert any("déclinaison inconnue" in e for e in rep.errors)
@@ -144,7 +144,38 @@ def test_derived_cannot_be_listed_as_image(tmp_path):
     d = tmp_path / "m"; shutil.copytree(ROOT / "spec" / "examples" / "03-femme-moderne", d)
     m = json.loads((d / "manifest.json").read_text("utf-8"))
     der = next(a["id"] for a in m["assets"] if a["role"] == "derived")
-    m["elements"]["face"]["variants"]["f1"]["images"].append(der)
+    m["elements"]["appearance"]["variants"]["f1"]["images"].append(der)
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep)
     assert any("dérivé" in e for e in rep.errors)
+
+
+def test_region_rules_and_single_kind(tmp_path):
+    d = tmp_path / "m"; shutil.copytree(MODULAR, d)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    V = m["elements"]["appearance"]["variants"]
+    V["o1"]["garment"] = "dress"
+    V["o2"] = {"kind": "clothing", "label": "Jupe", "garment": "bottom"}       # legs/hips base conflicts with dress
+    V["o3"] = {"kind": "clothing", "label": "Veste", "garment": "outerwear"}   # outer layer: OK
+    V["f2"] = {"kind": "face", "label": "Visage 2"}                             # second face → single_per_kind error
+    m["presets"]["default"]["slots"]["appearance"] = ["f1", "f2", "b1", "o1", "o2", "o3"]
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep)
+    assert any("deux déclinaisons de type 'face'" in e for e in rep.errors)
+    assert any("se recouvrent" in w for w in rep.warnings)
+    assert not any("'o3'" in w and "se recouvrent" in w for w in rep.warnings)
+
+
+def test_merge_and_extract(tmp_path):
+    from cof_cli.ops import merge_dirs, extract_preset
+    out = tmp_path / "merged"
+    merge_dirs([MODULAR, ROOT / "spec" / "examples" / "04-martien"], out)
+    rep = Report(); validate_dir(out, rep)
+    assert rep.ok, rep.errors
+    m = json.loads((out / "manifest.json").read_text("utf-8"))
+    assert len(m["identities"]) == 2 and m["name"] == "Léa Marchand"
+    ex = tmp_path / "ext"; extract_preset(out, ex, "m1-default")
+    rep2 = Report(); validate_dir(ex, rep2)
+    assert rep2.ok, rep2.errors
+    e = json.loads((ex / "manifest.json").read_text("utf-8"))
+    assert e["name"] == "Martien" and "personality" not in e["elements"]

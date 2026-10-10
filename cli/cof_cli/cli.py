@@ -11,8 +11,9 @@ from . import __version__
 from .completeness import compute as compute_completeness
 from .container import ContainerError, pack, read_manifest, unpack
 from .convert import card_to_cof_dir, export_soul, read_card_from_png, write_card_to_png
-from .migrate import migrate_dir
-from .model import asset_index, default_preset_id, resolved
+from .migrate import migrate_any
+from .ops import extract_preset, merge_dirs
+from .model import asset_index, default_preset_id, first, resolved
 from .validate import Report, validate_cof, validate_dir
 
 
@@ -132,13 +133,13 @@ def cmd_export(a):
         pid = a.preset or default_preset_id(manifest)
         r = resolved(manifest, pid)
         A = asset_index(manifest)
-        card_path = (r.get("personality") or {}).get("card")
+        card_path = (first(r, "personality") or {}).get("card")
         if fmt in ("png", "card") and not card_path:
             print("ce preset n'a pas de déclinaison de personnalité (card.json)", file=sys.stderr)
             return 1
         if fmt == "png":
             card = json.loads((d / card_path).read_text("utf-8"))
-            head = next((A[i]["path"] for i in (r.get("face") or {}).get("images", []) if i in A and A[i].get("subject") == "head" and A[i].get("angle") == "front"), None)
+            head = next((A[i]["path"] for i in (first(r, "appearance", "face") or {}).get("images", []) if i in A and A[i].get("subject") == "head" and A[i].get("angle") == "front"), None)
             if head and head.lower().endswith(".png"):
                 png = (d / head).read_bytes()
             else:
@@ -162,12 +163,37 @@ def cmd_export(a):
     return 0
 
 
+def cmd_merge(a):
+    dirs = []
+    for src in a.sources:
+        p = Path(src)
+        if p.is_file():
+            td = Path(tempfile.mkdtemp()); unpack(p, td); dirs.append(td)
+        else:
+            dirs.append(p)
+    merge_dirs(dirs, Path(a.out))
+    rep = Report(); validate_dir(Path(a.out), rep, recompute=True)
+    Path(a.out, "manifest.json").write_text(json.dumps(json.loads(Path(a.out, "manifest.json").read_text("utf-8")) | {}, ensure_ascii=False, indent=2) + "\n", "utf-8")
+    print(f"fusionné dans : {a.out}")
+    return _print_report(rep, a.json)
+
+
+def cmd_extract(a):
+    src = Path(a.src)
+    with tempfile.TemporaryDirectory() as td:
+        d = src if src.is_dir() else unpack(src, td)
+        extract_preset(d, Path(a.out), a.preset)
+    rep = Report(); validate_dir(Path(a.out), rep, recompute=True)
+    print(f"preset '{a.preset}' extrait dans : {a.out}")
+    return _print_report(rep, a.json)
+
+
 def cmd_migrate(a):
-    m = migrate_dir(Path(a.dir))
+    m = migrate_any(Path(a.dir))
     rep = Report()
     validate_dir(Path(a.dir), rep, recompute=True)
     Path(a.dir, "manifest.json").write_text(json.dumps(m | {k: v for k, v in json.loads(Path(a.dir, "manifest.json").read_text("utf-8")).items()}, ensure_ascii=False, indent=2) + "\n", "utf-8")
-    print(f"migré en v0.3 : {a.dir}")
+    print(f"migré en v{m.get('cof')} : {a.dir}")
     return _print_report(rep, a.json)
 
 
@@ -205,7 +231,9 @@ def main(argv=None) -> int:
     s = sub.add_parser("tokens", help="estimation des tokens par bloc"); s.add_argument("path"); s.set_defaults(fn=cmd_tokens)
     s = sub.add_parser("import", help="carte PNG/JSON (CCv2/V3) → dossier COF"); s.add_argument("src"); s.add_argument("-o", "--out"); s.add_argument("--age", type=int); s.add_argument("--real", action="store_true", help="personnage basé sur une personne réelle (consentement requis)"); s.add_argument("--lang", default="en"); s.add_argument("--keep-png", action="store_true", help="garde le PNG comme vue head.front"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_import)
     s = sub.add_parser("export", help="dossier/.cof → png | soul | card (depuis le preset par défaut ou --preset)"); s.add_argument("src"); s.add_argument("--format", choices=["png", "soul", "card"], required=True); s.add_argument("-o", "--out"); s.add_argument("--preset"); s.set_defaults(fn=cmd_export)
-    s = sub.add_parser("migrate", help="dossier v0.2 → v0.3 (elements / presets)"); s.add_argument("dir"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_migrate)
+    s = sub.add_parser("migrate", help="dossier v0.2/v0.3 → v0.4"); s.add_argument("dir"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_migrate)
+    s = sub.add_parser("merge", help="fusionne plusieurs .cof/dossiers (mêmes nom+surnom ⇒ même identité, sinon identités multiples)"); s.add_argument("sources", nargs="+"); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_merge)
+    s = sub.add_parser("extract", help="extrait un preset en dossier COF allégé"); s.add_argument("src"); s.add_argument("--preset", required=True); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_extract)
 
     a = ap.parse_args(argv)
     try:

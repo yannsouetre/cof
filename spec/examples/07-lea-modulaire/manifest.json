@@ -1,5 +1,5 @@
 {
-  "cof": "0.3",
+  "cof": "0.4",
   "id": "01K72S9A8B7C6D5E4F3G2H1J0K",
   "name": "Léa Marchand",
   "nickname": "Léa",
@@ -15,7 +15,7 @@
   "summary": "Ingénieure acoustique devenue archiviste sonore ; sceptique, drôle, loyale. Exemple modulaire : 2 personnalités, 2 presets.",
   "fictional": true,
   "morphology": {
-    "class": "humanoid",
+    "class": "human",
     "species": "human"
   },
   "tags": {
@@ -47,6 +47,7 @@
     "personality": {
       "variants": {
         "p1": {
+          "kind": "card",
           "label": "Léa Marchand",
           "card": "elements/personality/p1/card.json",
           "psyche": "elements/personality/p1/psyche.json",
@@ -73,15 +74,17 @@
           }
         },
         "p2": {
+          "kind": "card",
           "label": "Léa à 14 ans",
           "derives_from": "p1",
           "card": "elements/personality/p2/card.json"
         }
       }
     },
-    "face": {
+    "appearance": {
       "variants": {
         "f1": {
+          "kind": "face",
           "label": "Visage (planche Gemini)",
           "style": "photo-realistic",
           "images": [
@@ -89,12 +92,9 @@
             "a-head-right-closeup",
             "a-head-front"
           ]
-        }
-      }
-    },
-    "body": {
-      "variants": {
+        },
         "b1": {
+          "kind": "body",
           "label": "Corps (planche Gemini)",
           "style": "photo-realistic",
           "images": [
@@ -102,14 +102,12 @@
             "a-body-left",
             "a-body-back"
           ]
-        }
-      }
-    },
-    "outfit": {
-      "variants": {
+        },
         "o1": {
+          "kind": "clothing",
+          "garment": "full-outfit",
           "label": "Casual contemporain",
-          "spec": "elements/outfit/o1/outfit.json",
+          "spec": "elements/appearance/o1/outfit.json",
           "images": [
             "a-body-front",
             "a-body-left",
@@ -122,9 +120,15 @@
     "identity_weights": {
       "variants": {
         "l1": {
+          "kind": "lora",
           "label": "LoRA Flux (fictif)",
           "spec": "elements/identity_weights/l1/weights.json",
-          "style": "photo-realistic"
+          "style": "photo-realistic",
+          "covers": [
+            "face",
+            "hair",
+            "body"
+          ]
         }
       }
     }
@@ -134,11 +138,17 @@
       "label": "Léa aujourd'hui",
       "style": "photo-realistic",
       "slots": {
-        "personality": "p1",
-        "face": "f1",
-        "body": "b1",
-        "outfit": "o1",
-        "identity_weights": "l1"
+        "personality": [
+          "p1"
+        ],
+        "appearance": [
+          "f1",
+          "b1",
+          "o1"
+        ],
+        "identity_weights": [
+          "l1"
+        ]
       },
       "completeness": {
         "score": 56,
@@ -167,7 +177,9 @@
       "label": "Léa à 14 ans (texte seul)",
       "extends": "default",
       "slots": {
-        "personality": "p2"
+        "personality": [
+          "p2"
+        ]
       },
       "age_override": {
         "value": 14,
@@ -230,7 +242,7 @@
   "mapping_vocabularies": {},
   "assets": [
     {
-      "path": "elements/body/b1/body.front.jpg",
+      "path": "elements/appearance/b1/body.front.jpg",
       "role": "view",
       "subject": "body",
       "angle": "front",
@@ -248,7 +260,7 @@
       "style": "photo-realistic"
     },
     {
-      "path": "elements/body/b1/body.left.jpg",
+      "path": "elements/appearance/b1/body.left.jpg",
       "role": "view",
       "subject": "body",
       "angle": "left",
@@ -266,7 +278,7 @@
       "style": "photo-realistic"
     },
     {
-      "path": "elements/body/b1/body.back.jpg",
+      "path": "elements/appearance/b1/body.back.jpg",
       "role": "view",
       "subject": "body",
       "angle": "back",
@@ -284,7 +296,7 @@
       "style": "photo-realistic"
     },
     {
-      "path": "elements/face/f1/head.front.closeup.jpg",
+      "path": "elements/appearance/f1/head.front.closeup.jpg",
       "role": "view",
       "subject": "head",
       "angle": "front",
@@ -302,7 +314,7 @@
       "style": "photo-realistic"
     },
     {
-      "path": "elements/face/f1/head.right.closeup.jpg",
+      "path": "elements/appearance/f1/head.right.closeup.jpg",
       "role": "view",
       "subject": "head",
       "angle": "right",
@@ -320,7 +332,7 @@
       "style": "photo-realistic"
     },
     {
-      "path": "elements/face/f1/head.front.jpg",
+      "path": "elements/appearance/f1/head.front.jpg",
       "role": "view",
       "subject": "head",
       "angle": "front",

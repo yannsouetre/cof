@@ -1,11 +1,12 @@
 # COF — Character Open File
-## Spécification v0.3 (brouillon de travail, 10 octobre 2026)
+## Spécification v0.4 (brouillon de travail, 10 octobre 2026)
 
 > **Statut** : brouillon d'auteur, RFC publique sur GitHub (`rfcs/`).
 > **Licence** : spécification CC-BY-4.0 ; implémentation de référence MIT ; vocabulaires et schémas CC0.
 > **Auteur** : Yann Souetre.
 > **Nom** : *COF — Character Open File*, extension `.cof`, type MIME `application/vnd.cof.character+zip`.
-> **v0.3** : architecture **modulaire** (éléments → déclinaisons → presets), fichiers multi-personnages, poids d'identité (LoRA), maillages de visage, styles visuels, subdivision des éléments visuels, post-traitements dérivés optionnels, KPI de cohérence et règles de priorité.
+> **v0.4** : éléments organisés en **7 catégories par nature de média**, chaque déclinaison déclarant son **type** (`kind`) ; presets à **emplacements multiples** avec règles de cumul par **région du corps** (vêtements, accessoires, pilosité, particularités, LoRA) ; **identités multiples** dans un fichier avec presets rattachés ; langues portées par les déclinaisons ; fusion et extraction de presets ; vidéos de mouvement plafonnées.
+> v0.3 : architecture modulaire, poids d'identité, maillages, styles, dérivés optionnels, cohérence, priorités.
 > Les choix s'appuient sur l'état de l'art (`docs/state-of-the-art.md`). Les parties « à inventer » sont marquées **[NOUVEAU]**.
 
 ---
@@ -16,11 +17,12 @@ Un fichier `.cof` est un **conteneur ZIP** qui réunit tout ce qui définit un o
 
 ```
 Fichier .cof
- └─ Personnage(s)
-     ├─ Éléments        (personnalité, visage, cheveux, corps, tenue, voix, avatar 3D, mouvement, attitude, poids d'identité…)
-     │    └─ Déclinaisons   (visage f1, f2… ; tenue o1 « casual », o2 « médiévale » ; voix v1 « grave », v2…)
-     ├─ Presets         (combinaisons de déclinaisons : preset « défaut », preset « manga », preset « soirée »…)
-     └─ Droits, provenance, KPI (complétude, cohérence)
+ ├─ Identité(s)        (nom, âge, morphologie ; plusieurs identités possibles = casting)
+ ├─ Éléments, en 7 catégories par nature de média :
+ │    personnalité (texte) · apparence (photos) · poids d'identité (LoRA) · 3D · voix · postures · mouvements
+ │    └─ Déclinaisons, chacune avec un TYPE : visage f1, f2… ; vêtement « robe » o1, « bottes » o2 ; voix v1 « grave »…
+ ├─ Presets             (une identité + une combinaison de déclinaisons ; un preset par défaut)
+ └─ Droits, provenance, KPI (complétude, cohérence)
 ```
 
 | Couche | Contenu | Brique réutilisée |
@@ -84,31 +86,25 @@ Aucune contrainte sur la nature du personnage. `morphology.class` ∈ `humanoid 
 - Binaires haute entropie stockés sans compression (`store`), JSON/texte en `deflate`.
 - Alignement 64 octets optionnel (`container.aligned`), chiffrement interdit.
 
-### 1.2 Arborescence normative (v0.3)
+### 1.2 Arborescence normative (v0.4)
 
 ```
 mimetype
-manifest.json                              ← identité, éléments, presets, assets, droits (§ 2)
+manifest.json                              ← identités, éléments, presets, assets, droits (§ 2)
 elements/
-  personality/<v>/card.json                ← Character Card V3 (source de vérité du texte)
-  personality/<v>/psyche.json  story.md  lorebook.json  SOUL.md  IDENTITY.md
-  face/<v>/        head.front.jpg  head.left.jpg …  face.json (FLAME/descriptif)  mesh.glb (§ 4.2)
-  hair/<v>/        hair.json  views…        facial_hair/<v>/   body_hair/<v>/
-  body/<v>/        body.json  body.front.jpg …
-  intimate/<v>/    (optionnel, verrouillé — § 4.5)
-  outfit/<v>/      outfit.json  views…      accessories/<v>/
-  identity_weights/<v>/  weights.json  [lora.safetensors]   (§ 4.6)
-  voice/<v>/       profile.json  voice.vec.json  samples/  engines/
-  attitude/<v>/    attitude.json  poses/
-  avatar/<v>/      avatar.vrm | avatar.glb  skeleton.json  splat.json
-  motion/<v>/      clips/  visemes.json
-derived/<type>/<v>/   head.front.canny.png …  (§ 4.8, optionnel)
-sheets/            planches d'origine + regions (§ 4.1)
-rights/            consent.json  licenses/  manifest.c2pa
-characters/<id>/…  (fichiers multi-personnages : un sous-arbre complet par personnage — § 2.4)
+  personality/<v>/   card.json  psyche.json  story.md  lorebook.json  SOUL.md  IDENTITY.md
+  appearance/<v>/    images (head.front.jpg…), face.json / body.json / hair.json / outfit.json selon le type
+  identity_weights/<v>/  weights.json  [weights.safetensors]
+  volume3d/<v>/      avatar.vrm | mesh.glb | face.glb | splat.spz | figurine.3mf  skeleton.json
+  voice/<v>/         profile.json  voice.vec.json  samples/  engines/
+  posture/<v>/       photos, pose.json (OpenPose), silhouette.png, attitude.json
+  motion/<v>/        clips/ (BVH, VRMA)  videos/ (courtes, basse résolution)  visemes.json
+derived/<cat>/<v>/   post-traitements optionnels (§ 4.8)
+sheets/              planches d'origine + regions (§ 4.1)
+rights/              consent.json (par identité : consent.<identité>.json)  licenses/  manifest.c2pa
 extensions/<vendeur>/…
 ```
-`<v>` = identifiant de déclinaison (`f1`, `outfit-medieval`, …), `[a-z0-9-]`. Toute clé JSON inconnue est conservée ; `extensions/` n'est jamais purgé.
+`<v>` = identifiant de déclinaison (`f1`, `robe-rouge`, …), `[a-z0-9.-]`. Toute clé JSON inconnue est conservée ; `extensions/` n'est jamais purgé.
 
 ### 1.3 Enveloppes de compatibilité (exports)
 PNG `chara`+`ccv3` (texte + vignette), `.charx`, `SOUL.md`/`IDENTITY.md`, `.vrm`, artefact OCI (§ 10). Toujours calculées depuis le **preset par défaut** (ou un preset choisi).
@@ -117,73 +113,83 @@ PNG `chara`+`ccv3` (texte + vignette), `.charx`, `SOUL.md`/`IDENTITY.md`, `.vrm`
 
 ## 2. `manifest.json`
 
-### 2.1 Identité
+### 2.1 Identité(s)
+
+Champs **obligatoires** de l'identité : `name`, `age` (valeur + unité + base : déclaré / apparent / canonique), `fictional`, `morphology` (`class` ∈ `human` (défaut) | `humanoid` (non-humain de forme humaine : elfe, androïde, alien) | `anthropomorphic-animal` | `quadruped` | `avian` | `aquatic` | `mechanical` | `amorphous` | `other`, + `species` libre). Tout le reste (`nickname`, `summary`, tags) est optionnel. Les **langues** ne sont pas une propriété de l'identité : elles sont portées par les déclinaisons de personnalité (`language`) et par chaque échantillon de voix ; la racine `languages` en est l'**union calculée** (catalogues, filtres).
+
+**Plusieurs identités** **[NOUVEAU]** : un fichier peut décrire un casting. `identities: { "<id>": { name, nickname, age, summary, fictional, morphology, consent } }` + `default_identity`. Chaque preset se rattache à une identité (`presets.<p>.identity`, défaut = `default_identity`) ; une déclinaison peut se réserver à une identité (`identity`), sinon elle est partageable. Le **consentement est par identité** (une personne réelle = une identité). Pour que les lecteurs simples restent simples, la **racine porte une copie** des champs de l'identité par défaut (`name`, `age`, `fictional`, `morphology`, …) — le validateur vérifie l'égalité. La fusion de fichiers (§ 11.3) considère que deux identités sont la même si `name` et `nickname` sont identiques.
 
 ```jsonc
-{
-  "cof": "0.3",
-  "id": "01J9ZK5Y7Q4W8R2M3N6P0T1V9X",         // ULID stable
-  "name": "Léa Marchand", "nickname": "Léa",
-  "age": { "value": 34, "unit": "years", "basis": "declared" },   // obligatoire, non ambigu
-  "languages": ["fr", "en"], "summary": "…", "fictional": true,
-  "morphology": { "class": "humanoid", "species": "human" },
-  "tags": { "auto": [...], "manual": [...], "content": ["none"], "ip": { "original": true } },
-  "thumbnail": "elements/face/f1/head.front.jpg",   // = visage de face du preset par défaut (calculé)
-  ...
-}
+{ "cof": "0.4", "id": "01J9…", "name": "Léa Marchand", "nickname": "Léa",
+  "age": { "value": 34, "unit": "years", "basis": "declared" }, "fictional": true,
+  "morphology": { "class": "human", "species": "human" }, "summary": "…", "languages": ["fr", "en"],   // calculé
+  "identities": { "lea": { "name": "Léa Marchand", "nickname": "Léa", "age": {…}, "fictional": true, "morphology": {…} },
+                  "marc": { "name": "Marc", "age": {…}, "fictional": true, "morphology": {…} } },
+  "default_identity": "lea",
+  "tags": {…}, "thumbnail": "elements/appearance/f1/head.front.jpg", … }
 ```
 
-### 2.2 Éléments et déclinaisons **[NOUVEAU]**
+### 2.2 Éléments : 7 catégories, un type par déclinaison **[NOUVEAU]**
+
+| Catégorie | Nature | Types (`kind`) d'une déclinaison |
+|---|---|---|
+| `personality` | texte | `card` (Character Card V3 + psyche, story, lore), `description` (texte libre) |
+| `appearance` | photos | `reference-set` (photos en vrac, l'IA se débrouille), `character-sheet` (plusieurs angles sur une image), `face`, `body`, `hair`, `clothing` (+ `garment`), `accessory` (+ `accessory`), `intimate`, `pilosity` (+ `area` face/corps), `feature` (particularité : cornes, queue, prothèse… + `region`), `description` |
+| `identity_weights` | poids | `lora`, `lycoris`, `dora`, `textual-inversion`, `ip-adapter-embedding`, `dreambooth`, `other` (+ `covers`) |
+| `volume3d` | 3D | `mesh` (avatar riggé / maillage complet), `face-mesh`, `point-cloud` (splat), `print` (3MF), `other` |
+| `voice` | audio | `samples` (échantillons + transcriptions), `described` (profil sans audio) |
+| `posture` | pose | `photo` (une pose), `photos` (plusieurs vues d'une même pose), `openpose`, `silhouette`, `attitude` (signature de mouvement), `description` — avec `use: pose-only` (l'inférence ne retient que la pose) |
+| `motion` | mouvement | `clips` (BVH / VRMA), `video` (très court, basse résolution, plafond 20 Mo sauf `max_bytes_ack`), `description` |
+
+Règles :
+- Chaque déclinaison déclare `kind` (obligatoire), `label`, `style` / `style_tags` (visuel), `language` (texte/voix), `derives_from` (héritage de champs ; seule « hiérarchie »), `identity` (réservation optionnelle), et ses représentations (`images[]`, `samples[]`, `clips[]`, `videos[]` = identifiants d'assets ; `card`, `psyche`, `params`, `code`, `spec`, `profile`, `path`, `mesh`…).
+- Une déclinaison `face` / `body` / `hair` / `clothing` / `accessory` / `pilosity` / `feature` décrit **un seul** visage / corps / coupe / vêtement / accessoire cohérent — pour un autre, on crée une autre déclinaison. La subdivision est **possible, jamais imposée** : avec une seule planche, on renseigne `character-sheet` et c'est valide.
+- Les images sont référencées par identifiant d'asset et peuvent être partagées entre déclinaisons.
 
 ```jsonc
 "elements": {
-  "personality": { "variants": {
-      "p1": { "label": "Léa, archiviste", "card": "elements/personality/p1/card.json", "psyche": "elements/personality/p1/psyche.json", "story": "elements/personality/p1/story.md" },
-      "p2": { "label": "Léa, 20 ans plus tôt", "derives_from": "p1", "card": "elements/personality/p2/card.json" } } },
-  "face":   { "variants": {
-      "f1": { "label": "Visage photo", "style": "photo-realistic", "images": ["a-face-f1-front", "a-face-f1-left"], "params": "elements/face/f1/face.json", "mesh": { "path": "elements/face/f1/mesh.glb", "topology": "FLAME-2023", "blendshapes": "ARKit-52" } },
-      "f2": { "label": "Visage manga", "style": "manga", "derives_from": "f1", "images": ["a-face-f2-front"] } } },
-  "hair":   { "variants": { "h1": { "label": "Long châtain", "code": "elements/hair/h1/hair.json", "images": ["a-hair-h1"] }, "h2": { "label": "Court blond", "code": "elements/hair/h2/hair.json" } } },
-  "facial_hair": { "variants": {} }, "body": { "variants": { "b1": { "params": "elements/body/b1/body.json", "images": ["a-body-b1-front", "a-body-b1-back"] } } },
-  "body_hair": { "variants": {} }, "intimate": { "variants": {} },
-  "outfit": { "variants": { "o1": { "label": "Casual", "spec": "elements/outfit/o1/outfit.json", "images": ["a-body-b1-front"] }, "o2": { "label": "Médiéval", "spec": "elements/outfit/o2/outfit.json" } } },
-  "identity_weights": { "variants": { "l1": { "label": "LoRA Flux", "spec": "elements/identity_weights/l1/weights.json" } } },
-  "voice":    { "variants": { "v1": { "label": "Grave, posée", "profile": "elements/voice/v1/profile.json", "samples": ["a-voice-v1-30s"] }, "v2": { "label": "Enjouée" } } },
-  "attitude": { "variants": { "m1": { "spec": "elements/attitude/m1/attitude.json" } } },
-  "avatar":   { "variants": { "av1": { "path": "elements/avatar/av1/avatar.vrm", "rig": "VRMC_vrm-1.0" } } },
-  "motion":   { "variants": { "mo1": { "clips": ["a-clip-idle"], "visemes": "elements/motion/mo1/visemes.json" } } }
+  "personality": { "variants": { "p1": { "kind": "card", "label": "Léa", "language": "fr", "card": "elements/personality/p1/card.json", "psyche": "…" },
+                                 "p2": { "kind": "card", "label": "Léa en anglais", "language": "en", "derives_from": "p1", "card": "…" } } },
+  "appearance":  { "variants": { "f1": { "kind": "face", "style": "photo-realistic", "images": ["a-f1-front", "a-f1-left"], "params": "…/face.json" },
+                                 "b1": { "kind": "body", "images": ["a-b1-front"] },
+                                 "h1": { "kind": "hair", "code": "…/hair.json" }, "h2": { "kind": "hair", "label": "Court blond" },
+                                 "o1": { "kind": "clothing", "garment": "dress", "label": "Robe verte", "images": [...] },
+                                 "o2": { "kind": "clothing", "garment": "shoes", "label": "Bottes" },
+                                 "a1": { "kind": "accessory", "accessory": "glasses" },
+                                 "pi1": { "kind": "pilosity", "area": "face", "label": "Barbe de trois jours" },
+                                 "x1": { "kind": "feature", "region": "head", "label": "Cornes", "images": [...] },
+                                 "s1": { "kind": "character-sheet", "images": ["a-sheet-1"] } } },
+  "identity_weights": { "variants": { "l1": { "kind": "lora", "spec": "…/weights.json", "covers": ["face", "hair"] } } },
+  "volume3d": { "variants": { "m1": { "kind": "mesh", "path": "…/avatar.vrm", "rig": "VRMC_vrm-1.0" }, "fm1": { "kind": "face-mesh", "mesh": { "path": "…", "topology": "FLAME-2023" } } } },
+  "voice":    { "variants": { "v1": { "kind": "samples", "label": "Grave, posée", "profile": "…", "samples": ["a-v1-30s"] } } },
+  "posture":  { "variants": { "ps1": { "kind": "photo", "use": "pose-only", "images": ["a-pose-1"] }, "at1": { "kind": "attitude", "spec": "…/attitude.json" } } },
+  "motion":   { "variants": { "mo1": { "kind": "clips", "clips": ["a-clip-idle"], "visemes": "…" }, "vd1": { "kind": "video", "videos": ["a-vid-1"] } } }
 }
 ```
-Règles :
-- **Types d'éléments** (vocabulaire fermé, extensible par `x-<vendeur>-…`) : `personality`, `face`, `hair`, `facial_hair`, `body`, `body_hair`, `intimate`, `outfit`, `accessories`, `identity_weights`, `voice`, `attitude`, `avatar`, `motion`. La subdivision visuelle (visage / cheveux / pilosité / corps / tenue) est **possible, jamais imposée** : un auteur qui n'a qu'une planche ne renseigne que `face` et `body` ; une plateforme qui sait exploiter `hair` séparément y gagne quand il est présent.
-- Une **déclinaison** porte : `label`, `style` (vocabulaire `visual-styles`, § 4.7), `tags`, `derives_from` (héritage : les champs absents sont pris dans le parent — c'est la seule « hiérarchie » ; « 1.1 / 1.2 » n'est qu'une convention de nommage), ses représentations (`images[]` = identifiants d'assets, `params`, `mesh`, `code`, `spec`, `samples[]`, `clips[]`…), et `derived[]` (identifiants d'assets de post-traitement, § 4.8).
-- Les **images sont référencées par identifiant d'asset**, pas par chemin : une même vue de corps habillé peut servir à `body/b1` et à `outfit/o1`.
-- Une déclinaison hors de tout preset est autorisée (avertissement du validateur, pas erreur).
 
-### 2.3 Presets **[NOUVEAU]**
+### 2.3 Presets : emplacements multiples et règles de cumul **[NOUVEAU]**
 
 ```jsonc
 "presets": {
-  "default": { "label": "Léa aujourd'hui", "style": "photo-realistic",
-               "slots": { "personality": "p1", "face": "f1", "hair": "h1", "body": "b1", "outfit": "o1", "voice": "v1", "attitude": "m1", "avatar": "av1", "motion": "mo1", "identity_weights": "l1" },
-               "completeness": { "score": 78, "level": "B", "layers": {…} }, "coherence": { "score": 92, "computed_by": "…" } },
-  "manga":   { "label": "Version manga", "extends": "default", "style": "manga", "slots": { "face": "f2", "hair": "h2" } },
-  "young":   { "label": "Léa à 14 ans", "extends": "default", "slots": { "personality": "p2", "voice": "v2" }, "age_override": { "value": 14, "unit": "years", "basis": "canonical" } }
+  "default": { "label": "Léa aujourd'hui", "identity": "lea", "style": "photo-realistic",
+               "slots": { "personality": ["p1"], "appearance": ["f1", "b1", "h1", "o1", "o2", "a1"], "voice": ["v1"], "posture": ["at1"], "volume3d": ["m1"], "identity_weights": ["l1"] },
+               "rules": { "single_per_kind": true, "exclusive_regions": true } },
+  "soiree":  { "label": "Soirée", "extends": "default", "slots": { "appearance": ["f1", "b1", "h2", "o3", "o2", "a2"] } },
+  "en":      { "label": "Léa in English", "extends": "default", "slots": { "personality": ["p2"], "voice": ["v2"] } }
 },
 "default_preset": "default"
 ```
-Règles :
-- Un preset = une **combinaison** `slot → déclinaison` ; au plus une déclinaison par type d'élément ; `extends` hérite des slots d'un autre preset puis surcharge.
-- `default_preset` est obligatoire dès qu'il y a ≥ 1 preset ; s'il n'y a aucun preset, le lecteur construit un preset implicite avec la première déclinaison de chaque élément. La **vignette** du fichier = `head.front` du visage du preset par défaut.
-- Chaque preset a ses **KPI** (complétude, cohérence) ; les KPI de fichier = ceux du preset par défaut (identiques s'il n'y a qu'un preset).
-- `age_override` : un preset peut représenter le personnage à un autre âge ; toutes les règles d'âge (§ 9.1) s'appliquent à l'âge **le plus bas** parmi le manifeste et les presets.
-- À l'usage, l'application charge le preset par défaut, laisse choisir un autre preset, ou — niveau fin — composer les déclinaisons une à une.
-- `permissions_override` (optionnel, non mis en avant) : surcharge **partielle** des permissions globales pour un preset (ex. version « jeune » non commerciale) ; les permissions effectives = globales + surcharge ; jamais plus permissives que ne l'autorise l'âge du preset. Les droits restent globaux par défaut.
-- **Enregistrer sous / fusionner** : un outil peut extraire un ou plusieurs presets (avec les seules déclinaisons et assets qu'ils référencent) en un nouveau `.cof` (nouvel `id`, `provenance.source` ← ancien `id`), ou fusionner plusieurs `.cof` d'un même personnage (déclinaisons renommées en cas de collision, assets dédoublonnés par `sha256`).
+- Les emplacements sont des **listes par catégorie**. Règle `single_per_kind` (défaut vrai) : **au plus une déclinaison par type**, sauf les types cumulables `clothing`, `accessory`, `pilosity`, `feature` (et plusieurs `identity_weights` si leurs `covers` sont disjoints).
+- Règle `exclusive_regions` (défaut vrai, désactivable par preset) : deux vêtements sont en conflit s'ils couvrent la **même région du corps sur la même couche** (vocabulaire `garments-1.0` : `full-outfit` exclusif ; `top`/`bottom`/`dress`/`jumpsuit` en couche de base ; `outerwear`/`shoes`/`headwear`/`gloves`/`scarf`/`belt`/`armor` en couche extérieure ; sous-vêtements et chaussettes en couche inférieure ; `cape`/`other` cumulables) ; deux accessoires sont en conflit sur la même région sauf cumulables (`necklace`, `bracelet`, `ring`, `bag`) ; une pilosité par zone (`face`, `body`) ; les particularités se cumulent librement. Les conflits sont des **avertissements** (le format n'interdit pas), les doublons de type des **erreurs**.
+- `extends` hérite des listes du parent et **remplace** une catégorie entière quand elle est redéclarée. `identity` rattache le preset à une identité ; une déclinaison réservée à une autre identité est une erreur.
+- `default_preset` obligatoire dès qu'il y a ≥ 1 preset ; sans preset, preset implicite = première déclinaison de chaque catégorie. Vignette = `head.front` du `face` du preset par défaut.
+- KPI par preset (complétude, cohérence) ; KPI de fichier = preset par défaut.
+- `age_override` par preset ; règles d'âge sur l'âge le plus bas du fichier (toutes identités et presets). `permissions_override` optionnel (jamais plus permissif que l'âge du preset).
+- **Enregistrer sous / fusionner** : § 11.3.
 
-### 2.4 Fichiers multi-personnages **[NOUVEAU]**
+### 2.4 Fichiers multi-personnages
 
-Un `.cof` peut contenir **plusieurs personnages** (un casting, une famille, un jeu) : `manifest.json` racine déclare `"characters": [ { "id": "…", "name": "…", "path": "characters/lea/manifest.json" }, … ]` et `"default_character"` ; chaque sous-arbre `characters/<id>/` est un personnage **complet** (son propre manifeste, ses éléments, ses droits). Un fichier mono-personnage garde tout à la racine. Un outil « extrait » un personnage en un `.cof` autonome sans perte. Les droits et consentements sont **par personnage**, jamais mutualisés.
+Traités par les **identités multiples** (§ 2.1) : un seul pool d'éléments, des presets rattachés à des identités, des consentements par identité. Un outil extrait une identité (tous ses presets) ou un preset en `.cof` autonome ; la fusion de plusieurs `.cof` conserve les liens identité ↔ presets, renomme les déclinaisons en collision et dédoublonne les assets par `sha256`.
 
 ### 2.5 Complétude, cohérence, priorités
 
@@ -334,7 +340,11 @@ Page web unique (HTML/JS, hors ligne, GitHub Pages + Space Hugging Face), tout e
 
 **Priorités** : écran dédié, défauts du § 2.5, modifiables ; exportées dans le manifeste.
 
-**Build** : classe de taille, compression (recadrage/qualité JPEG, WebP ; Opus pour l'audio long ; externalisation des gros assets), génération de dérivés **sur demande seulement**, exports annexes (PNG ccv3, `.charx`, SOUL/IDENTITY, `.vrm`), « enregistrer sous » par preset.
+**Build** : classe de taille, compression (recadrage/qualité JPEG, WebP ; Opus pour l'audio long ; externalisation des gros assets ; **taille/qualité vidéo** affichées quand des vidéos sont présentes, plafond 20 Mo désactivable avec alerte), génération de dérivés **sur demande seulement**, exports annexes (PNG ccv3, `.charx`, SOUL/IDENTITY, `.vrm`), « enregistrer sous » par preset, **importer et fusionner** d'autres `.cof`.
+
+### 11.3 Fusion et extraction (`cof merge`, `cof extract`)
+- **Fusion** : mêmes `name` + `nickname` ⇒ même identité (éléments et presets ajoutés à cette identité) ; sinon nouvelle identité. Déclinaisons et presets renommés en cas de collision (préfixe), `derives_from`/`extends` réécrits, assets dédoublonnés par `sha256`, `provenance.source` ← identifiants des fichiers d'origine.
+- **Extraction d'un preset** : nouveau fichier contenant la seule identité du preset, ses déclinaisons (et leurs parents `derives_from`), leurs assets et dérivés, les droits ; nouvel `id`, `provenance.source` ← `cof:<id>#preset=<p>`.
 
 ---
 
@@ -343,8 +353,8 @@ Semver ; RFC publiques (14 jours) ; vocabulaires versionnés séparément (CC0) 
 
 ---
 
-## Annexe A — Migration v0.2 → v0.3
-Un fichier v0.2 (`sections` + `appearance/`, `character/`, `voice/`…) se lit comme un v0.3 à **une déclinaison par élément** et **un preset implicite** ; `cof migrate` déplace les fichiers sous `elements/<type>/<v1>/`, crée `elements`/`presets`/`default_preset`, attribue des `id` aux assets et déplace les cartes de traits sous `derived/`.
+## Annexe A — Migration v0.2 / v0.3 → v0.4
+`cof migrate` enchaîne v0.2 → v0.3 → v0.4 : types v0.3 (`face`, `hair`, `outfit`, `avatar`, `attitude`…) → catégories + `kind` (`appearance/face`, `appearance/hair`, `appearance/clothing` (`garment: full-outfit`), `volume3d/mesh`, `posture/attitude`…), emplacements de presets → listes, `humanoid` + espèce humaine → `human`.
 
 ## Annexe B — Exemple minimal valide (COF-Core)
 ```

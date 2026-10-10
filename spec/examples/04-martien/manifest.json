@@ -1,5 +1,5 @@
 {
-  "cof": "0.3",
+  "cof": "0.4",
   "id": "01K72R1A2B3C4D5E6F7G8H9J2K",
   "name": "Martien",
   "age": {
@@ -39,9 +39,10 @@
     }
   },
   "elements": {
-    "face": {
+    "appearance": {
       "variants": {
         "f1": {
+          "kind": "face",
           "label": "Visage",
           "images": [
             "a-head-front-closeup",
@@ -56,12 +57,9 @@
             "a-head-front-softedge"
           ],
           "style": "photo-realistic"
-        }
-      }
-    },
-    "body": {
-      "variants": {
+        },
         "b1": {
+          "kind": "body",
           "label": "Corps",
           "images": [
             "a-body-front",
@@ -82,8 +80,10 @@
     "default": {
       "label": "Défaut",
       "slots": {
-        "face": "f1",
-        "body": "b1"
+        "appearance": [
+          "f1",
+          "b1"
+        ]
       },
       "style": "photo-realistic",
       "completeness": {
@@ -103,8 +103,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/0.3.0",
-        "computed_at": "2026-10-10T08:09:15Z"
+        "computed_by": "cof-cli/0.4.0",
+        "computed_at": "2026-10-10T17:38:28Z"
       }
     }
   },
@@ -126,7 +126,7 @@
   },
   "assets": [
     {
-      "path": "elements/body/b1/body.front.jpg",
+      "path": "elements/appearance/b1/body.front.jpg",
       "role": "view",
       "subject": "body",
       "angle": "front",
@@ -144,7 +144,7 @@
       "style": "photo-realistic"
     },
     {
-      "path": "elements/body/b1/body.left.jpg",
+      "path": "elements/appearance/b1/body.left.jpg",
       "role": "view",
       "subject": "body",
       "angle": "left",
@@ -162,7 +162,7 @@
       "style": "photo-realistic"
     },
     {
-      "path": "elements/body/b1/body.back.jpg",
+      "path": "elements/appearance/b1/body.back.jpg",
       "role": "view",
       "subject": "body",
       "angle": "back",
@@ -180,7 +180,7 @@
       "style": "photo-realistic"
     },
     {
-      "path": "elements/face/f1/head.front.closeup.jpg",
+      "path": "elements/appearance/f1/head.front.closeup.jpg",
       "role": "view",
       "subject": "head",
       "angle": "front",
@@ -198,7 +198,7 @@
       "style": "photo-realistic"
     },
     {
-      "path": "elements/face/f1/head.right.closeup.jpg",
+      "path": "elements/appearance/f1/head.right.closeup.jpg",
       "role": "view",
       "subject": "head",
       "angle": "right",
@@ -217,7 +217,7 @@
       "style": "photo-realistic"
     },
     {
-      "path": "elements/face/f1/head.front.jpg",
+      "path": "elements/appearance/f1/head.front.jpg",
       "role": "view",
       "subject": "head",
       "angle": "front",
@@ -416,16 +416,16 @@
       "image-video-gen",
       "archive"
     ],
-    "computed_by": "cof-cli/0.3.0",
-    "computed_at": "2026-10-10T08:09:15Z"
+    "computed_by": "cof-cli/0.4.0",
+    "computed_at": "2026-10-10T17:38:28Z"
   },
   "coverage": {
     "elements": [
-      "face",
-      "body"
+      "appearance"
     ],
     "variants": 2,
-    "presets": 1
+    "presets": 1,
+    "identities": 1
   },
-  "thumbnail": "elements/face/f1/head.front.closeup.jpg"
+  "thumbnail": "elements/appearance/f1/head.front.closeup.jpg"
 }

@@ -1,5 +1,5 @@
 {
-  "cof": "0.3",
+  "cof": "0.4",
   "id": "01K72R1A2B3C4D5E6F7G8H9J4K",
   "name": "Homme médiéval",
   "age": {
@@ -13,7 +13,7 @@
   "summary": "Homme du Moyen Âge, moustache, gilet de cuir brun sur chemise de lin, bottes.",
   "fictional": true,
   "morphology": {
-    "class": "humanoid",
+    "class": "human",
     "species": "human"
   },
   "tags": {
@@ -38,9 +38,10 @@
     }
   },
   "elements": {
-    "face": {
+    "appearance": {
       "variants": {
         "f1": {
+          "kind": "face",
           "label": "Visage",
           "images": [
             "a-head-front-closeup",
@@ -55,12 +56,9 @@
             "a-head-front-softedge"
           ],
           "style": "photo-realistic"
-        }
-      }
-    },
-    "body": {
-      "variants": {
+        },
         "b1": {
+          "kind": "body",
           "label": "Corps",
           "images": [
             "a-body-front",
@@ -81,8 +79,10 @@
     "default": {
       "label": "Défaut",
       "slots": {
-        "face": "f1",
-        "body": "b1"
+        "appearance": [
+          "f1",
+          "b1"
+        ]
       },
       "style": "photo-realistic",
       "completeness": {
@@ -125,7 +125,7 @@
   },
   "assets": [
     {
-      "path": "elements/body/b1/body.front.jpg",
+      "path": "elements/appearance/b1/body.front.jpg",
       "role": "view",
       "subject": "body",
       "angle": "front",
@@ -143,7 +143,7 @@
       "style": "photo-realistic"
     },
     {
-      "path": "elements/body/b1/body.left.jpg",
+      "path": "elements/appearance/b1/body.left.jpg",
       "role": "view",
       "subject": "body",
       "angle": "left",
@@ -161,7 +161,7 @@
       "style": "photo-realistic"
     },
     {
-      "path": "elements/body/b1/body.back.jpg",
+      "path": "elements/appearance/b1/body.back.jpg",
       "role": "view",
       "subject": "body",
       "angle": "back",
@@ -179,7 +179,7 @@
       "style": "photo-realistic"
     },
     {
-      "path": "elements/face/f1/head.front.closeup.jpg",
+      "path": "elements/appearance/f1/head.front.closeup.jpg",
       "role": "view",
       "subject": "head",
       "angle": "front",
@@ -197,7 +197,7 @@
       "style": "photo-realistic"
     },
     {
-      "path": "elements/face/f1/head.right.closeup.jpg",
+      "path": "elements/appearance/f1/head.right.closeup.jpg",
       "role": "view",
       "subject": "head",
       "angle": "right",
@@ -215,7 +215,7 @@
       "style": "photo-realistic"
     },
     {
-      "path": "elements/face/f1/head.front.jpg",
+      "path": "elements/appearance/f1/head.front.jpg",
       "role": "view",
       "subject": "head",
       "angle": "front",

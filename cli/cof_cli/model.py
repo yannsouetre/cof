@@ -1,52 +1,80 @@
-"""Manifest model helpers (v0.3): element/variant/preset resolution, asset index."""
+"""Manifest model helpers (v0.4): categories → variants (with `kind`), presets with multi-slots, identities, regions."""
 from __future__ import annotations
 
-ELEMENT_TYPES = ["personality", "face", "hair", "facial_hair", "body", "body_hair", "intimate", "outfit",
-                 "accessories", "identity_weights", "voice", "attitude", "avatar", "motion"]
+import json
+from importlib import resources
+
+CATEGORIES = ["personality", "appearance", "identity_weights", "volume3d", "voice", "posture", "motion"]
+KINDS = {
+    "personality": ["card", "description"],
+    "appearance": ["reference-set", "character-sheet", "face", "body", "hair", "clothing", "accessory", "intimate", "pilosity", "feature", "description"],
+    "identity_weights": ["lora", "lycoris", "dora", "textual-inversion", "ip-adapter-embedding", "dreambooth", "other"],
+    "volume3d": ["mesh", "face-mesh", "point-cloud", "print", "other"],
+    "voice": ["samples", "described"],
+    "posture": ["photo", "photos", "openpose", "silhouette", "attitude", "description"],
+    "motion": ["clips", "video", "description"],
+}
+# kinds that may appear several times in one preset (subject to region rules)
+MULTI_KINDS = {"clothing", "accessory", "pilosity", "feature"}
+
+_garments = None
+
+
+def garments() -> dict:
+    global _garments
+    if _garments is None:
+        try:
+            with resources.files("cof_cli").joinpath("schemas/garments-1.0.json").open("r", encoding="utf-8") as f:
+                _garments = json.load(f)
+        except Exception:
+            _garments = {"types": {}, "accessories": {"types": {}}}
+    return _garments
 
 
 def asset_index(manifest: dict) -> dict[str, dict]:
     return {a["id"]: a for a in manifest.get("assets", []) if "id" in a}
 
 
-def resolve_variant(manifest: dict, etype: str, vid: str, _seen=None) -> dict | None:
-    """Return the variant with `derives_from` inheritance applied (child fields win)."""
-    variants = (manifest.get("elements", {}).get(etype, {}) or {}).get("variants", {}) or {}
-    v = variants.get(vid)
+def variants_of(manifest: dict, cat: str) -> dict:
+    return ((manifest.get("elements", {}) or {}).get(cat, {}) or {}).get("variants", {}) or {}
+
+
+def resolve_variant(manifest: dict, cat: str, vid: str, _seen=None) -> dict | None:
+    v = variants_of(manifest, cat).get(vid)
     if v is None:
         return None
     _seen = _seen or set()
     if vid in _seen:
         return dict(v)
     _seen.add(vid)
-    parent = resolve_variant(manifest, etype, v["derives_from"], _seen) if v.get("derives_from") else None
+    parent = resolve_variant(manifest, cat, v["derives_from"], _seen) if v.get("derives_from") else None
     merged = dict(parent or {})
     merged.update({k: val for k, val in v.items() if k != "derives_from"})
     merged["_id"] = vid
     return merged
 
 
-def resolve_preset_slots(manifest: dict, pid: str, _seen=None) -> dict[str, str]:
+def resolve_preset_slots(manifest: dict, pid: str, _seen=None) -> dict[str, list[str]]:
     presets = manifest.get("presets", {}) or {}
     p = presets.get(pid)
     if p is None:
         return {}
     _seen = _seen or set()
     if pid in _seen:
-        return dict(p.get("slots", {}))
+        return {k: list(v) for k, v in (p.get("slots") or {}).items()}
     _seen.add(pid)
     base = resolve_preset_slots(manifest, p["extends"], _seen) if p.get("extends") else {}
-    base.update(p.get("slots", {}) or {})
+    for k, v in (p.get("slots") or {}).items():
+        base[k] = list(v)          # a child replaces the whole category list
     return base
 
 
-def implicit_preset(manifest: dict) -> dict[str, str]:
-    """No presets declared → first variant of each element."""
+def implicit_preset(manifest: dict) -> dict[str, list[str]]:
     slots = {}
-    for etype, e in (manifest.get("elements", {}) or {}).items():
+    for cat, e in (manifest.get("elements", {}) or {}).items():
         vs = list((e or {}).get("variants", {}).keys())
         if vs:
-            slots[etype] = vs[0]
+            slots[cat] = [vs[0]]
     return slots
 
 
@@ -58,24 +86,116 @@ def default_preset_id(manifest: dict) -> str | None:
     return manifest.get("default_preset") or (preset_ids(manifest)[0] if preset_ids(manifest) else None)
 
 
-def resolved(manifest: dict, pid: str | None = None) -> dict[str, dict]:
-    """slot → resolved variant for a preset (or the implicit one)."""
+def resolved(manifest: dict, pid: str | None = None) -> dict[str, list[dict]]:
+    """category → list of resolved variants for a preset (or the implicit one)."""
     slots = resolve_preset_slots(manifest, pid) if pid else implicit_preset(manifest)
-    out = {}
-    for etype, vid in slots.items():
-        v = resolve_variant(manifest, etype, vid)
-        if v is not None:
-            out[etype] = v
+    out: dict[str, list[dict]] = {}
+    for cat, vids in slots.items():
+        lst = []
+        for vid in vids:
+            v = resolve_variant(manifest, cat, vid)
+            if v is not None:
+                lst.append(v)
+        if lst:
+            out[cat] = lst
     return out
+
+
+def by_kind(res: dict[str, list[dict]], cat: str, kind: str) -> list[dict]:
+    return [v for v in res.get(cat, []) if v.get("kind") == kind]
+
+
+def first(res: dict[str, list[dict]], cat: str, kind: str | None = None) -> dict | None:
+    lst = res.get(cat, [])
+    if kind:
+        lst = [v for v in lst if v.get("kind") == kind]
+    return lst[0] if lst else None
+
+
+def preset_identity(manifest: dict, pid: str | None) -> dict:
+    """Identity record for a preset: identities[preset.identity] or the root copy."""
+    p = (manifest.get("presets", {}) or {}).get(pid or "", {}) or {}
+    iid = p.get("identity") or manifest.get("default_identity")
+    ids = manifest.get("identities") or {}
+    if iid and iid in ids:
+        return ids[iid]
+    return {k: manifest.get(k) for k in ("name", "nickname", "age", "summary", "fictional", "morphology")}
 
 
 def lowest_age(manifest: dict) -> float | None:
     ages = []
-    a = manifest.get("age", {})
-    if isinstance(a, dict) and isinstance(a.get("value"), (int, float)):
-        ages.append(a["value"])
+    for src in [manifest, *((manifest.get("identities") or {}).values())]:
+        a = src.get("age", {})
+        if isinstance(a, dict) and isinstance(a.get("value"), (int, float)):
+            ages.append(a["value"])
     for p in (manifest.get("presets", {}) or {}).values():
         ao = p.get("age_override")
         if isinstance(ao, dict) and isinstance(ao.get("value"), (int, float)):
             ages.append(ao["value"])
     return min(ages) if ages else None
+
+
+def preset_age(manifest: dict, pid: str | None) -> float | None:
+    p = (manifest.get("presets", {}) or {}).get(pid or "", {}) or {}
+    ao = p.get("age_override")
+    if isinstance(ao, dict) and isinstance(ao.get("value"), (int, float)):
+        return ao["value"]
+    a = preset_identity(manifest, pid).get("age") or {}
+    return a.get("value") if isinstance(a, dict) else None
+
+
+# ---------- region rules (clothing / accessories / pilosity / features / weights) ----------
+
+def region_conflicts(res: dict[str, list[dict]]) -> list[str]:
+    """Return human-readable conflicts for a resolved preset (empty = OK)."""
+    g = garments()
+    issues = []
+    cloth = by_kind(res, "appearance", "clothing")
+    full = [v for v in cloth if (v.get("garment") or "other") == "full-outfit"]
+    if full and len(cloth) > 1:
+        issues.append(f"tenue complète '{full[0]['_id']}' combinée avec d'autres vêtements")
+    occupied: dict[tuple[str, str], str] = {}
+    for v in cloth:
+        t = g["types"].get(v.get("garment") or "other", {"regions": [], "layer": "outer", "stackable": True})
+        if t.get("stackable") or t.get("exclusive"):
+            continue
+        for r in t["regions"]:
+            key = (r, t["layer"])
+            if key in occupied:
+                issues.append(f"vêtements '{occupied[key]}' et '{v['_id']}' se recouvrent ({r}, couche {t['layer']})")
+            occupied[key] = v["_id"]
+    occ = {}
+    for v in by_kind(res, "appearance", "accessory"):
+        t = g["accessories"]["types"].get(v.get("accessory") or "other", {"region": "none", "stackable": True})
+        if t.get("stackable") or t["region"] in ("none",):
+            continue
+        if t["region"] in occ:
+            issues.append(f"accessoires '{occ[t['region']]}' et '{v['_id']}' sur la même région ({t['region']})")
+        occ[t["region"]] = v["_id"]
+    areas = {}
+    for v in by_kind(res, "appearance", "pilosity"):
+        a = v.get("area") or "face"
+        if a in areas:
+            issues.append(f"deux pilosités pour la zone '{a}' ('{areas[a]}', '{v['_id']}')")
+        areas[a] = v["_id"]
+    covered: dict[str, str] = {}
+    for v in res.get("identity_weights", []):
+        for c in v.get("covers") or []:
+            if c in covered:
+                issues.append(f"poids d'identité '{covered[c]}' et '{v['_id']}' couvrent tous deux '{c}'")
+            covered[c] = v["_id"]
+    return issues
+
+
+def single_kind_violations(res: dict[str, list[dict]]) -> list[str]:
+    out = []
+    for cat, lst in res.items():
+        seen = {}
+        for v in lst:
+            k = v.get("kind")
+            if k in MULTI_KINDS:
+                continue
+            if k in seen:
+                out.append(f"{cat} : deux déclinaisons de type '{k}' ('{seen[k]}', '{v['_id']}')")
+            seen[k] = v["_id"]
+    return out
