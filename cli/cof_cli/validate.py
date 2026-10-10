@@ -206,6 +206,16 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                         rep.errors.append(f"body.{vid} : body.estimated interdit pour un mineur")
                 except Exception:
                     pass
+    # per-preset permission overrides: never more permissive than the preset's own age allows
+    for pid in pids:
+        p = manifest["presets"][pid]
+        ov = p.get("permissions_override") or {}
+        if not ov:
+            continue
+        page = (p.get("age_override") or manifest.get("age") or {}).get("value")
+        eff = {**perms, **ov}
+        if page is not None and page < 18 and eff.get("allowSexualUsage"):
+            rep.errors.append(f"presets.{pid}.permissions_override : allowSexualUsage interdit (âge du preset {page})")
     if manifest.get("fictional") is False and not (manifest.get("rights", {}) or {}).get("consent"):
         rep.errors.append("personnage non fictif sans rights.consent")
 
