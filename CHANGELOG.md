@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0 — 2026-10-10
+- **Âge optionnel partout** : plus obligatoire dans l'identité (un personnage peut n'avoir aucun âge connu) ; `unit` et `basis` facultatifs. **Âge par déclinaison** (`variant.age`) sur tout ce qui touche à la morphologie — apparence hors vêtement / accessoire / particularités / description, 3D, poids d'identité — pour décliner un personnage aux différents âges de sa vie. Âge d'un preset = plus bas de ses déclinaisons, sinon `age_override`, sinon identité. **Aucun âge déclaré ⇒ `allowSexualUsage` et `intimate` refusés** (CLI + builder) ; tag auto `age-unknown`.
+- Builder 0.5.0 : champs « Âge représenté » + « Base de l'âge » à côté des tags de style sur les déclinaisons concernées ; identité : âge et base optionnels ; « Particularités » au pluriel ; `cof import` sans `--age` ne fabrique plus un âge de 18 ans.
+
 ## 0.4.3 — 2026-10-10
 - Builder 0.4.3 : **personnalité harmonisée** avec les autres catégories — « + Ajouter une déclinaison » puis choix du type dans la carte (*texte structuré* / *texte libre* / *import d'un fichier*) ; le type « import » affiche une zone glisser-déposer identique aux autres et prend le type du fichier déposé (carte → structuré, .md/.txt → libre, image sans fiche → « Photos en vrac » et la déclinaison vide disparaît) ; une déclinaison « import » restée vide est ignorée au build et signalée.
 - Build : « Exporter **un** preset » ; nouveau bouton « Importer un preset… » (même mécanisme que « Importer et fusionner » : un preset exporté est un `.cof` allégé, l'importer l'ajoute à ce fichier).

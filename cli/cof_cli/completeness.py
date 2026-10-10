@@ -25,7 +25,8 @@ def compute_preset(manifest: dict, pid: str | None, src: Path | None = None) -> 
     L: dict[str, int] = {}
     imgs = lambda v: [A[i] for i in (v or {}).get("images", []) if i in A]
 
-    s = 20 * bool(ident.get("name")) + 20 * (isinstance(ident.get("age"), dict) and "value" in ident["age"]) + 20 * bool(ident.get("summary"))
+    from .model import preset_age
+    s = 20 * bool(ident.get("name")) + 20 * (preset_age(m, pid) is not None) + 20 * bool(ident.get("summary"))
     s += 10 * bool(m.get("languages")) + 10 * bool(ident.get("morphology"))
     tags = m.get("tags", {}) or {}
     s += 10 * bool(tags.get("content")) + 10 * isinstance(tags.get("ip"), dict)

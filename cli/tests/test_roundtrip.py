@@ -199,3 +199,32 @@ def test_libraries_and_attitude_in_motion(tmp_path):
     assert not any("deux déclinaisons" in e for e in rep.errors), rep.errors
     assert rep.ok, rep.errors
     assert rep.info["completeness"]["layers"]["motion"] >= 30
+
+
+def test_age_optional_and_variant_ages(tmp_path):
+    """Age is optional everywhere; the lowest age anywhere (incl. morphological variants) drives the rules;
+    with no age at all, sensitive usages are refused."""
+    from cof_cli.model import lowest_age, preset_age
+    d = tmp_path / "m"; shutil.copytree(EXAMPLE, d)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    del m["age"]
+    for ident in (m.get("identities") or {}).values():
+        ident.pop("age", None)
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep)
+    assert rep.ok, rep.errors                                   # no age, no sensitive usage → fine
+    assert lowest_age(m) is None
+    m["rights"]["permissions"]["allowSexualUsage"] = True
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep)
+    assert any("aucun âge" in e for e in rep.errors), rep.errors
+    # a face variant declined at 14 lowers the file age
+    m["rights"]["permissions"]["allowSexualUsage"] = False
+    m["elements"].setdefault("appearance", {"variants": {}})["variants"]["f-young"] = {"kind": "face", "label": "À 14 ans", "age": {"value": 14}}
+    m["presets"] = {"default": {"label": "d", "slots": {"personality": ["p1"], "appearance": ["f-young"]}}}; m["default_preset"] = "default"
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    assert lowest_age(m) == 14 and preset_age(m, "default") == 14
+    m["rights"]["permissions"]["allowSexualUsage"] = True
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep)
+    assert any("âge le plus bas" in e for e in rep.errors), rep.errors
