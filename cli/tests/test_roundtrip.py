@@ -179,3 +179,23 @@ def test_merge_and_extract(tmp_path):
     assert rep2.ok, rep2.errors
     e = json.loads((ex / "manifest.json").read_text("utf-8"))
     assert e["name"] == "Martien" and "personality" not in e["elements"]
+
+
+def test_libraries_and_attitude_in_motion(tmp_path):
+    """posture/motion are libraries: several variants of the same kind in one preset is NOT a single-kind error;
+    attitude.json is admitted under motion as well as posture."""
+    d = tmp_path / "m"; shutil.copytree(MODULAR, d)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    m["elements"]["posture"] = {"variants": {"ps1": {"kind": "openpose", "label": "A"}, "ps2": {"kind": "openpose", "label": "B"}}}
+    (d / "elements/motion/mo1").mkdir(parents=True)
+    (d / "elements/motion/mo1/attitude.json").write_text(json.dumps({"notation": "LMA-Effort-1.0"}), "utf-8")
+    m["elements"]["motion"] = {"variants": {"mo1": {"kind": "attitude", "label": "Signature", "spec": "elements/motion/mo1/attitude.json"},
+                                            "mo2": {"kind": "description", "label": "D", "text": "marche lente"}}}
+    m["presets"]["default"]["slots"]["posture"] = ["ps1", "ps2"]
+    m["presets"]["default"]["slots"]["motion"] = ["mo1", "mo2"]
+    m["presets"]["default"]["defaults"] = {"motion": "mo1"}
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep)
+    assert not any("deux déclinaisons" in e for e in rep.errors), rep.errors
+    assert rep.ok, rep.errors
+    assert rep.info["completeness"]["layers"]["motion"] >= 30

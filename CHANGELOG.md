@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.1 — 2026-10-10
+- **Deux régimes de preset** explicités dans la spec : *combinaison* (personnalité, apparence, poids, 3D, voix — une déclinaison par type sauf cumulables, régions du corps exclusives) et **bibliothèque** (`posture`, `motion` — plusieurs déclinaisons de tout type, rien d'obligatoire à l'inférence, `defaults` optionnels par catégorie). Vêtements et accessoires = **garde-robe** (cumulables par région).
+- `attitude.json` admis dans `motion` en plus de `posture` (lecteurs : chercher dans les deux) ; +30 au KPI motion.
+- `character-sheet` : **une seule planche** par déclinaison par défaut, `allow_multiple_sheets: true` pour en admettre plusieurs (cohérence exigée) ; `reference-set` : multiple d'office, cohérence exigée.
+- Builder 0.4.1 : icônes 👄 voix / 🏃 postures / 🎥 mouvements ; création d'une personnalité au choix **texte structuré / texte libre / import de fichier** (carte PNG/JSON, .md/.txt → texte libre, image sans fiche → proposée en « Photos en vrac », image conservée) ; planche unique par défaut avec option « plusieurs planches » et avertissement de cohérence ; bibliothèques en cases à cocher dans les presets avec « par défaut » optionnel ; conflits de type ignorés pour les bibliothèques.
+- CLI : `LIBRARY_CATEGORIES` exemptées de la règle « une déclinaison par type » ; schéma : `preset.defaults`, `variant.allow_multiple_sheets`, `motion.kind = attitude` ; test dédié.
+
 ## 0.4.0 — 2026-10-10
 - **Éléments en 7 catégories par nature de média** (personnalité, apparence, poids d'identité, 3D, voix, postures, mouvements) ; chaque déclinaison déclare son **type** (`kind`) : visage, corps, cheveux, vêtement (+ type de vêtement), accessoire, intime, pilosité (zone), particularité, character sheet, photos en vrac, description… ; maillage / maillage facial / nuage de points / impression ; photo(s) de pose, OpenPose, silhouette, attitude ; clips / vidéo (plafond 20 Mo) / description.
 - **Presets à emplacements multiples** avec règles : une déclinaison par type sauf cumulables ; conflits par **région du corps et couche** (vocabulaire `garments-1.0`), accessoires par région, une pilosité par zone, LoRA à `covers` disjoints ; règles désactivables par preset.

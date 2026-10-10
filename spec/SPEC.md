@@ -138,13 +138,15 @@ Champs **obligatoires** de l'identité : `name`, `age` (valeur + unité + base :
 | `identity_weights` | poids | `lora`, `lycoris`, `dora`, `textual-inversion`, `ip-adapter-embedding`, `dreambooth`, `other` (+ `covers`) |
 | `volume3d` | 3D | `mesh` (avatar riggé / maillage complet), `face-mesh`, `point-cloud` (splat), `print` (3MF), `other` |
 | `voice` | audio | `samples` (échantillons + transcriptions), `described` (profil sans audio) |
-| `posture` | pose | `photo` (une pose), `photos` (plusieurs vues d'une même pose), `openpose`, `silhouette`, `attitude` (signature de mouvement), `description` — avec `use: pose-only` (l'inférence ne retient que la pose) |
-| `motion` | mouvement | `clips` (BVH / VRMA), `video` (très court, basse résolution, plafond 20 Mo sauf `max_bytes_ack`), `description` |
+| `posture` | pose (**bibliothèque**) | `photo` (une pose), `photos` (plusieurs vues d'une même pose), `openpose`, `silhouette`, `attitude` (signature de mouvement), `description` — avec `use: pose-only` (l'inférence ne retient que la pose) |
+| `motion` | mouvement (**bibliothèque**) | `clips` (BVH / VRMA), `video` (très court, basse résolution, plafond 20 Mo sauf `max_bytes_ack`), `attitude`, `description` |
 
 Règles :
 - Chaque déclinaison déclare `kind` (obligatoire), `label`, `style` / `style_tags` (visuel), `language` (texte/voix), `derives_from` (héritage de champs ; seule « hiérarchie »), `identity` (réservation optionnelle), et ses représentations (`images[]`, `samples[]`, `clips[]`, `videos[]` = identifiants d'assets ; `card`, `psyche`, `params`, `code`, `spec`, `profile`, `path`, `mesh`…).
 - Une déclinaison `face` / `body` / `hair` / `clothing` / `accessory` / `pilosity` / `feature` décrit **un seul** visage / corps / coupe / vêtement / accessoire cohérent — pour un autre, on crée une autre déclinaison. La subdivision est **possible, jamais imposée** : avec une seule planche, on renseigne `character-sheet` et c'est valide.
 - Les images sont référencées par identifiant d'asset et peuvent être partagées entre déclinaisons.
+- `character-sheet` : **une seule planche par déclinaison** par défaut ; `allow_multiple_sheets: true` en autorise plusieurs, à charge pour l'auteur de garantir la cohérence du personnage entre elles. `reference-set` : plusieurs photos d'office, même exigence de cohérence (le builder le rappelle).
+- Un même type d'information peut légitimement relever de **deux catégories** : `attitude` (signature de mouvement LMA, postures habituelles, gestes) est admis dans `posture` *et* dans `motion` ; une déclinaison vit dans l'une des deux, les lecteurs cherchent dans les deux.
 
 ```jsonc
 "elements": {
@@ -179,7 +181,9 @@ Règles :
 },
 "default_preset": "default"
 ```
-- Les emplacements sont des **listes par catégorie**. Règle `single_per_kind` (défaut vrai) : **au plus une déclinaison par type**, sauf les types cumulables `clothing`, `accessory`, `pilosity`, `feature` (et plusieurs `identity_weights` si leurs `covers` sont disjoints).
+- Les emplacements sont des **listes par catégorie**, avec **deux régimes** :
+  - **Combinaison** (`personality`, `appearance`, `identity_weights`, `volume3d`, `voice`) : ce que le preset *est* / *porte*. Règle `single_per_kind` (défaut vrai) : au plus une déclinaison par type, sauf les cumulables `clothing`, `accessory`, `pilosity`, `feature` (et plusieurs `identity_weights` à `covers` disjoints). Pour les vêtements et accessoires, la liste du preset = ce qui est **porté** ; toutes les autres déclinaisons du fichier forment la **garde-robe**, disponible à l'inférence pour changer de tenue sans sortir du personnage.
+  - **Bibliothèque** (`posture`, `motion`) : le preset liste le **répertoire** de poses et de mouvements *typiques* du personnage — plusieurs déclinaisons de tout type, **aucune n'est obligatoire à l'inférence** ; l'outil y puise quand il en a besoin (une pose de référence, un cycle de marche) et peut l'ignorer. `defaults` (optionnel) désigne la déclinaison à préférer quand l'outil doit en choisir une (`"defaults": { "posture": "ps1", "motion": "mo1" }`). L'intérêt est d'**associer** un personnage à ses postures et mouvements caractéristiques, pas de les imposer.
 - Règle `exclusive_regions` (défaut vrai, désactivable par preset) : deux vêtements sont en conflit s'ils couvrent la **même région du corps sur la même couche** (vocabulaire `garments-1.0` : `full-outfit` exclusif ; `top`/`bottom`/`dress`/`jumpsuit` en couche de base ; `outerwear`/`shoes`/`headwear`/`gloves`/`scarf`/`belt`/`armor` en couche extérieure ; sous-vêtements et chaussettes en couche inférieure ; `cape`/`other` cumulables) ; deux accessoires sont en conflit sur la même région sauf cumulables (`necklace`, `bracelet`, `ring`, `bag`) ; une pilosité par zone (`face`, `body`) ; les particularités se cumulent librement. Les conflits sont des **avertissements** (le format n'interdit pas), les doublons de type des **erreurs**.
 - `extends` hérite des listes du parent et **remplace** une catégorie entière quand elle est redéclarée. `identity` rattache le preset à une identité ; une déclinaison réservée à une autre identité est une erreur.
 - `default_preset` obligatoire dès qu'il y a ≥ 1 preset ; sans preset, preset implicite = première déclinaison de chaque catégorie. Vignette = `head.front` du `face` du preset par défaut.

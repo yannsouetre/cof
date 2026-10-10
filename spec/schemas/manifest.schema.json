@@ -745,6 +745,10 @@
         "max_bytes_ack": {
           "type": "boolean",
           "description": "l'auteur a accepté de dépasser le plafond vidéo"
+        },
+        "allow_multiple_sheets": {
+          "type": "boolean",
+          "description": "character-sheet : plusieurs planches autorisées (cohérence à la charge de l'auteur)"
         }
       },
       "required": [
@@ -890,6 +894,13 @@
               "type": "boolean",
               "default": true
             }
+          }
+        },
+        "defaults": {
+          "type": "object",
+          "description": "déclinaison à utiliser par défaut dans une bibliothèque (posture, motion) — optionnel",
+          "additionalProperties": {
+            "$ref": "#/$defs/vid"
           }
         }
       }
@@ -1580,6 +1591,7 @@
       "motion": [
         "clips",
         "video",
+        "attitude",
         "description"
       ]
     }
