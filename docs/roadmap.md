@@ -24,6 +24,23 @@ Et une **innovation à part** qui mérite sa propre visibilité : **COF-Vector**
 | `cof-vector` | Le code vectoriel visage/corps/vêtements : spec, schémas, JS + Python, démo photo → code → SVG | spec CC-BY-4.0, code MIT |
 | `cof-examples` (optionnel) | Personnages d'exemple lourds (VRM, voix) en Git LFS / HF | CC-BY-4.0 |
 
+## Suivi de la phase 0 (→ 31 octobre 2026) — 12 étapes
+
+| # | Étape | État |
+|---|---|---|
+| 1 | Dépôt, licences, gouvernance, RFC 0001 | ✅ |
+| 2 | Spécification + schémas + règles (complétude, tags) | ✅ (v0.3) |
+| 3 | `cof-cli` : validate / pack / unpack / tokens / completeness / import-export PNG / SOUL / migrate | ✅ |
+| 4 | Exemples 1–2 (texte seul ; apparence) | ✅ (7 exemples) |
+| 5 | Découpage de planches + post-traitements (Python de référence) | ✅ (dérivés optionnels) |
+| 6 | Vocabulaires : FDV (visage descriptif), HAIR, FACS↔ARKit, LMA, squelettes | ⬜ (styles visuels fait) |
+| 7 | Schémas des sous-fichiers : attitude, pose, skeleton, voice profile, weights | ⬜ |
+| 8 | `voice measure` (mesures acoustiques → code vocal) | ⬜ |
+| 9 | Pose depuis photo → OpenPose normalisé + rendu « bonhomme » | ⬜ |
+| 10 | Builder v0 (7 écrans, build, exports, réouverture) | ✅ |
+| 11 | Exemples : VRM + clips ; « personnage d'entreprise » ; flux de consentement complet | ⬜ |
+| 12 | Relecture croisée, spec v0.3 figée pour le lancement, builder ⇄ CLI validés | ⬜ |
+
 ## Phases
 
 ### Phase 0 — Fondations (→ 31 octobre 2026) · « rien n'est annoncé »

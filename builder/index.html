@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>COF Builder</title>
+<meta name="description" content="Fabrique un fichier .cof (Character Open File) dans le navigateur, hors ligne.">
+<style>
+:root{--bg:#f6f5f2;--panel:#fff;--ink:#1c1b19;--muted:#6b6963;--line:#e2dfd8;--accent:#0f6b5c;--accent-ink:#fff;--warn:#9a5b00;--err:#a8231d;--ok:#2d7a3a;--chip:#ece9e2;--radius:10px;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#15171a;--panel:#1e2125;--ink:#ebe8e1;--muted:#a09d95;--line:#2f3338;--accent:#3fb59a;--accent-ink:#0d1512;--chip:#2a2e33}}
+:root[data-theme=dark]{--bg:#15171a;--panel:#1e2125;--ink:#ebe8e1;--muted:#a09d95;--line:#2f3338;--accent:#3fb59a;--accent-ink:#0d1512;--chip:#2a2e33}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{display:flex;align-items:center;gap:14px;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:5}
+header h1{font-size:17px;margin:0;letter-spacing:.2px}header h1 span{color:var(--muted);font-weight:400}
+.badge{padding:3px 9px;border-radius:999px;background:var(--chip);font-size:12.5px}.badge.A{background:#d9f2df}.badge.B{background:#e4efd6}.badge.C{background:#f7ebc8}.badge.D{background:#f3d9d6}
+@media (prefers-color-scheme:dark){.badge.A,.badge.B,.badge.C,.badge.D{color:#111}}
+.spacer{flex:1}
+main{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 56px)}
+nav{border-right:1px solid var(--line);padding:14px 10px;background:var(--panel)}
+nav button{display:block;width:100%;text-align:left;padding:10px 12px;border:0;background:none;color:var(--ink);border-radius:8px;cursor:pointer;font-size:14.5px}
+nav button.active{background:var(--accent);color:var(--accent-ink)}nav button small{display:block;color:inherit;opacity:.7;font-size:12px}
+section.step{display:none;padding:22px 28px;max-width:1100px}section.step.active{display:block}
+h2{font-size:20px;margin:0 0 4px}.lead{color:var(--muted);margin:0 0 18px}
+fieldset{border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin:0 0 16px;background:var(--panel)}legend{padding:0 6px;color:var(--muted);font-size:13px}
+label{display:block;font-size:13px;color:var(--muted);margin:8px 0 3px}
+input[type=text],input[type=number],input[type=url],input[type=password],select,textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+textarea{min-height:84px;resize:vertical}textarea.mono{font-family:var(--mono);font-size:12.5px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.btn{display:inline-block;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;font:inherit}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}.btn.small{padding:4px 9px;font-size:13px}.btn.danger{color:var(--err)}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}.tabs button{padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;font-size:13.5px}.tabs button.active{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.variant{border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin:10px 0;background:var(--panel)}.variant h4{margin:0 0 6px;font-size:15px;display:flex;align-items:center;gap:8px}.variant h4 .id{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.drop{border:2px dashed var(--line);border-radius:var(--radius);padding:16px;text-align:center;color:var(--muted);cursor:pointer;margin:8px 0}.drop.over{border-color:var(--accent);color:var(--accent)}
+.thumbs{display:flex;flex-wrap:wrap;gap:10px}.thumb{width:150px;border:1px solid var(--line);border-radius:8px;padding:6px;background:var(--bg)}.thumb img{width:100%;height:120px;object-fit:contain;background:#fff;border-radius:5px}.thumb select,.thumb input{font-size:12px;padding:4px 6px;margin-top:4px}
+.issues li{margin:4px 0}.sev-major{color:var(--err)}.sev-minor{color:var(--warn)}.sev-info{color:var(--muted)}.err{color:var(--err)}.ok{color:var(--ok)}
+.kpi{display:flex;gap:16px;flex-wrap:wrap}.kpi div{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:10px 14px;min-width:140px}.kpi b{font-size:22px;display:block}
+.hint{font-size:12.5px;color:var(--muted)}code{font-family:var(--mono);font-size:12.5px;background:var(--chip);padding:1px 5px;border-radius:4px}
+.inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.chips span{display:inline-block;background:var(--chip);border-radius:999px;padding:2px 9px;font-size:12.5px;margin:2px}
+footer{padding:14px 28px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line)}
+@media (max-width:760px){main{grid-template-columns:1fr}nav{display:flex;overflow-x:auto;gap:4px;border-right:0;border-bottom:1px solid var(--line)}nav button{width:auto;white-space:nowrap}nav button small{display:none}section.step{padding:16px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>COF Builder <span>· Character Open File v0.3</span></h1>
+  <span class="badge" id="hdrName">Nouveau personnage</span>
+  <span class="badge" id="hdrScore">complétude —</span>
+  <div class="spacer"></div>
+  <button class="btn small" id="btnOpen">Ouvrir un .cof</button>
+  <input type="file" id="fileOpen" accept=".cof,.zip" hidden>
+  <button class="btn small primary" id="btnGoBuild">Build</button>
+</header>
+<main>
+  <nav id="nav">
+    <button data-step="identity" class="active">1 · Identité<small>nom, âge, morphologie</small></button>
+    <button data-step="elements">2 · Éléments<small>déclinaisons par type</small></button>
+    <button data-step="presets">3 · Presets<small>combinaisons</small></button>
+    <button data-step="rights">4 · Droits<small>permissions, consentement</small></button>
+    <button data-step="checks">5 · Contrôles<small>complétude, cohérence</small></button>
+    <button data-step="build">6 · Build<small>taille, compression, export</small></button>
+  </nav>
+  <div>
+  <!-- 1 IDENTITÉ -->
+  <section class="step active" id="step-identity">
+    <h2>Identité</h2><p class="lead">Les seuls champs obligatoires du format, avec les droits. Tout le reste est optionnel.</p>
+    <fieldset><legend>Personnage</legend>
+      <div class="row">
+        <div><label>Nom</label><input type="text" id="f_name" placeholder="Léa Marchand"></div>
+        <div><label>Surnom</label><input type="text" id="f_nickname"></div>
+        <div><label>Âge (valeur)</label><input type="number" id="f_age" min="0" step="1" placeholder="34"></div>
+        <div><label>Base de l'âge</label><select id="f_age_basis"><option value="declared">déclaré</option><option value="apparent">apparent</option><option value="canonical">canonique (univers)</option></select></div>
+        <div><label>Langues (ISO, séparées par des virgules)</label><input type="text" id="f_languages" placeholder="fr, en"></div>
+        <div><label>Personnage fictif ?</label><select id="f_fictional"><option value="true">oui — entièrement fictif</option><option value="false">non — basé sur une personne réelle (consentement requis)</option></select></div>
+        <div><label>Morphologie</label><select id="f_morph"><option>humanoid</option><option>anthropomorphic-animal</option><option>quadruped</option><option>avian</option><option>aquatic</option><option>mechanical</option><option>amorphous</option><option>other</option></select></div>
+        <div><label>Espèce (libre)</label><input type="text" id="f_species" placeholder="human, elf, mecha…"></div>
+      </div>
+      <label>Résumé (1–2 phrases)</label><textarea id="f_summary" placeholder="Ingénieure acoustique devenue archiviste sonore ; sceptique, drôle, loyale."></textarea>
+      <div class="row">
+        <div><label>Tags manuels (minuscules, séparés par des virgules)</label><input type="text" id="f_tags" placeholder="fiction, mentor, archiviste"></div>
+        <div><label>Contenu signalé</label><select id="f_content" multiple size="4"><option selected>none</option><option>nudity</option><option>sexual</option><option>violence</option><option>gore</option><option>drugs</option><option>profanity</option><option>horror</option><option>political</option><option>religious</option></select></div>
+        <div><label>Propriété intellectuelle</label><select id="f_ip"><option value="original">personnage original</option><option value="franchise">personnage d'une franchise / sous droits tiers</option></select><input type="text" id="f_franchise" placeholder="franchise (ex. Mickey Mouse) — ayant droit" style="margin-top:6px;display:none"></div>
+      </div>
+    </fieldset>
+  </section>
+
+  <!-- 2 ÉLÉMENTS -->
+  <section class="step" id="step-elements">
+    <h2>Éléments et déclinaisons</h2><p class="lead">Chaque type d'élément peut avoir plusieurs déclinaisons (visage 1, visage 2…). Rien n'est obligatoire ; les presets les combinent à l'étape suivante.</p>
+    <div class="tabs" id="elTabs"></div>
+    <div id="elPanel"></div>
+  </section>
+
+  <!-- 3 PRESETS -->
+  <section class="step" id="step-presets">
+    <h2>Presets</h2><p class="lead">Un preset = une combinaison de déclinaisons. Le preset par défaut est chargé à l'ouverture du fichier ; sa vue de visage de face devient la vignette.</p>
+    <div class="inline"><button class="btn" id="btnAddPreset">+ Ajouter un preset</button><span class="hint">Un preset peut hériter d'un autre (<code>extends</code>) et ne surcharger que quelques emplacements.</span></div>
+    <div id="presetList"></div>
+  </section>
+
+  <!-- 4 DROITS -->
+  <section class="step" id="step-rights">
+    <h2>Droits</h2><p class="lead">Défauts restrictifs (modèle VRM). Le consentement est obligatoire dès qu'une personne réelle est impliquée.</p>
+    <fieldset><legend>Permissions</legend><div class="row" id="permGrid"></div></fieldset>
+    <fieldset><legend>Consentement (personne réelle)</legend>
+      <div class="row">
+        <div><label>Une personne réelle est-elle représentée (voix, visage, LoRA) ?</label><select id="c_real"><option value="no">non</option><option value="yes">oui</option></select></div>
+        <div><label>Portée accordée</label><select id="c_scope" multiple size="6"><option>voice-synthesis</option><option>likeness-image</option><option>likeness-3d</option><option>conversational-persona</option><option>motion-capture</option><option>training</option></select></div>
+        <div><label>Accordé le</label><input type="text" id="c_granted" placeholder="2026-10-01"></div>
+        <div><label>Expire le</label><input type="text" id="c_expires" placeholder="2029-10-01"></div>
+        <div><label>Juridictions (codes pays)</label><input type="text" id="c_juris" placeholder="FR, EU"></div>
+        <div><label>Preuve : déclaration verbale enregistrée (WAV) ou document signé (PDF)</label><input type="file" id="c_proof" accept=".wav,.mp3,.pdf"><div class="hint" id="c_proofInfo"></div></div>
+      </div>
+    </fieldset>
+    <fieldset><legend>Licence et provenance</legend>
+      <div class="row">
+        <div><label>Licence par défaut des assets (SPDX)</label><input type="text" id="r_license" value="CC-BY-4.0"></div>
+        <div><label>Auteur / créateur</label><input type="text" id="r_creator" placeholder="Yann Souetre"></div>
+        <div><label>Source (URL du dépôt ou de la page)</label><input type="url" id="r_source" placeholder="https://…"></div>
+      </div>
+    </fieldset>
+  </section>
+
+  <!-- 5 CONTRÔLES -->
+  <section class="step" id="step-checks">
+    <h2>Contrôles</h2><p class="lead">Jamais bloquants : le format rend visible, il n'interdit pas. Les erreurs de structure, elles, empêchent le build.</p>
+    <div class="inline" style="margin-bottom:12px"><button class="btn primary" id="btnRunChecks">Lancer les contrôles</button><label class="inline" style="margin:0"><input type="checkbox" id="chkCoherence" checked> contrôles de cohérence (heuristiques locales)</label></div>
+    <div class="kpi" id="kpiBox"></div>
+    <fieldset><legend>Résultats</legend><ul class="issues" id="issueList"><li class="hint">Aucun contrôle lancé.</li></ul></fieldset>
+    <fieldset><legend>Cohérence par IA (optionnel) — passerelle API OpenAI-compatible</legend>
+      <div class="row">
+        <div><label>Point d'API (base URL)</label><input type="url" id="ai_url" placeholder="https://api.openai.com/v1 ou http://localhost:11434/v1"></div>
+        <div><label>Clé (reste dans le navigateur)</label><input type="password" id="ai_key"></div>
+        <div><label>Modèle (vision recommandée)</label><input type="text" id="ai_model" placeholder="gpt-4o-mini, gemini-…, qwen2.5-vl…"></div>
+        <div><label>Preset à contrôler</label><select id="ai_preset"></select></div>
+      </div>
+      <div class="inline" style="margin-top:8px"><button class="btn" id="btnAI">Demander un avis de cohérence</button><span class="hint" id="aiStatus"></span></div>
+      <p class="hint">Le builder envoie le dossier du preset (textes, vignettes, descripteurs) et attend un JSON <code>{score, issues[]}</code> — contrat dans <code>docs/coherence-api.md</code>. Le score est stocké avec le nom du modèle ; il ne bloque rien.</p>
+    </fieldset>
+    <fieldset><legend>Priorités (quand plusieurs représentations décrivent la même chose)</legend>
+      <div class="row">
+        <div><label>Visuel (ordre, séparé par des virgules)</label><input type="text" id="prio_visual" value="identity_weights, images, avatar, descriptive"></div>
+        <div><label>Voix</label><input type="text" id="prio_voice" value="samples, described"></div>
+      </div>
+      <p class="hint">Défauts par usage cible (jeu 3D : avatar d'abord ; chat texte : descriptif d'abord) : appliqués automatiquement, modifiables dans le manifeste.</p>
+    </fieldset>
+  </section>
+
+  <!-- 6 BUILD -->
+  <section class="step" id="step-build">
+    <h2>Build</h2><p class="lead">Génère le fichier <code>.cof</code> (ZIP : <code>mimetype</code> en première entrée, manifeste en seconde, binaires stockés sans compression, hashes SHA-256).</p>
+    <fieldset><legend>Options</legend>
+      <div class="row">
+        <div><label>Classe de taille visée</label><select id="b_class"><option value="lite">lite (≤ 20 Mo)</option><option value="standard">standard (≤ 100 Mo)</option><option value="full">full</option></select></div>
+        <div><label>Images : côté max (px)</label><select id="b_maxside"><option value="0">conserver</option><option value="2048">2048</option><option value="1024" selected>1024 (tête) / 2048 (corps)</option><option value="768">768 / 1536</option><option value="512">512 / 1024</option></select></div>
+        <div><label>Images : format de sortie</label><select id="b_imgfmt"><option value="keep">conserver</option><option value="jpeg" selected>JPEG (qualité 88)</option><option value="webp">WebP (qualité 85)</option></select></div>
+        <div><label>Dérivés (cartes de traits)</label><select id="b_derived"><option value="none" selected>aucun (régénérables à l'usage)</option><option value="canny">Canny (1 bit) pour les vues de tête</option></select></div>
+      </div>
+      <div class="hint" id="b_estimate" style="margin-top:8px"></div>
+    </fieldset>
+    <div class="inline">
+      <button class="btn primary" id="btnBuild">Construire et télécharger le .cof</button>
+      <button class="btn" id="btnExportPng">Exporter la carte PNG (ccv3)</button>
+      <button class="btn" id="btnExportSoul">Exporter SOUL.md / IDENTITY.md</button>
+      <button class="btn" id="btnManifest">Voir le manifeste</button>
+    </div>
+    <pre id="manifestView" class="mono" style="display:none;white-space:pre-wrap;font-family:var(--mono);font-size:12px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:14px"></pre>
+    <p class="hint" id="buildLog"></p>
+  </section>
+  <footer>COF Builder — tout se passe dans votre navigateur, rien n'est envoyé (sauf la passerelle de cohérence si vous la configurez). Spec et code : github.com/yannsouetre/cof · Yann Souetre</footer>
+  </div>
+</main>
+
+<script>
+/* ============================ utilitaires ============================ */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const ULID_ALPHA="0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+function ulid(){let t=Date.now(),o="";for(let i=0;i<10;i++){o=ULID_ALPHA[t%32]+o;t=Math.floor(t/32)}const r=crypto.getRandomValues(new Uint8Array(16));for(let i=0;i<16;i++)o+=ULID_ALPHA[r[i]%32];return o}
+const slug=s=>(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,40)||"x";
+async function sha256(buf){const h=await crypto.subtle.digest("SHA-256",buf);return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,"0")).join("")}
+const CRC=(()=>{const t=new Int32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c}return t})();
+function crc32(u8){let c=-1;for(let i=0;i<u8.length;i++)c=CRC[(c^u8[i])&255]^(c>>>8);return (c^-1)>>>0}
+const enc=new TextEncoder(), dec=new TextDecoder();
+async function deflateRaw(u8){const cs=new CompressionStream("deflate-raw");const w=cs.writable.getWriter();w.write(u8);w.close();return new Uint8Array(await new Response(cs.readable).arrayBuffer())}
+async function inflateRaw(u8){const ds=new DecompressionStream("deflate-raw");const w=ds.writable.getWriter();w.write(u8);w.close();return new Uint8Array(await new Response(ds.readable).arrayBuffer())}
+const STORED_EXT=new Set(["jpg","jpeg","webp","avif","png","gif","opus","ogg","mp3","flac","m4a","mp4","webm","glb","vrm","spz","ply","3mf","safetensors","onnx","npz","zip","wav","bvh","vrma","pdf"]);
+const MIME="application/vnd.cof.character+zip";
+
+/* ---- ZIP writer (local headers + central directory, zip64 non requis < 4 Gio) ---- */
+async function zipBuild(entries){ // entries: [{name, data:Uint8Array, store:boolean}]
+  const parts=[], central=[]; let offset=0;
+  const dt=(()=>{const d=new Date();return {time:((d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()>>1))&0xffff,date:(((d.getFullYear()-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate())&0xffff}})();
+  for(const e of entries){
+    const name=enc.encode(e.name); const crc=crc32(e.data);
+    const comp=e.store?e.data:await deflateRaw(e.data); const method=e.store?0:8;
+    const lh=new DataView(new ArrayBuffer(30));
+    lh.setUint32(0,0x04034b50,true);lh.setUint16(4,20,true);lh.setUint16(6,0x0800,true);lh.setUint16(8,method,true);lh.setUint16(10,dt.time,true);lh.setUint16(12,dt.date,true);
+    lh.setUint32(14,crc,true);lh.setUint32(18,comp.length,true);lh.setUint32(22,e.data.length,true);lh.setUint16(26,name.length,true);lh.setUint16(28,0,true);
+    parts.push(new Uint8Array(lh.buffer),name,comp);
+    const ch=new DataView(new ArrayBuffer(46));
+    ch.setUint32(0,0x02014b50,true);ch.setUint16(4,20,true);ch.setUint16(6,20,true);ch.setUint16(8,0x0800,true);ch.setUint16(10,method,true);ch.setUint16(12,dt.time,true);ch.setUint16(14,dt.date,true);
+    ch.setUint32(16,crc,true);ch.setUint32(20,comp.length,true);ch.setUint32(24,e.data.length,true);ch.setUint16(28,name.length,true);ch.setUint16(30,0,true);ch.setUint16(32,0,true);ch.setUint16(34,0,true);ch.setUint16(36,0,true);ch.setUint32(38,0,true);ch.setUint32(42,offset,true);
+    central.push(new Uint8Array(ch.buffer),name);
+    offset+=30+name.length+comp.length;
+  }
+  const cdSize=central.reduce((a,b)=>a+b.length,0);
+  const eocd=new DataView(new ArrayBuffer(22));
+  eocd.setUint32(0,0x06054b50,true);eocd.setUint16(4,0,true);eocd.setUint16(6,0,true);eocd.setUint16(8,entries.length,true);eocd.setUint16(10,entries.length,true);eocd.setUint32(12,cdSize,true);eocd.setUint32(16,offset,true);eocd.setUint16(20,0,true);
+  return new Blob([...parts,...central,new Uint8Array(eocd.buffer)],{type:MIME});
+}
+/* ---- ZIP reader ---- */
+async function zipRead(buf){
+  const u8=new Uint8Array(buf), dv=new DataView(buf); let eocd=-1;
+  for(let i=u8.length-22;i>=Math.max(0,u8.length-70000);i--){if(dv.getUint32(i,true)===0x06054b50){eocd=i;break}}
+  if(eocd<0)throw new Error("ZIP invalide");
+  const n=dv.getUint16(eocd+10,true), cdOff=dv.getUint32(eocd+16,true); const files=new Map(); let p=cdOff;
+  for(let i=0;i<n;i++){
+    const method=dv.getUint16(p+10,true), csize=dv.getUint32(p+20,true), usize=dv.getUint32(p+24,true), nlen=dv.getUint16(p+28,true), elen=dv.getUint16(p+30,true), clen=dv.getUint16(p+32,true), lho=dv.getUint32(p+42,true);
+    const name=dec.decode(u8.subarray(p+46,p+46+nlen));
+    const lnlen=dv.getUint16(lho+26,true), lelen=dv.getUint16(lho+28,true); const start=lho+30+lnlen+lelen;
+    const comp=u8.subarray(start,start+csize);
+    files.set(name, method===0?comp.slice():await inflateRaw(comp));
+    p+=46+nlen+elen+clen;
+  }
+  return files;
+}
+/* ---- PNG chunks (cartes chara / ccv3) ---- */
+function pngChunks(u8){const out=[];let p=8;const dv=new DataView(u8.buffer,u8.byteOffset);while(p+8<=u8.length){const len=dv.getUint32(p);const type=dec.decode(u8.subarray(p+4,p+8));out.push({type,data:u8.subarray(p+8,p+8+len)});p+=12+len;if(type==="IEND")break}return out}
+function pngBuild(chunks){const parts=[new Uint8Array([137,80,78,71,13,10,26,10])];for(const c of chunks){const t=enc.encode(c.type);const lenb=new Uint8Array(4);new DataView(lenb.buffer).setUint32(0,c.data.length);const tc=new Uint8Array(t.length+c.data.length);tc.set(t);tc.set(c.data,4);const crcb=new Uint8Array(4);new DataView(crcb.buffer).setUint32(0,crc32(tc));parts.push(lenb,tc,crcb)}return new Blob(parts,{type:"image/png"})}
+function b64enc(str){return btoa(unescape(encodeURIComponent(str)))}function b64dec(b){return decodeURIComponent(escape(atob(b)))}
+function readCardFromPng(u8){let found={};for(const c of pngChunks(u8)){if(c.type!=="tEXt")continue;const z=c.data.indexOf(0);if(z<0)continue;const key=dec.decode(c.data.subarray(0,z));if(key==="chara"||key==="ccv3"){try{found[key]=JSON.parse(b64dec(dec.decode(c.data.subarray(z+1))))}catch(e){}}}
+  if(found.ccv3)return found.ccv3; if(found.chara){const c=found.chara;return c.spec?c:{spec:"chara_card_v2",spec_version:"2.0",data:c}} return null}
+function writeCardToPng(u8,card){const v3={...card,spec:"chara_card_v3",spec_version:"3.0"};const d2={...card.data};for(const k of ["assets","nickname","creator_notes_multilingual","source","group_only_greetings","creation_date","modification_date"])delete d2[k];const v2={spec:"chara_card_v2",spec_version:"2.0",data:d2};
+  const chunks=pngChunks(u8).filter(c=>!(c.type==="tEXt"&&(dec.decode(c.data.subarray(0,6))==="chara\0"||dec.decode(c.data.subarray(0,5))==="ccv3\0")));const iend=chunks.pop();
+  for(const [k,o] of [["chara",v2],["ccv3",v3]]){const body=enc.encode(k+"\0"+b64enc(JSON.stringify(o)));chunks.push({type:"tEXt",data:body})}chunks.push(iend);return pngBuild(chunks)}
+
+/* ============================ état ============================ */
+const ELEMENT_TYPES=[["personality","Personnalité"],["face","Visage"],["hair","Cheveux"],["facial_hair","Pilosité visage"],["body","Corps"],["body_hair","Pilosité corps"],["outfit","Tenue"],["accessories","Accessoires"],["identity_weights","Poids d'identité (LoRA)"],["voice","Voix"],["attitude","Attitude physique"],["avatar","Avatar 3D"],["motion","Mouvement"],["intimate","Intime (verrouillé)"]];
+const STYLES=["photo-realistic","cinematic","3d-render","anime","manga","comic","cartoon","pixel-art","lego","clay","watercolor","oil-painting","ink-sketch","lineart","low-poly","voxel","chibi"];
+const ANGLES=["front","left34","left","leftback34","back","rightback34","right","right34","top","low34"];
+const PERMS=[["avatarPermission",["onlyAuthor","onlySeparatelyLicensedPerson","everyone"],"Qui peut incarner l'avatar"],["commercialUsage",["personalNonProfit","personalProfit","corporation"],"Usage commercial"],["modification",["prohibited","allowModification","allowModificationRedistribution"],"Modification"],["allowRedistribution",[false,true],"Redistribution"],["creditNotation",["required","unnecessary"],"Crédit"],["allowExcessivelyViolentUsage",[false,true],"Violence excessive"],["allowSexualUsage",[false,true],"Usage sexuel"],["allowPoliticalOrReligiousUsage",[false,true],"Politique / religieux"],["allowAntisocialOrHateUsage",[false,true],"Antisocial / haine"],["allowVoiceCloning",[false,true],"Clonage de voix"],["allowTraining",["none","finetune-private","finetune-public","any"],"Entraînement"],["allowImpersonationOfRealPerson",[false,true],"Imitation d'une personne réelle"],["aiDisclosure",[true,false],"Se déclare synthétique (art. 50)"]];
+const S={ id:ulid(), elements:{}, presets:{default:{label:"Défaut",slots:{},style:""}}, defaultPreset:"default", files:new Map(), assets:[], perms:{}, consent:null, coherence:{}, loadedManifest:null };
+for(const [k,opts] of PERMS)S.perms[k]=opts[0];
+let curType="personality";
+
+/* ============================ navigation ============================ */
+$$("#nav button").forEach(b=>b.onclick=()=>go(b.dataset.step));
+function go(step){$$("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.step===step));$$("section.step").forEach(s=>s.classList.toggle("active",s.id==="step-"+step));if(step==="presets")renderPresets();if(step==="checks"){fillPresetSelect();}if(step==="build")estimate();if(step==="rights")renderPerms()}
+$("#btnGoBuild").onclick=()=>go("build");
+$("#f_ip").onchange=e=>{$("#f_franchise").style.display=e.target.value==="franchise"?"block":"none"};
+$("#f_name").oninput=e=>{$("#hdrName").textContent=e.target.value||"Nouveau personnage"};
+
+/* ============================ éléments ============================ */
+function renderTabs(){const t=$("#elTabs");t.innerHTML="";for(const [k,lab] of ELEMENT_TYPES){const n=Object.keys(S.elements[k]?.variants||{}).length;const b=document.createElement("button");b.textContent=lab+(n?` (${n})`:"");b.classList.toggle("active",k===curType);b.onclick=()=>{curType=k;renderTabs();renderPanel()};t.appendChild(b)}}
+function variants(type){return (S.elements[type]=S.elements[type]||{variants:{}}).variants}
+function newVid(type){const pre={personality:"p",face:"f",hair:"h",facial_hair:"fh",body:"b",body_hair:"bh",outfit:"o",accessories:"ac",identity_weights:"l",voice:"v",attitude:"m",avatar:"av",motion:"mo",intimate:"i"}[type]||"x";let i=1;while(variants(type)[pre+i])i++;return pre+i}
+function addVariant(type,init){const vid=newVid(type);variants(type)[vid]={label:"",...(init||{})};if(Object.keys(variants(type)).length===1){for(const p of Object.values(S.presets))if(!p.slots[type]&&p===S.presets[S.defaultPreset])p.slots[type]=vid}renderTabs();renderPanel();return vid}
+function renderPanel(){
+  const type=curType,P=$("#elPanel");P.innerHTML="";
+  const intro={personality:"Texte libre (carte Character Card V3 embarquée) + traits typés optionnels. Importez une carte PNG SillyTavern/Chub si vous en avez une.",face:"Vues de tête : nommez face / profil. Le <code>head.front</code> du preset par défaut devient la vignette.",hair:"Code cheveux (COF-HAIR-1) et/ou images isolées. Si vous n'isolez pas les cheveux, ils restent implicites dans le visage — c'est permis.",body:"Vues de corps (face, profil, dos).",outfit:"Une déclinaison par tenue. Les images de corps habillé peuvent être partagées avec « Corps ».",identity_weights:"Fiche de LoRA / embedding : le modèle de base est obligatoire, les poids sont externalisés par défaut (URL + hash).",voice:"Échantillons WAV (≈ 8 s / 30 s / 2 min) avec transcription obligatoire, profil typé.",avatar:"Avatar riggé (VRM 1.0 de préférence, GLB accepté avec rig déclaré).",motion:"Clips BVH / VRMA avec rig déclaré.",attitude:"Signature de mouvement (LMA), postures, gestes habituels — en JSON (modèle fourni).",intimate:"Élément séparé, ignoré par défaut par les lecteurs ; interdit si l'âge le plus bas < 18.",facial_hair:"Barbe, moustache… (code + images optionnelles).",body_hair:"Pilosité corporelle (code).",accessories:"Lunettes, bijoux, armes… (descriptif + images)."}[type]||"";
+  P.insertAdjacentHTML("beforeend",`<p class="hint">${intro}</p><div class="inline" style="margin-bottom:8px"><button class="btn" id="btnAddVar">+ Ajouter une déclinaison</button>${type==="personality"?'<button class="btn" id="btnImportCard">Importer une carte PNG / JSON</button><input type="file" id="fileCard" accept=".png,.json" hidden>':""}</div>`);
+  $("#btnAddVar").onclick=()=>addVariant(type);
+  if(type==="personality"){$("#btnImportCard").onclick=()=>$("#fileCard").click();$("#fileCard").onchange=importCard}
+  for(const [vid,v] of Object.entries(variants(type)))P.appendChild(variantCard(type,vid,v));
+}
+function field(label,html){return `<div><label>${label}</label>${html}</div>`}
+function variantCard(type,vid,v){
+  const d=document.createElement("div");d.className="variant";d.dataset.vid=vid;
+  const others=Object.keys(variants(type)).filter(x=>x!==vid);
+  let html=`<h4><input type="text" value="${esc(v.label||"")}" placeholder="libellé (ex. Casual, Grave, Manga…)" data-k="label" style="max-width:360px"><span class="id">${vid}</span><span class="spacer"></span><button class="btn small danger" data-del>supprimer</button></h4>
+  <div class="row">${field("Dérive de",`<select data-k="derives_from"><option value="">—</option>${others.map(o=>`<option ${v.derives_from===o?"selected":""}>${o}</option>`).join("")}</select>`)}
+  ${["face","hair","body","outfit","accessories","identity_weights","facial_hair","body_hair","intimate"].includes(type)?field("Style visuel",`<select data-k="style"><option value="">—</option>${STYLES.map(s=>`<option ${v.style===s?"selected":""}>${s}</option>`).join("")}</select>`)+field("Tags de style (précisions)",`<input type="text" data-k="style_tags" value="${esc((v.style_tags||[]).join(", "))}" placeholder="anime-90s, ghibli-like">`):""}</div>`;
+  if(type==="personality")html+=personalityForm(v);
+  else if(type==="identity_weights")html+=weightsForm(v);
+  else if(type==="voice")html+=voiceForm(vid,v);
+  else if(type==="avatar")html+=`<div class="row">${field("Fichier VRM / GLB",`<input type="file" data-file="avatar" accept=".vrm,.glb,.gltf">`)}${field("Rig",`<select data-k="rig">${["VRMC_vrm-1.0","unity-humanoid","mixamo","ue-mannequin","metahuman","smplx-1.1","anny-104","anny-163","mhr","custom"].map(r=>`<option ${v.rig===r?"selected":""}>${r}</option>`).join("")}</select>`)}</div><div class="hint">${v.path?"fichier : "+v.path:""}</div>`;
+  else if(type==="motion")html+=`<div class="row">${field("Clips BVH / VRMA",`<input type="file" data-file="clip" accept=".bvh,.vrma,.fbx" multiple>`)}${field("Rig des clips",`<input type="text" data-k="rig" value="${esc(v.rig||"VRMC_vrm-1.0")}">`)}${field("Vocabulaire de visèmes",`<select data-k="visemes_vocab">${["ARKit-52","Oculus-15","PrestonBlair-AX"].map(r=>`<option ${v.visemes_vocab===r?"selected":""}>${r}</option>`).join("")}</select>`)}</div><div class="hint">${(v.clips||[]).length} clip(s)</div>`;
+  else if(type==="attitude")html+=`<label>attitude.json (modèle pré-rempli — LMA Effort, postures, gestes)</label><textarea class="mono" data-json="spec" style="min-height:160px">${esc(v._spec||ATTITUDE_TEMPLATE)}</textarea>`;
+  else if(type==="hair"||type==="facial_hair"||type==="body_hair")html+=hairForm(type,v);
+  else if(type==="outfit")html+=`<div class="row">${field("Pièces (une par ligne : catégorie Fashionpedia — attributs — couleur hex)",`<textarea data-k="items_text" placeholder="jacket — utility, cotton, khaki — #6B6B4A\npants — jeans, slim — #3B5A8A">${esc(v.items_text||"")}</textarea>`)}${field("Prompt de rendu",`<textarea data-k="prompt" placeholder="khaki cotton utility jacket over a white t-shirt…">${esc(v.prompt||"")}</textarea>`)}</div>`;
+  else if(type==="body")html+=`<div class="row">${field("Taille (cm)",`<input type="number" data-k="height_cm" value="${v.height_cm||""}">`)}${field("Descriptif court",`<input type="text" data-k="descriptive" value="${esc(v.descriptive||"")}" placeholder="slender-athletic, upright posture…">`)}</div>`;
+  if(["face","hair","body","outfit","accessories","facial_hair","intimate","body_hair"].includes(type))html+=imagesBlock(type,vid,v);
+  d.innerHTML=html;
+  d.querySelectorAll("[data-k]").forEach(el=>el.oninput=el.onchange=()=>{const k=el.dataset.k;let val=el.type==="number"?(el.value===""?"":Number(el.value)):el.value;if(k==="style_tags"||k==="trigger_words"||k==="covers")val=val.split(",").map(s=>s.trim()).filter(Boolean);if(k==="derives_from"&&!val){delete v[k];return}v[k]=val;if(k==="label")renderTabs()});
+  d.querySelectorAll("[data-json]").forEach(el=>el.oninput=()=>{v["_"+el.dataset.json]=el.value});
+  d.querySelector("[data-del]").onclick=()=>{delete variants(type)[vid];for(const p of Object.values(S.presets))if(p.slots[type]===vid)delete p.slots[type];renderTabs();renderPanel()};
+  d.querySelectorAll("[data-file]").forEach(el=>el.onchange=e=>onFiles(type,vid,v,el.dataset.file,[...e.target.files]));
+  const drop=d.querySelector(".drop");if(drop){drop.onclick=()=>drop.nextElementSibling.click();drop.ondragover=e=>{e.preventDefault();drop.classList.add("over")};drop.ondragleave=()=>drop.classList.remove("over");drop.ondrop=e=>{e.preventDefault();drop.classList.remove("over");onFiles(type,vid,v,"image",[...e.dataTransfer.files])};drop.nextElementSibling.onchange=e=>onFiles(type,vid,v,"image",[...e.target.files])}
+  d.querySelectorAll("[data-aid]").forEach(el=>{const a=S.assets.find(x=>x.id===el.dataset.aid);el.querySelector("[data-ak=subject]").onchange=e=>a.subject=e.target.value;el.querySelector("[data-ak=angle]").onchange=e=>a.angle=e.target.value;el.querySelector("[data-ak=framing]").onchange=e=>a.framing=e.target.value;el.querySelector("[data-ak=style]").onchange=e=>a.style=e.target.value||undefined;el.querySelector("[data-rm]").onclick=()=>{v.images=(v.images||[]).filter(x=>x!==a.id);S.assets=S.assets.filter(x=>x!==a);S.files.delete(a.path);renderPanel()}});
+  d.querySelectorAll("[data-sid]").forEach(el=>{const a=S.assets.find(x=>x.id===el.dataset.sid);el.querySelector("textarea").oninput=e=>{a._transcript=e.target.value};el.querySelector("select").onchange=e=>a.emotion=e.target.value;el.querySelector("[data-rm]").onclick=()=>{v.samples=(v.samples||[]).filter(x=>x!==a.id);S.assets=S.assets.filter(x=>x!==a);S.files.delete(a.path);renderPanel()}});
+  return d;
+}
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function personalityForm(v){v.card=v.card||{};const c=v.card;return `<div class="row">${field("Description (qui est-il/elle, contexte)",`<textarea data-card="description">${esc(c.description||"")}</textarea>`)}${field("Personnalité (dispositions)",`<textarea data-card="personality">${esc(c.personality||"")}</textarea>`)}</div>
+  <div class="row">${field("Scénario",`<textarea data-card="scenario">${esc(c.scenario||"")}</textarea>`)}${field("Premier message",`<textarea data-card="first_mes">${esc(c.first_mes||"")}</textarea>`)}</div>
+  <div class="row">${field("Exemples de dialogue (format Ali:Chat, <START>)",`<textarea data-card="mes_example">${esc(c.mes_example||"")}</textarea>`)}${field("Comportements observables (un par ligne — tics, rituels)",`<textarea data-card="behavior">${esc(c.behavior||"")}</textarea>`)}</div>
+  <div class="row">${field("Buts (un par ligne)",`<textarea data-card="goals">${esc(c.goals||"")}</textarea>`)}${field("Craintes (un par ligne)",`<textarea data-card="fears">${esc(c.fears||"")}</textarea>`)}${field("Valeurs (séparées par des virgules)",`<input type="text" data-card="values" value="${esc(c.values||"")}">`)}</div>
+  <details><summary class="hint">Traits typés (Big Five, 0–1) — optionnel</summary><div class="row">${["openness","conscientiousness","extraversion","agreeableness","neuroticism"].map(t=>field(t,`<input type="number" min="0" max="1" step="0.05" data-big5="${t}" value="${c.big5?.[t]??""}">`)).join("")}</div></details>
+  <div class="row">${field("Instructions système (optionnel)",`<textarea data-card="system_prompt">${esc(c.system_prompt||"")}</textarea>`)}${field("Notes du créateur (jamais injectées)",`<textarea data-card="creator_notes">${esc(c.creator_notes||"")}</textarea>`)}</div>`}
+function weightsForm(v){return `<div class="row">${field("Type",`<select data-k="kind">${["lora","lycoris","dora","textual-inversion","ip-adapter-embedding","dreambooth","other"].map(k=>`<option ${v.kind===k?"selected":""}>${k}</option>`).join("")}</select>`)}${field("Modèle de base (obligatoire)",`<input type="text" data-k="base_model" value="${esc(v.base_model||"")}" placeholder="FLUX.1-dev, SDXL 1.0, Wan 2.2…">`)}${field("Famille",`<input type="text" data-k="family" value="${esc(v.family||"")}" placeholder="flux, sdxl, wan">`)}
+  ${field("URL des poids (.safetensors) — externalisé",`<input type="url" data-k="weights_url" value="${esc(v.weights_url||"")}">`)}${field("SHA-256 des poids",`<input type="text" data-k="weights_sha256" value="${esc(v.weights_sha256||"")}" placeholder="64 hex">`)}${field("Taille (octets)",`<input type="number" data-k="weights_bytes" value="${v.weights_bytes||""}">`)}
+  ${field("Mots déclencheurs (virgules)",`<input type="text" data-k="trigger_words" value="${esc((v.trigger_words||[]).join(", "))}">`)}${field("Poids recommandé",`<input type="number" step="0.05" data-k="recommended_weight" value="${v.recommended_weight??0.8}">`)}${field("Couvre (face, hair, body, outfit…)",`<input type="text" data-k="covers" value="${esc((v.covers||[]).join(", "))}">`)}
+  ${field("Page du modèle (URL)",`<input type="url" data-k="page_url" value="${esc(v.page_url||"")}">`)}${field("Licence (SPDX)",`<input type="text" data-k="license" value="${esc(v.license||"")}">`)}</div>
+  <label>Notes de paramétrage / usage</label><textarea data-k="notes">${esc(v.notes||"")}</textarea>
+  <div class="hint">Ou joindre le fichier de poids (sera embarqué — pensez à la classe de taille) : <input type="file" data-file="weights" accept=".safetensors"> ${v.weights_path?"joint : "+v.weights_path:""}</div>`}
+function voiceForm(vid,v){const samples=(v.samples||[]).map(id=>S.assets.find(a=>a.id===id)).filter(Boolean);return `<div class="row">${field("Genre perçu",`<select data-k="gender_presentation">${["","feminine","masculine","androgynous","neutral","nonhuman"].map(g=>`<option ${v.gender_presentation===g?"selected":""}>${g}</option>`).join("")}</select>`)}${field("Âge perçu",`<input type="text" data-k="age_perceived" value="${esc(v.age_perceived||"")}" placeholder="30s">`)}${field("Accent / langue",`<input type="text" data-k="accent" value="${esc(v.accent||"")}" placeholder="fr-FR, légère pointe du Sud-Ouest">`)}${field("Hauteur",`<select data-k="pitch">${["","very-low","low","medium","high","very-high"].map(g=>`<option ${v.pitch===g?"selected":""}>${g}</option>`).join("")}</select>`)}${field("Débit",`<select data-k="rate">${["","slow","slow-medium","medium","medium-fast","fast"].map(g=>`<option ${v.rate===g?"selected":""}>${g}</option>`).join("")}</select>`)}${field("Timbre (adjectifs, virgules)",`<input type="text" data-k="timbre" value="${esc(v.timbre||"")}" placeholder="warm, slightly breathy">`)}</div>
+  <label>Registre / manière de s'exprimer (pas le contenu — il est dans la personnalité)</label><input type="text" data-k="speech_style" value="${esc(v.speech_style||"")}" placeholder="familier-précis, phrases courtes, humour sec">
+  <label>Échantillons WAV/MP3/OGG (≈ 8 s, 30 s, 2 min) — transcription obligatoire</label><input type="file" data-file="sample" accept=".wav,.mp3,.ogg,.flac,.m4a" multiple>
+  ${samples.map(a=>`<div class="variant" data-sid="${a.id}"><div class="inline"><b>${esc(a.path.split("/").pop())}</b><span class="hint">${a.duration_s?a.duration_s.toFixed(1)+" s":""}</span><select><option value="">émotion</option>${["contentment","joy","sadness","anger","fear","surprise","irritation","tenderness","neutral"].map(e=>`<option ${a.emotion===e?"selected":""}>${e}</option>`).join("")}</select><span class="spacer"></span><button class="btn small danger" data-rm>retirer</button></div><textarea placeholder="Transcription exacte de l'échantillon (obligatoire)">${esc(a._transcript||"")}</textarea></div>`).join("")}`}
+function hairForm(type,v){const sc=(k,max,lab)=>field(lab,`<input type="number" min="0" max="${max}" data-k="${k}" value="${v[k]??""}">`);return `<div class="row">${type==="hair"?sc("length",9,"Longueur 0 (chauve) – 9 (taille)")+sc("curl",9,"Courbure 0 (raide) – 9 (crépu)")+sc("density",9,"Densité 0–9")+field("Couleur de base (hex)",`<input type="text" data-k="color_base_hex" value="${esc(v.color_base_hex||"")}" placeholder="#4d2f27">`)+field("Gris (%)",`<input type="number" data-k="grey_pct" value="${v.grey_pct??""}">`)+field("Coiffure",`<input type="text" data-k="style_hair" value="${esc(v.style_hair||"")}" placeholder="loose, bob, braids, bun, afro…">`):type==="facial_hair"?field("Type",`<select data-k="fh_type">${["none","stubble","moustache","goatee","full_beard","sideburns"].map(t=>`<option ${v.fh_type===t?"selected":""}>${t}</option>`).join("")}</select>`)+sc("length",9,"Longueur 0–9")+field("Couleur (hex)",`<input type="text" data-k="color_hex" value="${esc(v.color_hex||"")}">`):sc("body_hair",9,"Pilosité 0–9")}</div>`}
+function imagesBlock(type,vid,v){const imgs=(v.images||[]).map(id=>S.assets.find(a=>a.id===id)).filter(Boolean);return `<div class="drop">Glissez des images ici (vues séparées : face, profil, dos…) ou cliquez</div><input type="file" accept="image/*" multiple hidden>
+  <div class="thumbs">${imgs.map(a=>`<div class="thumb" data-aid="${a.id}"><img src="${a._url}" alt=""><select data-ak="subject">${["head","body","hands","hair","outfit","detail"].map(s=>`<option ${a.subject===s?"selected":""}>${s}</option>`).join("")}</select><select data-ak="angle">${ANGLES.map(s=>`<option ${a.angle===s?"selected":""}>${s}</option>`).join("")}</select><select data-ak="framing">${["head","closeup","bust","full"].map(s=>`<option ${a.framing===s?"selected":""}>${s}</option>`).join("")}</select><select data-ak="style"><option value="">style…</option>${STYLES.map(s=>`<option ${a.style===s?"selected":""}>${s}</option>`).join("")}</select><button class="btn small danger" data-rm style="margin-top:4px">retirer</button></div>`).join("")}</div>`}
+const ATTITUDE_TEMPLATE=JSON.stringify({notation:"LMA-Effort-1.0",effort:{space:0,weight:0,time:0,flow:0,dominant_action:"glide"},shape:[],tempo:{walk_speed:"medium",gesture_rate:"medium",stillness:"medium"},posture:{default:"",seated:"",listening:""},gestures:[],gaze:{contact:"regular"},proxemics:{preferred_distance_m:1.2},renderings:{sentence:""}},null,2);
+
+function guessView(name){const n=name.toLowerCase();const subject=/head|face|visage|tete|zoom/.test(n)?"head":/hand|main/.test(n)?"hands":"body";let angle="front";for(const a of ["leftback34","rightback34","left34","right34","left","right","back","top","low34"])if(n.includes(a)||(a==="left"&&/profil|cote|side/.test(n))){angle=a;break}if(/dos|back/.test(n))angle="back";return {subject,angle,framing:subject==="head"?"head":"full"}}
+async function onFiles(type,vid,v,kind,files){
+  for(const f of files){
+    if(kind==="image"){const url=URL.createObjectURL(f);const g=guessView(f.name);const id="a-"+slug(type+"-"+vid+"-"+f.name.replace(/\.[^.]+$/,""))+"-"+Math.random().toString(36).slice(2,6);const ext=(f.name.split(".").pop()||"jpg").toLowerCase();let n=1,path;do{path=`elements/${type}/${vid}/${g.subject}.${g.angle}${n>1?"."+n:""}.${ext}`;n++}while(S.files.has(path));
+      S.files.set(path,f);S.assets.push({id,path,role:"view",mediaType:f.type||"image/jpeg",bytes:f.size,sha256:"",license:$("#r_license").value||"CC-BY-4.0",style:v.style||undefined,_url:url,...g});(v.images=v.images||[]).push(id)}
+    else if(kind==="sample"){const id="a-"+slug("voice-"+vid+"-"+f.name.replace(/\.[^.]+$/,""))+"-"+Math.random().toString(36).slice(2,6);const ext=(f.name.split(".").pop()||"wav").toLowerCase();const path=`elements/voice/${vid}/samples/${slug(f.name.replace(/\.[^.]+$/,""))}.${ext}`;let dur=0;try{const ac=new (window.AudioContext||window.webkitAudioContext)();dur=(await ac.decodeAudioData(await f.arrayBuffer())).duration;ac.close()}catch(e){}
+      S.files.set(path,f);S.assets.push({id,path,role:"voice-sample",mediaType:f.type||"audio/wav",bytes:f.size,sha256:"",license:$("#r_license").value||"CC-BY-4.0",duration_s:Math.round(dur*10)/10,transcript:path.replace(/\.[^.]+$/,".txt"),_transcript:""});(v.samples=v.samples||[]).push(id)}
+    else if(kind==="avatar"){const ext=f.name.split(".").pop().toLowerCase();const path=`elements/avatar/${vid}/avatar.${ext}`;S.files.set(path,f);v.path=path;v._assetId="a-avatar-"+vid;S.assets=S.assets.filter(a=>a.id!==v._assetId);S.assets.push({id:v._assetId,path,role:"avatar",mediaType:ext==="vrm"||ext==="glb"?"model/gltf-binary":"model/gltf+json",bytes:f.size,sha256:"",license:$("#r_license").value||"CC-BY-4.0",rig:v.rig||"VRMC_vrm-1.0"})}
+    else if(kind==="clip"){const ext=f.name.split(".").pop().toLowerCase();const id="a-clip-"+vid+"-"+slug(f.name.replace(/\.[^.]+$/,""));const path=`elements/motion/${vid}/clips/${slug(f.name.replace(/\.[^.]+$/,""))}.${ext}`;S.files.set(path,f);S.assets.push({id,path,role:"motion-clip",mediaType:ext==="bvh"?"application/x-bvh":"model/gltf-binary",bytes:f.size,sha256:"",license:$("#r_license").value||"CC-BY-4.0",rig:v.rig||"VRMC_vrm-1.0"});(v.clips=v.clips||[]).push(id)}
+    else if(kind==="weights"){const path=`elements/identity_weights/${vid}/weights.safetensors`;S.files.set(path,f);v.weights_path=path;v.weights_bytes=f.size}
+  }
+  renderPanel();
+}
+async function importCard(e){const f=e.target.files[0];if(!f)return;const u8=new Uint8Array(await f.arrayBuffer());let card=null,png=null;
+  if(f.name.toLowerCase().endsWith(".png")){card=readCardFromPng(u8);png=f}else{card=JSON.parse(dec.decode(u8));if(!card.spec)card={spec:"chara_card_v2",spec_version:"2.0",data:card}}
+  if(!card){alert("Aucune carte (chara/ccv3) trouvée dans ce PNG.");return}
+  const d=card.data||{};const cof=d.extensions?.cof||{};
+  const vid=addVariant("personality",{label:d.name||"Importée",card:{description:d.description||"",personality:d.personality||"",scenario:d.scenario||"",first_mes:d.first_mes||"",mes_example:d.mes_example||"",system_prompt:d.system_prompt||"",creator_notes:d.creator_notes||"",behavior:(cof.behavior||[]).join("\n"),goals:(cof.goals||[]).join("\n"),fears:(cof.fears||[]).join("\n")},_raw:card});
+  if(!$("#f_name").value){$("#f_name").value=d.name||"";$("#hdrName").textContent=d.name||""}
+  if(!$("#f_tags").value&&d.tags)$("#f_tags").value=d.tags.join(", ");
+  if(png){const fv=addVariant("face",{label:"Visage (vignette de la carte)"});curType="face";const v=variants("face")[fv];await onFiles("face",fv,v,"image",[new File([png],"head.front.png",{type:"image/png"})]);curType="personality"}
+  renderTabs();renderPanel();
+}
+document.addEventListener("input",e=>{const el=e.target;if(el.dataset.card!==undefined){const card=el.closest(".variant");const vid=card.dataset.vid;const v=variants("personality")[vid];v.card[el.dataset.card]=el.value}if(el.dataset.big5!==undefined){const vid=el.closest(".variant").dataset.vid;const v=variants("personality")[vid];(v.card.big5=v.card.big5||{})[el.dataset.big5]=Number(el.value)}});
+
+/* ============================ presets ============================ */
+$("#btnAddPreset").onclick=()=>{let i=2;while(S.presets["preset"+i])i++;S.presets["preset"+i]={label:"Preset "+i,slots:{},extends:S.defaultPreset};renderPresets()};
+function renderPresets(){const L=$("#presetList");L.innerHTML="";
+  for(const [pid,p] of Object.entries(S.presets)){const d=document.createElement("div");d.className="variant";
+    d.innerHTML=`<h4><input type="radio" name="defp" ${pid===S.defaultPreset?"checked":""} title="preset par défaut"><input type="text" value="${esc(p.label||"")}" data-pk="label" style="max-width:300px"><span class="id">${pid}</span><span class="spacer"></span>${Object.keys(S.presets).length>1?'<button class="btn small danger" data-pdel>supprimer</button>':""}</h4>
+    <div class="row">${field("Hérite de",`<select data-pk="extends"><option value="">—</option>${Object.keys(S.presets).filter(x=>x!==pid).map(o=>`<option ${p.extends===o?"selected":""}>${o}</option>`).join("")}</select>`)}${field("Style attendu",`<select data-pk="style"><option value="">—</option>${STYLES.map(s=>`<option ${p.style===s?"selected":""}>${s}</option>`).join("")}</select>`)}${field("Âge dans ce preset (optionnel)",`<input type="number" data-pk="age_override" value="${p.age_override??""}" placeholder="ex. 14">`)}</div>
+    <div class="row" style="margin-top:8px">${ELEMENT_TYPES.filter(([k])=>Object.keys(variants(k)).length).map(([k,lab])=>field(lab,`<select data-slot="${k}"><option value="">${p.extends?"(hérité)":"—"}</option>${Object.entries(variants(k)).map(([vid,v])=>`<option value="${vid}" ${p.slots[k]===vid?"selected":""}>${vid} ${esc(v.label||"")}</option>`).join("")}</select>`)).join("")||'<span class="hint">Ajoutez d\'abord des déclinaisons à l\'étape 2.</span>'}</div>
+    <details style="margin-top:8px"><summary class="hint">Surcharge de permissions pour ce preset (optionnel, rare)</summary><div class="row">${PERMS.map(([k,opts,lab])=>field(lab,`<select data-pperm="${k}"><option value="">(global)</option>${opts.map(o=>`<option value="${o}" ${String(p.permissions_override?.[k])===String(o)?"selected":""}>${o}</option>`).join("")}</select>`)).join("")}</div></details>`;
+    d.querySelector("input[type=radio]").onchange=()=>{S.defaultPreset=pid;renderPresets()};
+    d.querySelectorAll("[data-pk]").forEach(el=>el.onchange=el.oninput=()=>{const k=el.dataset.pk;if(k==="age_override"){if(el.value==="")delete p.age_override;else p.age_override=Number(el.value)}else if(el.value==="")delete p[k];else p[k]=el.value});
+    d.querySelectorAll("[data-slot]").forEach(el=>el.onchange=()=>{if(el.value)p.slots[el.dataset.slot]=el.value;else delete p.slots[el.dataset.slot]});
+    d.querySelectorAll("[data-pperm]").forEach(el=>el.onchange=()=>{p.permissions_override=p.permissions_override||{};const k=el.dataset.pperm;if(el.value==="")delete p.permissions_override[k];else p.permissions_override[k]=el.value==="true"?true:el.value==="false"?false:el.value;if(!Object.keys(p.permissions_override).length)delete p.permissions_override});
+    const del=d.querySelector("[data-pdel]");if(del)del.onclick=()=>{delete S.presets[pid];if(S.defaultPreset===pid)S.defaultPreset=Object.keys(S.presets)[0];for(const q of Object.values(S.presets))if(q.extends===pid)delete q.extends;renderPresets()};
+    L.appendChild(d)}
+}
+function resolveSlots(pid,seen=new Set()){const p=S.presets[pid];if(!p||seen.has(pid))return {};seen.add(pid);const base=p.extends?resolveSlots(p.extends,seen):{};return {...base,...p.slots}}
+function resolveVariant(type,vid,seen=new Set()){const v=variants(type)[vid];if(!v||seen.has(vid))return v?{...v}:null;seen.add(vid);const parent=v.derives_from?resolveVariant(type,v.derives_from,seen):null;const out={...(parent||{})};for(const [k,val] of Object.entries(v))if(k!=="derives_from")out[k]=val;return out}
+function resolved(pid){const out={};for(const [t,vid] of Object.entries(resolveSlots(pid))){const v=resolveVariant(t,vid);if(v){v._id=vid;out[t]=v}}return out}
+
+/* ============================ droits ============================ */
+function renderPerms(){const g=$("#permGrid");if(g.children.length)return;for(const [k,opts,lab] of PERMS){const d=document.createElement("div");d.innerHTML=`<label>${lab} <code>${k}</code></label><select>${opts.map(o=>`<option value="${o}" ${String(S.perms[k])===String(o)?"selected":""}>${o}</option>`).join("")}</select>`;d.querySelector("select").onchange=e=>{S.perms[k]=e.target.value==="true"?true:e.target.value==="false"?false:e.target.value};g.appendChild(d)}}
+$("#c_proof").onchange=e=>{const f=e.target.files[0];if(f){S.consentProof=f;$("#c_proofInfo").textContent=f.name+" ("+(f.size/1024).toFixed(0)+" Ko)"}};
+
+/* ============================ manifeste ============================ */
+function lowestAge(){const ages=[Number($("#f_age").value)].filter(x=>!isNaN(x)&&$("#f_age").value!=="");for(const p of Object.values(S.presets))if(p.age_override!==undefined)ages.push(p.age_override);return ages.length?Math.min(...ages):null}
+function buildCard(v,name){const c=v.card||{};const raw=v._raw?JSON.parse(JSON.stringify(v._raw)):{spec:"chara_card_v3",spec_version:"3.0",data:{}};raw.spec="chara_card_v3";raw.spec_version="3.0";const d=raw.data=raw.data||{};
+  d.name=name;Object.assign(d,{description:c.description||"",personality:c.personality||"",scenario:c.scenario||"",first_mes:c.first_mes||"",mes_example:c.mes_example||"",system_prompt:c.system_prompt||"",creator_notes:c.creator_notes||"",post_history_instructions:d.post_history_instructions||"",alternate_greetings:d.alternate_greetings||[],tags:d.tags||[],creator:$("#r_creator").value||d.creator||"",character_version:d.character_version||"1.0.0"});
+  d.extensions=d.extensions||{};d.extensions.cof={behavior:(c.behavior||"").split("\n").map(s=>s.trim()).filter(Boolean),goals:(c.goals||"").split("\n").map(s=>s.trim()).filter(Boolean),fears:(c.fears||"").split("\n").map(s=>s.trim()).filter(Boolean)};
+  d.source=d.source||[];d.group_only_greetings=d.group_only_greetings||[];d.creation_date=d.creation_date||Math.floor(Date.now()/1000);d.modification_date=Math.floor(Date.now()/1000);return raw}
+function buildPsyche(v){const c=v.card||{};const big5=c.big5&&Object.keys(c.big5).length?c.big5:null;const goals=(c.goals||"").split("\n").map(s=>s.trim()).filter(Boolean);const fears=(c.fears||"").split("\n").map(s=>s.trim()).filter(Boolean);const values=(c.values||"").split(",").map(s=>s.trim()).filter(Boolean);if(!big5&&!goals.length&&!fears.length&&!values.length)return null;
+  return {model:"cof-psyche/0.1",traits:{big5:big5||{}},goals:goals.map((t,i)=>({id:"goal:"+(i+1),text:t})),fears:fears.map((t,i)=>({id:"fear:"+(i+1),text:t})),values,renderings:big5?{sentence:"You are a character who is "+Object.entries(big5).map(([k,x])=>(x>0.66?"high ":x<0.33?"low ":"moderate ")+k).join(", ")+"."}:{}}}
+async function assemble(opts){ // → {manifest, entries:[{name,data,store}]}
+  const name=$("#f_name").value.trim()||"Unnamed";const files=[];const put=(path,obj)=>files.push({name:path,data:enc.encode(JSON.stringify(obj,null,2)+"\n"),store:false});const putText=(path,txt)=>files.push({name:path,data:enc.encode(txt),store:false});
+  const elements={};
+  for(const [type,e] of Object.entries(S.elements)){const out={};
+    for(const [vid,v] of Object.entries(e.variants)){const o={};if(v.label)o.label=v.label;if(v.derives_from)o.derives_from=v.derives_from;if(v.style)o.style=v.style;if(v.style_tags?.length)o.style_tags=v.style_tags;
+      if(type==="personality"){const card=buildCard(v,name);put(`elements/personality/${vid}/card.json`,card);o.card=`elements/personality/${vid}/card.json`;const ps=buildPsyche(v);if(ps){put(`elements/personality/${vid}/psyche.json`,ps);o.psyche=`elements/personality/${vid}/psyche.json`}}
+      if(type==="identity_weights"){const w={kind:v.kind||"lora",base_model:{name:v.base_model||"",family:v.family||""},format:"safetensors",trigger_words:v.trigger_words||[],recommended_weight:v.recommended_weight??0.8,covers:v.covers||[],pages:v.page_url?[{label:"page",url:v.page_url}]:[],notes:v.notes||"",license:v.license||""};
+        const aid="a-weights-"+vid;if(v.weights_path){w.file=aid;S.assets=S.assets.filter(a=>a.id!==aid);S.assets.push({id:aid,path:v.weights_path,role:"weights",mediaType:"application/octet-stream",bytes:v.weights_bytes||0,sha256:"",license:v.license||"LicenseRef-Unknown",base_model:v.base_model||""})}
+        else if(v.weights_url){w.file=aid;S.assets=S.assets.filter(a=>a.id!==aid);S.assets.push({id:aid,uri:v.weights_url,role:"weights",mediaType:"application/octet-stream",bytes:Number(v.weights_bytes||0),sha256:(v.weights_sha256||"").toLowerCase(),license:v.license||"LicenseRef-Unknown",base_model:v.base_model||""})}
+        put(`elements/identity_weights/${vid}/weights.json`,w);o.spec=`elements/identity_weights/${vid}/weights.json`}
+      if(type==="voice"){const prof={canonical:{gender_presentation:v.gender_presentation||"",age_perceived:v.age_perceived||"",accent:v.accent||"",pitch:{range:v.pitch||""},rate:v.rate||"",timbre:(v.timbre||"").split(",").map(s=>s.trim()).filter(Boolean)},speech_style:{register:v.speech_style||""},samples:(v.samples||[]).map(id=>{const a=S.assets.find(x=>x.id===id);return a?{id,path:a.path,duration_s:a.duration_s,transcript:a.transcript,emotion:a.emotion||""}:null}).filter(Boolean)};
+        put(`elements/voice/${vid}/profile.json`,prof);o.profile=`elements/voice/${vid}/profile.json`;if(v.samples?.length)o.samples=v.samples;for(const id of v.samples||[]){const a=S.assets.find(x=>x.id===id);if(a)putText(a.transcript,a._transcript||"")}}
+      if(type==="attitude"){let spec;try{spec=JSON.parse(v._spec||ATTITUDE_TEMPLATE)}catch(e){spec=JSON.parse(ATTITUDE_TEMPLATE)}put(`elements/attitude/${vid}/attitude.json`,spec);o.spec=`elements/attitude/${vid}/attitude.json`}
+      if(type==="avatar"&&v.path){o.path=v.path;o.rig=v.rig||"VRMC_vrm-1.0"}
+      if(type==="motion"){if(v.clips?.length)o.clips=v.clips;put(`elements/motion/${vid}/visemes.json`,{vocabulary:v.visemes_vocab||"ARKit-52"});o.visemes=`elements/motion/${vid}/visemes.json`}
+      if(type==="hair"){put(`elements/hair/${vid}/hair.json`,{model:"COF-HAIR-1",length:v.length??null,curl:v.curl??null,density:v.density??null,color_base_hex:v.color_base_hex||null,grey_pct:v.grey_pct??null,style:v.style_hair||null});o.code=`elements/hair/${vid}/hair.json`}
+      if(type==="facial_hair"){put(`elements/facial_hair/${vid}/facial_hair.json`,{type:v.fh_type||"none",length:v.length??null,color_hex:v.color_hex||null});o.code=`elements/facial_hair/${vid}/facial_hair.json`}
+      if(type==="body_hair"){put(`elements/body_hair/${vid}/body_hair.json`,{body_hair:v.body_hair??null});o.code=`elements/body_hair/${vid}/body_hair.json`}
+      if(type==="outfit"){const items=(v.items_text||"").split("\n").map(l=>l.split("—").map(s=>s.trim())).filter(p=>p[0]).map(p=>({fashionpedia_category:p[0],attributes:(p[1]||"").split(",").map(s=>s.trim()).filter(Boolean),color_hex:p[2]||undefined}));put(`elements/outfit/${vid}/outfit.json`,{id:vid,label:v.label||vid,items,renderings:{prompt:v.prompt||""}});o.spec=`elements/outfit/${vid}/outfit.json`}
+      if(type==="body"&&(v.height_cm||v.descriptive)){put(`elements/body/${vid}/body.json`,{height_cm:v.height_cm||null,descriptive:v.descriptive||"",renderings:{prompt:v.descriptive||""}});o.params=`elements/body/${vid}/body.json`}
+      if(v.images?.length)o.images=v.images;
+      out[vid]=o}
+    if(Object.keys(out).length)elements[type]={variants:out}}
+  // presets
+  const presets={};for(const [pid,p] of Object.entries(S.presets)){const o={label:p.label||pid,slots:{...p.slots}};if(p.extends)o.extends=p.extends;if(p.style)o.style=p.style;if(p.age_override!==undefined)o.age_override={value:p.age_override,unit:"years",basis:"canonical"};if(p.permissions_override)o.permissions_override=p.permissions_override;for(const k of Object.keys(o.slots))if(!elements[k]?.variants?.[o.slots[k]])delete o.slots[k];presets[pid]=o}
+  // assets: hashes, image processing
+  const assets=[];for(const a of S.assets){const o={...a};for(const k of Object.keys(o))if(k.startsWith("_"))delete o[k];
+    if(a.path&&S.files.has(a.path)){let blob=S.files.get(a.path);if(a.role==="view"&&opts){const r=await processImage(blob,a,opts);blob=r.blob;if(r.path!==a.path){o.path=r.path}o.mediaType=blob.type||o.mediaType;o.width=r.w;o.height=r.h}
+      const buf=await blob.arrayBuffer();o.bytes=buf.byteLength;o.sha256=await sha256(buf);files.push({name:o.path,data:new Uint8Array(buf),store:STORED_EXT.has(o.path.split(".").pop().toLowerCase())})}
+    if(!o.sha256)o.sha256="0".repeat(64);if(!o.license)o.license=$("#r_license").value||"CC-BY-4.0";assets.push(o)}
+  // consent
+  let consent=null;if($("#c_real").value==="yes"){const scope=[...$("#c_scope").selectedOptions].map(o=>o.value);consent={subject_is_real_person:true,scope:scope.length?scope:["conversational-persona"],granted:$("#c_granted").value||new Date().toISOString().slice(0,10),jurisdictions:($("#c_juris").value||"").split(",").map(s=>s.trim().toUpperCase()).filter(s=>/^[A-Z]{2}$/.test(s)),proof:[]};if($("#c_expires").value)consent.expires=$("#c_expires").value;
+    if(S.consentProof){const buf=await S.consentProof.arrayBuffer();const ext=S.consentProof.name.split(".").pop().toLowerCase();const path="rights/consent-proof."+ext;files.push({name:path,data:new Uint8Array(buf),store:STORED_EXT.has(ext)});consent.proof.push({type:ext==="pdf"?"signed-document":"verbal-statement-audio",path,sha256:await sha256(buf)})}
+    put("rights/consent.json",consent)}
+  const age=Number($("#f_age").value);const la=lowestAge();
+  const manifest={cof:"0.3",id:S.id,name,nickname:$("#f_nickname").value||"",age:{value:isNaN(age)||$("#f_age").value===""?18:age,unit:"years",basis:$("#f_age_basis").value},
+    languages:($("#f_languages").value||"fr").split(",").map(s=>s.trim().toLowerCase()).filter(Boolean),summary:$("#f_summary").value||"",fictional:$("#f_fictional").value==="true",
+    morphology:{class:$("#f_morph").value,species:$("#f_species").value||""},
+    tags:{auto:[],manual:($("#f_tags").value||"").split(",").map(s=>slug(s)).filter(s=>s&&s!=="x").slice(0,30),content:[...$("#f_content").selectedOptions].map(o=>o.value).filter((x,i,arr)=>arr.length===1||x!=="none"),ip:$("#f_ip").value==="original"?{original:true,franchise:null,based_on:null}:{original:false,franchise:$("#f_franchise").value.split("—")[0].trim()||null,based_on:($("#f_franchise").value.split("—")[1]||"").trim()||null}},
+    elements,presets,default_preset:S.defaultPreset,
+    priorities:{visual:$("#prio_visual").value.split(",").map(s=>s.trim()).filter(Boolean),voice:$("#prio_voice").value.split(",").map(s=>s.trim()).filter(Boolean),by_target:{"game-3d":{visual:["avatar","images","identity_weights","descriptive"]},"chat-text":{visual:["descriptive","images"]},"video-realtime":{visual:["avatar","images","identity_weights","descriptive"]}}},
+    mapping_vocabularies:{},assets,size_class:$("#b_class").value,container:{aligned:0,executableContent:"none"},
+    rights:{permissions:{...S.perms},consent},
+    provenance:{created:S.loadedManifest?.provenance?.created||new Date().toISOString().replace(/\.\d+Z$/,"Z"),modified:new Date().toISOString().replace(/\.\d+Z$/,"Z"),generator:"cof-builder/0.3.0",source:[...(S.loadedManifest?.provenance?.source||[]),...($("#r_source").value?[$("#r_source").value]:[])].filter((x,i,a)=>a.indexOf(x)===i),c2pa:null,signatures:[]},
+    metadata:{"@context":{dc:"http://purl.org/dc/elements/1.1/"},"dc:creator":[$("#r_creator").value||""]},extensions:{}};
+  if(!manifest.tags.content.length)manifest.tags.content=["none"];
+  // auto tags, thumbnail, KPIs
+  const at=new Set([manifest.morphology.class,la===null?"adult":la<13?"child":la<18?"teen":la>=65?"elder":"adult",...manifest.languages]);if(elements.voice)at.add("has-voice");if(elements.avatar)at.add("has-3d");if(elements.motion)at.add("has-motion");if(elements.identity_weights)at.add("has-weights");if(Object.keys(presets).length>1)at.add("multi-preset");const ps=presets[S.defaultPreset]?.style;if(ps)at.add("style-"+ps);manifest.tags.auto=[...at].map(slug).filter(Boolean);
+  const dres=resolved(S.defaultPreset);for(const id of dres.face?.images||[]){const a=assets.find(x=>x.id===id);if(a&&a.subject==="head"&&a.angle==="front"){manifest.thumbnail=a.path;break}}
+  const kpis={};for(const pid of Object.keys(presets)){kpis[pid]=completeness(pid,manifest);presets[pid].completeness={...kpis[pid],computed_by:"cof-builder/0.3.0",computed_at:manifest.provenance.modified};if(S.coherence[pid])presets[pid].coherence=S.coherence[pid]}
+  manifest.completeness={...kpis[S.defaultPreset],computed_by:"cof-builder/0.3.0",computed_at:manifest.provenance.modified};
+  manifest.coverage={elements:Object.keys(elements),variants:Object.values(elements).reduce((n,e)=>n+Object.keys(e.variants).length,0),presets:Object.keys(presets).length};
+  if(la!==null&&la<18){manifest.rights.permissions.allowSexualUsage=false}
+  files.unshift({name:"manifest.json",data:enc.encode(JSON.stringify(manifest,null,2)+"\n"),store:false});
+  files.unshift({name:"mimetype",data:enc.encode(MIME),store:true});
+  return {manifest,entries:files};
+}
+async function processImage(blob,a,opts){const maxHead=Number(opts.maxside)||0;if(!maxHead&&opts.fmt==="keep")return {blob,path:a.path,w:a.width,h:a.height};
+  const img=await createImageBitmap(blob);let w=img.width,h=img.height;const max=a.subject==="head"?maxHead:maxHead*2;if(max&&Math.max(w,h)>max){const s=max/Math.max(w,h);w=Math.round(w*s);h=Math.round(h*s)}
+  const cv=document.createElement("canvas");cv.width=w;cv.height=h;const ctx=cv.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,w,h);ctx.drawImage(img,0,0,w,h);
+  const fmt=opts.fmt==="keep"?(blob.type||"image/jpeg"):opts.fmt==="webp"?"image/webp":"image/jpeg";const out=await new Promise(r=>cv.toBlob(r,fmt,fmt==="image/webp"?0.85:0.88));
+  const ext=fmt==="image/webp"?"webp":fmt==="image/png"?"png":"jpg";return {blob:out,path:a.path.replace(/\.[^.]+$/,"."+ext),w,h}}
+
+/* ============================ complétude (règles docs/completeness-rules.md) ============================ */
+function completeness(pid,manifest){const r=resolved(pid);const A=Object.fromEntries((manifest?.assets||S.assets).map(a=>[a.id,a]));const L={};const imgs=v=>(v?.images||[]).map(i=>A[i]).filter(Boolean);
+  const m=manifest||{};const hasAge=$("#f_age").value!=="";
+  L.identity=Math.min(100,20*!!$("#f_name").value+20*hasAge+20*!!$("#f_summary").value+10+10+10+10);
+  const p=r.personality;let s=0;if(p){s+=30;const c=p.card||{};s+=10*!!c.description+10*!!c.personality+5*!!c.scenario+10*!!c.first_mes+10*!!c.mes_example;s+=15*!!(buildPsyche(p));}L.personality=Math.min(100,s);
+  const f=r.face,fi=imgs(f);s=25*fi.some(a=>a.subject==="head"&&a.angle==="front")+10*(fi.length>=2)+10*!!(f&&(f.params||f.mesh))+5*!!(f&&f.mesh)+5*!!r.hair;const bi=imgs(r.body);s+=10*!!bi.length+5*(bi.length>=2)+5*!!(r.body&&(r.body.height_cm||r.body.descriptive))+10*!!r.outfit+15*!!(r.identity_weights&&r.identity_weights.base_model);L.appearance=Math.min(100,s);
+  L.physique=Math.min(100,60*!!r.attitude);
+  const v=r.voice,sm=(v?.samples||[]).map(i=>A[i]).filter(Boolean);s=0;if(sm.length){s+=sm.every(a=>(a._transcript||"").trim()||a.transcript)?40:20;const d=sm.map(a=>a.duration_s||0).sort((x,y)=>x-y);s+=10*(d[0]<=12&&d[d.length-1]>=25)}s+=25*!!v;L.voice=Math.min(100,s);
+  L.volume=Math.min(100,60*!!(r.avatar&&r.avatar.path)+10*!!(r.avatar&&r.avatar.rig));
+  const mo=r.motion;s=60*!!(mo&&mo.clips?.length)+25*!!mo+15*!!(mo&&mo.clips?.length);L.motion=Math.min(100,s);
+  const needs=$("#f_fictional").value==="false";s=40+15+(needs?($("#c_real").value==="yes"?20:0):20)+10*!!$("#r_source").value;L.rights=Math.min(100,s);
+  const W={identity:.10,personality:.20,appearance:.20,physique:.05,voice:.15,volume:.10,motion:.05,rights:.15};const score=Math.round(Object.entries(W).reduce((a,[k,w])=>a+L[k]*w,0));const level=score>=85?"A":score>=60?"B":score>=35?"C":"D";
+  const t=[];if(L.personality>=50)t.push("chat-text","agent-persona");if(L.personality>=50&&L.voice>=40)t.push("chat-voice");if(L.appearance>=25)t.push("image-video-gen");if(r.avatar?.path)t.push("game-3d");if(L.rights>=60)t.push("archive");
+  return {score,level,layers:L,targets_ready:t}}
+
+/* ============================ contrôles ============================ */
+$("#btnRunChecks").onclick=runChecks;
+function runChecks(){const issues=[];const push=(sev,msg)=>issues.push({sev,msg});
+  if(!$("#f_name").value.trim())push("error","Nom manquant (obligatoire).");if($("#f_age").value==="")push("error","Âge manquant (obligatoire et non ambigu).");
+  const la=lowestAge();if(la!==null&&la<18){if(S.perms.allowSexualUsage)push("error",`Âge le plus bas ${la} < 18 : allowSexualUsage sera forcé à false.`);if(Object.keys(variants("intimate")).length)push("error","Élément « intime » interdit : âge le plus bas < 18.")}
+  if($("#f_fictional").value==="false"&&$("#c_real").value!=="yes")push("error","Personnage non fictif : le consentement est obligatoire (étape 4).");
+  for(const [t,e] of Object.entries(S.elements))for(const [vid,v] of Object.entries(e.variants)){if(t==="identity_weights"&&!(v.base_model||"").trim())push("error",`${t}.${vid} : modèle de base manquant (un LoRA sans base est inutilisable).`);if(t==="identity_weights"&&!v.weights_path&&!v.weights_url)push("minor",`${t}.${vid} : aucun fichier ni URL de poids.`);
+    if(t==="voice")for(const id of v.samples||[]){const a=S.assets.find(x=>x.id===id);if(a&&!(a._transcript||"").trim())push("error",`voice.${vid} : échantillon sans transcription (${a.path.split("/").pop()}).`)}
+    if(t==="avatar"&&!v.path)push("minor",`avatar.${vid} : aucun fichier VRM/GLB.`)}
+  const used=new Set();for(const pid of Object.keys(S.presets))for(const [t,vid] of Object.entries(resolveSlots(pid)))used.add(t+":"+vid);
+  for(const [t,e] of Object.entries(S.elements))for(const vid of Object.keys(e.variants))if(!used.has(t+":"+vid))push("info",`${t}.${vid} n'est dans aucun preset.`);
+  if($("#chkCoherence").checked){for(const [pid,p] of Object.entries(S.presets)){const r=resolved(pid);const styles=new Set();for(const t of ["face","hair","body","outfit"]){if(r[t]?.style)styles.add(r[t].style);for(const id of r[t]?.images||[]){const a=S.assets.find(x=>x.id===id);if(a?.style)styles.add(a.style)}}
+      if(p.style&&[...styles].some(s=>s!==p.style))push("minor",`Preset ${pid} : style déclaré « ${p.style} » mais déclinaisons/images en ${[...styles].filter(s=>s!==p.style).join(", ")}.`);else if(!p.style&&styles.size>1)push("minor",`Preset ${pid} : styles mélangés (${[...styles].join(", ")}) sans style déclaré.`);
+      const vg=r.voice?.gender_presentation;const txt=((r.personality?.card?.description||"")+" "+(r.personality?.card?.personality||"")).toLowerCase();const fem=/\b(elle|she|her|femme|woman|girl|fille)\b/.test(txt),masc=/\b(il|he|his|homme|man|boy|garçon)\b/.test(txt);
+      if(vg==="feminine"&&masc&&!fem)push("major",`Preset ${pid} : voix perçue féminine mais texte au masculin.`);if(vg==="masculine"&&fem&&!masc)push("major",`Preset ${pid} : voix perçue masculine mais texte au féminin.`);
+      const ageP=p.age_override??Number($("#f_age").value);const ap=r.voice?.age_perceived||"";if(ap&&/^\d/.test(ap)){const n=parseInt(ap);if(!isNaN(ageP)&&Math.abs(n-ageP)>15)push("minor",`Preset ${pid} : âge ${ageP} vs voix perçue « ${ap} ».`)}
+      if($("#f_morph").value==="mechanical"&&r.hair)push("info",`Preset ${pid} : cheveux déclarés sur une morphologie mécanique.`);
+      const langs=($("#f_languages").value||"").toLowerCase();if(r.voice?.accent&&langs&&!langs.includes((r.voice.accent.match(/^[a-z]{2}/)||[""])[0]))push("minor",`Preset ${pid} : accent « ${r.voice.accent} » hors des langues déclarées (${langs}).`)}}
+  const ul=$("#issueList");ul.innerHTML=issues.length?issues.map(i=>`<li class="${i.sev==="error"?"err":"sev-"+i.sev}">${i.sev==="error"?"✖":i.sev==="major"?"⚠":i.sev==="minor"?"△":"ℹ"} ${esc(i.msg)}</li>`).join(""):'<li class="ok">✔ Aucun problème détecté.</li>';
+  const kb=$("#kpiBox");kb.innerHTML=Object.keys(S.presets).map(pid=>{const c=completeness(pid);const coh=S.coherence[pid];return `<div><span class="hint">${esc(S.presets[pid].label||pid)}${pid===S.defaultPreset?" (défaut)":""}</span><b>${c.score} <small>/100 · ${c.level}</small></b><span class="hint">${Object.entries(c.layers).map(([k,v])=>k.slice(0,4)+" "+v).join(" · ")}</span><br><span class="hint">prêt : ${c.targets_ready.join(", ")||"—"}</span>${coh?`<br><span class="hint">cohérence ${coh.score} (${esc(coh.computed_by)})</span>`:""}</div>`}).join("");
+  const dc=completeness(S.defaultPreset);$("#hdrScore").textContent=`complétude ${dc.score} · ${dc.level}`;$("#hdrScore").className="badge "+dc.level;
+  S._errors=issues.filter(i=>i.sev==="error").length;return issues}
+function fillPresetSelect(){const s=$("#ai_preset");s.innerHTML=Object.keys(S.presets).map(p=>`<option value="${p}" ${p===S.defaultPreset?"selected":""}>${esc(S.presets[p].label||p)}</option>`).join("")}
+$("#btnAI").onclick=async()=>{const url=$("#ai_url").value.replace(/\/$/,""),key=$("#ai_key").value,model=$("#ai_model").value,pid=$("#ai_preset").value;if(!url||!model){$("#aiStatus").textContent="URL et modèle requis.";return}
+  $("#aiStatus").textContent="envoi…";const r=resolved(pid);const content=[];const bundle={cof:"0.3",character:{name:$("#f_name").value,age:{value:Number($("#f_age").value)},fictional:$("#f_fictional").value==="true",morphology:{class:$("#f_morph").value,species:$("#f_species").value},languages:$("#f_languages").value},preset:{id:pid,label:S.presets[pid].label,style:S.presets[pid].style||null,age_override:S.presets[pid].age_override??null},elements:{}};
+  if(r.personality)bundle.elements.personality={description:r.personality.card?.description,personality:r.personality.card?.personality};if(r.voice)bundle.elements.voice={gender_presentation:r.voice.gender_presentation,age_perceived:r.voice.age_perceived,accent:r.voice.accent,timbre:r.voice.timbre};if(r.hair)bundle.elements.hair={length:r.hair.length,curl:r.hair.curl,color:r.hair.color_base_hex,style:r.hair.style_hair};if(r.outfit)bundle.elements.outfit={prompt:r.outfit.prompt,items:r.outfit.items_text};if(r.identity_weights)bundle.elements.identity_weights={base_model:r.identity_weights.base_model,covers:r.identity_weights.covers,trigger_words:r.identity_weights.trigger_words};
+  content.push({type:"text",text:"Dossier de preset COF (contrôle de cohérence). Réponds UNIQUEMENT en JSON strict {\"score\":0-100,\"issues\":[{\"severity\":\"info|minor|major\",\"elements\":[...],\"check\":\"gender|age|species|style|language|weights-vs-images\",\"message\":\"...\"}]}. Vérifie que texte, images et voix décrivent le même personnage (genre, âge, espèce, style visuel, langue).\n"+JSON.stringify(bundle)});
+  for(const t of ["face","body","outfit"])for(const id of (r[t]?.images||[]).slice(0,3)){const a=S.assets.find(x=>x.id===id);if(a?._url){const th=await thumbDataUrl(S.files.get(a.path),384);content.push({type:"image_url",image_url:{url:th}})}}
+  try{const resp=await fetch(url+"/chat/completions",{method:"POST",headers:{"Content-Type":"application/json",...(key?{Authorization:"Bearer "+key}:{})},body:JSON.stringify({model,messages:[{role:"system",content:"Tu es un contrôleur de cohérence de fiches de personnages. Réponds en JSON strict."},{role:"user",content}],temperature:0})});
+    const j=await resp.json();const txt=j.choices?.[0]?.message?.content||"";const m=txt.match(/\{[\s\S]*\}/);const parsed=JSON.parse(m?m[0]:txt);S.coherence[pid]={score:Math.max(0,Math.min(100,Math.round(parsed.score))),method:"ai-api",computed_by:model,computed_at:new Date().toISOString().replace(/\.\d+Z$/,"Z"),issues:(parsed.issues||[]).map(i=>({severity:["info","minor","major"].includes(i.severity)?i.severity:"info",elements:i.elements||[],message:String(i.message||"")}))};
+    $("#aiStatus").textContent=`cohérence ${S.coherence[pid].score}/100 — ${S.coherence[pid].issues.length} remarque(s)`;runChecks();const ul=$("#issueList");for(const i of S.coherence[pid].issues)ul.insertAdjacentHTML("beforeend",`<li class="sev-${i.severity}">🤖 ${esc(i.message)}</li>`)}catch(e){$("#aiStatus").textContent="échec : "+e.message}}
+async function thumbDataUrl(blob,max){const img=await createImageBitmap(blob);const s=Math.min(1,max/Math.max(img.width,img.height));const cv=document.createElement("canvas");cv.width=Math.round(img.width*s);cv.height=Math.round(img.height*s);cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height);return cv.toDataURL("image/jpeg",0.8)}
+
+/* ============================ build / exports / ouverture ============================ */
+function estimate(){let total=0;for(const b of S.files.values())total+=b.size;$("#b_estimate").textContent=`Assets chargés : ${(total/1e6).toFixed(2)} Mo avant traitement (${S.files.size} fichier(s)).`}
+$("#btnBuild").onclick=async()=>{const issues=runChecks();if(issues.some(i=>i.sev==="error")){go("checks");alert("Corrigez d'abord les erreurs de structure (étape 5).");return}
+  $("#buildLog").textContent="construction…";try{const {manifest,entries}=await assemble({maxside:$("#b_maxside").value,fmt:$("#b_imgfmt").value});
+    if($("#b_derived").value==="canny"){for(const a of manifest.assets.filter(x=>x.role==="view"&&x.subject==="head")){const e=entries.find(x=>x.name===a.path);if(!e)continue;const png=await cannyPng(new Blob([e.data]));const path=`derived/face/${a.id}.canny.png`;const id=a.id+"-canny";manifest.assets.push({id,path,role:"derived",method:"canny",source:a.id,mediaType:"image/png",bytes:png.byteLength,sha256:await sha256(png),license:a.license,bits:1});entries.push({name:path,data:new Uint8Array(png),store:true});for(const e2 of Object.values(manifest.elements.face?.variants||{}))if((e2.images||[]).includes(a.id))(e2.derived=e2.derived||[]).push(id)}
+      entries[1].data=enc.encode(JSON.stringify(manifest,null,2)+"\n")}
+    const blob=await zipBuild(entries);const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=slug(manifest.name)+".cof";a.click();$("#buildLog").textContent=`${a.download} — ${(blob.size/1e6).toFixed(2)} Mo, ${entries.length} entrées, complétude ${manifest.completeness.score}/100 (${manifest.completeness.level}).`}catch(e){$("#buildLog").textContent="échec : "+e.message;console.error(e)}};
+$("#btnManifest").onclick=async()=>{const {manifest}=await assemble(null);const pv=$("#manifestView");pv.style.display=pv.style.display==="none"?"block":"none";pv.textContent=JSON.stringify(manifest,null,2)};
+$("#btnExportPng").onclick=async()=>{const r=resolved(S.defaultPreset);if(!r.personality){alert("Le preset par défaut n'a pas de personnalité.");return}const card=buildCard(r.personality,$("#f_name").value||"Unnamed");let png=null;for(const id of r.face?.images||[]){const a=S.assets.find(x=>x.id===id);if(a&&a.subject==="head"&&a.angle==="front"){png=await toPng1024(S.files.get(a.path));break}}if(!png)png=await toPng1024(null);const out=writeCardToPng(new Uint8Array(await png.arrayBuffer()),card);const a=document.createElement("a");a.href=URL.createObjectURL(out);a.download=slug($("#f_name").value||"card")+".png";a.click()};
+$("#btnExportSoul").onclick=()=>{const r=resolved(S.defaultPreset);const p=r.personality||{card:{}};const c=p.card||{};const lines=[`# SOUL.md — ${$("#f_name").value}`,""];if(c.personality)lines.push("## Voice & stance",c.personality,"");if(c.behavior)lines.push("## Habits",...c.behavior.split("\n").filter(Boolean).map(b=>"- "+b),"");if(c.values)lines.push("## Values",...c.values.split(",").map(v=>"- "+v.trim()),"");if(c.goals)lines.push("## Goals",...c.goals.split("\n").filter(Boolean).map(b=>"- "+b),"");if(c.fears)lines.push("## Fears",...c.fears.split("\n").filter(Boolean).map(b=>"- "+b),"");if(c.system_prompt)lines.push("## Boundaries",c.system_prompt,"");if(S.perms.aiDisclosure)lines.push("## Disclosure","I am a synthetic character. I say so when asked.","");
+  const id=[`- Name: ${$("#f_name").value}`,`- Creature: ${$("#f_species").value||"human"}`,`- Vibe: ${$("#f_summary").value}`,`- Emoji: 🙂`,`- Avatar: `+(r.face?.images?.[0]?S.assets.find(a=>a.id===r.face.images[0])?.path||"":""),""].join("\n");
+  for(const [n,t] of [["SOUL.md",lines.join("\n")],["IDENTITY.md",id]]){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"text/markdown"}));a.download=n;a.click()}};
+async function toPng1024(blob){const cv=document.createElement("canvas");cv.width=cv.height=1024;const ctx=cv.getContext("2d");ctx.fillStyle="#404048";ctx.fillRect(0,0,1024,1024);if(blob){const img=await createImageBitmap(blob);const s=Math.min(1024/img.width,1024/img.height);const w=img.width*s,h=img.height*s;ctx.fillStyle="#fff";ctx.fillRect(0,0,1024,1024);ctx.drawImage(img,(1024-w)/2,(1024-h)/2,w,h)}return new Promise(r=>cv.toBlob(r,"image/png"))}
+async function cannyPng(blob){ // Canny simplifié (Sobel + seuil auto + amincissement léger), sortie PNG 1 bit via canvas
+  const img=await createImageBitmap(blob);const w=img.width,h=img.height;const cv=document.createElement("canvas");cv.width=w;cv.height=h;const ctx=cv.getContext("2d");ctx.drawImage(img,0,0);const d=ctx.getImageData(0,0,w,h).data;const g=new Float32Array(w*h);for(let i=0;i<w*h;i++)g[i]=0.299*d[i*4]+0.587*d[i*4+1]+0.114*d[i*4+2];
+  const bl=new Float32Array(w*h);for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){let s=0;for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++)s+=g[(y+j)*w+x+i]*((i===0&&j===0)?4:(i===0||j===0)?2:1);bl[y*w+x]=s/16}
+  const mag=new Float32Array(w*h);let vals=[];for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const gx=-bl[(y-1)*w+x-1]+bl[(y-1)*w+x+1]-2*bl[y*w+x-1]+2*bl[y*w+x+1]-bl[(y+1)*w+x-1]+bl[(y+1)*w+x+1];const gy=-bl[(y-1)*w+x-1]-2*bl[(y-1)*w+x]-bl[(y-1)*w+x+1]+bl[(y+1)*w+x-1]+2*bl[(y+1)*w+x]+bl[(y+1)*w+x+1];mag[y*w+x]=Math.hypot(gx,gy)}
+  for(let i=0;i<mag.length;i+=7)vals.push(mag[i]);vals.sort((a,b)=>a-b);const thr=vals[Math.floor(vals.length*0.92)]||40;
+  const out=ctx.createImageData(w,h);for(let i=0;i<w*h;i++){const v=mag[i]>thr?0:255;out.data[i*4]=out.data[i*4+1]=out.data[i*4+2]=v;out.data[i*4+3]=255}ctx.putImageData(out,0,0);return (await new Promise(r=>cv.toBlob(r,"image/png"))).arrayBuffer()}
+
+$("#btnOpen").onclick=()=>$("#fileOpen").click();
+$("#fileOpen").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const files=await zipRead(await f.arrayBuffer());if(dec.decode(files.get("mimetype")||new Uint8Array()).trim()!==MIME)throw new Error("pas un fichier COF (mimetype)");const m=JSON.parse(dec.decode(files.get("manifest.json")));if(!String(m.cof).startsWith("0.3"))throw new Error("version "+m.cof+" : lancez `cof migrate` (v0.3 attendue)");await loadManifest(m,files);alert("Fichier chargé : "+m.name)}catch(err){alert("Ouverture impossible : "+err.message)}};
+async function loadManifest(m,files){S.loadedManifest=m;S.id=m.id||ulid();S.elements={};S.presets={};S.assets=[];S.files=new Map();S.coherence={};
+  $("#f_name").value=m.name||"";$("#hdrName").textContent=m.name||"";$("#f_nickname").value=m.nickname||"";$("#f_age").value=m.age?.value??"";$("#f_age_basis").value=m.age?.basis||"declared";$("#f_languages").value=(m.languages||[]).join(", ");$("#f_fictional").value=String(m.fictional!==false);$("#f_morph").value=m.morphology?.class||"humanoid";$("#f_species").value=m.morphology?.species||"";$("#f_summary").value=m.summary||"";$("#f_tags").value=(m.tags?.manual||[]).join(", ");
+  for(const o of $("#f_content").options)o.selected=(m.tags?.content||["none"]).includes(o.value);if(m.tags?.ip&&m.tags.ip.original===false){$("#f_ip").value="franchise";$("#f_franchise").style.display="block";$("#f_franchise").value=(m.tags.ip.franchise||"")+(m.tags.ip.based_on?" — "+m.tags.ip.based_on:"")}
+  for(const [k] of PERMS)if(m.rights?.permissions?.[k]!==undefined)S.perms[k]=m.rights.permissions[k];$("#permGrid").innerHTML="";renderPerms();
+  if(m.rights?.consent){$("#c_real").value="yes";for(const o of $("#c_scope").options)o.selected=(m.rights.consent.scope||[]).includes(o.value);$("#c_granted").value=m.rights.consent.granted||"";$("#c_expires").value=m.rights.consent.expires||"";$("#c_juris").value=(m.rights.consent.jurisdictions||[]).join(", ")}
+  $("#r_creator").value=m.metadata?.["dc:creator"]?.[0]||"";$("#r_source").value="";$("#prio_visual").value=(m.priorities?.visual||["identity_weights","images","avatar","descriptive"]).join(", ");$("#prio_voice").value=(m.priorities?.voice||["samples","described"]).join(", ");$("#b_class").value=m.size_class||"lite";
+  for(const a of m.assets||[]){const o={...a};if(a.path&&files.has(a.path)){const blob=new Blob([files.get(a.path)],{type:a.mediaType});S.files.set(a.path,blob);if(a.role==="view")o._url=URL.createObjectURL(blob);if(a.role==="voice-sample"&&a.transcript&&files.has(a.transcript))o._transcript=dec.decode(files.get(a.transcript))}S.assets.push(o)}
+  const rj=p=>{try{return JSON.parse(dec.decode(files.get(p)))}catch(e){return null}};
+  for(const [type,e] of Object.entries(m.elements||{})){S.elements[type]={variants:{}};for(const [vid,v] of Object.entries(e.variants||{})){const o={label:v.label||"",derives_from:v.derives_from,style:v.style,style_tags:v.style_tags,images:v.images,samples:v.samples,clips:v.clips,path:v.path,rig:v.rig};
+    if(type==="personality"&&v.card){const card=rj(v.card);if(card){const d=card.data||{},cof=d.extensions?.cof||{};const ps=v.psyche?rj(v.psyche):null;o.card={description:d.description||"",personality:d.personality||"",scenario:d.scenario||"",first_mes:d.first_mes||"",mes_example:d.mes_example||"",system_prompt:d.system_prompt||"",creator_notes:d.creator_notes||"",behavior:(cof.behavior||[]).join("\n"),goals:(ps?.goals||[]).map(g=>g.text).join("\n")||(cof.goals||[]).join("\n"),fears:(ps?.fears||[]).map(g=>g.text).join("\n")||(cof.fears||[]).join("\n"),values:(ps?.values||[]).join(", "),big5:ps?.traits?.big5||null};o._raw=card}}
+    if(type==="identity_weights"&&v.spec){const w=rj(v.spec)||{};Object.assign(o,{kind:w.kind,base_model:w.base_model?.name,family:w.base_model?.family,trigger_words:w.trigger_words,recommended_weight:w.recommended_weight,covers:w.covers,page_url:w.pages?.[0]?.url,notes:w.notes,license:w.license});const wa=S.assets.find(x=>x.id===w.file);if(wa){if(wa.uri){o.weights_url=wa.uri;o.weights_sha256=wa.sha256;o.weights_bytes=wa.bytes}else{o.weights_path=wa.path;o.weights_bytes=wa.bytes}}}
+    if(type==="voice"&&v.profile){const p=rj(v.profile)||{};Object.assign(o,{gender_presentation:p.canonical?.gender_presentation,age_perceived:p.canonical?.age_perceived,accent:p.canonical?.accent,pitch:p.canonical?.pitch?.range,rate:p.canonical?.rate,timbre:(p.canonical?.timbre||[]).join(", "),speech_style:p.speech_style?.register})}
+    if(type==="attitude"&&v.spec){o._spec=JSON.stringify(rj(v.spec)||{},null,2)}
+    if(type==="hair"&&v.code){const h=rj(v.code)||{};Object.assign(o,{length:h.length,curl:h.curl,density:h.density,color_base_hex:h.color_base_hex,grey_pct:h.grey_pct,style_hair:h.style})}
+    if(type==="outfit"&&v.spec){const s=rj(v.spec)||{};o.items_text=(s.items||[]).map(i=>[i.fashionpedia_category,(i.attributes||[]).join(", "),i.color_hex||""].join(" — ")).join("\n");o.prompt=s.renderings?.prompt||""}
+    if(type==="body"&&v.params){const b=rj(v.params)||{};o.height_cm=b.height_cm;o.descriptive=b.descriptive}
+    if(type==="motion"&&v.visemes){o.visemes_vocab=(rj(v.visemes)||{}).vocabulary}
+    for(const k of Object.keys(o))if(o[k]===undefined)delete o[k];S.elements[type].variants[vid]=o}}
+  for(const [pid,p] of Object.entries(m.presets||{default:{label:"Défaut",slots:{}}})){S.presets[pid]={label:p.label||pid,slots:{...(p.slots||{})},extends:p.extends,style:p.style,age_override:p.age_override?.value,permissions_override:p.permissions_override};if(S.presets[pid].age_override===undefined)delete S.presets[pid].age_override;if(S.coherence)if(p.coherence)S.coherence[pid]=p.coherence}
+  S.defaultPreset=m.default_preset||Object.keys(S.presets)[0];curType="personality";renderTabs();renderPanel();renderPresets();runChecks();go("identity")}
+
+/* init */
+renderTabs();renderPanel();renderPerms();
+</script>
+</body>
+</html>
