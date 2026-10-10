@@ -138,8 +138,10 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
             rep.errors.append(f"dérivé {a['id']} : source inconnue {a.get('source')}")
         if a.get("role") == "voice-sample":
             t = a.get("transcript")
-            if not t or not (src / t).is_file():
-                rep.errors.append(f"échantillon de voix sans transcription lisible : {a.get('path')}")
+            if t and not (src / t).is_file():
+                rep.errors.append(f"échantillon de voix : transcription déclarée mais absente : {t}")
+            elif not t:
+                rep.warnings.append(f"échantillon de voix sans transcription (facultative ; utile aux moteurs à alignement texte) : {a.get('path')}")
 
     # variants: kind valid, referenced files and assets exist; derives_from resolvable
     for etype, e in elements.items():
@@ -209,6 +211,11 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
             for b in by_kind(res, "appearance", "body"):
                 if b.get("estimated"):
                     rep.errors.append(f"presets.{pid} : morphologie estimée interdite (âge {pa})")
+    # intimate ⇒ tags.content must flag it (opt-in element, never hidden)
+    has_intimate = any((v or {}).get("kind") == "intimate" for v in ((elements.get("appearance") or {}).get("variants", {}) or {}).values())
+    content = set(((manifest.get("tags") or {}).get("content") or []))
+    if has_intimate and not (content & {"nudity", "sexual"}):
+        rep.errors.append("déclinaison intime présente : tags.content doit contenir 'nudity' ou 'sexual'")
     dp = default_preset_id(manifest)
     if pids and dp not in manifest["presets"]:
         rep.errors.append(f"default_preset inconnu : {dp}")
