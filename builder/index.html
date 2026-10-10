@@ -42,7 +42,7 @@ footer{padding:14px 28px;color:var(--muted);font-size:12.5px;border-top:1px soli
 </head>
 <body>
 <header>
-  <h1>COF Builder <span>· Character Open File v0.4 · builder 0.4.3</span></h1>
+  <h1>COF Builder <span>· Character Open File v0.4 · builder 0.4.4</span></h1>
   <span class="badge" id="hdrName">Nouveau personnage</span>
   <span class="badge" id="hdrScore">complétude —</span>
   <div class="spacer"></div>
@@ -136,7 +136,7 @@ footer{padding:14px 28px;color:var(--muted);font-size:12.5px;border-top:1px soli
     </fieldset>
     <div class="inline">
       <button class="btn primary" id="btnBuild">Construire et télécharger le .cof</button>
-      <span class="inline"><button class="btn" id="btnExportPreset">Exporter un preset</button><select id="x_preset" style="width:auto"></select><button class="btn" id="btnImportPreset" title="Un preset exporté est un .cof allégé : l'importer, c'est le fusionner dans ce fichier (ses déclinaisons et son preset s'ajoutent)">Importer un preset…</button></span>
+      <span class="inline" style="gap:6px"><button class="btn" id="btnExportPreset">Exporter un preset</button><span class="hint">lequel :</span><select id="x_preset" style="width:auto" title="preset à exporter"></select><button class="btn" id="btnImportPreset" title="Un preset exporté est un .cof allégé : l'importer, c'est le fusionner dans ce fichier (ses déclinaisons et son preset s'ajoutent)">Importer un preset…</button></span>
       <button class="btn" id="btnExportPng">Carte PNG (ccv3)</button>
       <button class="btn" id="btnExportSoul">SOUL.md / IDENTITY.md</button>
       <button class="btn" id="btnManifest">Voir le manifeste</button>
@@ -240,7 +240,7 @@ const sel=(k,opts,val,extra="")=>`<select ${k} ${extra}>${opts.map(([v,l])=>`<op
 
 /* ============================ navigation ============================ */
 $$("#nav button").forEach(b=>b.onclick=()=>go(b.dataset.step));
-function go(step){$$("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.step===step));$$("section.step").forEach(s=>s.classList.toggle("active",s.id==="step-"+step));if(step==="identity")renderIdentities();if(step==="presets")renderPresets();if(step==="checks")fillPresetSelect();if(step==="build")estimate();if(step==="rights")renderPerms()}
+function go(step){$$("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.step===step));$$("section.step").forEach(s=>s.classList.toggle("active",s.id==="step-"+step));if(step==="identity")renderIdentities();if(step==="presets")renderPresets();if(step==="checks")fillPresetSelect();if(step==="build"){fillPresetSelect();estimate()}if(step==="rights")renderPerms()}
 $("#btnGoBuild").onclick=()=>go("build");
 
 /* ============================ identités ============================ */
@@ -441,14 +441,14 @@ async function assemble(opts){
     priorities:{visual:$("#prio_visual").value.split(",").map(s=>s.trim()).filter(Boolean),voice:$("#prio_voice").value.split(",").map(s=>s.trim()).filter(Boolean),by_target:{"game-3d":{visual:["avatar","images","identity_weights","descriptive"]},"chat-text":{visual:["descriptive","images"]},"video-realtime":{visual:["avatar","images","identity_weights","descriptive"]}}},
     mapping_vocabularies:{},assets,size_class:$("#b_class").value,container:{aligned:0,executableContent:"none"},
     rights:{permissions:{...S.perms},consent},
-    provenance:{created:S.loadedManifest?.provenance?.created||new Date().toISOString().replace(/\.\d+Z$/,"Z"),modified:new Date().toISOString().replace(/\.\d+Z$/,"Z"),generator:"cof-builder/0.4.3",source:[...(S.loadedManifest?.provenance?.source||[]),...($("#r_source").value?[$("#r_source").value]:[])].filter((x,i,a)=>a.indexOf(x)===i),c2pa:null,signatures:[]},
+    provenance:{created:S.loadedManifest?.provenance?.created||new Date().toISOString().replace(/\.\d+Z$/,"Z"),modified:new Date().toISOString().replace(/\.\d+Z$/,"Z"),generator:"cof-builder/0.4.4",source:[...(S.loadedManifest?.provenance?.source||[]),...($("#r_source").value?[$("#r_source").value]:[])].filter((x,i,a)=>a.indexOf(x)===i),c2pa:null,signatures:[]},
     metadata:{"@context":{dc:"http://purl.org/dc/elements/1.1/"},"dc:creator":[$("#r_creator").value||""]},extensions:{}};
   // languages = union
   const langs=new Set();for(const e of Object.values(elements.personality?.variants||{}))if(e.language)langs.add(e.language);for(const a of assets)if(a.role==="voice-sample"&&a.language)langs.add(a.language);manifest.languages=[...langs];
   const at=new Set([DR.morphology.class,la===null?"adult":la<13?"child":la<18?"teen":la>=65?"elder":"adult",...manifest.languages]);if(elements.voice)at.add("has-voice");if(elements.volume3d)at.add("has-3d");if(elements.motion)at.add("has-motion");if(elements.identity_weights)at.add("has-weights");if(Object.keys(presets).length>1)at.add("multi-preset");if(Object.keys(identities).length>1)at.add("multi-identity");const ps=presets[S.defaultPreset]?.style;if(ps)at.add("style-"+ps);manifest.tags.auto=[...at].map(slug).filter(Boolean);
   const dres=resolved(S.defaultPreset);for(const id of first(dres,"appearance","face")?.images||[]){const a=assets.find(x=>x.id===id);if(a&&a.subject==="head"&&a.angle==="front"){manifest.thumbnail=a.path;break}}
-  const kpis={};for(const pid of Object.keys(presets)){kpis[pid]=completeness(pid);presets[pid].completeness={...kpis[pid],computed_by:"cof-builder/0.4.3",computed_at:manifest.provenance.modified};if(S.coherence[pid])presets[pid].coherence=S.coherence[pid]}
-  manifest.completeness={...kpis[S.defaultPreset],computed_by:"cof-builder/0.4.3",computed_at:manifest.provenance.modified};
+  const kpis={};for(const pid of Object.keys(presets)){kpis[pid]=completeness(pid);presets[pid].completeness={...kpis[pid],computed_by:"cof-builder/0.4.4",computed_at:manifest.provenance.modified};if(S.coherence[pid])presets[pid].coherence=S.coherence[pid]}
+  manifest.completeness={...kpis[S.defaultPreset],computed_by:"cof-builder/0.4.4",computed_at:manifest.provenance.modified};
   manifest.coverage={elements:Object.keys(elements),variants:Object.values(elements).reduce((n,e)=>n+Object.keys(e.variants).length,0),presets:Object.keys(presets).length,identities:Object.keys(identities).length};
   if(la!==null&&la<18)manifest.rights.permissions.allowSexualUsage=false;
   files.unshift({name:"manifest.json",data:enc.encode(JSON.stringify(manifest,null,2)+"\n"),store:false});files.unshift({name:"mimetype",data:enc.encode(MIME),store:true});
