@@ -124,26 +124,53 @@ def preset_identity(manifest: dict, pid: str | None) -> dict:
     return {k: manifest.get(k) for k in ("name", "nickname", "age", "summary", "fictional", "morphology")}
 
 
+# categories whose variants may carry their own `age` (a character declined at several ages of its life)
+AGE_CATEGORIES = {"appearance", "volume3d", "identity_weights"}
+AGELESS_KINDS = {"clothing", "accessory", "feature", "description"}
+
+
+def _age_value(a) -> float | None:
+    return a["value"] if isinstance(a, dict) and isinstance(a.get("value"), (int, float)) else None
+
+
+def variant_ages(manifest: dict) -> list[float]:
+    out = []
+    for cat in AGE_CATEGORIES:
+        for v in variants_of(manifest, cat).values():
+            if v.get("kind") in AGELESS_KINDS:
+                continue
+            x = _age_value(v.get("age"))
+            if x is not None:
+                out.append(x)
+    return out
+
+
 def lowest_age(manifest: dict) -> float | None:
+    """Lowest age declared anywhere (root, identities, presets' age_override, morphological variants). None = no age known."""
     ages = []
     for src in [manifest, *((manifest.get("identities") or {}).values())]:
-        a = src.get("age", {})
-        if isinstance(a, dict) and isinstance(a.get("value"), (int, float)):
-            ages.append(a["value"])
+        x = _age_value(src.get("age"))
+        if x is not None:
+            ages.append(x)
     for p in (manifest.get("presets", {}) or {}).values():
-        ao = p.get("age_override")
-        if isinstance(ao, dict) and isinstance(ao.get("value"), (int, float)):
-            ages.append(ao["value"])
+        x = _age_value(p.get("age_override"))
+        if x is not None:
+            ages.append(x)
+    ages += variant_ages(manifest)
     return min(ages) if ages else None
 
 
 def preset_age(manifest: dict, pid: str | None) -> float | None:
+    """Age of a preset: lowest age of its resolved morphological variants, else age_override, else identity age, else None."""
+    res = resolved(manifest, pid) if pid else {}
+    va = [x for cat in AGE_CATEGORIES for v in res.get(cat, []) if v.get("kind") not in AGELESS_KINDS for x in [_age_value(v.get("age"))] if x is not None]
+    if va:
+        return min(va)
     p = (manifest.get("presets", {}) or {}).get(pid or "", {}) or {}
-    ao = p.get("age_override")
-    if isinstance(ao, dict) and isinstance(ao.get("value"), (int, float)):
-        return ao["value"]
-    a = preset_identity(manifest, pid).get("age") or {}
-    return a.get("value") if isinstance(a, dict) else None
+    x = _age_value(p.get("age_override"))
+    if x is not None:
+        return x
+    return _age_value(preset_identity(manifest, pid).get("age"))
 
 
 # ---------- region rules (clothing / accessories / pilosity / features / weights) ----------

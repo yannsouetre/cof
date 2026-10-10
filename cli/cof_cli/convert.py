@@ -133,7 +133,7 @@ def card_to_cof_dir(card: dict, dest: Path, *, png: bytes | None = None, age: in
     manifest = {
         "cof": "0.4", "id": ulid_like(),
         "name": data.get("name") or "Unnamed", "nickname": data.get("nickname") or "",
-        "age": {"value": age if age is not None else 18, "unit": "years", "basis": "declared" if age is not None else "canonical"},
+        **({"age": {"value": age, "unit": "years", "basis": "declared"}} if age is not None else {}),   # âge optionnel : inconnu si non fourni
         "languages": [language], "summary": (data.get("description") or "")[:300], "fictional": fictional,
         "morphology": {"class": "human", "species": "human"},
         "tags": {"auto": ["humanoid", "imported-ccv3"], "manual": [t for t in manual if t][:30], "content": ["none"],

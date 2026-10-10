@@ -7,7 +7,6 @@
     "cof",
     "id",
     "name",
-    "age",
     "fictional",
     "morphology",
     "tags",
@@ -440,7 +439,10 @@
               }
             }
           }
-        }
+        },
+        "required": [
+          "age"
+        ]
       },
       "then": {
         "properties": {
@@ -496,9 +498,7 @@
     "age": {
       "type": "object",
       "required": [
-        "value",
-        "unit",
-        "basis"
+        "value"
       ],
       "properties": {
         "value": {
@@ -510,16 +510,19 @@
             "years",
             "months",
             "unknown-adult"
-          ]
+          ],
+          "default": "years"
         },
         "basis": {
           "enum": [
             "declared",
             "apparent",
             "canonical"
-          ]
+          ],
+          "default": "declared"
         }
-      }
+      },
+      "description": "Âge : optionnel partout (identité, preset, déclinaison morphologique). Un personnage peut n'avoir aucun âge connu. Les règles de protection s'appliquent à l'âge le plus bas déclaré ; sans aucun âge, les usages sensibles sont refusés."
     },
     "style": {
       "type": "string",
@@ -749,6 +752,10 @@
         "allow_multiple_sheets": {
           "type": "boolean",
           "description": "character-sheet : plusieurs planches autorisées (cohérence à la charge de l'auteur)"
+        },
+        "age": {
+          "$ref": "#/$defs/age",
+          "description": "Âge représenté par cette déclinaison (apparence hors vêtement/accessoire/particularités, 3D, poids d'identité) — un personnage se décline à différents âges de sa vie"
         }
       },
       "required": [
@@ -1474,7 +1481,6 @@
       "type": "object",
       "required": [
         "name",
-        "age",
         "fictional",
         "morphology"
       ],

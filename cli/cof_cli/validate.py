@@ -230,9 +230,14 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                 if (cat, vid) not in used:
                     rep.warnings.append(f"elements.{cat}.{vid} n'est référencée par aucun preset")
 
-    # age rules on the lowest age
+    # age rules on the lowest age (age is optional everywhere; no age at all ⇒ no sensitive usage)
     la = lowest_age(manifest)
-    perms = (manifest.get("rights", {}) or {}).get("permissions", {}) or {}
+    perms = (manifest.get("rights", {}) or {}).get("permissions", {} ) or {}
+    if la is None:
+        if perms.get("allowSexualUsage"):
+            rep.errors.append("allowSexualUsage refusé : aucun âge déclaré (identité, preset ou déclinaison) — déclarez-en un")
+        if has_intimate:
+            rep.errors.append("déclinaison intime refusée : aucun âge déclaré — déclarez-en un")
     if la is not None and la < 18:
         if perms.get("allowSexualUsage"):
             rep.errors.append("allowSexualUsage interdit : âge le plus bas < 18")
@@ -246,7 +251,7 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
         ov = p.get("permissions_override") or {}
         if not ov:
             continue
-        page = (p.get("age_override") or manifest.get("age") or {}).get("value")
+        page = preset_age(manifest, pid)
         eff = {**perms, **ov}
         if page is not None and page < 18 and eff.get("allowSexualUsage"):
             rep.errors.append(f"presets.{pid}.permissions_override : allowSexualUsage interdit (âge du preset {page})")
