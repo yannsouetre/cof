@@ -3,233 +3,1370 @@
   "$id": "https://cof.dev/schemas/0.3/manifest.schema.json",
   "title": "COF manifest.json (v0.3)",
   "type": "object",
-  "required": ["cof", "id", "name", "age", "fictional", "morphology", "tags", "elements", "assets", "rights", "provenance"],
+  "required": [
+    "cof",
+    "id",
+    "name",
+    "age",
+    "fictional",
+    "morphology",
+    "tags",
+    "elements",
+    "assets",
+    "rights",
+    "provenance"
+  ],
   "additionalProperties": true,
   "properties": {
-    "cof": { "type": "string", "pattern": "^0\\.3$" },
-    "id": { "type": "string", "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$", "description": "ULID stable" },
-    "name": { "type": "string", "minLength": 1, "maxLength": 200 },
-    "nickname": { "type": "string", "maxLength": 100 },
-    "age": { "$ref": "#/$defs/age" },
-    "languages": { "type": "array", "items": { "type": "string", "pattern": "^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$" } },
-    "summary": { "type": "string", "maxLength": 2000 },
-    "fictional": { "type": "boolean" },
+    "cof": {
+      "type": "string",
+      "pattern": "^0\\.3$"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$",
+      "description": "ULID stable"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "nickname": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "age": {
+      "$ref": "#/$defs/age"
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
+      }
+    },
+    "summary": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "fictional": {
+      "type": "boolean"
+    },
     "morphology": {
-      "type": "object", "required": ["class"],
-      "properties": {
-        "class": { "enum": ["humanoid", "anthropomorphic-animal", "quadruped", "avian", "aquatic", "mechanical", "amorphous", "other"] },
-        "species": { "type": "string" }, "notes": { "type": "string" }
-      }
-    },
-    "tags": {
-      "type": "object", "required": ["content", "ip"],
-      "properties": {
-        "auto": { "type": "array", "items": { "$ref": "#/$defs/tag" }, "maxItems": 60 },
-        "manual": { "type": "array", "items": { "$ref": "#/$defs/tag" }, "maxItems": 30 },
-        "content": { "type": "array", "minItems": 1, "items": { "enum": ["none", "nudity", "sexual", "violence", "gore", "drugs", "profanity", "horror", "political", "religious"] } },
-        "ip": { "type": "object", "required": ["original"], "properties": { "original": { "type": "boolean" }, "franchise": { "type": ["string", "null"] }, "based_on": { "type": ["string", "null"] } } }
-      }
-    },
-    "thumbnail": { "$ref": "#/$defs/path" },
-
-    "elements": {
       "type": "object",
-      "description": "Types d'éléments → déclinaisons. Tous optionnels ; la subdivision visuelle n'est jamais imposée.",
-      "propertyNames": { "pattern": "^(personality|face|hair|facial_hair|body|body_hair|intimate|outfit|accessories|identity_weights|voice|attitude|avatar|motion|x-[a-z0-9-]+)$" },
-      "additionalProperties": {
-        "type": "object", "required": ["variants"],
-        "properties": {
-          "variants": { "type": "object", "propertyNames": { "$ref": "#/$defs/vid" }, "additionalProperties": { "$ref": "#/$defs/variant" } }
+      "required": [
+        "class"
+      ],
+      "properties": {
+        "class": {
+          "enum": [
+            "humanoid",
+            "anthropomorphic-animal",
+            "quadruped",
+            "avian",
+            "aquatic",
+            "mechanical",
+            "amorphous",
+            "other"
+          ]
+        },
+        "species": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
         }
       }
     },
-
+    "tags": {
+      "type": "object",
+      "required": [
+        "content",
+        "ip"
+      ],
+      "properties": {
+        "auto": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/tag"
+          },
+          "maxItems": 60
+        },
+        "manual": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/tag"
+          },
+          "maxItems": 30
+        },
+        "content": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "enum": [
+              "none",
+              "nudity",
+              "sexual",
+              "violence",
+              "gore",
+              "drugs",
+              "profanity",
+              "horror",
+              "political",
+              "religious"
+            ]
+          }
+        },
+        "ip": {
+          "type": "object",
+          "required": [
+            "original"
+          ],
+          "properties": {
+            "original": {
+              "type": "boolean"
+            },
+            "franchise": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "based_on": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "thumbnail": {
+      "$ref": "#/$defs/path"
+    },
+    "elements": {
+      "type": "object",
+      "description": "Types d'éléments → déclinaisons. Tous optionnels ; la subdivision visuelle n'est jamais imposée.",
+      "propertyNames": {
+        "pattern": "^(personality|face|hair|facial_hair|body|body_hair|intimate|outfit|accessories|identity_weights|voice|attitude|avatar|motion|x-[a-z0-9-]+)$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "variants"
+        ],
+        "properties": {
+          "variants": {
+            "type": "object",
+            "propertyNames": {
+              "$ref": "#/$defs/vid"
+            },
+            "additionalProperties": {
+              "$ref": "#/$defs/variant"
+            }
+          }
+        }
+      }
+    },
     "presets": {
-      "type": "object", "propertyNames": { "$ref": "#/$defs/vid" },
-      "additionalProperties": { "$ref": "#/$defs/preset" }
+      "type": "object",
+      "propertyNames": {
+        "$ref": "#/$defs/vid"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/preset"
+      }
     },
-    "default_preset": { "$ref": "#/$defs/vid" },
-
+    "default_preset": {
+      "$ref": "#/$defs/vid"
+    },
     "characters": {
-      "type": "array", "description": "Fichier multi-personnages : sous-arbres complets characters/<id>/",
-      "items": { "type": "object", "required": ["id", "name", "path"], "properties": { "id": { "type": "string" }, "name": { "type": "string" }, "path": { "$ref": "#/$defs/path" } } }
+      "type": "array",
+      "description": "Fichier multi-personnages : sous-arbres complets characters/<id>/",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "path"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "path": {
+            "$ref": "#/$defs/path"
+          }
+        }
+      }
     },
-    "default_character": { "type": "string" },
-
+    "default_character": {
+      "type": "string"
+    },
     "priorities": {
       "type": "object",
       "properties": {
-        "visual": { "$ref": "#/$defs/visualPriority" },
-        "voice": { "type": "array", "items": { "enum": ["samples", "described", "engines"] } },
-        "by_target": { "type": "object", "additionalProperties": { "type": "object", "properties": { "visual": { "$ref": "#/$defs/visualPriority" }, "voice": { "type": "array", "items": { "enum": ["samples", "described", "engines"] } } } } }
+        "visual": {
+          "$ref": "#/$defs/visualPriority"
+        },
+        "voice": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "samples",
+              "described",
+              "engines"
+            ]
+          }
+        },
+        "by_target": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "visual": {
+                "$ref": "#/$defs/visualPriority"
+              },
+              "voice": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "samples",
+                    "described",
+                    "engines"
+                  ]
+                }
+              }
+            }
+          }
+        }
       }
     },
-
-    "completeness": { "$ref": "#/$defs/completeness" },
-    "coherence": { "$ref": "#/$defs/coherence" },
-    "coverage": { "type": "object", "properties": { "elements": { "type": "array", "items": { "type": "string" } }, "variants": { "type": "integer" }, "presets": { "type": "integer" } } },
-
-    "mapping_vocabularies": { "type": "object", "additionalProperties": { "type": "string" } },
-    "assets": { "type": "array", "items": { "$ref": "#/$defs/asset" } },
-    "size_class": { "enum": ["lite", "standard", "full"] },
-    "container": { "type": "object", "properties": { "aligned": { "enum": [0, 4, 32, 64] }, "executableContent": { "enum": ["none", "sandboxed-wasm", "scripts"], "default": "none" } } },
-
+    "completeness": {
+      "$ref": "#/$defs/completeness"
+    },
+    "coherence": {
+      "$ref": "#/$defs/coherence"
+    },
+    "coverage": {
+      "type": "object",
+      "properties": {
+        "elements": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "variants": {
+          "type": "integer"
+        },
+        "presets": {
+          "type": "integer"
+        }
+      }
+    },
+    "mapping_vocabularies": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/asset"
+      }
+    },
+    "size_class": {
+      "enum": [
+        "lite",
+        "standard",
+        "full"
+      ]
+    },
+    "container": {
+      "type": "object",
+      "properties": {
+        "aligned": {
+          "enum": [
+            0,
+            4,
+            32,
+            64
+          ]
+        },
+        "executableContent": {
+          "enum": [
+            "none",
+            "sandboxed-wasm",
+            "scripts"
+          ],
+          "default": "none"
+        }
+      }
+    },
     "rights": {
-      "type": "object", "required": ["permissions"],
-      "properties": { "permissions": { "$ref": "#/$defs/permissions" }, "consent": { "oneOf": [ { "type": "null" }, { "$ref": "#/$defs/consent" } ] } }
+      "type": "object",
+      "required": [
+        "permissions"
+      ],
+      "properties": {
+        "permissions": {
+          "$ref": "#/$defs/permissions"
+        },
+        "consent": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/consent"
+            }
+          ]
+        }
+      }
     },
     "provenance": {
-      "type": "object", "required": ["created", "modified"],
+      "type": "object",
+      "required": [
+        "created",
+        "modified"
+      ],
       "properties": {
-        "created": { "type": "string", "format": "date-time" }, "modified": { "type": "string", "format": "date-time" },
-        "generator": { "type": "string" }, "source": { "type": "array", "items": { "type": "string" } },
-        "c2pa": { "oneOf": [ { "type": "null" }, { "$ref": "#/$defs/path" } ] },
-        "signatures": { "type": "array", "items": { "type": "object", "required": ["alg", "kid", "jws"], "properties": { "alg": { "type": "string" }, "kid": { "type": "string" }, "jws": { "type": "string" }, "canonicalization": { "const": "RFC8785" } } } }
+        "created": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "modified": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "generator": {
+          "type": "string"
+        },
+        "source": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "c2pa": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/path"
+            }
+          ]
+        },
+        "signatures": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "alg",
+              "kid",
+              "jws"
+            ],
+            "properties": {
+              "alg": {
+                "type": "string"
+              },
+              "kid": {
+                "type": "string"
+              },
+              "jws": {
+                "type": "string"
+              },
+              "canonicalization": {
+                "const": "RFC8785"
+              }
+            }
+          }
+        }
       }
     },
-    "metadata": { "type": "object" },
-    "extensions": { "type": "object" }
+    "metadata": {
+      "type": "object"
+    },
+    "extensions": {
+      "type": "object"
+    }
   },
-
   "allOf": [
-    { "if": { "properties": { "fictional": { "const": false } } },
-      "then": { "properties": { "rights": { "required": ["permissions", "consent"], "properties": { "consent": { "type": "object" } } } } } },
-    { "if": { "properties": { "age": { "properties": { "value": { "maximum": 17.999 } } } } },
-      "then": { "properties": { "rights": { "properties": { "permissions": { "properties": { "allowSexualUsage": { "const": false } } } } },
-                                "elements": { "not": { "required": ["intimate"] } } } } },
-    { "if": { "required": ["presets"], "properties": { "presets": { "minProperties": 1 } } }, "then": { "required": ["default_preset"] } }
+    {
+      "if": {
+        "properties": {
+          "fictional": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "rights": {
+            "required": [
+              "permissions",
+              "consent"
+            ],
+            "properties": {
+              "consent": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "age": {
+            "properties": {
+              "value": {
+                "maximum": 17.999
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "rights": {
+            "properties": {
+              "permissions": {
+                "properties": {
+                  "allowSexualUsage": {
+                    "const": false
+                  }
+                }
+              }
+            }
+          },
+          "elements": {
+            "not": {
+              "required": [
+                "intimate"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "presets"
+        ],
+        "properties": {
+          "presets": {
+            "minProperties": 1
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "default_preset"
+        ]
+      }
+    }
   ],
-
   "$defs": {
-    "path": { "type": "string", "pattern": "^(?!/)(?!.*\\.\\.)[A-Za-z0-9._/-]+$" },
-    "vid": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.-]{0,63}$" },
-    "aid": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.-]{0,63}$" },
-    "tag": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
-    "age": { "type": "object", "required": ["value", "unit", "basis"],
-      "properties": { "value": { "type": "number", "minimum": 0 }, "unit": { "enum": ["years", "months", "unknown-adult"] }, "basis": { "enum": ["declared", "apparent", "canonical"] } } },
-    "style": { "type": "string", "pattern": "^(photo-realistic|cinematic|3d-render|anime|manga|comic|cartoon|pixel-art|lego|clay|watercolor|oil-painting|ink-sketch|lineart|low-poly|voxel|chibi|other:[a-z0-9-]+)$" },
-    "visualPriority": { "type": "array", "items": { "enum": ["identity_weights", "images", "avatar", "mesh", "descriptive"] } },
-
+    "path": {
+      "type": "string",
+      "pattern": "^(?!/)(?!.*\\.\\.)[A-Za-z0-9._/-]+$"
+    },
+    "vid": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9.-]{0,63}$"
+    },
+    "aid": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9.-]{0,63}$"
+    },
+    "tag": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "age": {
+      "type": "object",
+      "required": [
+        "value",
+        "unit",
+        "basis"
+      ],
+      "properties": {
+        "value": {
+          "type": "number",
+          "minimum": 0
+        },
+        "unit": {
+          "enum": [
+            "years",
+            "months",
+            "unknown-adult"
+          ]
+        },
+        "basis": {
+          "enum": [
+            "declared",
+            "apparent",
+            "canonical"
+          ]
+        }
+      }
+    },
+    "style": {
+      "type": "string",
+      "pattern": "^(photo-realistic|cinematic|3d-render|anime|manga|comic|cartoon|pixel-art|lego|clay|watercolor|oil-painting|ink-sketch|lineart|low-poly|voxel|chibi|other:[a-z0-9-]+)$"
+    },
+    "visualPriority": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "identity_weights",
+          "images",
+          "avatar",
+          "mesh",
+          "descriptive"
+        ]
+      }
+    },
     "variant": {
       "type": "object",
       "properties": {
-        "label": { "type": "string", "maxLength": 120 },
-        "derives_from": { "$ref": "#/$defs/vid" },
-        "style": { "$ref": "#/$defs/style" },
-        "tags": { "type": "array", "items": { "$ref": "#/$defs/tag" } },
-        "images": { "type": "array", "items": { "$ref": "#/$defs/aid" } },
-        "derived": { "type": "array", "items": { "$ref": "#/$defs/aid" } },
-        "samples": { "type": "array", "items": { "$ref": "#/$defs/aid" } },
-        "clips": { "type": "array", "items": { "$ref": "#/$defs/aid" } },
-        "card": { "$ref": "#/$defs/path" }, "psyche": { "$ref": "#/$defs/path" }, "story": { "$ref": "#/$defs/path" }, "lorebook": { "$ref": "#/$defs/path" },
-        "params": { "$ref": "#/$defs/path" }, "code": { "$ref": "#/$defs/path" }, "spec": { "$ref": "#/$defs/path" },
-        "profile": { "$ref": "#/$defs/path" }, "vec": { "$ref": "#/$defs/path" }, "visemes": { "$ref": "#/$defs/path" },
-        "path": { "$ref": "#/$defs/path" }, "rig": { "type": "string" }, "skeleton": { "$ref": "#/$defs/path" },
-        "mesh": { "type": "object", "required": ["path", "topology"],
-          "properties": { "path": { "$ref": "#/$defs/path" },
-            "topology": { "enum": ["FLAME-2023", "MediaPipe-468", "ARKit", "ICT-FaceKit", "MetaHuman", "custom"] },
-            "blendshapes": { "enum": ["ARKit-52", "UnifiedExpressions-1.0", "VRM-presets", "none"] },
-            "textures": { "type": "array", "items": { "$ref": "#/$defs/aid" } }, "units": { "enum": ["m", "cm", "mm"] },
-            "watertight": { "type": "boolean" }, "landmarks": { "type": "string" } } },
-        "profiles": { "type": "object" },
-        "estimated": { "type": "boolean" }
+        "label": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "derives_from": {
+          "$ref": "#/$defs/vid"
+        },
+        "style": {
+          "$ref": "#/$defs/style"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/tag"
+          }
+        },
+        "images": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/aid"
+          }
+        },
+        "derived": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/aid"
+          }
+        },
+        "samples": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/aid"
+          }
+        },
+        "clips": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/aid"
+          }
+        },
+        "card": {
+          "$ref": "#/$defs/path"
+        },
+        "psyche": {
+          "$ref": "#/$defs/path"
+        },
+        "story": {
+          "$ref": "#/$defs/path"
+        },
+        "lorebook": {
+          "$ref": "#/$defs/path"
+        },
+        "params": {
+          "$ref": "#/$defs/path"
+        },
+        "code": {
+          "$ref": "#/$defs/path"
+        },
+        "spec": {
+          "$ref": "#/$defs/path"
+        },
+        "profile": {
+          "$ref": "#/$defs/path"
+        },
+        "vec": {
+          "$ref": "#/$defs/path"
+        },
+        "visemes": {
+          "$ref": "#/$defs/path"
+        },
+        "path": {
+          "$ref": "#/$defs/path"
+        },
+        "rig": {
+          "type": "string"
+        },
+        "skeleton": {
+          "$ref": "#/$defs/path"
+        },
+        "mesh": {
+          "type": "object",
+          "required": [
+            "path",
+            "topology"
+          ],
+          "properties": {
+            "path": {
+              "$ref": "#/$defs/path"
+            },
+            "topology": {
+              "enum": [
+                "FLAME-2023",
+                "MediaPipe-468",
+                "ARKit",
+                "ICT-FaceKit",
+                "MetaHuman",
+                "custom"
+              ]
+            },
+            "blendshapes": {
+              "enum": [
+                "ARKit-52",
+                "UnifiedExpressions-1.0",
+                "VRM-presets",
+                "none"
+              ]
+            },
+            "textures": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/aid"
+              }
+            },
+            "units": {
+              "enum": [
+                "m",
+                "cm",
+                "mm"
+              ]
+            },
+            "watertight": {
+              "type": "boolean"
+            },
+            "landmarks": {
+              "type": "string"
+            }
+          }
+        },
+        "profiles": {
+          "type": "object"
+        },
+        "estimated": {
+          "type": "boolean"
+        },
+        "style_tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/tag"
+          },
+          "maxItems": 8,
+          "description": "précisions libres complétant style (ex. anime-90s, ghibli-like)"
+        }
       }
     },
-
     "preset": {
-      "type": "object", "required": ["slots"],
+      "type": "object",
+      "required": [
+        "slots"
+      ],
       "properties": {
-        "label": { "type": "string", "maxLength": 120 },
-        "extends": { "$ref": "#/$defs/vid" },
-        "style": { "$ref": "#/$defs/style" },
-        "slots": { "type": "object", "propertyNames": { "pattern": "^(personality|face|hair|facial_hair|body|body_hair|intimate|outfit|accessories|identity_weights|voice|attitude|avatar|motion|x-[a-z0-9-]+)$" }, "additionalProperties": { "$ref": "#/$defs/vid" } },
-        "age_override": { "$ref": "#/$defs/age" },
-        "completeness": { "$ref": "#/$defs/completeness" },
-        "coherence": { "$ref": "#/$defs/coherence" },
-        "targets_ready": { "type": "array", "items": { "type": "string" } }
+        "label": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "extends": {
+          "$ref": "#/$defs/vid"
+        },
+        "style": {
+          "$ref": "#/$defs/style"
+        },
+        "slots": {
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^(personality|face|hair|facial_hair|body|body_hair|intimate|outfit|accessories|identity_weights|voice|attitude|avatar|motion|x-[a-z0-9-]+)$"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/vid"
+          }
+        },
+        "age_override": {
+          "$ref": "#/$defs/age"
+        },
+        "completeness": {
+          "$ref": "#/$defs/completeness"
+        },
+        "coherence": {
+          "$ref": "#/$defs/coherence"
+        },
+        "targets_ready": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "permissions_override": {
+          "type": "object",
+          "description": "Optionnel, rarement utilisé : surcharge partielle des permissions globales pour ce preset (jamais plus permissif qu'autorisé par l'âge du preset).",
+          "properties": {
+            "avatarPermission": {
+              "enum": [
+                "onlyAuthor",
+                "onlySeparatelyLicensedPerson",
+                "everyone"
+              ]
+            },
+            "commercialUsage": {
+              "enum": [
+                "personalNonProfit",
+                "personalProfit",
+                "corporation"
+              ]
+            },
+            "modification": {
+              "enum": [
+                "prohibited",
+                "allowModification",
+                "allowModificationRedistribution"
+              ]
+            },
+            "allowRedistribution": {
+              "type": "boolean"
+            },
+            "creditNotation": {
+              "enum": [
+                "required",
+                "unnecessary"
+              ]
+            },
+            "allowExcessivelyViolentUsage": {
+              "type": "boolean"
+            },
+            "allowSexualUsage": {
+              "type": "boolean"
+            },
+            "allowPoliticalOrReligiousUsage": {
+              "type": "boolean"
+            },
+            "allowAntisocialOrHateUsage": {
+              "type": "boolean"
+            },
+            "allowVoiceCloning": {
+              "type": "boolean"
+            },
+            "allowTraining": {
+              "enum": [
+                "none",
+                "finetune-private",
+                "finetune-public",
+                "any"
+              ]
+            },
+            "allowImpersonationOfRealPerson": {
+              "type": "boolean"
+            },
+            "ageRating": {
+              "type": "string"
+            },
+            "minUserAge": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "aiDisclosure": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        "style_tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/tag"
+          },
+          "maxItems": 8,
+          "description": "précisions libres complétant style (ex. anime-90s, ghibli-like)"
+        }
       }
     },
-
     "completeness": {
-      "type": "object", "required": ["score", "level", "layers"],
+      "type": "object",
+      "required": [
+        "score",
+        "level",
+        "layers"
+      ],
       "properties": {
-        "score": { "type": "integer", "minimum": 0, "maximum": 100 }, "level": { "enum": ["A", "B", "C", "D"] },
-        "layers": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0, "maximum": 100 } },
-        "targets_ready": { "type": "array", "items": { "enum": ["chat-text", "chat-voice", "video-realtime", "image-video-gen", "game-3d", "agent-persona", "print-3d", "archive"] } },
-        "computed_by": { "type": "string" }, "computed_at": { "type": "string", "format": "date-time" }
+        "score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "level": {
+          "enum": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ]
+        },
+        "layers": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          }
+        },
+        "targets_ready": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "chat-text",
+              "chat-voice",
+              "video-realtime",
+              "image-video-gen",
+              "game-3d",
+              "agent-persona",
+              "print-3d",
+              "archive"
+            ]
+          }
+        },
+        "computed_by": {
+          "type": "string"
+        },
+        "computed_at": {
+          "type": "string",
+          "format": "date-time"
+        }
       }
     },
     "coherence": {
-      "type": "object", "required": ["score", "computed_by"],
+      "type": "object",
+      "required": [
+        "score",
+        "computed_by"
+      ],
       "properties": {
-        "score": { "type": "integer", "minimum": 0, "maximum": 100 },
-        "method": { "enum": ["heuristic", "ai-api", "platform-native", "human"] },
-        "computed_by": { "type": "string" }, "computed_at": { "type": "string", "format": "date-time" },
-        "issues": { "type": "array", "items": { "type": "object", "required": ["severity", "message"], "properties": { "severity": { "enum": ["info", "minor", "major"] }, "elements": { "type": "array", "items": { "type": "string" } }, "message": { "type": "string" } } } }
+        "score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "method": {
+          "enum": [
+            "heuristic",
+            "ai-api",
+            "platform-native",
+            "human"
+          ]
+        },
+        "computed_by": {
+          "type": "string"
+        },
+        "computed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "severity": {
+                "enum": [
+                  "info",
+                  "minor",
+                  "major"
+                ]
+              },
+              "elements": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "message": {
+                "type": "string"
+              }
+            }
+          }
+        }
       }
     },
-
     "asset": {
       "type": "object",
-      "required": ["id", "role", "mediaType", "bytes", "sha256", "license"],
-      "anyOf": [ { "required": ["path"] }, { "required": ["uri"] } ],
+      "required": [
+        "id",
+        "role",
+        "mediaType",
+        "bytes",
+        "sha256",
+        "license"
+      ],
+      "anyOf": [
+        {
+          "required": [
+            "path"
+          ]
+        },
+        {
+          "required": [
+            "uri"
+          ]
+        }
+      ],
       "properties": {
-        "id": { "$ref": "#/$defs/aid" },
-        "path": { "$ref": "#/$defs/path" }, "uri": { "type": "string", "pattern": "^https://" },
-        "role": { "enum": ["view", "expression", "reference", "sheet", "voice-sample", "voice-consent", "engine-artifact", "weights", "avatar", "splat", "print", "motion-clip", "motion-reference", "mesh", "texture", "derived", "document", "other"] },
-        "mediaType": { "type": "string", "pattern": "^[a-z0-9!#$&^_.+-]+/[a-zA-Z0-9!#$&^_.+-]+$" },
-        "bytes": { "type": "integer", "minimum": 0 }, "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
-        "license": { "type": "string" }, "digitalSourceType": { "type": "string", "format": "uri" },
-        "generator": { "type": "string" }, "style": { "$ref": "#/$defs/style" },
-        "subject": { "enum": ["head", "body", "hands", "hair", "outfit", "detail"] },
-        "angle": { "enum": ["front", "left34", "left", "leftback34", "back", "rightback34", "right", "right34", "top", "low34"] },
-        "framing": { "enum": ["closeup", "head", "bust", "full"] },
-        "width": { "type": "integer" }, "height": { "type": "integer" },
-        "duration_s": { "type": "number", "minimum": 0 }, "fps": { "type": "number" },
-        "transcript": { "$ref": "#/$defs/path" }, "emotion": { "type": "string" },
-        "rig": { "type": "string" }, "labels": { "type": "array", "items": { "type": "string" } },
-        "method": { "enum": ["canny", "lineart", "lineart-anime", "softedge", "hed", "pidinet", "teed", "depth", "normal", "openpose", "segmentation", "other"] },
-        "source": { "$ref": "#/$defs/aid" }, "bits": { "enum": [1, 2, 4, 8] },
-        "base_model": { "type": "string" },
-        "regions": { "type": "array", "items": { "type": "object", "required": ["box", "subject", "angle"], "properties": {
-          "box": { "type": "array", "items": { "type": "number", "minimum": 0, "maximum": 1 }, "minItems": 4, "maxItems": 4 },
-          "subject": { "type": "string" }, "angle": { "type": "string" }, "framing": { "type": "string" }, "asset": { "$ref": "#/$defs/aid" },
-          "confidence": { "type": "number" }, "human_confirmed": { "type": "boolean" } } } },
-        "derived_from": { "$ref": "#/$defs/aid" }, "estimated": { "type": "boolean" }, "confidence": { "type": "number" }, "human_confirmed": { "type": "boolean" }
+        "id": {
+          "$ref": "#/$defs/aid"
+        },
+        "path": {
+          "$ref": "#/$defs/path"
+        },
+        "uri": {
+          "type": "string",
+          "pattern": "^https://"
+        },
+        "role": {
+          "enum": [
+            "view",
+            "expression",
+            "reference",
+            "sheet",
+            "voice-sample",
+            "voice-consent",
+            "engine-artifact",
+            "weights",
+            "avatar",
+            "splat",
+            "print",
+            "motion-clip",
+            "motion-reference",
+            "mesh",
+            "texture",
+            "derived",
+            "document",
+            "other"
+          ]
+        },
+        "mediaType": {
+          "type": "string",
+          "pattern": "^[a-z0-9!#$&^_.+-]+/[a-zA-Z0-9!#$&^_.+-]+$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "license": {
+          "type": "string"
+        },
+        "digitalSourceType": {
+          "type": "string",
+          "format": "uri"
+        },
+        "generator": {
+          "type": "string"
+        },
+        "style": {
+          "$ref": "#/$defs/style"
+        },
+        "subject": {
+          "enum": [
+            "head",
+            "body",
+            "hands",
+            "hair",
+            "outfit",
+            "detail"
+          ]
+        },
+        "angle": {
+          "enum": [
+            "front",
+            "left34",
+            "left",
+            "leftback34",
+            "back",
+            "rightback34",
+            "right",
+            "right34",
+            "top",
+            "low34"
+          ]
+        },
+        "framing": {
+          "enum": [
+            "closeup",
+            "head",
+            "bust",
+            "full"
+          ]
+        },
+        "width": {
+          "type": "integer"
+        },
+        "height": {
+          "type": "integer"
+        },
+        "duration_s": {
+          "type": "number",
+          "minimum": 0
+        },
+        "fps": {
+          "type": "number"
+        },
+        "transcript": {
+          "$ref": "#/$defs/path"
+        },
+        "emotion": {
+          "type": "string"
+        },
+        "rig": {
+          "type": "string"
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "method": {
+          "enum": [
+            "canny",
+            "lineart",
+            "lineart-anime",
+            "softedge",
+            "hed",
+            "pidinet",
+            "teed",
+            "depth",
+            "normal",
+            "openpose",
+            "segmentation",
+            "other"
+          ]
+        },
+        "source": {
+          "$ref": "#/$defs/aid"
+        },
+        "bits": {
+          "enum": [
+            1,
+            2,
+            4,
+            8
+          ]
+        },
+        "base_model": {
+          "type": "string"
+        },
+        "regions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "box",
+              "subject",
+              "angle"
+            ],
+            "properties": {
+              "box": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "minItems": 4,
+                "maxItems": 4
+              },
+              "subject": {
+                "type": "string"
+              },
+              "angle": {
+                "type": "string"
+              },
+              "framing": {
+                "type": "string"
+              },
+              "asset": {
+                "$ref": "#/$defs/aid"
+              },
+              "confidence": {
+                "type": "number"
+              },
+              "human_confirmed": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "derived_from": {
+          "$ref": "#/$defs/aid"
+        },
+        "estimated": {
+          "type": "boolean"
+        },
+        "confidence": {
+          "type": "number"
+        },
+        "human_confirmed": {
+          "type": "boolean"
+        },
+        "style_tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/tag"
+          },
+          "maxItems": 8,
+          "description": "précisions libres complétant style (ex. anime-90s, ghibli-like)"
+        }
       },
       "allOf": [
-        { "if": { "properties": { "role": { "const": "voice-sample" } } }, "then": { "required": ["duration_s", "transcript"] } },
-        { "if": { "properties": { "role": { "const": "derived" } } }, "then": { "required": ["method", "source"] } },
-        { "if": { "properties": { "role": { "const": "weights" } } }, "then": { "required": ["base_model"] } }
+        {
+          "if": {
+            "properties": {
+              "role": {
+                "const": "voice-sample"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "duration_s",
+              "transcript"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "role": {
+                "const": "derived"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "method",
+              "source"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "role": {
+                "const": "weights"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "base_model"
+            ]
+          }
+        }
       ]
     },
-
     "permissions": {
-      "type": "object", "required": ["avatarPermission", "commercialUsage", "modification", "aiDisclosure"],
+      "type": "object",
+      "required": [
+        "avatarPermission",
+        "commercialUsage",
+        "modification",
+        "aiDisclosure"
+      ],
       "properties": {
-        "avatarPermission": { "enum": ["onlyAuthor", "onlySeparatelyLicensedPerson", "everyone"] },
-        "commercialUsage": { "enum": ["personalNonProfit", "personalProfit", "corporation"] },
-        "modification": { "enum": ["prohibited", "allowModification", "allowModificationRedistribution"] },
-        "allowRedistribution": { "type": "boolean" }, "creditNotation": { "enum": ["required", "unnecessary"] },
-        "allowExcessivelyViolentUsage": { "type": "boolean" }, "allowSexualUsage": { "type": "boolean" },
-        "allowPoliticalOrReligiousUsage": { "type": "boolean" }, "allowAntisocialOrHateUsage": { "type": "boolean" },
-        "allowVoiceCloning": { "type": "boolean" }, "allowTraining": { "enum": ["none", "finetune-private", "finetune-public", "any"] },
-        "allowImpersonationOfRealPerson": { "type": "boolean" }, "ageRating": { "type": "string" }, "minUserAge": { "type": "integer", "minimum": 0 },
-        "aiDisclosure": { "type": "boolean" }
+        "avatarPermission": {
+          "enum": [
+            "onlyAuthor",
+            "onlySeparatelyLicensedPerson",
+            "everyone"
+          ]
+        },
+        "commercialUsage": {
+          "enum": [
+            "personalNonProfit",
+            "personalProfit",
+            "corporation"
+          ]
+        },
+        "modification": {
+          "enum": [
+            "prohibited",
+            "allowModification",
+            "allowModificationRedistribution"
+          ]
+        },
+        "allowRedistribution": {
+          "type": "boolean"
+        },
+        "creditNotation": {
+          "enum": [
+            "required",
+            "unnecessary"
+          ]
+        },
+        "allowExcessivelyViolentUsage": {
+          "type": "boolean"
+        },
+        "allowSexualUsage": {
+          "type": "boolean"
+        },
+        "allowPoliticalOrReligiousUsage": {
+          "type": "boolean"
+        },
+        "allowAntisocialOrHateUsage": {
+          "type": "boolean"
+        },
+        "allowVoiceCloning": {
+          "type": "boolean"
+        },
+        "allowTraining": {
+          "enum": [
+            "none",
+            "finetune-private",
+            "finetune-public",
+            "any"
+          ]
+        },
+        "allowImpersonationOfRealPerson": {
+          "type": "boolean"
+        },
+        "ageRating": {
+          "type": "string"
+        },
+        "minUserAge": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "aiDisclosure": {
+          "type": "boolean"
+        }
       }
     },
     "consent": {
-      "type": "object", "required": ["subject_is_real_person", "scope", "granted", "proof"],
+      "type": "object",
+      "required": [
+        "subject_is_real_person",
+        "scope",
+        "granted",
+        "proof"
+      ],
       "properties": {
-        "subject_is_real_person": { "type": "boolean" },
-        "subject": { "type": "object", "properties": { "name": { "type": "string" }, "contact_hash": { "type": "string" } } },
-        "scope": { "type": "array", "minItems": 1, "items": { "enum": ["voice-synthesis", "likeness-image", "likeness-3d", "conversational-persona", "motion-capture", "training"] } },
-        "excluded": { "type": "array", "items": { "type": "string" } },
-        "jurisdictions": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z]{2}$" } },
-        "granted": { "type": "string", "format": "date" }, "expires": { "type": "string", "format": "date" }, "revocation_uri": { "type": "string", "format": "uri" },
-        "proof": { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["type", "sha256"], "properties": {
-          "type": { "enum": ["verbal-statement-audio", "signed-document", "platform-attestation", "other"] },
-          "path": { "$ref": "#/$defs/path" }, "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }, "transcript": { "$ref": "#/$defs/path" } } } }
+        "subject_is_real_person": {
+          "type": "boolean"
+        },
+        "subject": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "contact_hash": {
+              "type": "string"
+            }
+          }
+        },
+        "scope": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "enum": [
+              "voice-synthesis",
+              "likeness-image",
+              "likeness-3d",
+              "conversational-persona",
+              "motion-capture",
+              "training"
+            ]
+          }
+        },
+        "excluded": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "jurisdictions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$"
+          }
+        },
+        "granted": {
+          "type": "string",
+          "format": "date"
+        },
+        "expires": {
+          "type": "string",
+          "format": "date"
+        },
+        "revocation_uri": {
+          "type": "string",
+          "format": "uri"
+        },
+        "proof": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "sha256"
+            ],
+            "properties": {
+              "type": {
+                "enum": [
+                  "verbal-statement-audio",
+                  "signed-document",
+                  "platform-attestation",
+                  "other"
+                ]
+              },
+              "path": {
+                "$ref": "#/$defs/path"
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "transcript": {
+                "$ref": "#/$defs/path"
+              }
+            }
+          }
+        }
       }
     }
   }
