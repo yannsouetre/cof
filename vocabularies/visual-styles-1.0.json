@@ -1,0 +1,14 @@
+{ "vocabulary": "visual-styles", "version": "1.0", "license": "CC0-1.0",
+  "values": {
+    "photo-realistic": { "fr": "photo-réaliste", "en": "photo-realistic" },
+    "cinematic": { "fr": "cinématographique", "en": "cinematic" },
+    "3d-render": { "fr": "rendu 3D", "en": "3D render" },
+    "anime": { "fr": "anime", "en": "anime" }, "manga": { "fr": "manga", "en": "manga" },
+    "comic": { "fr": "comics", "en": "comic" }, "cartoon": { "fr": "cartoon", "en": "cartoon" },
+    "pixel-art": { "fr": "pixel art", "en": "pixel art" }, "lego": { "fr": "briques (type Lego)", "en": "brick (Lego-like)" },
+    "clay": { "fr": "pâte à modeler / claymation", "en": "clay" }, "watercolor": { "fr": "aquarelle", "en": "watercolor" },
+    "oil-painting": { "fr": "peinture à l'huile", "en": "oil painting" }, "ink-sketch": { "fr": "croquis à l'encre", "en": "ink sketch" },
+    "lineart": { "fr": "dessin au trait", "en": "line art" }, "low-poly": { "fr": "low-poly", "en": "low-poly" },
+    "voxel": { "fr": "voxel", "en": "voxel" }, "chibi": { "fr": "chibi", "en": "chibi" }
+  },
+  "extension": "other:<slug> pour un style non listé" }

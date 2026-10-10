@@ -13,8 +13,10 @@ cof import carte.png -o perso/ --age 30 --lang fr --keep-png   # carte PNG CCv2/
 cof export lea.cof --format png -o lea.png                     # → PNG avec chunks chara + ccv3
 cof export lea.cof --format soul -o ./agent/                   # → SOUL.md + IDENTITY.md (OpenClaw)
 cof export lea.cof --format card -o lea.card.json
+cof export lea.cof --format soul --preset young -o ./agent/        # export depuis un autre preset
+cof migrate dossier-v0.2/                                      # v0.2 → v0.3 (elements / presets)
 ```
 
-Ce que `validate` vérifie : schéma du manifeste, sentinelle `mimetype`, chemins sûrs (pas de `..`, pas de symlink), absence de chiffrement, taux de compression, hashes SHA-256 et tailles des assets, cohérence âge ↔ corps, bloc intime interdit si mineur, consentement si personne réelle, transcriptions des échantillons de voix, contenu exécutable non déclaré, renvois `expresses` vers `psyche.json`, doublons textuels, budgets de tokens ; puis recalcule le KPI de complétude et les cibles prêtes.
+Ce que `validate` vérifie (v0.3) : résolution des presets (slots, `extends`, `derives_from`), identifiants d'assets, dérivés hors des images de base, poids avec modèle de base, règles d'âge sur l'**âge le plus bas** (manifeste et `age_override`), styles mélangés dans un preset ; schéma du manifeste, sentinelle `mimetype`, chemins sûrs (pas de `..`, pas de symlink), absence de chiffrement, taux de compression, hashes SHA-256 et tailles des assets, cohérence âge ↔ corps, bloc intime interdit si mineur, consentement si personne réelle, transcriptions des échantillons de voix, contenu exécutable non déclaré, renvois `expresses` vers `psyche.json`, doublons textuels, budgets de tokens ; puis recalcule le KPI de complétude et les cibles prêtes.
 
 Tests : `pytest` (dossier `cli/`). Tokens : installer `tiktoken` pour un comptage exact (sinon heuristique par caractères).

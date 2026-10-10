@@ -96,68 +96,73 @@ def ulid_like() -> str:
     return out + tail
 
 
+def default_permissions() -> dict:
+    return {"avatarPermission": "onlyAuthor", "commercialUsage": "personalNonProfit", "modification": "prohibited",
+            "allowRedistribution": False, "creditNotation": "required",
+            "allowExcessivelyViolentUsage": False, "allowSexualUsage": False, "allowPoliticalOrReligiousUsage": False,
+            "allowAntisocialOrHateUsage": False, "allowVoiceCloning": False, "allowTraining": "none",
+            "allowImpersonationOfRealPerson": False, "aiDisclosure": True}
+
+
 def card_to_cof_dir(card: dict, dest: Path, *, png: bytes | None = None, age: int | None = None,
                     fictional: bool = True, language: str = "en") -> Path:
+    """Character Card (V2/V3) → v0.3 directory: elements.personality.p1 (+ face.f1 from the PNG) + preset 'default'."""
     data = card.get("data", {})
     dest.mkdir(parents=True, exist_ok=True)
-    (dest / "character").mkdir(exist_ok=True)
+    pdir = dest / "elements" / "personality" / "p1"
+    pdir.mkdir(parents=True, exist_ok=True)
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     v3 = {**card, "spec": "chara_card_v3", "spec_version": "3.0"}
     v3.setdefault("data", {}).setdefault("extensions", {})
-    (dest / "character" / "card.json").write_text(json.dumps(v3, ensure_ascii=False, indent=2) + "\n", "utf-8")
+    (pdir / "card.json").write_text(json.dumps(v3, ensure_ascii=False, indent=2) + "\n", "utf-8")
 
+    elements = {"personality": {"variants": {"p1": {"label": data.get("name") or "Personnalité", "card": "elements/personality/p1/card.json"}}}}
+    slots = {"personality": "p1"}
     assets = []
-    sections = {"character": "character/card.json"}
     if png:
-        (dest / "appearance" / "views").mkdir(parents=True, exist_ok=True)
-        (dest / "appearance" / "views" / "head.front.png").write_bytes(png)
-        assets.append({"path": "appearance/views/head.front.png", "role": "view", "subject": "head", "angle": "front",
-                       "mediaType": "image/png", "bytes": 0, "sha256": "0" * 64, "license": "LicenseRef-Unknown"})
+        fdir = dest / "elements" / "face" / "f1"
+        fdir.mkdir(parents=True, exist_ok=True)
+        (fdir / "head.front.png").write_bytes(png)
+        assets.append({"id": "a-face-f1-front", "path": "elements/face/f1/head.front.png", "role": "view", "subject": "head", "angle": "front",
+                       "framing": "head", "mediaType": "image/png", "bytes": 0, "sha256": "0" * 64, "license": "LicenseRef-Unknown"})
+        elements["face"] = {"variants": {"f1": {"label": "Visage (vignette de la carte)", "images": ["a-face-f1-front"]}}}
+        slots["face"] = "f1"
 
+    manual = [re.sub(r"[^a-z0-9-]", "-", t.lower()).strip("-") for t in (data.get("tags") or []) if isinstance(t, str)]
     manifest = {
-        "cof": "0.2",
-        "id": ulid_like(),
-        "name": data.get("name") or "Unnamed",
-        "nickname": data.get("nickname") or "",
+        "cof": "0.3", "id": ulid_like(),
+        "name": data.get("name") or "Unnamed", "nickname": data.get("nickname") or "",
         "age": {"value": age if age is not None else 18, "unit": "years", "basis": "declared" if age is not None else "canonical"},
-        "languages": [language],
-        "summary": (data.get("description") or "")[:300],
-        "fictional": fictional,
+        "languages": [language], "summary": (data.get("description") or "")[:300], "fictional": fictional,
         "morphology": {"class": "humanoid", "species": "human"},
-        "tags": {"auto": ["humanoid", "imported-ccv3"], "manual": [t for t in (data.get("tags") or []) if isinstance(t, str)][:30],
-                 "content": ["none"], "ip": {"original": True, "franchise": None, "based_on": None}},
-        "sections": sections,
-        "profiles": {},
-        "mapping_vocabularies": {},
-        "assets": assets,
-        "size_class": "lite",
-        "container": {"aligned": 0, "executableContent": "none"},
-        "rights": {"permissions": {
-            "avatarPermission": "onlyAuthor", "commercialUsage": "personalNonProfit", "modification": "prohibited",
-            "allowRedistribution": False, "creditNotation": "required",
-            "allowExcessivelyViolentUsage": False, "allowSexualUsage": False, "allowPoliticalOrReligiousUsage": False,
-            "allowAntisocialOrHateUsage": False, "allowVoiceCloning": False, "allowTraining": "none",
-            "allowImpersonationOfRealPerson": False, "aiDisclosure": True}, "consent": None},
-        "provenance": {"created": now, "modified": now, "generator": "cof-cli", "source": list(data.get("source") or []),
-                       "c2pa": None, "signatures": []},
+        "tags": {"auto": ["humanoid", "imported-ccv3"], "manual": [t for t in manual if t][:30], "content": ["none"],
+                 "ip": {"original": True, "franchise": None, "based_on": None}},
+        "elements": elements,
+        "presets": {"default": {"label": "Défaut", "slots": slots}},
+        "default_preset": "default",
+        "priorities": {"visual": ["identity_weights", "images", "avatar", "descriptive"], "voice": ["samples", "described"]},
+        "mapping_vocabularies": {}, "assets": assets,
+        "size_class": "lite", "container": {"aligned": 0, "executableContent": "none"},
+        "rights": {"permissions": default_permissions(), "consent": None},
+        "provenance": {"created": now, "modified": now, "generator": "cof-cli", "source": list(data.get("source") or []), "c2pa": None, "signatures": []},
         "metadata": {"@context": {"dc": "http://purl.org/dc/elements/1.1/"}, "dc:creator": [data.get("creator") or ""]},
         "extensions": {},
     }
-    # sanitise manual tags to the allowed pattern
-    manifest["tags"]["manual"] = [re.sub(r"[^a-z0-9-]", "-", t.lower()).strip("-") for t in manifest["tags"]["manual"]]
-    manifest["tags"]["manual"] = [t for t in manifest["tags"]["manual"] if t]
     (dest / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", "utf-8")
     return dest
 
 
 # ---------- COF directory → SOUL.md / IDENTITY.md ----------
 
-def export_soul(src: Path) -> tuple[str, str]:
+def export_soul(src: Path, preset: str | None = None) -> tuple[str, str]:
+    from .model import asset_index, default_preset_id, resolved
     manifest = json.loads((src / "manifest.json").read_text("utf-8"))
-    sec = manifest.get("sections", {})
-    data = json.loads((src / sec["character"]).read_text("utf-8")).get("data", {}) if sec.get("character") else {}
-    psyche = json.loads((src / sec["psyche"]).read_text("utf-8")) if sec.get("psyche") and (src / sec["psyche"]).is_file() else {}
+    r = resolved(manifest, preset or default_preset_id(manifest))
+    p = r.get("personality") or {}
+    data = json.loads((src / p["card"]).read_text("utf-8")).get("data", {}) if p.get("card") else {}
+    psyche = json.loads((src / p["psyche"]).read_text("utf-8")) if p.get("psyche") and (src / p["psyche"]).is_file() else {}
+    A = asset_index(manifest)
 
     lines = [f"# SOUL.md — {manifest.get('name')}", ""]
     if data.get("personality"):
@@ -178,7 +183,7 @@ def export_soul(src: Path) -> tuple[str, str]:
         lines += ["## Disclosure", "I am a synthetic character. I say so when asked.", ""]
     soul = "\n".join(lines)[:20000]
 
-    avatar = next((a["path"] for a in manifest.get("assets", []) if a.get("role") == "view" and a.get("subject") == "head"), "")
+    avatar = manifest.get("thumbnail") or next((A[i]["path"] for i in (r.get("face") or {}).get("images", []) if i in A and A[i].get("subject") == "head"), "")
     identity = "\n".join([
         f"- Name: {manifest.get('name')}",
         f"- Creature: {manifest.get('morphology', {}).get('species', 'human')}",
