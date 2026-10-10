@@ -14,7 +14,7 @@ from jsonschema import Draft202012Validator
 from . import SPEC_VERSION, __version__
 from .completeness import compute as compute_completeness
 from .container import ContainerError, inspect, read_manifest, unpack, verify_hashes
-from .model import CATEGORIES, KINDS, MULTI_KINDS, asset_index, default_preset_id, first, lowest_age, preset_age, preset_identity, preset_ids, region_conflicts, resolve_preset_slots, resolve_variant, resolved, single_kind_violations, by_kind
+from .model import ADULT, implicit_resolved, AGELESS_KINDS, AGE_CATEGORIES, CATEGORIES, KINDS, MULTI_KINDS, _age_value, age_required, asset_index, default_preset_id, first, lowest_age, preset_age, preset_identity, preset_ids, region_conflicts, resolve_preset_slots, resolve_variant, resolved, single_kind_violations, by_kind
 from .tokens import count as count_tokens, tokenizer_name
 
 PROMPT_FIELDS = ("description", "personality", "scenario", "first_mes", "mes_example", "system_prompt", "post_history_instructions")
@@ -101,8 +101,8 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
     except Exception as e:
         rep.errors.append(f"manifest.json illisible : {e}")
         return {}
-    if str(manifest.get("cof", "")) in ("0.2", "0.3"):
-        rep.errors.append(f"manifest v{manifest.get('cof')} : lancer `cof migrate` (structure v0.4 attendue)")
+    if str(manifest.get("cof", "")) in ("0.2", "0.3", "0.4"):
+        rep.errors.append(f"manifest v{manifest.get('cof')} : lancer `cof migrate` (structure v0.5 attendue)")
         return manifest
     validate_manifest(manifest, rep)
     if rep.errors:
@@ -119,7 +119,7 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
         if di not in ids:
             rep.errors.append(f"default_identity inconnu : {di}")
         else:
-            for k in ("name", "age", "fictional", "morphology"):
+            for k in ("name", "fictional", "morphology"):
                 if json.dumps(ids[di].get(k), sort_keys=True) != json.dumps(manifest.get(k), sort_keys=True):
                     rep.errors.append(f"la racine doit refléter l'identité par défaut ({k} diffère)")
             for iid, ident in ids.items():
@@ -182,6 +182,7 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
 
     # presets: slots resolvable, extends known, identity known, kind/region rules
     pids = preset_ids(manifest)
+    perms_all = (manifest.get("rights", {}) or {}).get("permissions", {}) or {}
     for pid in pids:
         p = manifest["presets"][pid]
         if p.get("extends") and p["extends"] not in manifest["presets"]:
@@ -203,14 +204,9 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
             rep.errors += [f"presets.{pid} : {x}" for x in single_kind_violations(res)]
         if rules.get("exclusive_regions", True):
             rep.warnings += [f"presets.{pid} : {x}" for x in region_conflicts(res)]
-        # per-preset age: intimate forbidden, estimated body forbidden
-        pa = preset_age(manifest, pid)
-        if pa is not None and pa < 18:
-            if by_kind(res, "appearance", "intimate"):
-                rep.errors.append(f"presets.{pid} : élément intime interdit (âge du preset {pa})")
-            for b in by_kind(res, "appearance", "body"):
-                if b.get("estimated"):
-                    rep.errors.append(f"presets.{pid} : morphologie estimée interdite (âge {pa})")
+        _age_rules(manifest, pid, res, perms_all, rep)
+    if not pids:
+        _age_rules(manifest, None, implicit_resolved(manifest), perms_all, rep)
     # intimate ⇒ tags.content must flag it (opt-in element, never hidden)
     has_intimate = any((v or {}).get("kind") == "intimate" for v in ((elements.get("appearance") or {}).get("variants", {}) or {}).values())
     content = set(((manifest.get("tags") or {}).get("content") or []))
@@ -230,31 +226,15 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                 if (cat, vid) not in used:
                     rep.warnings.append(f"elements.{cat}.{vid} n'est référencée par aucun preset")
 
-    # age rules on the lowest age (age is optional everywhere; no age at all ⇒ no sensitive usage)
-    la = lowest_age(manifest)
-    perms = (manifest.get("rights", {}) or {}).get("permissions", {} ) or {}
-    if la is None:
-        if perms.get("allowSexualUsage"):
-            rep.errors.append("allowSexualUsage refusé : aucun âge déclaré (identité, preset ou déclinaison) — déclarez-en un")
-        if has_intimate:
-            rep.errors.append("déclinaison intime refusée : aucun âge déclaré — déclarez-en un")
-    if la is not None and la < 18:
-        if perms.get("allowSexualUsage"):
-            rep.errors.append("allowSexualUsage interdit : âge le plus bas < 18")
-        for vid, v in ((elements.get("appearance") or {}).get("variants", {}) or {}).items():
-            rv = resolve_variant(manifest, "appearance", vid) or {}
-            if rv.get("kind") == "intimate" and not ids:
-                rep.errors.append(f"appearance.{vid} : élément intime interdit (âge le plus bas < 18)")
-    # per-preset permission overrides: never more permissive than the preset's own age allows
-    for pid in pids:
-        p = manifest["presets"][pid]
-        ov = p.get("permissions_override") or {}
-        if not ov:
-            continue
-        page = preset_age(manifest, pid)
-        eff = {**perms, **ov}
-        if page is not None and page < 18 and eff.get("allowSexualUsage"):
-            rep.errors.append(f"presets.{pid}.permissions_override : allowSexualUsage interdit (âge du preset {page})")
+    # intimate variants: age mandatory and ≥ 18, wherever they are (even outside any preset)
+    for vid, v in ((elements.get("appearance") or {}).get("variants", {}) or {}).items():
+        rv = resolve_variant(manifest, "appearance", vid) or {}
+        if rv.get("kind") == "intimate":
+            x = _age_value(rv.get("age"))
+            if x is None:
+                rep.errors.append(f"appearance.{vid} (intimate) : âge obligatoire (≥ {ADULT})")
+            elif x < ADULT:
+                rep.errors.append(f"appearance.{vid} (intimate) : âge {x} < {ADULT} — interdit")
     if manifest.get("fictional") is False and not (manifest.get("rights", {}) or {}).get("consent"):
         rep.errors.append("personnage non fictif sans rights.consent")
 
@@ -371,3 +351,26 @@ def validate_cof(cof: Path) -> Report:
     if manifest.get("cof") != SPEC_VERSION:
         rep.warnings.append(f"version de format {manifest.get('cof')} (outil : {SPEC_VERSION})")
     return rep
+
+
+def _age_rules(manifest: dict, pid: str | None, res: dict, perms_all: dict, rep: "Report") -> None:
+    """v0.5: age lives on the representation. Required on face/body/sheet/reference (human form) and intimate;
+    a preset with any element < 18 admits no intimate, no estimated body, no effective allowSexualUsage."""
+    label = f"presets.{pid}" if pid else "preset implicite"
+    p = (manifest.get("presets", {}) or {}).get(pid or "", {}) or {}
+    pa = preset_age(manifest, pid)
+    for cat in AGE_CATEGORIES:
+        for v in res.get(cat, []):
+            if v.get("kind") in AGELESS_KINDS:
+                continue
+            if age_required(manifest, pid, v) and _age_value(v.get("age")) is None:
+                rep.errors.append(f"{label} : {cat}.{v['_id']} ({v['kind']}) doit déclarer un âge (basis 'apparent' si l'âge canonique est inconnu)")
+    eff_perms = {**perms_all, **(p.get("permissions_override") or {})}
+    if pa is not None and pa < ADULT:
+        if by_kind(res, "appearance", "intimate"):
+            rep.errors.append(f"{label} : déclinaison intime combinée avec un élément de moins de {ADULT} ans (âge du preset {pa}) — interdit")
+        for b in by_kind(res, "appearance", "body"):
+            if b.get("estimated"):
+                rep.errors.append(f"{label} : morphologie estimée interdite (âge {pa})")
+        if eff_perms.get("allowSexualUsage"):
+            rep.errors.append(f"{label} : allowSexualUsage effectif interdit (âge du preset {pa}) — mettez-le à false au niveau du fichier ou dans permissions_override")

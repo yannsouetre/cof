@@ -7,18 +7,19 @@ Le builder peut déléguer le **contrôle de cohérence** d'un preset à une IA 
 ## Dossier de preset (`cof coherence-bundle <dir> --preset <p>`)
 ```jsonc
 {
-  "cof": "0.3", "character": { "name": "…", "age": { "value": 34 }, "fictional": true, "morphology": { "class": "humanoid", "species": "human" }, "languages": ["fr"] },
+  "cof": "0.5", "character": { "name": "…", "age": { "value": 34 },   // âge du preset (plus bas de ses déclinaisons), null si inconnu "fictional": true, "morphology": { "class": "humanoid", "species": "human" }, "languages": ["fr"] },
   "preset": { "id": "default", "label": "…", "style": "photo-realistic", "age_override": null },
   "elements": {
     "personality": { "summary": "…", "gender_presentation_declared": "feminine", "age_in_text": 34 },
-    "face":  { "style": "photo-realistic", "thumbnails": ["data:image/jpeg;base64,…"] },
+    "face":  { "style": "photo-realistic", "age_declared": 34, "age_basis": "apparent", "thumbnails": ["data:image/jpeg;base64,…"] },
+    "intimate": { "age_declared": 34 },                         // présent ⇒ contrôle age-legality obligatoire
     "body":  { "style": "photo-realistic", "thumbnails": ["…"] },
     "hair":  { "code": { "length": 5, "color_base_hex": "#4d2f27" } },
     "outfit":{ "prompt": "khaki cotton utility jacket…" },
     "voice": { "canonical": { "gender_presentation": "feminine", "age_perceived": "30s", "accent": "fr-FR" }, "sample_languages": ["fr"] },
     "identity_weights": { "base_model": "FLUX.1-dev", "covers": ["face", "hair", "body"], "trigger_words": ["…"] }
   },
-  "checks_requested": ["gender", "age", "species", "style", "language", "weights-vs-images"]
+  "checks_requested": ["gender", "age", "species", "style", "language", "weights-vs-images", "clothing", "age-legality"]
 }
 ```
 
@@ -29,4 +30,7 @@ Le builder peut déléguer le **contrôle de cohérence** d'un preset à une IA 
     { "severity": "major", "elements": ["voice", "face"], "check": "gender", "message": "La voix est perçue masculine, le visage et le texte sont féminins." },
     { "severity": "minor", "elements": ["outfit"], "check": "style", "message": "Tenue décrite en style manga dans un preset photo-réaliste." } ] }
 ```
-Le builder écrit le résultat dans `presets.<p>.coherence` avec `method: "ai-api" | "platform-native"`, `computed_by` (nom du modèle), `computed_at`. Les contrôles **heuristiques locaux** (sans IA) produisent le même format avec `method: "heuristic"`. Un score bas n'invalide jamais le fichier.
+### Contrôle `age-legality` (sévérité `illegal`)
+Si le dossier contient une déclinaison `intimate`, le contrôleur **doit** estimer l'âge apparent de chaque image de visage et de corps. Si une image paraît clairement mineure (< 18, avec marge) alors que l'âge déclaré est majeur, il renvoie `{ "severity": "illegal", "check": "age-legality", "elements": [...], "message": "..." }`. Le builder affiche cette issue en rouge comme **combinaison illégale** et refuse de construire le fichier tant qu'elle subsiste ; un lecteur qui reçoit un fichier portant une telle issue dans `presets.<p>.coherence` doit le traiter comme invalide. Les sévérités `info | minor | major` restent non bloquantes.
+
+Le builder écrit le résultat dans `presets.<p>.coherence` avec `method: "ai-api" | "platform-native"`, `computed_by` (nom du modèle), `computed_at`. Les contrôles **heuristiques locaux** (sans IA) produisent le même format avec `method: "heuristic"`. Un score bas n'invalide jamais le fichier ; seule une issue `illegal` bloque.

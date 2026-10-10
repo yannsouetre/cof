@@ -52,12 +52,12 @@ def test_unpack_matches(workdir, tmp_path):
 
 def test_minor_with_sexual_permission_is_rejected(workdir):
     m = json.loads((workdir / "manifest.json").read_text("utf-8"))
-    m["age"]["value"] = 15
+    m["presets"]["default"]["age_override"] = {"value": 15, "unit": "years", "basis": "declared"}
     m["rights"]["permissions"]["allowSexualUsage"] = True
     (workdir / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report()
     validate_dir(workdir, rep)
-    assert not rep.ok
+    assert not rep.ok and any("allowSexualUsage effectif" in e for e in rep.errors), rep.errors
 
 
 def test_real_person_needs_consent(workdir):
@@ -104,22 +104,49 @@ MODULAR = ROOT / "spec" / "examples" / "07-lea-modulaire"
 
 
 def test_presets_resolve_and_inherit():
-    from cof_cli.model import resolved, lowest_age
+    from cof_cli.model import resolved, lowest_age, preset_age
     m = json.loads((MODULAR / "manifest.json").read_text("utf-8"))
     d = resolved(m, "default"); y = resolved(m, "young")
     assert d["personality"][0]["_id"] == "p1" and y["personality"][0]["_id"] == "p2"
-    assert "f1" in [v["_id"] for v in y["appearance"]]      # inherited via extends
+    assert "appearance" not in y                            # 'young' is text-only (an explicit empty list overrides the inherited one)
     assert y["personality"][0].get("psyche")               # inherited via derives_from
-    assert lowest_age(m) == 14
+    assert lowest_age(m) == 14 and preset_age(m, "young") == 14 and preset_age(m, "default") == 34
 
 
-def test_lowest_age_blocks_sexual_permission(tmp_path):
+def test_preset_level_age_rules(tmp_path):
+    """v0.5: a file may hold an adult preset WITH intimate and a minor preset WITHOUT; the minor preset refuses
+    intimate, estimated body and effective allowSexualUsage; the adult preset may override allowSexualUsage to true."""
     d = tmp_path / "m"; shutil.copytree(MODULAR, d)
     m = json.loads((d / "manifest.json").read_text("utf-8"))
-    m["rights"]["permissions"]["allowSexualUsage"] = True          # manifest age 34, but preset 'young' is 14
+    V = m["elements"]["appearance"]["variants"]
+    V["i1"] = {"kind": "intimate", "label": "Intime", "age": {"value": 34}}
+    m["tags"]["content"] = ["nudity"]
+    m["presets"]["default"]["slots"]["appearance"].append("i1")
+    m["presets"]["default"]["permissions_override"] = {"allowSexualUsage": True}      # adult preset: fine
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep)
-    assert any("âge le plus bas" in e for e in rep.errors)
+    assert rep.ok, rep.errors
+    # same intimate combined in the 14-year-old preset → refused
+    m["presets"]["young"]["slots"]["appearance"] = ["i1"]
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep)
+    assert any("presets.young" in e and "intime" in e for e in rep.errors), rep.errors
+    # file-level allowSexualUsage true while a minor preset exists → refused for that preset
+    m["presets"]["young"]["slots"]["appearance"] = []
+    m["rights"]["permissions"]["allowSexualUsage"] = True
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep)
+    assert any("presets.young" in e and "allowSexualUsage" in e for e in rep.errors), rep.errors
+    # intimate itself under 18 or without age → refused wherever it is
+    m["rights"]["permissions"]["allowSexualUsage"] = False
+    V["i1"]["age"] = {"value": 17}
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep)
+    assert any("(intimate) : âge 17" in e for e in rep.errors), rep.errors
+    del V["i1"]["age"]
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep)
+    assert any("(intimate) : âge obligatoire" in e for e in rep.errors), rep.errors
 
 
 def test_unknown_slot_variant_is_error(tmp_path):
@@ -201,30 +228,29 @@ def test_libraries_and_attitude_in_motion(tmp_path):
     assert rep.info["completeness"]["layers"]["motion"] >= 30
 
 
-def test_age_optional_and_variant_ages(tmp_path):
-    """Age is optional everywhere; the lowest age anywhere (incl. morphological variants) drives the rules;
-    with no age at all, sensitive usages are refused."""
+def test_age_on_representation(tmp_path):
+    """v0.5: no age on the identity; face/body/sheet/reference must carry one for human-form morphologies;
+    a face declined at 14 makes its preset a minor preset; a text-only preset may have no age at all."""
     from cof_cli.model import lowest_age, preset_age
     d = tmp_path / "m"; shutil.copytree(EXAMPLE, d)
     m = json.loads((d / "manifest.json").read_text("utf-8"))
-    del m["age"]
-    for ident in (m.get("identities") or {}).values():
-        ident.pop("age", None)
+    assert "age" not in m and all("age" not in i for i in m.get("identities", {}).values())
+    m["presets"]["default"].pop("age_override", None)
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep)
-    assert rep.ok, rep.errors                                   # no age, no sensitive usage → fine
-    assert lowest_age(m) is None
-    m["rights"]["permissions"]["allowSexualUsage"] = True
+    assert rep.ok and preset_age(m, "default") is None, rep.errors     # text only, no age: valid
+    m["elements"]["appearance"] = {"variants": {"f-young": {"kind": "face", "label": "À 14 ans", "age": {"value": 14}},
+                                                "f-noage": {"kind": "face", "label": "Sans âge"}}}
+    m["presets"]["default"]["slots"]["appearance"] = ["f-young"]
+    m["presets"]["p2"] = {"label": "p2", "slots": {"personality": ["p1"], "appearance": ["f-noage"]}}
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep)
-    assert any("aucun âge" in e for e in rep.errors), rep.errors
-    # a face variant declined at 14 lowers the file age
-    m["rights"]["permissions"]["allowSexualUsage"] = False
-    m["elements"].setdefault("appearance", {"variants": {}})["variants"]["f-young"] = {"kind": "face", "label": "À 14 ans", "age": {"value": 14}}
-    m["presets"] = {"default": {"label": "d", "slots": {"personality": ["p1"], "appearance": ["f-young"]}}}; m["default_preset"] = "default"
-    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     assert lowest_age(m) == 14 and preset_age(m, "default") == 14
-    m["rights"]["permissions"]["allowSexualUsage"] = True
+    assert any("f-noage (face) doit déclarer un âge" in e for e in rep.errors), rep.errors
+    # a mechanical morphology does not need ages on faces
+    m["morphology"] = {"class": "mechanical", "species": "robot"}
+    for i in m.get("identities", {}).values():
+        i["morphology"] = m["morphology"]
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep)
-    assert any("âge le plus bas" in e for e in rep.errors), rep.errors
+    assert not any("doit déclarer un âge" in e for e in rep.errors), rep.errors

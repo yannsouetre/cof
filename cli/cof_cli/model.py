@@ -1,4 +1,4 @@
-"""Manifest model helpers (v0.4): categories → variants (with `kind`), presets with multi-slots, identities, regions."""
+"""Manifest model helpers (v0.5): categories → variants (with `kind`), presets with multi-slots, identities, regions."""
 from __future__ import annotations
 
 import json
@@ -121,12 +121,15 @@ def preset_identity(manifest: dict, pid: str | None) -> dict:
     ids = manifest.get("identities") or {}
     if iid and iid in ids:
         return ids[iid]
-    return {k: manifest.get(k) for k in ("name", "nickname", "age", "summary", "fictional", "morphology")}
+    return {k: manifest.get(k) for k in ("name", "nickname", "summary", "fictional", "morphology")}
 
 
-# categories whose variants may carry their own `age` (a character declined at several ages of its life)
-AGE_CATEGORIES = {"appearance", "volume3d", "identity_weights"}
-AGELESS_KINDS = {"clothing", "accessory", "feature", "description"}
+# Age is a property of the REPRESENTATION, never of the identity (v0.5).
+AGE_CATEGORIES = {"appearance", "volume3d", "identity_weights"}       # variants that MAY carry `age`
+AGELESS_KINDS = {"clothing", "accessory", "feature", "description"}    # variants that never do
+AGE_REQUIRED_KINDS = {"face", "body", "character-sheet", "reference-set"}   # MUST carry `age` for human-form morphologies
+HUMAN_FORM = {"human", "humanoid", "anthropomorphic-animal"}
+ADULT = 18
 
 
 def _age_value(a) -> float | None:
@@ -146,12 +149,8 @@ def variant_ages(manifest: dict) -> list[float]:
 
 
 def lowest_age(manifest: dict) -> float | None:
-    """Lowest age declared anywhere (root, identities, presets' age_override, morphological variants). None = no age known."""
+    """Lowest age declared anywhere (presets' age_override, morphological variants). None = no age known."""
     ages = []
-    for src in [manifest, *((manifest.get("identities") or {}).values())]:
-        x = _age_value(src.get("age"))
-        if x is not None:
-            ages.append(x)
     for p in (manifest.get("presets", {}) or {}).values():
         x = _age_value(p.get("age_override"))
         if x is not None:
@@ -161,16 +160,33 @@ def lowest_age(manifest: dict) -> float | None:
 
 
 def preset_age(manifest: dict, pid: str | None) -> float | None:
-    """Age of a preset: lowest age of its resolved morphological variants, else age_override, else identity age, else None."""
-    res = resolved(manifest, pid) if pid else {}
+    """Age of a preset = min(ages of its resolved morphological variants, age_override). None = no age known (e.g. text only)."""
+    res = resolved(manifest, pid) if pid else implicit_resolved(manifest)
     va = [x for cat in AGE_CATEGORIES for v in res.get(cat, []) if v.get("kind") not in AGELESS_KINDS for x in [_age_value(v.get("age"))] if x is not None]
-    if va:
-        return min(va)
     p = (manifest.get("presets", {}) or {}).get(pid or "", {}) or {}
     x = _age_value(p.get("age_override"))
     if x is not None:
-        return x
-    return _age_value(preset_identity(manifest, pid).get("age"))
+        va.append(x)
+    return min(va) if va else None
+
+
+def implicit_resolved(manifest: dict) -> dict[str, list[dict]]:
+    out = {}
+    for cat, vids in implicit_preset(manifest).items():
+        lst = [v for v in (resolve_variant(manifest, cat, vid) for vid in vids) if v]
+        if lst:
+            out[cat] = lst
+    return out
+
+
+def age_required(manifest: dict, pid: str | None, v: dict) -> bool:
+    """Does this (resolved) variant have to carry an age? intimate: always; face/body/sheet/reference: for human-form morphologies."""
+    if v.get("kind") == "intimate":
+        return True
+    if v.get("kind") not in AGE_REQUIRED_KINDS:
+        return False
+    cls = ((preset_identity(manifest, pid) or {}).get("morphology") or {}).get("class") or "human"
+    return cls in HUMAN_FORM
 
 
 # ---------- region rules (clothing / accessories / pilosity / features / weights) ----------

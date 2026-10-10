@@ -1,8 +1,11 @@
 # Changelog
 
-## 0.5.0 — 2026-10-10
-- **Âge optionnel partout** : plus obligatoire dans l'identité (un personnage peut n'avoir aucun âge connu) ; `unit` et `basis` facultatifs. **Âge par déclinaison** (`variant.age`) sur tout ce qui touche à la morphologie — apparence hors vêtement / accessoire / particularités / description, 3D, poids d'identité — pour décliner un personnage aux différents âges de sa vie. Âge d'un preset = plus bas de ses déclinaisons, sinon `age_override`, sinon identité. **Aucun âge déclaré ⇒ `allowSexualUsage` et `intimate` refusés** (CLI + builder) ; tag auto `age-unknown`.
-- Builder 0.5.0 : champs « Âge représenté » + « Base de l'âge » à côté des tags de style sur les déclinaisons concernées ; identité : âge et base optionnels ; « Particularités » au pluriel ; `cof import` sans `--age` ne fabrique plus un âge de 18 ans.
+## 0.5.0 — 2026-10-10 (format v0.5)
+- **L'âge quitte l'identité** (plus de `age` racine ni par identité) : il est porté par la **représentation** — `variant.age` sur les déclinaisons morphologiques (obligatoire sur `face` / `body` / `character-sheet` / `reference-set` pour les morphologies de forme humaine, obligatoire et ≥ 18 sur `intimate`, optionnel sur cheveux / pilosité / 3D / poids) et plancher par preset (`age_override`). Âge d'un preset = min(déclinaisons, plancher). Un âge mystérieux = `basis: apparent`.
+- **Règles par preset** (§ 9.4) : aucun `intimate`, aucune `body.estimated`, aucun `allowSexualUsage` effectif dans un preset dont un élément a moins de 18 ans ; un fichier peut contenir un preset adulte avec intime et un preset mineur sans.
+- **Contrôle IA `age-legality`** : sévérité `illegal` (corps d'apparence mineure + intime), affichée en rouge, bloque le build. Question du signalement laissée à la communauté (§ 9.4.5).
+- `cof migrate` v0.4 → v0.5 (âge d'identité recopié sur déclinaisons et presets) ; exemples migrés ; builder ouvre encore les `.cof` v0.4 en les migrant à la volée.
+- Builder 0.5.1 : plus de champ âge dans l'identité ; « Âge représenté » obligatoire/optionnel selon le type ; contrôles par preset ; « Particularités » au pluriel ; `cof import --age` place l'âge sur le visage et en plancher du preset.
 
 ## 0.4.3 — 2026-10-10
 - Builder 0.4.3 : **personnalité harmonisée** avec les autres catégories — « + Ajouter une déclinaison » puis choix du type dans la carte (*texte structuré* / *texte libre* / *import d'un fichier*) ; le type « import » affiche une zone glisser-déposer identique aux autres et prend le type du fichier déposé (carte → structuré, .md/.txt → libre, image sans fiche → « Photos en vrac » et la déclinaison vide disparaît) ; une déclinaison « import » restée vide est ignorée au build et signalée.

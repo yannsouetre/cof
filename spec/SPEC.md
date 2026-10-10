@@ -1,10 +1,11 @@
 # COF — Character Open File
-## Spécification v0.4 (brouillon de travail, 10 octobre 2026)
+## Spécification v0.5 (brouillon de travail, 10 octobre 2026)
 
 > **Statut** : brouillon d'auteur, RFC publique sur GitHub (`rfcs/`).
 > **Licence** : spécification CC-BY-4.0 ; implémentation de référence MIT ; vocabulaires et schémas CC0.
 > **Auteur** : Yann Souetre.
 > **Nom** : *COF — Character Open File*, extension `.cof`, type MIME `application/vnd.cof.character+zip`.
+> **v0.5** : **l'âge quitte l'identité** et devient une propriété de la **représentation** (déclinaisons morphologiques, plancher par preset) ; règles de protection **par preset** : aucun `intimate` (lui-même ≥ 18 obligatoire) combinable avec un élément de moins de 18 ans — un même fichier peut donc contenir un preset adulte avec intime et un preset mineur sans ; contrôle IA « age-legality ».
 > **v0.4** : éléments organisés en **7 catégories par nature de média**, chaque déclinaison déclarant son **type** (`kind`) ; presets à **emplacements multiples** avec règles de cumul par **région du corps** (vêtements, accessoires, pilosité, particularités, LoRA) ; **identités multiples** dans un fichier avec presets rattachés ; langues portées par les déclinaisons ; fusion et extraction de presets ; vidéos de mouvement plafonnées.
 > v0.3 : architecture modulaire, poids d'identité, maillages, styles, dérivés optionnels, cohérence, priorités.
 > Les choix s'appuient sur l'état de l'art (`docs/state-of-the-art.md`). Les parties « à inventer » sont marquées **[NOUVEAU]**.
@@ -86,7 +87,7 @@ Aucune contrainte sur la nature du personnage. `morphology.class` ∈ `humanoid 
 - Binaires haute entropie stockés sans compression (`store`), JSON/texte en `deflate`.
 - Alignement 64 octets optionnel (`container.aligned`), chiffrement interdit.
 
-### 1.2 Arborescence normative (v0.4)
+### 1.2 Arborescence normative (v0.5)
 
 ```
 mimetype
@@ -115,16 +116,15 @@ PNG `chara`+`ccv3` (texte + vignette), `.charx`, `SOUL.md`/`IDENTITY.md`, `.vrm`
 
 ### 2.1 Identité(s)
 
-Champs **obligatoires** de l'identité : `name`, `fictional`, `morphology` (`class` ∈ `human` (défaut) | `humanoid` (non-humain de forme humaine : elfe, androïde, alien) | `anthropomorphic-animal` | `quadruped` | `avian` | `aquatic` | `mechanical` | `amorphous` | `other`, + `species` libre). Tout le reste (`nickname`, `summary`, tags, **`age`**) est optionnel. **L'âge est optionnel** (`{ value, unit?: years|months|unknown-adult, basis?: declared|apparent|canonical }`) : un personnage peut n'avoir aucun âge connu — c'est parfois le mystère voulu. L'âge peut aussi être porté par une **déclinaison** (§ 2.2 : apparence hors vêtement/accessoire/particularités, 3D, poids d'identité), car un personnage se décline aux différents âges de sa vie, et par un preset (`age_override`). Règle de sécurité : les protections s'appliquent à **l'âge le plus bas déclaré où que ce soit** ; si **aucun** âge n'est déclaré dans le fichier, `allowSexualUsage` et toute déclinaison `intimate` sont **refusés** (déclarer un âge est la condition de ces usages, jamais l'inverse). Tag automatique `age-unknown` dans ce cas. Les **langues** ne sont pas une propriété de l'identité : elles sont portées par les déclinaisons de personnalité (`language`) et par chaque échantillon de voix ; la racine `languages` en est l'**union calculée** (catalogues, filtres).
+Champs **obligatoires** de l'identité : `name`, `fictional`, `morphology` (`class` ∈ `human` (défaut) | `humanoid` (non-humain de forme humaine : elfe, androïde, alien) | `anthropomorphic-animal` | `quadruped` | `avian` | `aquatic` | `mechanical` | `amorphous` | `other`, + `species` libre). Tout le reste (`nickname`, `summary`, tags) est optionnel. **L'identité ne porte pas d'âge** : l'âge est une propriété de la *représentation* — un même personnage se décline aux différents âges de sa vie (§ 2.2, `variant.age`), et un preset peut poser un plancher (`age_override`, utile aux presets sans élément morphologique, ex. texte seul). Un âge « mystérieux » n'est pas une valeur : c'est un âge **apparent** (`basis: apparent`) sur les éléments visuels, et l'absence d'âge sur un preset purement textuel. Les **langues** ne sont pas une propriété de l'identité : elles sont portées par les déclinaisons de personnalité (`language`) et par chaque échantillon de voix ; la racine `languages` en est l'**union calculée** (catalogues, filtres).
 
 **Plusieurs identités** **[NOUVEAU]** : un fichier peut décrire un casting. `identities: { "<id>": { name, nickname, age, summary, fictional, morphology, consent } }` + `default_identity`. Chaque preset se rattache à une identité (`presets.<p>.identity`, défaut = `default_identity`) ; une déclinaison peut se réserver à une identité (`identity`), sinon elle est partageable. Le **consentement est par identité** (une personne réelle = une identité). Pour que les lecteurs simples restent simples, la **racine porte une copie** des champs de l'identité par défaut (`name`, `age`, `fictional`, `morphology`, …) — le validateur vérifie l'égalité. La fusion de fichiers (§ 11.3) considère que deux identités sont la même si `name` et `nickname` sont identiques.
 
 ```jsonc
-{ "cof": "0.4", "id": "01J9…", "name": "Léa Marchand", "nickname": "Léa",
-  "age": { "value": 34, "unit": "years", "basis": "declared" }, "fictional": true,
+{ "cof": "0.5", "id": "01J9…", "name": "Léa Marchand", "nickname": "Léa", "fictional": true,   // pas d'âge ici : l'âge est porté par les déclinaisons
   "morphology": { "class": "human", "species": "human" }, "summary": "…", "languages": ["fr", "en"],   // calculé
-  "identities": { "lea": { "name": "Léa Marchand", "nickname": "Léa", "age": {…}, "fictional": true, "morphology": {…} },
-                  "marc": { "name": "Marc", "age": {…}, "fictional": true, "morphology": {…} } },
+  "identities": { "lea": { "name": "Léa Marchand", "nickname": "Léa", "fictional": true, "morphology": {…} },
+                  "marc": { "name": "Marc", "fictional": true, "morphology": {…} } },
   "default_identity": "lea",
   "tags": {…}, "thumbnail": "elements/appearance/f1/head.front.jpg", … }
 ```
@@ -145,7 +145,7 @@ Règles :
 - Chaque déclinaison déclare `kind` (obligatoire), `label`, `style` / `style_tags` (visuel), `language` (texte/voix), `derives_from` (héritage de champs ; seule « hiérarchie »), `identity` (réservation optionnelle), et ses représentations (`images[]`, `samples[]`, `clips[]`, `videos[]` = identifiants d'assets ; `card`, `psyche`, `params`, `code`, `spec`, `profile`, `path`, `mesh`…).
 - Une déclinaison `face` / `body` / `hair` / `clothing` / `accessory` / `pilosity` / `feature` décrit **un seul** visage / corps / coupe / vêtement / accessoire cohérent — pour un autre, on crée une autre déclinaison. La subdivision est **possible, jamais imposée** : avec une seule planche, on renseigne `character-sheet` et c'est valide.
 - Les images sont référencées par identifiant d'asset et peuvent être partagées entre déclinaisons.
-- **`age` par déclinaison** (optionnel) sur tout ce qui touche à la morphologie : `appearance` sauf `clothing` / `accessory` / `feature` / `description`, `volume3d`, `identity_weights`. Même structure que l'âge d'identité. L'âge d'un preset est l'âge le plus bas de ses déclinaisons résolues qui en portent un, sinon `age_override`, sinon celui de l'identité, sinon inconnu.
+- **`age` par déclinaison** (`{ value, unit?: years|months, basis?: declared|apparent|canonical }`) sur tout ce qui touche à la morphologie : `appearance` sauf `clothing` / `accessory` / `feature` / `description`, `volume3d`, `identity_weights`. **Obligatoire** sur `face`, `body`, `character-sheet`, `reference-set` quand la morphologie de l'identité est de forme humaine (`human`, `humanoid`, `anthropomorphic-animal`) — un corps de forme humaine a toujours un âge apparent, d'où `basis: apparent` quand l'âge canonique est inconnu — et sur `intimate` (**≥ 18**) ; optionnel sur `hair`, `pilosity`, 3D, poids ; sans objet sur les classes `mechanical`, `amorphous`, etc. L'**âge d'un preset** = le plus bas des âges de ses déclinaisons résolues et de son `age_override` ; inconnu si aucun.
 - `character-sheet` : **une seule planche par déclinaison** par défaut ; `allow_multiple_sheets: true` en autorise plusieurs, à charge pour l'auteur de garantir la cohérence du personnage entre elles. `reference-set` : plusieurs photos d'office, même exigence de cohérence (le builder le rappelle).
 - Un même type d'information peut légitimement relever de **deux catégories** : `attitude` (signature de mouvement LMA, postures habituelles, gestes) est admis dans `posture` *et* dans `motion` ; une déclinaison vit dans l'une des deux, les lecteurs cherchent dans les deux.
 
@@ -189,7 +189,7 @@ Règles :
 - `extends` hérite des listes du parent et **remplace** une catégorie entière quand elle est redéclarée. `identity` rattache le preset à une identité ; une déclinaison réservée à une autre identité est une erreur.
 - `default_preset` obligatoire dès qu'il y a ≥ 1 preset ; sans preset, preset implicite = première déclinaison de chaque catégorie. Vignette = `head.front` du `face` du preset par défaut.
 - KPI par preset (complétude, cohérence) ; KPI de fichier = preset par défaut.
-- `age_override` par preset ; règles d'âge sur l'âge le plus bas du fichier (identités, presets, déclinaisons) ; aucun âge ⇒ usages sensibles refusés. `permissions_override` optionnel (jamais plus permissif que l'âge du preset).
+- `age_override` par preset (plancher) ; **règles d'âge par preset** (§ 9.4) : un preset dont un élément a moins de 18 ans n'admet ni `intimate`, ni `body.estimated`, ni `allowSexualUsage` effectif. `permissions_override` optionnel (jamais plus permissif que l'âge du preset).
 - **Enregistrer sous / fusionner** : § 11.3.
 
 ### 2.4 Fichiers multi-personnages
@@ -321,13 +321,21 @@ Les sections se renvoient par identifiants ; le validateur signale les doublons 
 ## 9. Droits
 
 ### 9.1 Permissions (calquées sur `VRMC_vrm.meta`, défauts restrictifs)
-`avatarPermission`, `commercialUsage`, `modification`, `allowRedistribution`, `creditNotation`, `allowExcessivelyViolentUsage`, `allowSexualUsage`, `allowPoliticalOrReligiousUsage`, `allowAntisocialOrHateUsage`, **+** `allowVoiceCloning`, `allowTraining` (`none | finetune-private | finetune-public | any`), `allowImpersonationOfRealPerson`, `ageRating`, `minUserAge`, `aiDisclosure` (défaut `true`). Règles d'âge sur l'âge **le plus bas** du fichier (identités, `age_override` des presets, `age` des déclinaisons morphologiques) : < 18 ⇒ `allowSexualUsage` forcé à `false`, élément `intimate` et `body.estimated` interdits ; **aucun âge déclaré** ⇒ `allowSexualUsage` et `intimate` refusés.
+`avatarPermission`, `commercialUsage`, `modification`, `allowRedistribution`, `creditNotation`, `allowExcessivelyViolentUsage`, `allowSexualUsage`, `allowPoliticalOrReligiousUsage`, `allowAntisocialOrHateUsage`, **+** `allowVoiceCloning`, `allowTraining` (`none | finetune-private | finetune-public | any`), `allowImpersonationOfRealPerson`, `ageRating`, `minUserAge`, `aiDisclosure` (défaut `true`). Les règles d'âge sont au § 9.4.
 
 ### 9.2 Consentement
 `rights/consent.json` obligatoire dès que `fictional: false`, qu'un asset provient d'une personne réelle, ou qu'un poids d'identité a été entraîné sur une personne réelle : `subject_is_real_person`, `scope[]` (`voice-synthesis | likeness-image | likeness-3d | conversational-persona | motion-capture | training`), `excluded[]`, `jurisdictions[]`, dates, `revocation_uri`, `proof[]` (déclaration verbale enregistrée, document signé, attestation de plateforme — hachés). Un lecteur conforme refuse de synthétiser une voix ou d'utiliser un LoRA d'une personne réelle sans preuve valide.
 
 ### 9.3 Provenance, signature, sécurité
 `source[]` append-only, `created/modified`, `generator`, `digitalSourceType` par asset, C2PA par asset média + sidecar `rights/manifest.c2pa`, signature optionnelle du manifeste (RFC 8785 + JWS). `container.executableContent` déclaré et vérifié ; aucun format sérialisé exécutable (les poids sont en **safetensors**, jamais pickle) ; noms restreints ; bornes anti zip-bomb ; textes de prompt `untrusted` ; `uri` externes en `https://` vérifiées par hash.
+
+### 9.4 Âge, mineurs et contenu intime — règles par preset
+L'âge est porté par la représentation (§ 2.2), les règles s'appliquent donc **preset par preset**, ce qui autorise un fichier à contenir un preset « adulte » avec contenu intime et un preset « enfance » sans.
+1. Une déclinaison `intimate` porte **obligatoirement** un âge **≥ 18** ; sinon le fichier est invalide, où qu'elle soit.
+2. Dans un preset dont **au moins un** élément (déclinaison morphologique ou `age_override`) a moins de 18 ans : **aucune** déclinaison `intimate`, aucune `body.estimated`, et `allowSexualUsage` **effectif** (`rights.permissions` fusionné avec `permissions_override`) doit être `false`. Un fichier mixte met donc `allowSexualUsage` à `false` au niveau du fichier et peut l'autoriser par `permissions_override` sur le seul preset adulte.
+3. Un preset sans aucun âge (texte seul) n'est soumis à aucune règle visuelle ; le format ne peut pas lire l'âge dans un texte — c'est le rôle du contrôle de cohérence.
+4. **Contrôle IA « age-legality »** (`docs/coherence-api.md`) : le contrôleur estime l'âge apparent des images de visage et de corps ; si un preset contient une déclinaison `intimate` et qu'une image paraît clairement mineure alors que l'âge déclaré est majeur, il renvoie une issue de sévérité **`illegal`**. Le builder l'affiche en rouge comme combinaison illégale et **refuse de construire** le fichier tant qu'elle n'est pas levée ; une sévérité `illegal` n'est jamais un simple avertissement.
+5. *Question ouverte pour la communauté* : signalement d'une combinaison illégale détectée (vers qui, sous quelle forme, avec quelles garanties). La norme pose dès maintenant le principe que sécurité et légalité sont des contraintes de conception, pas des options de lecteur ; le mécanisme de signalement sera défini avec les premiers adoptants.
 
 ---
 
@@ -339,7 +347,7 @@ Fichier `.cof` monolithique, ou artefact OCI (`artifactType: application/vnd.cof
 ## 11. Validation, builder, conformité
 
 ### 11.1 Niveaux de conformité
-`COF-Core` (mimetype, manifeste, âge, droits, assets hashés, presets résolubles) ; `COF-Psyche` ; `COF-Visual` ; `COF-Voice` ; `COF-3D` ; `COF-Motion` ; `COF-Weights` (base model + hash + licence) ; `COF-Rights+` (C2PA + signature). Le validateur rend erreurs/avertissements, recalcule complétude, `coverage` et `targets_ready` par preset.
+`COF-Core` (mimetype, manifeste, droits, assets hashés, presets résolubles) ; `COF-Psyche` ; `COF-Visual` ; `COF-Voice` ; `COF-3D` ; `COF-Motion` ; `COF-Weights` (base model + hash + licence) ; `COF-Rights+` (C2PA + signature). Le validateur rend erreurs/avertissements, recalcule complétude, `coverage` et `targets_ready` par preset.
 
 ### 11.2 Le builder
 Page web unique (HTML/JS, hors ligne, GitHub Pages + Space Hugging Face), tout en local. Parcours : **Identité → Éléments** (chaque type : ajouter des déclinaisons ; import de carte PNG/CharX/SOUL.md ; glisser des images ou une planche → découpage, classification, style proposé ; WAV → mesures ; VRM/GLB/BVH → rig ; LoRA → fiche de poids) → **Presets** (composer des combinaisons ; marquer le défaut ; enregistrer sous / fusionner) → **Droits** → **Contrôles** → **Build**.
@@ -361,12 +369,12 @@ Semver ; RFC publiques (14 jours) ; vocabulaires versionnés séparément (CC0) 
 
 ---
 
-## Annexe A — Migration v0.2 / v0.3 → v0.4
-`cof migrate` enchaîne v0.2 → v0.3 → v0.4 : types v0.3 (`face`, `hair`, `outfit`, `avatar`, `attitude`…) → catégories + `kind` (`appearance/face`, `appearance/hair`, `appearance/clothing` (`garment: full-outfit`), `volume3d/mesh`, `posture/attitude`…), emplacements de presets → listes, `humanoid` + espèce humaine → `human`.
+## Annexe A — Migration v0.2 / v0.3 / v0.4 → v0.5
+`cof migrate` enchaîne v0.2 → v0.3 → v0.4 → v0.5. **v0.4 → v0.5** : l'âge d'identité est recopié sur les déclinaisons morphologiques qui n'en ont pas (déclinaison réservée → âge de son identité, sinon identité par défaut) et en `age_override` des presets qui n'en ont pas ; une `intimate` < 18 n'est pas corrigée (le fichier devient invalide, à dessein). v0.3 → v0.4 : types v0.3 (`face`, `hair`, `outfit`, `avatar`, `attitude`…) → catégories + `kind` (`appearance/face`, `appearance/hair`, `appearance/clothing` (`garment: full-outfit`), `volume3d/mesh`, `posture/attitude`…), emplacements de presets → listes, `humanoid` + espèce humaine → `human`.
 
 ## Annexe B — Exemple minimal valide (COF-Core)
 ```
 mimetype
-manifest.json        (identité, rights.permissions, elements.personality.variants.p1.card, presets.default, assets: [])
+manifest.json        (identité sans âge, rights.permissions, elements.personality.variants.p1.card, presets.default, assets: [])
 elements/personality/p1/card.json
 ```

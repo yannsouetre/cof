@@ -1,12 +1,7 @@
 {
-  "cof": "0.4",
+  "cof": "0.5",
   "id": "01K72R1A2B3C4D5E6F7G8H9J4K",
   "name": "Homme médiéval",
-  "age": {
-    "value": 35,
-    "unit": "years",
-    "basis": "apparent"
-  },
   "languages": [
     "fr"
   ],
@@ -55,7 +50,12 @@
             "a-head-front-lineart-2",
             "a-head-front-softedge"
           ],
-          "style": "photo-realistic"
+          "style": "photo-realistic",
+          "age": {
+            "value": 35,
+            "unit": "years",
+            "basis": "apparent"
+          }
         },
         "b1": {
           "kind": "body",
@@ -70,7 +70,12 @@
             "a-body-front-lineart",
             "a-body-front-softedge"
           ],
-          "style": "photo-realistic"
+          "style": "photo-realistic",
+          "age": {
+            "value": 35,
+            "unit": "years",
+            "basis": "apparent"
+          }
         }
       }
     }
@@ -104,6 +109,11 @@
         ],
         "computed_by": "cof-cli/0.3.0",
         "computed_at": "2026-10-10T08:09:16Z"
+      },
+      "age_override": {
+        "value": 35,
+        "unit": "years",
+        "basis": "apparent"
       }
     }
   },

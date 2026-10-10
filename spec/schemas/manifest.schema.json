@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://cof.dev/schemas/0.4/manifest.schema.json",
-  "title": "COF manifest.json (v0.4)",
+  "$id": "https://cof.dev/schemas/0.5/manifest.schema.json",
+  "title": "COF manifest.json (v0.5)",
   "type": "object",
   "required": [
     "cof",
@@ -19,7 +19,7 @@
   "properties": {
     "cof": {
       "type": "string",
-      "pattern": "^0\\.4$"
+      "pattern": "^0\\.5$"
     },
     "id": {
       "type": "string",
@@ -34,9 +34,6 @@
     "nickname": {
       "type": "string",
       "maxLength": 100
-    },
-    "age": {
-      "$ref": "#/$defs/age"
     },
     "languages": {
       "type": "array",
@@ -431,37 +428,6 @@
     },
     {
       "if": {
-        "properties": {
-          "age": {
-            "properties": {
-              "value": {
-                "maximum": 17.999
-              }
-            }
-          }
-        },
-        "required": [
-          "age"
-        ]
-      },
-      "then": {
-        "properties": {
-          "rights": {
-            "properties": {
-              "permissions": {
-                "properties": {
-                  "allowSexualUsage": {
-                    "const": false
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "if": {
         "required": [
           "identities"
         ],
@@ -522,7 +488,7 @@
           "default": "declared"
         }
       },
-      "description": "Âge : optionnel partout (identité, preset, déclinaison morphologique). Un personnage peut n'avoir aucun âge connu. Les règles de protection s'appliquent à l'âge le plus bas déclaré ; sans aucun âge, les usages sensibles sont refusés."
+      "description": "Âge représenté par une déclinaison (ou plancher d'un preset via age_override). Jamais sur l'identité : l'âge est une propriété de la représentation. Obligatoire sur face / body / character-sheet / reference-set (morphologies de forme humaine) et sur intimate (≥ 18)."
     },
     "style": {
       "type": "string",
@@ -755,7 +721,7 @@
         },
         "age": {
           "$ref": "#/$defs/age",
-          "description": "Âge représenté par cette déclinaison (apparence hors vêtement/accessoire/particularités, 3D, poids d'identité) — un personnage se décline à différents âges de sa vie"
+          "description": "Âge représenté par cette déclinaison. Obligatoire pour face, body, character-sheet, reference-set (si morphologie human / humanoid / anthropomorphic-animal) et intimate (≥ 18) ; optionnel pour hair, pilosity, 3D, poids d'identité ; absent pour clothing, accessory, feature, description."
         }
       },
       "required": [
@@ -792,7 +758,8 @@
           }
         },
         "age_override": {
-          "$ref": "#/$defs/age"
+          "$ref": "#/$defs/age",
+          "description": "Plancher d'âge du preset (utile aux presets sans élément morphologique, ex. texte seul). L'âge du preset = min(âges des déclinaisons résolues, age_override)."
         },
         "completeness": {
           "$ref": "#/$defs/completeness"
@@ -1493,9 +1460,6 @@
         "nickname": {
           "type": "string",
           "maxLength": 100
-        },
-        "age": {
-          "$ref": "#/$defs/age"
         },
         "summary": {
           "type": "string",

@@ -1,12 +1,7 @@
 {
-  "cof": "0.4",
+  "cof": "0.5",
   "id": "01K72R1A2B3C4D5E6F7G8H9J3K",
   "name": "Robot",
-  "age": {
-    "value": 3,
-    "unit": "years",
-    "basis": "declared"
-  },
   "languages": [
     "fr"
   ],
@@ -56,7 +51,12 @@
             "a-head-front-lineart-2",
             "a-head-front-softedge"
           ],
-          "style": "3d-render"
+          "style": "3d-render",
+          "age": {
+            "value": 3,
+            "unit": "years",
+            "basis": "declared"
+          }
         },
         "b1": {
           "kind": "body",
@@ -71,7 +71,12 @@
             "a-body-front-lineart",
             "a-body-front-softedge"
           ],
-          "style": "3d-render"
+          "style": "3d-render",
+          "age": {
+            "value": 3,
+            "unit": "years",
+            "basis": "declared"
+          }
         }
       }
     }
@@ -105,6 +110,11 @@
         ],
         "computed_by": "cof-cli/0.3.0",
         "computed_at": "2026-10-10T08:09:15Z"
+      },
+      "age_override": {
+        "value": 3,
+        "unit": "years",
+        "basis": "declared"
       }
     }
   },

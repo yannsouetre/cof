@@ -29,7 +29,7 @@ Et une **innovation à part** qui mérite sa propre visibilité : **COF-Vector**
 | # | Étape | État |
 |---|---|---|
 | 1 | Dépôt, licences, gouvernance, RFC 0001 | ✅ |
-| 2 | Spécification + schémas + règles (complétude, tags) | ✅ (v0.4) |
+| 2 | Spécification + schémas + règles (complétude, tags) | ✅ (v0.5) |
 | 3 | `cof-cli` : validate / pack / unpack / tokens / completeness / import-export PNG / SOUL / migrate / merge / extract | ✅ |
 | 4 | Exemples 1–2 (texte seul ; apparence) | ✅ (7 exemples) |
 | 5 | Découpage de planches + post-traitements (Python de référence) | ✅ (dérivés optionnels) |
@@ -37,7 +37,7 @@ Et une **innovation à part** qui mérite sa propre visibilité : **COF-Vector**
 | 7 | Schémas des sous-fichiers : attitude, pose, skeleton, voice profile, weights | ⬜ |
 | 8 | `voice measure` (mesures acoustiques → code vocal) | ⬜ |
 | 9 | Pose depuis photo → OpenPose normalisé + rendu « bonhomme » | ⬜ |
-| 10 | Builder (identités, 7 catégories typées, presets multi-emplacements, fusion, export de preset) | ✅ (v0.4) |
+| 10 | Builder (identités, 7 catégories typées, presets multi-emplacements, fusion, export de preset) | ✅ (v0.5) |
 | 11 | Exemples : VRM + clips ; « personnage d'entreprise » ; flux de consentement complet | ⬜ |
 | 12 | Relecture croisée, spec v0.3 figée pour le lancement, builder ⇄ CLI validés | ⬜ |
 

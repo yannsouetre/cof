@@ -229,11 +229,45 @@ def migrate_v3_to_v4(src: Path) -> dict:
     return m
 
 
+AGE_KINDS_V5 = {"face", "body", "character-sheet", "reference-set", "intimate", "hair", "pilosity"}
+
+
+def migrate_v4_to_v5(src: Path) -> dict:
+    """v0.5: age leaves the identity. Identity ages become (a) `age` on the morphological variants that lack one
+    (reserved variants take their identity's age, shared ones the default identity's) and (b) `age_override` on
+    presets without one (floor for text-only presets). Intimate variants under 18 are NOT fixed: validation will fail."""
+    m = json.loads((src / "manifest.json").read_text("utf-8"))
+    if str(m.get("cof", "")) != "0.4":
+        raise ValueError("ce manifeste n'est pas en v0.4")
+    ids = m.get("identities") or {}
+    root_age = m.pop("age", None)
+    id_ages = {iid: i.pop("age", None) for iid, i in ids.items()}
+    default_age = id_ages.get(m.get("default_identity")) or root_age
+    for cat in ("appearance", "volume3d", "identity_weights"):
+        for vid, v in (((m.get("elements") or {}).get(cat) or {}).get("variants") or {}).items():
+            if cat == "appearance" and v.get("kind") not in AGE_KINDS_V5:
+                continue
+            if v.get("age") is None:
+                a = id_ages.get(v.get("identity")) or default_age
+                if a:
+                    v["age"] = dict(a)
+    for pid, p in (m.get("presets") or {}).items():
+        if p.get("age_override") is None:
+            a = id_ages.get(p.get("identity")) or default_age
+            if a:
+                p["age_override"] = dict(a)
+    m["cof"] = "0.5"
+    (src / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
+    return m
+
+
 def migrate_any(src: Path) -> dict:
     m = json.loads((src / "manifest.json").read_text("utf-8"))
     v = str(m.get("cof", ""))
     if v == "0.2":
         migrate_dir(src); v = "0.3"
     if v == "0.3":
-        m = migrate_v3_to_v4(src)
+        m = migrate_v3_to_v4(src); v = "0.4"
+    if v == "0.4":
+        m = migrate_v4_to_v5(src)
     return m
