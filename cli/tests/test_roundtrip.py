@@ -45,8 +45,8 @@ def test_unpack_matches(workdir, tmp_path):
     out = tmp_path / "lea.cof"
     pack(workdir, out)
     d = unpack(out, tmp_path / "x")
-    a = json.loads((d / "character/card.json").read_text("utf-8"))
-    b = json.loads((workdir / "character/card.json").read_text("utf-8"))
+    a = json.loads((d / "elements/personality/p1/card.json").read_text("utf-8"))
+    b = json.loads((workdir / "elements/personality/p1/card.json").read_text("utf-8"))
     assert a == b
 
 
@@ -89,7 +89,7 @@ def test_zip_slip_rejected(tmp_path):
 
 def test_png_card_roundtrip(workdir, tmp_path):
     from cof_cli.cli import _placeholder_png
-    card = json.loads((workdir / "character/card.json").read_text("utf-8"))
+    card = json.loads((workdir / "elements/personality/p1/card.json").read_text("utf-8"))
     png = write_card_to_png(_placeholder_png(None), card)
     back = read_card_from_png(png)
     assert back["spec"] == "chara_card_v3"
@@ -98,3 +98,53 @@ def test_png_card_roundtrip(workdir, tmp_path):
     rep = Report()
     validate_dir(d, rep)
     assert rep.ok, rep.errors
+
+
+MODULAR = ROOT / "spec" / "examples" / "07-lea-modulaire"
+
+
+def test_presets_resolve_and_inherit():
+    from cof_cli.model import resolved, lowest_age
+    m = json.loads((MODULAR / "manifest.json").read_text("utf-8"))
+    d = resolved(m, "default"); y = resolved(m, "young")
+    assert d["personality"]["_id"] == "p1" and y["personality"]["_id"] == "p2"
+    assert y["face"]["_id"] == "f1"                      # inherited via extends
+    assert y["personality"].get("psyche")                 # inherited via derives_from
+    assert lowest_age(m) == 14
+
+
+def test_lowest_age_blocks_sexual_permission(tmp_path):
+    d = tmp_path / "m"; shutil.copytree(MODULAR, d)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    m["rights"]["permissions"]["allowSexualUsage"] = True          # manifest age 34, but preset 'young' is 14
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep)
+    assert any("âge le plus bas" in e for e in rep.errors)
+
+
+def test_unknown_slot_variant_is_error(tmp_path):
+    d = tmp_path / "m"; shutil.copytree(MODULAR, d)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    m["presets"]["default"]["slots"]["face"] = "f9"
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep)
+    assert any("déclinaison inconnue" in e for e in rep.errors)
+
+
+def test_weights_need_base_model(tmp_path):
+    d = tmp_path / "m"; shutil.copytree(MODULAR, d)
+    w = d / "elements/identity_weights/l1/weights.json"
+    j = json.loads(w.read_text("utf-8")); j["base_model"] = {}
+    w.write_text(json.dumps(j), "utf-8")
+    rep = Report(); validate_dir(d, rep)
+    assert any("base_model" in e for e in rep.errors)
+
+
+def test_derived_cannot_be_listed_as_image(tmp_path):
+    d = tmp_path / "m"; shutil.copytree(ROOT / "spec" / "examples" / "03-femme-moderne", d)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    der = next(a["id"] for a in m["assets"] if a["role"] == "derived")
+    m["elements"]["face"]["variants"]["f1"]["images"].append(der)
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep)
+    assert any("dérivé" in e for e in rep.errors)

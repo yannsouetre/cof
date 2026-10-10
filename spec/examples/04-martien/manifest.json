@@ -1,5 +1,5 @@
 {
-  "cof": "0.2",
+  "cof": "0.3",
   "id": "01K72R1A2B3C4D5E6F7G8H9J2K",
   "name": "Martien",
   "age": {
@@ -18,11 +18,11 @@
   },
   "tags": {
     "auto": [
-      "humanoid",
       "adult",
-      "multi-view",
+      "humanoid",
       "image-only",
-      "line-maps"
+      "multi-view",
+      "style-photo-realistic"
     ],
     "manual": [
       "fiction",
@@ -38,25 +38,95 @@
       "based_on": null
     }
   },
-  "sections": {
-    "appearance": {
-      "lines": [
-        "appearance/lines/head.front.canny.png",
-        "appearance/lines/head.front.lineart.png",
-        "appearance/lines/head.front.softedge.png",
-        "appearance/lines/body.front.canny.png",
-        "appearance/lines/body.front.lineart.png",
-        "appearance/lines/body.front.softedge.png"
-      ]
+  "elements": {
+    "face": {
+      "variants": {
+        "f1": {
+          "label": "Visage",
+          "images": [
+            "a-head-front-closeup",
+            "a-head-right-closeup",
+            "a-head-front"
+          ],
+          "derived": [
+            "a-head-front-canny",
+            "a-head-front-canny-2",
+            "a-head-front-lineart",
+            "a-head-front-lineart-2",
+            "a-head-front-softedge"
+          ],
+          "style": "photo-realistic"
+        }
+      }
+    },
+    "body": {
+      "variants": {
+        "b1": {
+          "label": "Corps",
+          "images": [
+            "a-body-front",
+            "a-body-left",
+            "a-body-back"
+          ],
+          "derived": [
+            "a-body-front-canny",
+            "a-body-front-lineart",
+            "a-body-front-softedge"
+          ],
+          "style": "photo-realistic"
+        }
+      }
     }
   },
-  "profiles": {},
+  "presets": {
+    "default": {
+      "label": "Défaut",
+      "slots": {
+        "face": "f1",
+        "body": "b1"
+      },
+      "style": "photo-realistic",
+      "completeness": {
+        "score": 33,
+        "level": "D",
+        "layers": {
+          "identity": 100,
+          "personality": 0,
+          "appearance": 50,
+          "physique": 0,
+          "voice": 0,
+          "volume": 0,
+          "motion": 0,
+          "rights": 85
+        },
+        "targets_ready": [
+          "image-video-gen",
+          "archive"
+        ],
+        "computed_by": "cof-cli/0.3.0",
+        "computed_at": "2026-10-10T08:09:15Z"
+      }
+    }
+  },
+  "default_preset": "default",
+  "priorities": {
+    "visual": [
+      "identity_weights",
+      "images",
+      "avatar",
+      "descriptive"
+    ],
+    "voice": [
+      "samples",
+      "described"
+    ]
+  },
   "mapping_vocabularies": {
     "line_maps": "controlnet-preprocessors"
   },
   "assets": [
     {
-      "path": "appearance/views/body.front.jpg",
+      "path": "elements/body/b1/body.front.jpg",
       "role": "view",
       "subject": "body",
       "angle": "front",
@@ -69,10 +139,12 @@
       "generator": "Gemini (image)",
       "width": 1024,
       "height": 2048,
-      "confidence": 0.9
+      "confidence": 0.9,
+      "id": "a-body-front",
+      "style": "photo-realistic"
     },
     {
-      "path": "appearance/views/body.left.jpg",
+      "path": "elements/body/b1/body.left.jpg",
       "role": "view",
       "subject": "body",
       "angle": "left",
@@ -85,10 +157,12 @@
       "generator": "Gemini (image)",
       "width": 1024,
       "height": 2048,
-      "confidence": 0.5
+      "confidence": 0.5,
+      "id": "a-body-left",
+      "style": "photo-realistic"
     },
     {
-      "path": "appearance/views/body.back.jpg",
+      "path": "elements/body/b1/body.back.jpg",
       "role": "view",
       "subject": "body",
       "angle": "back",
@@ -101,10 +175,12 @@
       "generator": "Gemini (image)",
       "width": 1024,
       "height": 2048,
-      "confidence": 0.6
+      "confidence": 0.6,
+      "id": "a-body-back",
+      "style": "photo-realistic"
     },
     {
-      "path": "appearance/views/head.front.closeup.jpg",
+      "path": "elements/face/f1/head.front.closeup.jpg",
       "role": "view",
       "subject": "head",
       "angle": "front",
@@ -117,10 +193,12 @@
       "generator": "Gemini (image)",
       "width": 1024,
       "height": 1024,
-      "confidence": 0.9
+      "confidence": 0.9,
+      "id": "a-head-front-closeup",
+      "style": "photo-realistic"
     },
     {
-      "path": "appearance/views/head.right.closeup.jpg",
+      "path": "elements/face/f1/head.right.closeup.jpg",
       "role": "view",
       "subject": "head",
       "angle": "right",
@@ -134,10 +212,12 @@
       "width": 1024,
       "height": 1024,
       "confidence": 1.0,
-      "human_confirmed": true
+      "human_confirmed": true,
+      "id": "a-head-right-closeup",
+      "style": "photo-realistic"
     },
     {
-      "path": "appearance/views/head.front.jpg",
+      "path": "elements/face/f1/head.front.jpg",
       "role": "view",
       "subject": "head",
       "angle": "front",
@@ -151,13 +231,14 @@
       "width": 1024,
       "height": 1024,
       "confidence": 0.8,
-      "derived_from": "appearance/views/body.front.jpg"
+      "derived_from": "a-body-front",
+      "id": "a-head-front",
+      "style": "photo-realistic"
     },
     {
-      "path": "appearance/lines/head.front.canny.png",
-      "role": "line-map",
+      "path": "derived/face/f1/head.front.canny.png",
+      "role": "derived",
       "method": "canny",
-      "source_view": "appearance/views/head.front.jpg",
       "mediaType": "image/png",
       "bytes": 8315,
       "sha256": "043c39f30a9e57a51f3c12accd3f8872771be2de4832db2e779f270d77934d80",
@@ -165,25 +246,27 @@
       "width": 1024,
       "height": 1024,
       "bits": 1,
-      "derived_from": "appearance/views/head.front.jpg"
+      "derived_from": "a-head-front",
+      "id": "a-head-front-canny",
+      "source": "a-head-front"
     },
     {
-      "path": "appearance/lines/head.front.canny.svg",
-      "role": "line-map",
+      "path": "derived/face/f1/head.front.canny.svg",
+      "role": "derived",
       "method": "canny",
       "format": "svg",
-      "source_view": "appearance/views/head.front.jpg",
       "mediaType": "image/svg+xml",
       "bytes": 26763,
       "sha256": "474a68a2f0cd2fa3b0cbdfdc666c1233043b22754304d17e61fbeff5e994f0d3",
       "license": "CC-BY-4.0",
-      "derived_from": "appearance/lines/head.front.canny.png"
+      "derived_from": "a-head-front-canny",
+      "id": "a-head-front-canny-2",
+      "source": "a-head-front"
     },
     {
-      "path": "appearance/lines/head.front.lineart.png",
-      "role": "line-map",
+      "path": "derived/face/f1/head.front.lineart.png",
+      "role": "derived",
       "method": "lineart",
-      "source_view": "appearance/views/head.front.jpg",
       "mediaType": "image/png",
       "bytes": 9628,
       "sha256": "41c74c8446005b19d7c1010494883a1ae214149d879103627e2883c7cd64bb57",
@@ -191,25 +274,27 @@
       "width": 1024,
       "height": 1024,
       "bits": 1,
-      "derived_from": "appearance/views/head.front.jpg"
+      "derived_from": "a-head-front",
+      "id": "a-head-front-lineart",
+      "source": "a-head-front"
     },
     {
-      "path": "appearance/lines/head.front.lineart.svg",
-      "role": "line-map",
+      "path": "derived/face/f1/head.front.lineart.svg",
+      "role": "derived",
       "method": "lineart",
       "format": "svg",
-      "source_view": "appearance/views/head.front.jpg",
       "mediaType": "image/svg+xml",
       "bytes": 63190,
       "sha256": "cd68f9bfdc5b35771e8159fc0d1f1d3b76e691afa988aa405945d9180f995cc4",
       "license": "CC-BY-4.0",
-      "derived_from": "appearance/lines/head.front.lineart.png"
+      "derived_from": "a-head-front-lineart",
+      "id": "a-head-front-lineart-2",
+      "source": "a-head-front"
     },
     {
-      "path": "appearance/lines/head.front.softedge.png",
-      "role": "line-map",
+      "path": "derived/face/f1/head.front.softedge.png",
+      "role": "derived",
       "method": "softedge",
-      "source_view": "appearance/views/head.front.jpg",
       "mediaType": "image/png",
       "bytes": 33907,
       "sha256": "034a12479534dccff3b41288f1bc82543a2000210edfee5e4621dbcb38af327e",
@@ -217,13 +302,14 @@
       "width": 512,
       "height": 512,
       "bits": 4,
-      "derived_from": "appearance/views/head.front.jpg"
+      "derived_from": "a-head-front",
+      "id": "a-head-front-softedge",
+      "source": "a-head-front"
     },
     {
-      "path": "appearance/lines/body.front.canny.png",
-      "role": "line-map",
+      "path": "derived/body/b1/body.front.canny.png",
+      "role": "derived",
       "method": "canny",
-      "source_view": "appearance/views/body.front.jpg",
       "mediaType": "image/png",
       "bytes": 6398,
       "sha256": "e642be415d3daaf637cb9b1a3811c5448558800144f9bd17967ff8edfb0197eb",
@@ -231,13 +317,14 @@
       "width": 512,
       "height": 1024,
       "bits": 1,
-      "derived_from": "appearance/views/body.front.jpg"
+      "derived_from": "a-body-front",
+      "id": "a-body-front-canny",
+      "source": "a-body-front"
     },
     {
-      "path": "appearance/lines/body.front.lineart.png",
-      "role": "line-map",
+      "path": "derived/body/b1/body.front.lineart.png",
+      "role": "derived",
       "method": "lineart",
-      "source_view": "appearance/views/body.front.jpg",
       "mediaType": "image/png",
       "bytes": 8584,
       "sha256": "1d54684623f4bcf50e0070376d9a1c91d6f78a229eb2eeef14e6bae88343aea6",
@@ -245,13 +332,14 @@
       "width": 512,
       "height": 1024,
       "bits": 1,
-      "derived_from": "appearance/views/body.front.jpg"
+      "derived_from": "a-body-front",
+      "id": "a-body-front-lineart",
+      "source": "a-body-front"
     },
     {
-      "path": "appearance/lines/body.front.softedge.png",
-      "role": "line-map",
+      "path": "derived/body/b1/body.front.softedge.png",
+      "role": "derived",
       "method": "softedge",
-      "source_view": "appearance/views/body.front.jpg",
       "mediaType": "image/png",
       "bytes": 12088,
       "sha256": "c93da0168881e173359276add050cdeb948826d92b563aaeea9a542aaca230c0",
@@ -259,7 +347,9 @@
       "width": 256,
       "height": 512,
       "bits": 4,
-      "derived_from": "appearance/views/body.front.jpg"
+      "derived_from": "a-body-front",
+      "id": "a-body-front-softedge",
+      "source": "a-body-front"
     }
   ],
   "size_class": "lite",
@@ -308,13 +398,14 @@
     "dc:description": "Exemple COF « apparence seule » : vues extraites automatiquement d'une planche de personnage générée (Gemini) ; code vectoriel visage COF-Vector v0.1 quand un maillage facial est détecté."
   },
   "extensions": {},
+  "profiles": {},
   "completeness": {
-    "score": 34,
+    "score": 33,
     "level": "D",
     "layers": {
       "identity": 100,
       "personality": 0,
-      "appearance": 55,
+      "appearance": 50,
       "physique": 0,
       "voice": 0,
       "volume": 0,
@@ -325,7 +416,16 @@
       "image-video-gen",
       "archive"
     ],
-    "computed_by": "cof-cli/0.2.0",
-    "computed_at": "2026-10-09T20:54:52Z"
-  }
+    "computed_by": "cof-cli/0.3.0",
+    "computed_at": "2026-10-10T08:09:15Z"
+  },
+  "coverage": {
+    "elements": [
+      "face",
+      "body"
+    ],
+    "variants": 2,
+    "presets": 1
+  },
+  "thumbnail": "elements/face/f1/head.front.closeup.jpg"
 }
