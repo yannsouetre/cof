@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.3 — 2026-10-10
+- Builder 0.4.3 : **personnalité harmonisée** avec les autres catégories — « + Ajouter une déclinaison » puis choix du type dans la carte (*texte structuré* / *texte libre* / *import d'un fichier*) ; le type « import » affiche une zone glisser-déposer identique aux autres et prend le type du fichier déposé (carte → structuré, .md/.txt → libre, image sans fiche → « Photos en vrac » et la déclinaison vide disparaît) ; une déclinaison « import » restée vide est ignorée au build et signalée.
+- Build : « Exporter **un** preset » ; nouveau bouton « Importer un preset… » (même mécanisme que « Importer et fusionner » : un preset exporté est un `.cof` allégé, l'importer l'ajoute à ce fichier).
+
 ## 0.4.2 — 2026-10-10
 - **Transcription des échantillons de voix facultative** (recommandée) : `assets[].transcript` optionnel dans le schéma ; validation → avertissement au lieu d'erreur (erreur seulement si déclarée et absente) ; KPI voix : échantillons 30 + 10 si tous transcrits. Motivation : ElevenLabs, XTTS, OpenVoice… clonent sans texte ; F5-TTS, CosyVoice, Fish en profitent.
 - **`intimate` : « verrouillé » remplacé par « opt-in »** et défini techniquement (§4.5) : non-chargement par défaut sauf `allowSexualUsage` **et** demande explicite de l'hôte ; dossier isolé pour retrait d'un bloc ; `tags.content` doit contenir `nudity` ou `sexual` (nouvelle règle de validation, CLI + builder).
