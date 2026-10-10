@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://cof.dev/schemas/0.3/manifest.schema.json",
-  "title": "COF manifest.json (v0.3)",
+  "$id": "https://cof.dev/schemas/0.4/manifest.schema.json",
+  "title": "COF manifest.json (v0.4)",
   "type": "object",
   "required": [
     "cof",
@@ -20,7 +20,7 @@
   "properties": {
     "cof": {
       "type": "string",
-      "pattern": "^0\\.3$"
+      "pattern": "^0\\.4$"
     },
     "id": {
       "type": "string",
@@ -61,6 +61,7 @@
       "properties": {
         "class": {
           "enum": [
+            "human",
             "humanoid",
             "anthropomorphic-animal",
             "quadruped",
@@ -69,7 +70,8 @@
             "mechanical",
             "amorphous",
             "other"
-          ]
+          ],
+          "description": "human = humain ; humanoid = non-humain de forme humaine (elfe, androïde, alien)"
         },
         "species": {
           "type": "string"
@@ -148,9 +150,9 @@
     },
     "elements": {
       "type": "object",
-      "description": "Types d'éléments → déclinaisons. Tous optionnels ; la subdivision visuelle n'est jamais imposée.",
+      "description": "Catégories (par nature de média) → déclinaisons ; chaque déclinaison déclare son `kind`.",
       "propertyNames": {
-        "pattern": "^(personality|face|hair|facial_hair|body|body_hair|intimate|outfit|accessories|identity_weights|voice|attitude|avatar|motion|x-[a-z0-9-]+)$"
+        "pattern": "^(personality|appearance|identity_weights|volume3d|voice|posture|motion|x-[a-z0-9-]+)$"
       },
       "additionalProperties": {
         "type": "object",
@@ -181,32 +183,6 @@
     },
     "default_preset": {
       "$ref": "#/$defs/vid"
-    },
-    "characters": {
-      "type": "array",
-      "description": "Fichier multi-personnages : sous-arbres complets characters/<id>/",
-      "items": {
-        "type": "object",
-        "required": [
-          "id",
-          "name",
-          "path"
-        ],
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "path": {
-            "$ref": "#/$defs/path"
-          }
-        }
-      }
-    },
-    "default_character": {
-      "type": "string"
     },
     "priorities": {
       "type": "object",
@@ -397,6 +373,19 @@
     },
     "extensions": {
       "type": "object"
+    },
+    "identities": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "#/$defs/vid"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/identity"
+      },
+      "description": "Optionnel : plusieurs identités (casting). La racine porte une copie de l'identité par défaut."
+    },
+    "default_identity": {
+      "$ref": "#/$defs/vid"
     }
   },
   "allOf": [
@@ -426,6 +415,23 @@
     },
     {
       "if": {
+        "required": [
+          "presets"
+        ],
+        "properties": {
+          "presets": {
+            "minProperties": 1
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "default_preset"
+        ]
+      }
+    },
+    {
+      "if": {
         "properties": {
           "age": {
             "properties": {
@@ -448,13 +454,6 @@
                 }
               }
             }
-          },
-          "elements": {
-            "not": {
-              "required": [
-                "intimate"
-              ]
-            }
           }
         }
       }
@@ -462,17 +461,17 @@
     {
       "if": {
         "required": [
-          "presets"
+          "identities"
         ],
         "properties": {
-          "presets": {
+          "identities": {
             "minProperties": 1
           }
         }
       },
       "then": {
         "required": [
-          "default_preset"
+          "default_identity"
         ]
       }
     }
@@ -682,8 +681,75 @@
           },
           "maxItems": 8,
           "description": "précisions libres complétant style (ex. anime-90s, ghibli-like)"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "identity": {
+          "$ref": "#/$defs/vid",
+          "description": "identité à laquelle la déclinaison est réservée (optionnel)"
+        },
+        "language": {
+          "type": "string",
+          "pattern": "^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
+        },
+        "garment": {
+          "type": "string",
+          "description": "type de vêtement (vocabulaire garments-1.0) pour kind=clothing"
+        },
+        "accessory": {
+          "type": "string",
+          "description": "type d'accessoire (garments-1.0/accessories) pour kind=accessory"
+        },
+        "area": {
+          "enum": [
+            "face",
+            "body"
+          ],
+          "description": "pour kind=pilosity"
+        },
+        "region": {
+          "type": "string",
+          "description": "région libre pour kind=feature (cornes, queue…)"
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 8000,
+          "description": "pour kind=description"
+        },
+        "use": {
+          "enum": [
+            "pose-only",
+            "full"
+          ],
+          "description": "posture : l'inférence ne retient que la pose"
+        },
+        "videos": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/aid"
+          }
+        },
+        "topology": {
+          "type": "string"
+        },
+        "blendshapes": {
+          "type": "string"
+        },
+        "covers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "max_bytes_ack": {
+          "type": "boolean",
+          "description": "l'auteur a accepté de dépasser le plafond vidéo"
         }
-      }
+      },
+      "required": [
+        "kind"
+      ]
     },
     "preset": {
       "type": "object",
@@ -704,10 +770,14 @@
         "slots": {
           "type": "object",
           "propertyNames": {
-            "pattern": "^(personality|face|hair|facial_hair|body|body_hair|intimate|outfit|accessories|identity_weights|voice|attitude|avatar|motion|x-[a-z0-9-]+)$"
+            "pattern": "^(personality|appearance|identity_weights|volume3d|voice|posture|motion|x-[a-z0-9-]+)$"
           },
           "additionalProperties": {
-            "$ref": "#/$defs/vid"
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/vid"
+            },
+            "uniqueItems": true
           }
         },
         "age_override": {
@@ -805,6 +875,22 @@
           },
           "maxItems": 8,
           "description": "précisions libres complétant style (ex. anime-90s, ghibli-like)"
+        },
+        "identity": {
+          "$ref": "#/$defs/vid"
+        },
+        "rules": {
+          "type": "object",
+          "properties": {
+            "exclusive_regions": {
+              "type": "boolean",
+              "default": true
+            },
+            "single_per_kind": {
+              "type": "boolean",
+              "default": true
+            }
+          }
         }
       }
     },
@@ -953,24 +1039,26 @@
         },
         "role": {
           "enum": [
-            "view",
-            "expression",
-            "reference",
-            "sheet",
-            "voice-sample",
-            "voice-consent",
-            "engine-artifact",
-            "weights",
             "avatar",
-            "splat",
-            "print",
-            "motion-clip",
-            "motion-reference",
-            "mesh",
-            "texture",
             "derived",
             "document",
-            "other"
+            "engine-artifact",
+            "expression",
+            "mesh",
+            "motion-clip",
+            "motion-reference",
+            "other",
+            "pose-image",
+            "print",
+            "reference",
+            "sheet",
+            "splat",
+            "texture",
+            "video",
+            "view",
+            "voice-consent",
+            "voice-sample",
+            "weights"
           ]
         },
         "mediaType": {
@@ -1148,6 +1236,9 @@
           },
           "maxItems": 8,
           "description": "précisions libres complétant style (ex. anime-90s, ghibli-like)"
+        },
+        "language": {
+          "type": "string"
         }
       },
       "allOf": [
@@ -1368,6 +1459,129 @@
           }
         }
       }
+    },
+    "identity": {
+      "type": "object",
+      "required": [
+        "name",
+        "age",
+        "fictional",
+        "morphology"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "nickname": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "age": {
+          "$ref": "#/$defs/age"
+        },
+        "summary": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "fictional": {
+          "type": "boolean"
+        },
+        "morphology": {
+          "type": "object",
+          "required": [
+            "class"
+          ],
+          "properties": {
+            "class": {
+              "enum": [
+                "human",
+                "humanoid",
+                "anthropomorphic-animal",
+                "quadruped",
+                "avian",
+                "aquatic",
+                "mechanical",
+                "amorphous",
+                "other"
+              ],
+              "description": "human = humain ; humanoid = non-humain de forme humaine (elfe, androïde, alien)"
+            },
+            "species": {
+              "type": "string"
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        },
+        "tags": {
+          "type": "object"
+        },
+        "consent": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/consent"
+            }
+          ]
+        }
+      }
+    },
+    "kinds": {
+      "personality": [
+        "card",
+        "description"
+      ],
+      "appearance": [
+        "reference-set",
+        "character-sheet",
+        "face",
+        "body",
+        "hair",
+        "clothing",
+        "accessory",
+        "intimate",
+        "pilosity",
+        "feature",
+        "description"
+      ],
+      "identity_weights": [
+        "lora",
+        "lycoris",
+        "dora",
+        "textual-inversion",
+        "ip-adapter-embedding",
+        "dreambooth",
+        "other"
+      ],
+      "volume3d": [
+        "mesh",
+        "face-mesh",
+        "point-cloud",
+        "print",
+        "other"
+      ],
+      "voice": [
+        "samples",
+        "described"
+      ],
+      "posture": [
+        "photo",
+        "photos",
+        "openpose",
+        "silhouette",
+        "attitude",
+        "description"
+      ],
+      "motion": [
+        "clips",
+        "video",
+        "description"
+      ]
     }
   }
 }

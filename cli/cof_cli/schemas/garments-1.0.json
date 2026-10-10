@@ -1,0 +1,35 @@
+{ "vocabulary": "garments", "version": "1.0", "license": "CC0-1.0",
+  "note": "Types de vêtements avec régions couvertes et couche. Deux vêtements d'un même preset sont en conflit s'ils partagent une région ET une couche. 'full-outfit' est exclusif.",
+  "layers": ["under", "base", "outer"],
+  "regions": ["head", "face", "neck", "torso", "arms", "hands", "waist", "hips", "legs", "feet"],
+  "types": {
+    "full-outfit": { "fr": "tenue complète (tout)", "regions": ["*"], "layer": "*", "exclusive": true },
+    "top":         { "fr": "haut (chemise, t-shirt, pull, blouse)", "regions": ["torso", "arms"], "layer": "base" },
+    "bottom":      { "fr": "bas (pantalon, jupe, short)", "regions": ["hips", "legs"], "layer": "base" },
+    "dress":       { "fr": "robe", "regions": ["torso", "hips", "legs"], "layer": "base" },
+    "jumpsuit":    { "fr": "combinaison", "regions": ["torso", "arms", "hips", "legs"], "layer": "base" },
+    "outerwear":   { "fr": "veste, manteau, gilet", "regions": ["torso", "arms"], "layer": "outer" },
+    "underwear-top":    { "fr": "sous-vêtement haut", "regions": ["torso"], "layer": "under" },
+    "underwear-bottom": { "fr": "sous-vêtement bas", "regions": ["hips"], "layer": "under" },
+    "socks":       { "fr": "chaussettes, collants", "regions": ["feet", "legs"], "layer": "under" },
+    "shoes":       { "fr": "chaussures, bottes", "regions": ["feet"], "layer": "outer" },
+    "headwear":    { "fr": "chapeau, casque, capuche", "regions": ["head"], "layer": "outer" },
+    "gloves":      { "fr": "gants", "regions": ["hands"], "layer": "outer" },
+    "scarf":       { "fr": "écharpe, foulard", "regions": ["neck"], "layer": "outer" },
+    "belt":        { "fr": "ceinture", "regions": ["waist"], "layer": "outer" },
+    "armor":       { "fr": "armure, protection", "regions": ["torso", "arms", "legs"], "layer": "outer" },
+    "cape":        { "fr": "cape", "regions": ["torso"], "layer": "outer", "stackable": true },
+    "other":       { "fr": "autre", "regions": [], "layer": "outer", "stackable": true }
+  },
+  "accessories": {
+    "note": "Deux accessoires d'un même preset sont en conflit s'ils partagent une région, sauf si stackable.",
+    "types": {
+      "glasses": { "fr": "lunettes", "region": "face" }, "mask": { "fr": "masque", "region": "face" },
+      "earrings": { "fr": "boucles d'oreilles", "region": "ears" }, "necklace": { "fr": "collier", "region": "neck", "stackable": true },
+      "bracelet": { "fr": "bracelet, montre", "region": "wrists", "stackable": true }, "ring": { "fr": "bague", "region": "fingers", "stackable": true },
+      "bag": { "fr": "sac, cartable", "region": "back-or-hand", "stackable": true }, "weapon": { "fr": "arme", "region": "held" },
+      "tool": { "fr": "outil, instrument", "region": "held" }, "headpiece": { "fr": "diadème, bandeau, couronne", "region": "head" },
+      "other": { "fr": "autre", "region": "none", "stackable": true }
+    }
+  }
+}

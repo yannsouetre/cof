@@ -14,7 +14,7 @@ from jsonschema import Draft202012Validator
 from . import SPEC_VERSION, __version__
 from .completeness import compute as compute_completeness
 from .container import ContainerError, inspect, read_manifest, unpack, verify_hashes
-from .model import ELEMENT_TYPES, asset_index, default_preset_id, lowest_age, preset_ids, resolve_preset_slots, resolve_variant, resolved
+from .model import CATEGORIES, KINDS, MULTI_KINDS, asset_index, default_preset_id, first, lowest_age, preset_age, preset_identity, preset_ids, region_conflicts, resolve_preset_slots, resolve_variant, resolved, single_kind_violations, by_kind
 from .tokens import count as count_tokens, tokenizer_name
 
 PROMPT_FIELDS = ("description", "personality", "scenario", "first_mes", "mes_example", "system_prompt", "post_history_instructions")
@@ -101,8 +101,8 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
     except Exception as e:
         rep.errors.append(f"manifest.json illisible : {e}")
         return {}
-    if manifest.get("cof", "").startswith("0.2"):
-        rep.errors.append("manifest v0.2 : lancer `cof migrate` (structure elements/presets attendue en v0.3)")
+    if str(manifest.get("cof", "")) in ("0.2", "0.3"):
+        rep.errors.append(f"manifest v{manifest.get('cof')} : lancer `cof migrate` (structure v0.4 attendue)")
         return manifest
     validate_manifest(manifest, rep)
     if rep.errors:
@@ -112,16 +112,19 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
     A = asset_index(manifest)
     elements = manifest.get("elements", {}) or {}
 
-    # multi-character file: validate each sub-character recursively
-    for ch in manifest.get("characters", []) or []:
-        sub = src / Path(ch["path"]).parent
-        if not (src / ch["path"]).is_file():
-            rep.errors.append(f"characters[{ch.get('id')}] : manifeste absent {ch['path']}")
-            continue
-        subrep = Report()
-        validate_dir(sub, subrep, recompute=recompute)
-        rep.errors += [f"characters[{ch.get('id')}] → {e}" for e in subrep.errors]
-        rep.warnings += [f"characters[{ch.get('id')}] → {w}" for w in subrep.warnings]
+    # identities: root must mirror the default identity
+    ids = manifest.get("identities") or {}
+    if ids:
+        di = manifest.get("default_identity")
+        if di not in ids:
+            rep.errors.append(f"default_identity inconnu : {di}")
+        else:
+            for k in ("name", "age", "fictional", "morphology"):
+                if json.dumps(ids[di].get(k), sort_keys=True) != json.dumps(manifest.get(k), sort_keys=True):
+                    rep.errors.append(f"la racine doit refléter l'identité par défaut ({k} diffère)")
+            for iid, ident in ids.items():
+                if ident.get("fictional") is False and not ident.get("consent"):
+                    rep.errors.append(f"identities.{iid} : personne réelle sans consentement")
 
     # asset ids unique, files present
     seen = set()
@@ -138,20 +141,31 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
             if not t or not (src / t).is_file():
                 rep.errors.append(f"échantillon de voix sans transcription lisible : {a.get('path')}")
 
-    # variants: referenced files and assets exist; derives_from resolvable
+    # variants: kind valid, referenced files and assets exist; derives_from resolvable
     for etype, e in elements.items():
         for vid, v in ((e or {}).get("variants", {}) or {}).items():
             where = f"elements.{etype}.{vid}"
             if v.get("derives_from") and v["derives_from"] not in e["variants"]:
                 rep.errors.append(f"{where} : derives_from inconnu {v['derives_from']}")
             rv = resolve_variant(manifest, etype, vid) or {}
+            if etype in KINDS and rv.get("kind") not in KINDS[etype]:
+                rep.errors.append(f"{where} : kind '{rv.get('kind')}' inconnu pour {etype} (attendu : {', '.join(KINDS[etype])})")
+            if etype == "appearance" and rv.get("kind") == "clothing" and not rv.get("garment"):
+                rep.warnings.append(f"{where} : vêtement sans type 'garment' (règles de cumul inapplicables)")
+            if etype == "motion" and rv.get("kind") == "video":
+                for aid in rv.get("videos") or []:
+                    a = A.get(aid)
+                    if a and a.get("bytes", 0) > 20_000_000 and not rv.get("max_bytes_ack"):
+                        rep.warnings.append(f"{where} : vidéo {aid} > 20 Mo sans accusé (transportabilité)")
+            if "identity" in rv and ids and rv["identity"] not in ids:
+                rep.errors.append(f"{where} : identité inconnue {rv['identity']}")
             for fld in PATH_FIELDS:
                 rel = rv.get(fld)
                 if isinstance(rel, str) and not (src / rel).is_file():
                     rep.errors.append(f"{where}.{fld} : fichier absent {rel}")
             if isinstance(rv.get("mesh"), dict) and not (src / rv["mesh"]["path"]).is_file():
                 rep.errors.append(f"{where}.mesh : fichier absent {rv['mesh']['path']}")
-            for lst in ("images", "derived", "samples", "clips"):
+            for lst in ("images", "derived", "samples", "clips", "videos"):
                 for aid in rv.get(lst, []) or []:
                     if aid not in A:
                         rep.errors.append(f"{where}.{lst} : asset inconnu {aid}")
@@ -164,28 +178,50 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                 if w.get("file") and w["file"] not in A:
                     rep.errors.append(f"{where} : asset de poids inconnu {w['file']}")
 
-    # presets: slots resolvable, extends known
+    # presets: slots resolvable, extends known, identity known, kind/region rules
     pids = preset_ids(manifest)
     for pid in pids:
         p = manifest["presets"][pid]
         if p.get("extends") and p["extends"] not in manifest["presets"]:
             rep.errors.append(f"presets.{pid} : extends inconnu {p['extends']}")
-        for etype, vid in resolve_preset_slots(manifest, pid).items():
-            if etype not in elements or vid not in (elements[etype] or {}).get("variants", {}):
-                rep.errors.append(f"presets.{pid}.slots.{etype} : déclinaison inconnue {vid}")
+        if p.get("identity") and ids and p["identity"] not in ids:
+            rep.errors.append(f"presets.{pid} : identité inconnue {p['identity']}")
+        for cat, vids in resolve_preset_slots(manifest, pid).items():
+            for vid in vids:
+                if cat not in elements or vid not in (elements[cat] or {}).get("variants", {}):
+                    rep.errors.append(f"presets.{pid}.slots.{cat} : déclinaison inconnue {vid}")
+                else:
+                    rv = resolve_variant(manifest, cat, vid) or {}
+                    pidn = p.get("identity") or manifest.get("default_identity")
+                    if rv.get("identity") and pidn and rv["identity"] != pidn:
+                        rep.errors.append(f"presets.{pid} : '{vid}' est réservée à l'identité {rv['identity']}")
+        rules = p.get("rules") or {}
+        res = resolved(manifest, pid)
+        if rules.get("single_per_kind", True):
+            rep.errors += [f"presets.{pid} : {x}" for x in single_kind_violations(res)]
+        if rules.get("exclusive_regions", True):
+            rep.warnings += [f"presets.{pid} : {x}" for x in region_conflicts(res)]
+        # per-preset age: intimate forbidden, estimated body forbidden
+        pa = preset_age(manifest, pid)
+        if pa is not None and pa < 18:
+            if by_kind(res, "appearance", "intimate"):
+                rep.errors.append(f"presets.{pid} : élément intime interdit (âge du preset {pa})")
+            for b in by_kind(res, "appearance", "body"):
+                if b.get("estimated"):
+                    rep.errors.append(f"presets.{pid} : morphologie estimée interdite (âge {pa})")
     dp = default_preset_id(manifest)
     if pids and dp not in manifest["presets"]:
         rep.errors.append(f"default_preset inconnu : {dp}")
-    # variants outside any preset → warning
     used = set()
     for pid in pids:
-        for etype, vid in resolve_preset_slots(manifest, pid).items():
-            used.add((etype, vid))
+        for cat, vids in resolve_preset_slots(manifest, pid).items():
+            for vid in vids:
+                used.add((cat, vid))
     if pids:
-        for etype, e in elements.items():
+        for cat, e in elements.items():
             for vid in (e or {}).get("variants", {}):
-                if (etype, vid) not in used:
-                    rep.warnings.append(f"elements.{etype}.{vid} n'est référencée par aucun preset")
+                if (cat, vid) not in used:
+                    rep.warnings.append(f"elements.{cat}.{vid} n'est référencée par aucun preset")
 
     # age rules on the lowest age
     la = lowest_age(manifest)
@@ -193,19 +229,10 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
     if la is not None and la < 18:
         if perms.get("allowSexualUsage"):
             rep.errors.append("allowSexualUsage interdit : âge le plus bas < 18")
-        if (elements.get("intimate") or {}).get("variants"):
-            rep.errors.append("élément 'intimate' interdit : âge le plus bas < 18")
-        for vid, v in ((elements.get("body") or {}).get("variants", {}) or {}).items():
-            rv = resolve_variant(manifest, "body", vid) or {}
-            if rv.get("estimated"):
-                rep.errors.append(f"body.{vid} : morphologie estimée interdite pour un mineur")
-            bj = rv.get("params")
-            if bj and (src / bj).is_file():
-                try:
-                    if json.loads((src / bj).read_text("utf-8")).get("estimated"):
-                        rep.errors.append(f"body.{vid} : body.estimated interdit pour un mineur")
-                except Exception:
-                    pass
+        for vid, v in ((elements.get("appearance") or {}).get("variants", {}) or {}).items():
+            rv = resolve_variant(manifest, "appearance", vid) or {}
+            if rv.get("kind") == "intimate" and not ids:
+                rep.errors.append(f"appearance.{vid} : élément intime interdit (âge le plus bas < 18)")
     # per-preset permission overrides: never more permissive than the preset's own age allows
     for pid in pids:
         p = manifest["presets"][pid]
@@ -224,26 +251,25 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
     for pid in (pids or [None]):
         r = resolved(manifest, pid)
         label = pid or "(implicite)"
-        p = r.get("personality")
+        p = first(r, "personality")
         if p and p.get("card") and (src / p["card"]).is_file():
             try:
                 card = json.loads((src / p["card"]).read_text("utf-8"))
                 tokens_by_preset[label] = validate_card(card, rep, lang, f"{p['card']}")
             except Exception as e:
                 rep.errors.append(f"{p['card']} illisible : {e}")
-        ids = set()
+        ids_ = set()
         if p and p.get("psyche") and (src / p["psyche"]).is_file():
             try:
                 ps = json.loads((src / p["psyche"]).read_text("utf-8"))
-                ids |= {t.get("id") for t in (ps.get("traits", {}).get("custom") or [])}
+                ids_ |= {t.get("id") for t in (ps.get("traits", {}).get("custom") or [])}
                 for k in ("goals", "fears"):
-                    ids |= {it.get("id") for it in ps.get(k, []) or []}
-                ids |= {f"trait:big5.{d}" for d in (ps.get("traits", {}).get("big5") or {})}
+                    ids_ |= {it.get("id") for it in ps.get(k, []) or []}
+                ids_ |= {f"trait:big5.{d}" for d in (ps.get("traits", {}).get("big5") or {})}
             except Exception as e:
                 rep.errors.append(f"{p['psyche']} illisible : {e}")
-        for et in ("attitude", "voice"):
-            v = r.get(et)
-            rel = (v or {}).get("spec") or (v or {}).get("profile")
+        for v in r.get("posture", []) + r.get("voice", []):
+            rel = v.get("spec") or v.get("profile")
             if rel and (src / rel).is_file():
                 try:
                     obj = json.loads((src / rel).read_text("utf-8"))
@@ -251,16 +277,17 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                     for g in obj.get("gestures", []) or []:
                         refs |= set(g.get("expresses", []) or [])
                     refs |= set((obj.get("speech_style") or {}).get("expresses", []) or [])
-                    missing = [x for x in refs if x not in ids]
-                    if missing and ids:
+                    missing = [x for x in refs if x not in ids_]
+                    if missing and ids_:
                         rep.warnings.append(f"{rel} : renvois non résolus vers psyche : {', '.join(missing)}")
                 except Exception as e:
                     rep.errors.append(f"{rel} illisible : {e}")
-        # style coherence inside a preset
         pstyle = (manifest.get("presets", {}).get(pid, {}) if pid else {}).get("style")
-        styles = {r[et].get("style") for et in ("face", "hair", "body", "outfit") if r.get(et) and r[et].get("style")}
-        for et in ("face", "hair", "body", "outfit"):
-            for aid in (r.get(et) or {}).get("images", []) or []:
+        styles = set()
+        for v in r.get("appearance", []):
+            if v.get("style"):
+                styles.add(v["style"])
+            for aid in v.get("images", []) or []:
                 if aid in A and A[aid].get("style"):
                     styles.add(A[aid]["style"])
         if pstyle and styles - {pstyle}:
@@ -284,11 +311,22 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
             manifest["presets"][pid]["completeness"] = {**c, "computed_by": f"cof-cli/{__version__}", "computed_at": now}
         # thumbnail = head.front of the default preset's face
         r = resolved(manifest, dp)
-        for aid in (r.get("face") or {}).get("images", []) or []:
+        fv = first(r, "appearance", "face")
+        for aid in (fv or {}).get("images", []) or []:
             a = A.get(aid)
             if a and a.get("subject") == "head" and a.get("angle") == "front" and a.get("path"):
                 manifest["thumbnail"] = a["path"]
                 break
+        # languages = union of personality / voice sample languages
+        langs = set(manifest.get("languages") or [])
+        for v in (elements.get("personality") or {}).get("variants", {}).values():
+            if v.get("language"):
+                langs.add(v["language"])
+        for a in manifest.get("assets", []):
+            if a.get("role") == "voice-sample" and a.get("language"):
+                langs.add(a["language"])
+        if langs:
+            manifest["languages"] = sorted(langs)
     rep.info["completeness"] = comp["file"]
     rep.info["presets"] = {k: v["score"] for k, v in comp["presets"].items()}
     rep.info["coverage"] = comp["coverage"]

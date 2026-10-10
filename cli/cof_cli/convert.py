@@ -117,25 +117,25 @@ def card_to_cof_dir(card: dict, dest: Path, *, png: bytes | None = None, age: in
     v3.setdefault("data", {}).setdefault("extensions", {})
     (pdir / "card.json").write_text(json.dumps(v3, ensure_ascii=False, indent=2) + "\n", "utf-8")
 
-    elements = {"personality": {"variants": {"p1": {"label": data.get("name") or "Personnalité", "card": "elements/personality/p1/card.json"}}}}
-    slots = {"personality": "p1"}
+    elements = {"personality": {"variants": {"p1": {"kind": "card", "label": data.get("name") or "Personnalité", "language": language, "card": "elements/personality/p1/card.json"}}}}
+    slots = {"personality": ["p1"]}
     assets = []
     if png:
-        fdir = dest / "elements" / "face" / "f1"
+        fdir = dest / "elements" / "appearance" / "f1"
         fdir.mkdir(parents=True, exist_ok=True)
         (fdir / "head.front.png").write_bytes(png)
-        assets.append({"id": "a-face-f1-front", "path": "elements/face/f1/head.front.png", "role": "view", "subject": "head", "angle": "front",
+        assets.append({"id": "a-face-f1-front", "path": "elements/appearance/f1/head.front.png", "role": "view", "subject": "head", "angle": "front",
                        "framing": "head", "mediaType": "image/png", "bytes": 0, "sha256": "0" * 64, "license": "LicenseRef-Unknown"})
-        elements["face"] = {"variants": {"f1": {"label": "Visage (vignette de la carte)", "images": ["a-face-f1-front"]}}}
-        slots["face"] = "f1"
+        elements["appearance"] = {"variants": {"f1": {"kind": "face", "label": "Visage (vignette de la carte)", "images": ["a-face-f1-front"]}}}
+        slots["appearance"] = ["f1"]
 
     manual = [re.sub(r"[^a-z0-9-]", "-", t.lower()).strip("-") for t in (data.get("tags") or []) if isinstance(t, str)]
     manifest = {
-        "cof": "0.3", "id": ulid_like(),
+        "cof": "0.4", "id": ulid_like(),
         "name": data.get("name") or "Unnamed", "nickname": data.get("nickname") or "",
         "age": {"value": age if age is not None else 18, "unit": "years", "basis": "declared" if age is not None else "canonical"},
         "languages": [language], "summary": (data.get("description") or "")[:300], "fictional": fictional,
-        "morphology": {"class": "humanoid", "species": "human"},
+        "morphology": {"class": "human", "species": "human"},
         "tags": {"auto": ["humanoid", "imported-ccv3"], "manual": [t for t in manual if t][:30], "content": ["none"],
                  "ip": {"original": True, "franchise": None, "based_on": None}},
         "elements": elements,
@@ -156,10 +156,10 @@ def card_to_cof_dir(card: dict, dest: Path, *, png: bytes | None = None, age: in
 # ---------- COF directory → SOUL.md / IDENTITY.md ----------
 
 def export_soul(src: Path, preset: str | None = None) -> tuple[str, str]:
-    from .model import asset_index, default_preset_id, resolved
+    from .model import asset_index, default_preset_id, first, resolved
     manifest = json.loads((src / "manifest.json").read_text("utf-8"))
     r = resolved(manifest, preset or default_preset_id(manifest))
-    p = r.get("personality") or {}
+    p = first(r, "personality") or {}
     data = json.loads((src / p["card"]).read_text("utf-8")).get("data", {}) if p.get("card") else {}
     psyche = json.loads((src / p["psyche"]).read_text("utf-8")) if p.get("psyche") and (src / p["psyche"]).is_file() else {}
     A = asset_index(manifest)
@@ -183,7 +183,7 @@ def export_soul(src: Path, preset: str | None = None) -> tuple[str, str]:
         lines += ["## Disclosure", "I am a synthetic character. I say so when asked.", ""]
     soul = "\n".join(lines)[:20000]
 
-    avatar = manifest.get("thumbnail") or next((A[i]["path"] for i in (r.get("face") or {}).get("images", []) if i in A and A[i].get("subject") == "head"), "")
+    avatar = manifest.get("thumbnail") or next((A[i]["path"] for i in (first(r, "appearance", "face") or {}).get("images", []) if i in A and A[i].get("subject") == "head"), "")
     identity = "\n".join([
         f"- Name: {manifest.get('name')}",
         f"- Creature: {manifest.get('morphology', {}).get('species', 'human')}",

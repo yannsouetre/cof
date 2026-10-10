@@ -153,3 +153,87 @@ def migrate_dir(src: Path) -> dict:
     m = {k: m[k] for k in order if k in m} | {k: v for k, v in m.items() if k not in order}
     (src / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
     return m
+
+
+# ---------------- v0.3 → v0.4 : categories + kind, multi-slots ----------------
+
+V3_TO_V4 = {  # old element type → (category, kind, extra)
+    "personality": ("personality", "card", {}), "face": ("appearance", "face", {}), "hair": ("appearance", "hair", {}),
+    "facial_hair": ("appearance", "pilosity", {"area": "face"}), "body": ("appearance", "body", {}), "body_hair": ("appearance", "pilosity", {"area": "body"}),
+    "intimate": ("appearance", "intimate", {}), "outfit": ("appearance", "clothing", {"garment": "full-outfit"}), "accessories": ("appearance", "accessory", {}),
+    "identity_weights": ("identity_weights", "lora", {}), "voice": ("voice", "samples", {}), "attitude": ("posture", "attitude", {}),
+    "avatar": ("volume3d", "mesh", {}), "motion": ("motion", "clips", {}),
+}
+
+
+def migrate_v3_to_v4(src: Path) -> dict:
+    m = json.loads((src / "manifest.json").read_text("utf-8"))
+    if str(m.get("cof", "")) != "0.3":
+        raise ValueError("ce manifeste n'est pas en v0.3")
+    old = m.get("elements", {}) or {}
+    new: dict = {}
+    remap: dict[tuple[str, str], tuple[str, str]] = {}
+    for etype, e in old.items():
+        if etype not in V3_TO_V4:
+            continue
+        cat, kind, extra = V3_TO_V4[etype]
+        for vid, v in (e.get("variants") or {}).items():
+            nv = {"kind": kind, **extra, **v}
+            if etype == "personality" and nv.get("card") is None:
+                nv["kind"] = "description"
+            if etype == "voice" and not nv.get("samples"):
+                nv["kind"] = "described"
+            if etype == "identity_weights":
+                try:
+                    w = json.loads((src / nv["spec"]).read_text("utf-8")) if nv.get("spec") else {}
+                    nv["kind"] = w.get("kind", "lora"); nv["covers"] = w.get("covers", [])
+                except Exception:
+                    pass
+            # move files to the new folder
+            for fld in ("card", "psyche", "story", "lorebook", "params", "code", "spec", "profile", "vec", "visemes", "path", "skeleton"):
+                rel = nv.get(fld)
+                if isinstance(rel, str) and rel.startswith(f"elements/{etype}/"):
+                    newrel = rel.replace(f"elements/{etype}/", f"elements/{cat}/", 1)
+                    s_, d_ = src / rel, src / newrel
+                    if s_.is_file():
+                        d_.parent.mkdir(parents=True, exist_ok=True); shutil.move(str(s_), str(d_))
+                    nv[fld] = newrel
+            new.setdefault(cat, {"variants": {}})["variants"][vid] = nv
+            remap[(etype, vid)] = (cat, vid)
+    # asset paths under elements/<old>/ → elements/<cat>/
+    for a in m.get("assets", []):
+        for fld in ("path", "transcript"):
+            rel = a.get(fld)
+            if isinstance(rel, str) and rel.startswith("elements/"):
+                parts = rel.split("/")
+                if parts[1] in V3_TO_V4:
+                    newrel = "/".join([parts[0], V3_TO_V4[parts[1]][0]] + parts[2:])
+                    s_, d_ = src / rel, src / newrel
+                    if s_.is_file():
+                        d_.parent.mkdir(parents=True, exist_ok=True); shutil.move(str(s_), str(d_))
+                    a[fld] = newrel
+    for d in list((src / "elements").glob("*")) if (src / "elements").is_dir() else []:
+        if d.is_dir() and not any(d.rglob("*")):
+            shutil.rmtree(d)
+    # presets: slots → lists per category
+    for pid, p in (m.get("presets") or {}).items():
+        slots: dict[str, list] = {}
+        for etype, vid in (p.get("slots") or {}).items():
+            cat = V3_TO_V4.get(etype, (etype,))[0]
+            slots.setdefault(cat, []).append(vid)
+        p["slots"] = slots
+    m["cof"] = "0.4"; m["elements"] = new
+    if m.get("morphology", {}).get("class") == "humanoid" and (m["morphology"].get("species") or "human") == "human":
+        m["morphology"]["class"] = "human"
+    (src / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
+    return m
+
+
+def migrate_any(src: Path) -> dict:
+    m = json.loads((src / "manifest.json").read_text("utf-8"))
+    v = str(m.get("cof", ""))
+    if v == "0.2":
+        migrate_dir(src); v = "0.3"
+    if v == "0.3":
+        m = migrate_v3_to_v4(src)
+    return m
