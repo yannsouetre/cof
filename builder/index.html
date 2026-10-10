@@ -14,6 +14,7 @@ header{display:flex;align-items:center;gap:14px;padding:12px 20px;border-bottom:
 header h1{font-size:17px;margin:0;letter-spacing:.2px}header h1 span{color:var(--muted);font-weight:400}
 .badge{padding:3px 9px;border-radius:999px;background:var(--chip);font-size:12.5px}.badge.A{background:#d9f2df}.badge.B{background:#e4efd6}.badge.C{background:#f7ebc8}.badge.D{background:#f3d9d6}
 @media (prefers-color-scheme:dark){.badge.A,.badge.B,.badge.C,.badge.D{color:#111}}
+.logo{color:var(--ink);flex:none;margin-right:2px}
 .spacer{flex:1}
 main{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 56px)}
 nav{border-right:1px solid var(--line);padding:14px 10px;background:var(--panel)}
@@ -42,10 +43,12 @@ footer{padding:14px 28px;color:var(--muted);font-size:12.5px;border-top:1px soli
 </head>
 <body>
 <header>
-  <h1>COF Builder <span>· Character Open File v0.5 · builder 0.5.2</span></h1>
+  <svg class="logo" viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><circle cx="16" cy="10" r="6" fill="currentColor"/><path d="M4 30a12 9 0 0 1 24 0Z" fill="currentColor"/><path d="M12 19.5 16 23l4-3.5" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <h1>COF Builder <span>· Character Open File v0.5 · builder 0.5.3</span></h1>
   <span class="badge" id="hdrName">Nouveau personnage</span>
   <span class="badge" id="hdrScore">complétude —</span>
   <div class="spacer"></div>
+  <button class="btn small" id="btnTheme" title="Basculer clair / sombre">🌙 Sombre</button>
   <button class="btn small" id="btnOpen">Ouvrir un .cof</button>
   <input type="file" id="fileOpen" accept=".cof,.zip" hidden>
   <button class="btn small" id="btnMerge" title="Ajoute un ou plusieurs .cof (preset exporté, autre personnage…) à celui-ci">Importer et fusionner…</button>
@@ -54,7 +57,7 @@ footer{padding:14px 28px;color:var(--muted);font-size:12.5px;border-top:1px soli
 </header>
 <main>
   <nav id="nav">
-    <button data-step="identity" class="active">1 · Identité<small>nom, âge, morphologie</small></button>
+    <button data-step="identity" class="active">1 · Identité<small>nom, morphologie, droits d’auteur</small></button>
     <button data-step="elements">2 · Éléments<small>7 catégories, déclinaisons typées</small></button>
     <button data-step="presets">3 · Presets<small>combinaisons</small></button>
     <button data-step="rights">4 · Droits<small>permissions, consentement</small></button>
@@ -278,8 +281,9 @@ function variantCard(cat,vid,v){const d=document.createElement("div");d.classNam
   let html=`<h4><input type="text" value="${esc(v.label||"")}" placeholder="libellé (ex. Casual, Grave, Manga…)" data-k="label" style="max-width:300px">${sel('data-k="kind"',KINDS[cat],k,'style="max-width:380px"')}<span class="id">${vid}</span><span class="spacer"></span><button class="btn small danger" data-del>supprimer</button></h4>`;
   if(KIND_HINT[k])html+=`<p class="hint">ℹ ${KIND_HINT[k]}</p>`;
   html+=`<div class="row">${field("Dérive de",sel('data-k="derives_from"',[["","—"],...others.map(o=>[o,o])],v.derives_from||""))}${Object.keys(S.identities).length>1?field("Réservée à l'identité",sel('data-k="identity"',[["","(toutes)"],...Object.entries(S.identities).map(([i,I])=>[i,I.name||i])],v.identity||"")):""}`;
-  if(cat==="appearance"||cat==="identity_weights"||(cat==="volume3d"))html+=field("Style visuel",sel('data-k="style"',[["","—"],...STYLES.map(s=>[s,s])],v.style||""))+field("Tags de style (précisions)",`<input type="text" data-k="style_tags" value="${esc((v.style_tags||[]).join(", "))}" placeholder="anime-90s, ghibli-like">`);
+  if(cat==="appearance"||cat==="identity_weights"||(cat==="volume3d"))html+=field("Style visuel",sel('data-k="style"',[["","—"],...STYLES.map(s=>[s,s])],v.style||""));
   if(AGE_CATS.has(cat)&&!AGELESS_KINDS.has(k)){const req=ageRequired(k,v);html+=field("Âge représenté"+(req?" *":" (optionnel)"),`<input type="number" data-k="age" min="0" step="1" value="${v.age??""}" placeholder="${k==="intimate"?"≥ 18":"ex. 34"}">`,k==="intimate"?"obligatoire et ≥ 18 — jamais combinable, dans un preset, avec un élément de moins de 18 ans":req?"obligatoire : une morphologie de forme humaine a toujours un âge apparent — base « apparent » si l'âge canonique est inconnu ou mystérieux":"pour décliner le personnage à un autre âge de sa vie")+field("Base de l'âge",sel('data-k="age_basis"',[["",""],...AGE_BASIS],v.age_basis||""))}
+  if(cat==="appearance"||cat==="identity_weights"||(cat==="volume3d"))html+=field("Tags de style (précisions)",`<input type="text" data-k="style_tags" value="${esc((v.style_tags||[]).join(", "))}" placeholder="anime-90s, ghibli-like">`);
   if(cat==="personality"||cat==="voice")html+=field("Langue (ISO)",`<input type="text" data-k="language" value="${esc(v.language||"")}" placeholder="fr">`);
   if(k==="clothing")html+=field("Type de vêtement *",sel('data-k="garment"',Object.entries(GARMENTS).map(([g,x])=>[g,x[0]]),v.garment||"top"));
   if(k==="accessory")html+=field("Type d'accessoire *",sel('data-k="accessory"',Object.entries(ACCESSORIES).map(([g,x])=>[g,x[0]]),v.accessory||"other"));
@@ -450,14 +454,14 @@ async function assemble(opts){
     priorities:{visual:$("#prio_visual").value.split(",").map(s=>s.trim()).filter(Boolean),voice:$("#prio_voice").value.split(",").map(s=>s.trim()).filter(Boolean),by_target:{"game-3d":{visual:["avatar","images","identity_weights","descriptive"]},"chat-text":{visual:["descriptive","images"]},"video-realtime":{visual:["avatar","images","identity_weights","descriptive"]}}},
     mapping_vocabularies:{},assets,size_class:$("#b_class").value,container:{aligned:0,executableContent:"none"},
     rights:{permissions:{...S.perms},consent},
-    provenance:{created:S.loadedManifest?.provenance?.created||new Date().toISOString().replace(/\.\d+Z$/,"Z"),modified:new Date().toISOString().replace(/\.\d+Z$/,"Z"),generator:"cof-builder/0.5.2",source:[...(S.loadedManifest?.provenance?.source||[]),...($("#r_source").value?[$("#r_source").value]:[])].filter((x,i,a)=>a.indexOf(x)===i),c2pa:null,signatures:[]},
+    provenance:{created:S.loadedManifest?.provenance?.created||new Date().toISOString().replace(/\.\d+Z$/,"Z"),modified:new Date().toISOString().replace(/\.\d+Z$/,"Z"),generator:"cof-builder/0.5.3",source:[...(S.loadedManifest?.provenance?.source||[]),...($("#r_source").value?[$("#r_source").value]:[])].filter((x,i,a)=>a.indexOf(x)===i),c2pa:null,signatures:[]},
     metadata:{"@context":{dc:"http://purl.org/dc/elements/1.1/"},"dc:creator":[$("#r_creator").value||""]},extensions:{}};
   // languages = union
   const langs=new Set();for(const e of Object.values(elements.personality?.variants||{}))if(e.language)langs.add(e.language);for(const a of assets)if(a.role==="voice-sample"&&a.language)langs.add(a.language);manifest.languages=[...langs];
   const at=new Set([DR.morphology.class,la===null?"age-unknown":la<13?"child":la<18?"teen":la>=65?"elder":"adult",...manifest.languages]);if(elements.voice)at.add("has-voice");if(elements.volume3d)at.add("has-3d");if(elements.motion)at.add("has-motion");if(elements.identity_weights)at.add("has-weights");if(Object.keys(presets).length>1)at.add("multi-preset");if(Object.keys(identities).length>1)at.add("multi-identity");const ps=presets[S.defaultPreset]?.style;if(ps)at.add("style-"+ps);manifest.tags.auto=[...at].map(slug).filter(Boolean);
   const dres=resolved(S.defaultPreset);for(const id of first(dres,"appearance","face")?.images||[]){const a=assets.find(x=>x.id===id);if(a&&a.subject==="head"&&a.angle==="front"){manifest.thumbnail=a.path;break}}
-  const kpis={};for(const pid of Object.keys(presets)){kpis[pid]=completeness(pid);presets[pid].completeness={...kpis[pid],computed_by:"cof-builder/0.5.2",computed_at:manifest.provenance.modified};if(S.coherence[pid])presets[pid].coherence=S.coherence[pid]}
-  manifest.completeness={...kpis[S.defaultPreset],computed_by:"cof-builder/0.5.2",computed_at:manifest.provenance.modified};
+  const kpis={};for(const pid of Object.keys(presets)){kpis[pid]=completeness(pid);presets[pid].completeness={...kpis[pid],computed_by:"cof-builder/0.5.3",computed_at:manifest.provenance.modified};if(S.coherence[pid])presets[pid].coherence=S.coherence[pid]}
+  manifest.completeness={...kpis[S.defaultPreset],computed_by:"cof-builder/0.5.3",computed_at:manifest.provenance.modified};
   manifest.coverage={elements:Object.keys(elements),variants:Object.values(elements).reduce((n,e)=>n+Object.keys(e.variants).length,0),presets:Object.keys(presets).length,identities:Object.keys(identities).length};
   if(lowestAge()!==null&&lowestAge()<ADULT&&!Object.values(S.presets).some(p=>p.permissions_override?.allowSexualUsage===false))manifest.rights.permissions.allowSexualUsage=false;   // un preset mineur sans surcharge ⇒ pas d'usage sexuel au niveau fichier
   files.unshift({name:"manifest.json",data:enc.encode(JSON.stringify(manifest,null,2)+"\n"),store:false});files.unshift({name:"mimetype",data:enc.encode(MIME),store:true});
@@ -589,6 +593,11 @@ async function loadManifest(m,files,{merge}){const pre=merge?"m"+(Object.keys(S.
   if(!merge)S.defaultPreset=m.default_preset||Object.keys(S.presets)[0];if(!S.defaultPreset)S.defaultPreset=Object.keys(S.presets)[0];
   curCat="personality";if(!merge){renderIdentities();renderTabs();renderPanel();renderPresets();runChecks();go("identity")}}
 
+/* thème clair / sombre */
+(function(){const root=document.documentElement;let saved=null;try{saved=localStorage.getItem("cof-theme")}catch(e){}if(saved==="dark"||saved==="light")root.dataset.theme=saved;
+  const isDark=()=>root.dataset.theme==="dark"||(!root.dataset.theme&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches);
+  const paint=()=>{$("#btnTheme").textContent=isDark()?"☀️ Clair":"🌙 Sombre"};
+  $("#btnTheme").onclick=()=>{root.dataset.theme=isDark()?"light":"dark";try{localStorage.setItem("cof-theme",root.dataset.theme)}catch(e){}paint()};paint()})();
 /* init */
 newIdentity();renderIdentities();renderTabs();renderPanel();renderPerms();
 </script>

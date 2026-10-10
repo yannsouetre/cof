@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.3 — 2026-10-10 — builder
+- Logo (silhouette tête-épaules, monochrome + chevron accent) devant le titre ; bouton **clair / sombre** dans l'en-tête (mémorisé localement, suit le système par défaut) ; champs « Âge représenté » et « Base de l'âge » côte à côte, avant les tags de style.
+
 ## 0.5.2 — 2026-10-10 — étape 7 : schémas des sous-fichiers
 - 11 schémas JSON 2020-12 dans `spec/schemas/` (`card`, `psyche`, `weights`, `voice-profile`, `attitude`, `pose`, `skeleton`, `hair`, `body`, `consent`, `visemes`) + `README.md` ; `consent.schema.json` devient la source de vérité du `$defs/consent` du manifeste (scope `intimate` ajouté, sha256 exigé seulement si une preuve est jointe).
 - `cof validate` valide chaque sous-fichier référencé par une déclinaison contre son schéma (erreurs) ; test dédié.
