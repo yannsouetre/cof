@@ -77,7 +77,7 @@ def merge_dirs(sources: list[Path], dst: Path) -> dict:
         m = json.loads((src / "manifest.json").read_text("utf-8"))
         prefix = f"m{n}"
         # identities of this file
-        src_ids = m.get("identities") or {m.get("default_identity") or _slug(m.get("name")): {k: m.get(k) for k in ("name", "nickname", "age", "summary", "fictional", "morphology") if m.get(k) is not None}}
+        src_ids = m.get("identities") or {m.get("default_identity") or _slug(m.get("name")): {k: m.get(k) for k in ("name", "nickname", "summary", "fictional", "morphology") if m.get(k) is not None}}
         id_map = {}
         for iid, ident in src_ids.items():
             key = _ident_key(m, ident)
@@ -125,7 +125,7 @@ def merge_dirs(sources: list[Path], dst: Path) -> dict:
     out["assets"] = list({a["id"]: a for a in taken_assets.values()}.values())
     out["id"] = ulid_like()
     di = out["identities"][out["default_identity"]]
-    for k in ("name", "nickname", "age", "summary", "fictional", "morphology"):
+    for k in ("name", "nickname", "summary", "fictional", "morphology"):
         if di.get(k) is not None:
             out[k] = di[k]
     out.setdefault("provenance", {})["modified"] = NOW()
@@ -172,7 +172,7 @@ def extract_preset(src: Path, dst: Path, pid: str) -> dict:
     ident = p.get("identity") or m.get("default_identity")
     if m.get("identities") and ident in m["identities"]:
         out["identities"] = {ident: m["identities"][ident]}; out["default_identity"] = ident
-        for k in ("name", "nickname", "age", "summary", "fictional", "morphology"):
+        for k in ("name", "nickname", "summary", "fictional", "morphology"):
             if m["identities"][ident].get(k) is not None:
                 out[k] = m["identities"][ident][k]
     out["assets"] = []

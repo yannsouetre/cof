@@ -1,13 +1,8 @@
 {
-  "cof": "0.4",
+  "cof": "0.5",
   "id": "01K72Q3F8M9W1X4Z6B7N2P5R8T",
   "name": "Léa Marchand",
   "nickname": "Léa",
-  "age": {
-    "value": 34,
-    "unit": "years",
-    "basis": "declared"
-  },
   "languages": [
     "fr",
     "en"
@@ -102,6 +97,11 @@
         ],
         "computed_by": "cof-cli/0.3.0",
         "computed_at": "2026-10-10T08:09:16Z"
+      },
+      "age_override": {
+        "value": 34,
+        "unit": "years",
+        "basis": "declared"
       }
     }
   },

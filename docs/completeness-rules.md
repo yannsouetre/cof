@@ -4,7 +4,7 @@ Calculé **par preset** (slots résolus, héritage `extends`/`derives_from` appl
 
 | Couche (poids) | Points |
 |---|---|
-| identity (10 %) | name 20 · age 20 · summary 20 · languages 10 · morphology 10 · tags.content 10 · tags.ip 10 |
+| identity (10 %) | name 20 · âge du preset connu (déclinaisons ou plancher) 20 · summary 20 · languages 10 · morphology 10 · tags.content 10 · tags.ip 10 |
 | personality (20 %) | card 30 · description 10 · personality 10 · scenario 5 · first_mes 10 · mes_example 10 · story/lore 10 · psyche 15 |
 | appearance (20 %) | head.front 25 · ≥ 2 vues de tête 10 · face params ou mesh 10 · mesh 5 · hair 5 · vues de corps 10 · ≥ 2 vues 5 · body params 5 · outfit 10 · identity_weights 15 |
 | physique (5 %) | attitude 60 · poses 40 |

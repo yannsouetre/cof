@@ -13,7 +13,7 @@ from .container import ContainerError, pack, read_manifest, unpack
 from .convert import card_to_cof_dir, export_soul, read_card_from_png, write_card_to_png
 from .migrate import migrate_any
 from .ops import extract_preset, merge_dirs
-from .model import asset_index, default_preset_id, first, resolved
+from .model import asset_index, default_preset_id, first, preset_age, resolved
 from .validate import Report, validate_cof, validate_dir
 
 
@@ -81,7 +81,7 @@ def cmd_unpack(a):
 def cmd_info(a):
     m = read_manifest(a.cof)
     c = m.get("completeness") or compute_completeness(m)
-    print(json.dumps({"name": m.get("name"), "id": m.get("id"), "cof": m.get("cof"), "age": m.get("age"),
+    print(json.dumps({"name": m.get("name"), "id": m.get("id"), "cof": m.get("cof"), "age": {p: preset_age(m, p) for p in (m.get("presets") or {})},
                       "fictional": m.get("fictional"), "size_class": m.get("size_class"), "thumbnail": m.get("thumbnail"),
                       "completeness": c["file"] if isinstance(c, dict) and "file" in c else c, "coverage": m.get("coverage"),
                       "presets": {k: {"label": v.get("label"), "slots": v.get("slots"), "score": (v.get("completeness") or {}).get("score")} for k, v in (m.get("presets") or {}).items()},
@@ -231,7 +231,7 @@ def main(argv=None) -> int:
     s = sub.add_parser("tokens", help="estimation des tokens par bloc"); s.add_argument("path"); s.set_defaults(fn=cmd_tokens)
     s = sub.add_parser("import", help="carte PNG/JSON (CCv2/V3) → dossier COF"); s.add_argument("src"); s.add_argument("-o", "--out"); s.add_argument("--age", type=int); s.add_argument("--real", action="store_true", help="personnage basé sur une personne réelle (consentement requis)"); s.add_argument("--lang", default="en"); s.add_argument("--keep-png", action="store_true", help="garde le PNG comme vue head.front"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_import)
     s = sub.add_parser("export", help="dossier/.cof → png | soul | card (depuis le preset par défaut ou --preset)"); s.add_argument("src"); s.add_argument("--format", choices=["png", "soul", "card"], required=True); s.add_argument("-o", "--out"); s.add_argument("--preset"); s.set_defaults(fn=cmd_export)
-    s = sub.add_parser("migrate", help="dossier v0.2/v0.3 → v0.4"); s.add_argument("dir"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_migrate)
+    s = sub.add_parser("migrate", help="dossier v0.2/v0.3/v0.4 → v0.5"); s.add_argument("dir"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_migrate)
     s = sub.add_parser("merge", help="fusionne plusieurs .cof/dossiers (mêmes nom+surnom ⇒ même identité, sinon identités multiples)"); s.add_argument("sources", nargs="+"); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_merge)
     s = sub.add_parser("extract", help="extrait un preset en dossier COF allégé"); s.add_argument("src"); s.add_argument("--preset", required=True); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_extract)
 

@@ -126,20 +126,22 @@ def card_to_cof_dir(card: dict, dest: Path, *, png: bytes | None = None, age: in
         (fdir / "head.front.png").write_bytes(png)
         assets.append({"id": "a-face-f1-front", "path": "elements/appearance/f1/head.front.png", "role": "view", "subject": "head", "angle": "front",
                        "framing": "head", "mediaType": "image/png", "bytes": 0, "sha256": "0" * 64, "license": "LicenseRef-Unknown"})
-        elements["appearance"] = {"variants": {"f1": {"kind": "face", "label": "Visage (vignette de la carte)", "images": ["a-face-f1-front"]}}}
+        fv = {"kind": "face", "label": "Visage (vignette de la carte)", "images": ["a-face-f1-front"]}
+        if age is not None:
+            fv["age"] = {"value": age, "unit": "years", "basis": "declared"}      # v0.5 : l'âge est porté par la représentation
+        elements["appearance"] = {"variants": {"f1": fv}}
         slots["appearance"] = ["f1"]
 
     manual = [re.sub(r"[^a-z0-9-]", "-", t.lower()).strip("-") for t in (data.get("tags") or []) if isinstance(t, str)]
     manifest = {
-        "cof": "0.4", "id": ulid_like(),
+        "cof": "0.5", "id": ulid_like(),
         "name": data.get("name") or "Unnamed", "nickname": data.get("nickname") or "",
-        **({"age": {"value": age, "unit": "years", "basis": "declared"}} if age is not None else {}),   # âge optionnel : inconnu si non fourni
         "languages": [language], "summary": (data.get("description") or "")[:300], "fictional": fictional,
         "morphology": {"class": "human", "species": "human"},
         "tags": {"auto": ["humanoid", "imported-ccv3"], "manual": [t for t in manual if t][:30], "content": ["none"],
                  "ip": {"original": True, "franchise": None, "based_on": None}},
         "elements": elements,
-        "presets": {"default": {"label": "Défaut", "slots": slots}},
+        "presets": {"default": {"label": "Défaut", "slots": slots, **({"age_override": {"value": age, "unit": "years", "basis": "declared"}} if age is not None else {})}},
         "default_preset": "default",
         "priorities": {"visual": ["identity_weights", "images", "avatar", "descriptive"], "voice": ["samples", "described"]},
         "mapping_vocabularies": {}, "assets": assets,

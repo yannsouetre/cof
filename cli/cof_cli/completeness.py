@@ -1,4 +1,4 @@
-"""Completeness KPI (v0.4) — per preset, from categories/kinds. Derived assets never count."""
+"""Completeness KPI (v0.5) — per preset, from categories/kinds. Derived assets never count."""
 from __future__ import annotations
 
 import json

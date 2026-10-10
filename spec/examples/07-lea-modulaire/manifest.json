@@ -1,13 +1,8 @@
 {
-  "cof": "0.4",
+  "cof": "0.5",
   "id": "01K72S9A8B7C6D5E4F3G2H1J0K",
   "name": "Léa Marchand",
   "nickname": "Léa",
-  "age": {
-    "value": 34,
-    "unit": "years",
-    "basis": "declared"
-  },
   "languages": [
     "fr",
     "en"
@@ -91,7 +86,12 @@
             "a-head-front-closeup",
             "a-head-right-closeup",
             "a-head-front"
-          ]
+          ],
+          "age": {
+            "value": 34,
+            "unit": "years",
+            "basis": "declared"
+          }
         },
         "b1": {
           "kind": "body",
@@ -101,7 +101,12 @@
             "a-body-front",
             "a-body-left",
             "a-body-back"
-          ]
+          ],
+          "age": {
+            "value": 34,
+            "unit": "years",
+            "basis": "declared"
+          }
         },
         "o1": {
           "kind": "clothing",
@@ -128,7 +133,12 @@
             "face",
             "hair",
             "body"
-          ]
+          ],
+          "age": {
+            "value": 34,
+            "unit": "years",
+            "basis": "declared"
+          }
         }
       }
     }
@@ -171,6 +181,11 @@
         ],
         "computed_by": "cof-cli/0.3.0",
         "computed_at": "2026-10-10T08:09:14Z"
+      },
+      "age_override": {
+        "value": 34,
+        "unit": "years",
+        "basis": "declared"
       }
     },
     "young": {
@@ -179,7 +194,8 @@
       "slots": {
         "personality": [
           "p2"
-        ]
+        ],
+        "appearance": []
       },
       "age_override": {
         "value": 14,
