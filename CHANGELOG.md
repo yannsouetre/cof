@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.2 — 2026-10-10 — étape 7 : schémas des sous-fichiers
+- 11 schémas JSON 2020-12 dans `spec/schemas/` (`card`, `psyche`, `weights`, `voice-profile`, `attitude`, `pose`, `skeleton`, `hair`, `body`, `consent`, `visemes`) + `README.md` ; `consent.schema.json` devient la source de vérité du `$defs/consent` du manifeste (scope `intimate` ajouté, sha256 exigé seulement si une preuve est jointe).
+- `cof validate` valide chaque sous-fichier référencé par une déclinaison contre son schéma (erreurs) ; test dédié.
+- Builder 0.5.2 : `profile.json` n'écrit plus de langue vide sur les échantillons.
+- `docs/design-notes-phase0.md` : notes de conception pour les étapes 6, 8, 9, 11, 12 (passation).
+
 ## 0.5.0 — 2026-10-10 (format v0.5)
 - **L'âge quitte l'identité** (plus de `age` racine ni par identité) : il est porté par la **représentation** — `variant.age` sur les déclinaisons morphologiques (obligatoire sur `face` / `body` / `character-sheet` / `reference-set` pour les morphologies de forme humaine, obligatoire et ≥ 18 sur `intimate`, optionnel sur cheveux / pilosité / 3D / poids) et plancher par preset (`age_override`). Âge d'un preset = min(déclinaisons, plancher). Un âge mystérieux = `basis: apparent`.
 - **Règles par preset** (§ 9.4) : aucun `intimate`, aucune `body.estimated`, aucun `allowSexualUsage` effectif dans un preset dont un élément a moins de 18 ans ; un fichier peut contenir un preset adulte avec intime et un preset mineur sans.

@@ -346,6 +346,9 @@ Fichier `.cof` monolithique, ou artefact OCI (`artifactType: application/vnd.cof
 
 ## 11. Validation, builder, conformité
 
+### 11.0 Schémas des sous-fichiers
+Chaque sous-fichier JSON référencé par une déclinaison a son schéma dans `spec/schemas/` (`card`, `psyche`, `weights`, `voice-profile`, `attitude`, `pose`, `skeleton`, `hair`, `body`, `consent`, `visemes` — voir `spec/schemas/README.md`). Le validateur les applique en **erreur** : ces fichiers sont produits par le builder ou la CLI, un écart est un bogue, pas une liberté. `consent.schema.json` est la source du `$defs/consent` du manifeste.
+
 ### 11.1 Niveaux de conformité
 `COF-Core` (mimetype, manifeste, droits, assets hashés, presets résolubles) ; `COF-Psyche` ; `COF-Visual` ; `COF-Voice` ; `COF-3D` ; `COF-Motion` ; `COF-Weights` (base model + hash + licence) ; `COF-Rights+` (C2PA + signature). Le validateur rend erreurs/avertissements, recalcule complétude, `coverage` et `targets_ready` par preset.
 

@@ -254,3 +254,31 @@ def test_age_on_representation(tmp_path):
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep)
     assert not any("doit déclarer un âge" in e for e in rep.errors), rep.errors
+
+
+def test_subfile_schemas(tmp_path):
+    """Step 7: sub-files (psyche, weights, attitude, hair, body, voice profile, visemes, consent) are validated against their schemas."""
+    d = tmp_path / "m"; shutil.copytree(MODULAR, d)
+    ps = d / "elements/personality/p1/psyche.json"
+    j = json.loads(ps.read_text("utf-8")); j["traits"]["big5"]["openness"] = 1.7
+    ps.write_text(json.dumps(j), "utf-8")
+    rep = Report(); validate_dir(d, rep)
+    assert any("psyche.schema" in e and "openness" in e for e in rep.errors), rep.errors
+    # attitude under motion + hair code + consent inline
+    j["traits"]["big5"]["openness"] = 0.7; ps.write_text(json.dumps(j), "utf-8")
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    (d / "elements/motion/mo1").mkdir(parents=True)
+    (d / "elements/motion/mo1/attitude.json").write_text(json.dumps({"notation": "LMA-Effort-1.0", "effort": {"space": 2}}), "utf-8")
+    m["elements"]["motion"] = {"variants": {"mo1": {"kind": "attitude", "label": "A", "spec": "elements/motion/mo1/attitude.json"}}}
+    (d / "elements/appearance/h1").mkdir(parents=True)
+    (d / "elements/appearance/h1/hair.json").write_text(json.dumps({"model": "COF-HAIR-1", "length": 12}), "utf-8")
+    m["elements"]["appearance"]["variants"]["h1"] = {"kind": "hair", "label": "H", "code": "elements/appearance/h1/hair.json"}
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep)
+    assert any("attitude.schema" in e and "space" in e for e in rep.errors), rep.errors
+    assert any("hair.schema" in e and "length" in e for e in rep.errors), rep.errors
+    # inline consent is checked by the manifest schema first; the consent schema applies once the manifest passes
+    m["rights"]["consent"] = {"subject_is_real_person": True, "scope": ["voice-synthesis"], "granted": "2026-10-10", "jurisdictions": ["FR"], "proof": [{"type": "signed-document"}]}
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep)
+    assert not any("consent" in e for e in rep.errors), rep.errors

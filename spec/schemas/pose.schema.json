@@ -1,0 +1,206 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cof.dev/schemas/0.5/pose.schema.json",
+  "title": "pose.json — points-clés 2D normalisés d'une posture, squelette déclaré",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "skeleton": {
+      "enum": [
+        "openpose-body25",
+        "coco-18",
+        "coco-wholebody-133",
+        "mediapipe-pose-33",
+        "h36m-17"
+      ]
+    },
+    "normalized": {
+      "const": true,
+      "description": "x, y dans [0,1] du cadre d'origine ; c = confiance [0,1]"
+    },
+    "aspect": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "description": "largeur/hauteur du cadre d'origine (restitue les proportions)"
+    },
+    "keypoints": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "minItems": 3,
+        "maxItems": 3
+      },
+      "description": "[x, y, c] par joint, dans l'ordre du squelette ; c = 0 pour un joint absent"
+    },
+    "hands": {
+      "type": "object",
+      "properties": {
+        "left": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "minItems": 21,
+          "maxItems": 21
+        },
+        "right": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "minItems": 21,
+          "maxItems": 21
+        }
+      }
+    },
+    "face": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "number"
+        },
+        "minItems": 3,
+        "maxItems": 3
+      },
+      "minItems": 68,
+      "maxItems": 70
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "asset": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9.-]{0,63}$"
+        },
+        "detector": {
+          "type": "string"
+        },
+        "converted_from": {
+          "enum": [
+            "openpose-body25",
+            "coco-18",
+            "coco-wholebody-133",
+            "mediapipe-pose-33",
+            "h36m-17"
+          ]
+        }
+      }
+    },
+    "render": {
+      "type": "string",
+      "pattern": "^(?!/)(?!.*\\.\\.)[A-Za-z0-9._/-]+$"
+    },
+    "mirror_ok": {
+      "type": "boolean",
+      "default": true,
+      "description": "la pose peut être retournée gauche/droite sans perdre son sens"
+    }
+  },
+  "required": [
+    "skeleton",
+    "keypoints"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "skeleton": {
+            "const": "openpose-body25"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "keypoints": {
+            "minItems": 25,
+            "maxItems": 25
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "skeleton": {
+            "const": "coco-18"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "keypoints": {
+            "minItems": 18,
+            "maxItems": 18
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "skeleton": {
+            "const": "coco-wholebody-133"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "keypoints": {
+            "minItems": 133,
+            "maxItems": 133
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "skeleton": {
+            "const": "mediapipe-pose-33"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "keypoints": {
+            "minItems": 33,
+            "maxItems": 33
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "skeleton": {
+            "const": "h36m-17"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "keypoints": {
+            "minItems": 17,
+            "maxItems": 17
+          }
+        }
+      }
+    }
+  ]
+}

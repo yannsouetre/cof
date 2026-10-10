@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cof.dev/schemas/0.5/card.schema.json",
+  "title": "elements/personality/<v>/card.json — Character Card V3 (sous-ensemble vérifié ; le reste suit la spec CCv3)",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "spec": {
+      "enum": [
+        "chara_card_v3",
+        "chara_card_v2"
+      ]
+    },
+    "spec_version": {
+      "type": "string"
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "personality": {
+          "type": "string"
+        },
+        "scenario": {
+          "type": "string"
+        },
+        "first_mes": {
+          "type": "string"
+        },
+        "mes_example": {
+          "type": "string"
+        },
+        "system_prompt": {
+          "type": "string"
+        },
+        "post_history_instructions": {
+          "type": "string"
+        },
+        "creator_notes": {
+          "type": "string"
+        },
+        "creator": {
+          "type": "string"
+        },
+        "character_version": {
+          "type": "string"
+        },
+        "alternate_greetings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "extensions": {
+          "type": "object",
+          "properties": {
+            "cof": {
+              "type": "object",
+              "properties": {
+                "behavior": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "goals": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "fears": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "language": {
+                  "type": "string",
+                  "pattern": "^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "spec",
+    "data"
+  ]
+}

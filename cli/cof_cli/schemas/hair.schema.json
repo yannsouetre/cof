@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cof.dev/schemas/0.5/hair.schema.json",
+  "title": "elements/appearance/<v>/hair.json — code COF-HAIR-1",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "model": {
+      "const": "COF-HAIR-1"
+    },
+    "length": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9,
+      "description": "0 chauve · 1 ras · 2 court · 3 oreilles · 4 menton · 5 épaules · 6 omoplates · 7 milieu du dos · 8 taille · 9 au-delà"
+    },
+    "curl": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9,
+      "description": "0 raide · 3 ondulé · 6 bouclé · 9 crépu (échelle Andre 1a–4c projetée)"
+    },
+    "density": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9
+    },
+    "thickness": {
+      "enum": [
+        "fine",
+        "medium",
+        "coarse",
+        null
+      ]
+    },
+    "color_base_hex": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^#[0-9a-fA-F]{6}$"
+    },
+    "color_secondary_hex": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^#[0-9a-fA-F]{6}$"
+    },
+    "grey_pct": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 100
+    },
+    "style": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "loose, bob, braids, bun, ponytail, undercut, mohawk, locs, afro…"
+    },
+    "parting": {
+      "enum": [
+        "left",
+        "right",
+        "middle",
+        "none",
+        null
+      ]
+    },
+    "fringe": {
+      "enum": [
+        "none",
+        "straight",
+        "side",
+        "curtain",
+        null
+      ]
+    },
+    "renderings": {
+      "type": "object",
+      "properties": {
+        "prompt": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "required": [
+    "model"
+  ]
+}

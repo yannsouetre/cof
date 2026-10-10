@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cof.dev/schemas/0.5/visemes.schema.json",
+  "title": "elements/motion/<v>/visemes.json — vocabulaire de visèmes des clips",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "vocabulary": {
+      "enum": [
+        "ARKit-52",
+        "Oculus-15",
+        "PrestonBlair-AX",
+        "UnifiedExpressions-1.0",
+        "custom"
+      ]
+    },
+    "mapping": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "si custom : nom local → nom ARKit"
+    }
+  },
+  "required": [
+    "vocabulary"
+  ]
+}

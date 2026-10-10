@@ -47,6 +47,31 @@ def manifest_validator() -> Draft202012Validator:
     return _validator
 
 
+_sub_validators: dict[str, Draft202012Validator] = {}
+# which sub-file schema validates which variant field (by category / kind)
+SUBFILE_SCHEMAS = {
+    ("personality", None, "card"): "card", ("personality", None, "psyche"): "psyche",
+    ("identity_weights", None, "spec"): "weights", ("voice", None, "profile"): "voice-profile",
+    ("posture", "attitude", "spec"): "attitude", ("motion", "attitude", "spec"): "attitude",
+    ("posture", None, "pose"): "pose", ("appearance", "hair", "code"): "hair", ("appearance", "body", "params"): "body",
+    ("motion", None, "visemes"): "visemes",
+}
+
+
+def sub_validator(name: str) -> Draft202012Validator:
+    if name not in _sub_validators:
+        with resources.files("cof_cli").joinpath(f"schemas/{name}.schema.json").open("r", encoding="utf-8") as f:
+            _sub_validators[name] = Draft202012Validator(json.load(f), format_checker=jsonschema.FormatChecker())
+    return _sub_validators[name]
+
+
+def validate_subfile(obj: dict, schema: str, rep: "Report", where: str) -> None:
+    """Validate a sub-file (or inline object) against spec/schemas/<schema>.schema.json. Errors are errors: these files are ours."""
+    for e in sorted(sub_validator(schema).iter_errors(obj), key=lambda e: list(e.path)):
+        loc = "/".join(str(p) for p in e.path) or "(racine)"
+        rep.errors.append(f"{where} [{schema}.schema {loc}] : {e.message[:160]}")
+
+
 def validate_manifest(manifest: dict, rep: Report) -> None:
     for e in sorted(manifest_validator().iter_errors(manifest), key=lambda e: list(e.path)):
         loc = "/".join(str(p) for p in e.path) or "(racine)"
@@ -165,6 +190,13 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                 rel = rv.get(fld)
                 if isinstance(rel, str) and not (src / rel).is_file():
                     rep.errors.append(f"{where}.{fld} : fichier absent {rel}")
+                elif isinstance(rel, str) and rel.endswith(".json"):
+                    schema = SUBFILE_SCHEMAS.get((etype, rv.get("kind"), fld)) or SUBFILE_SCHEMAS.get((etype, None, fld))
+                    if schema:
+                        try:
+                            validate_subfile(json.loads((src / rel).read_text("utf-8")), schema, rep, f"{where}.{fld} ({rel})")
+                        except Exception as ex:
+                            rep.errors.append(f"{where}.{fld} : JSON illisible ({ex})")
             if isinstance(rv.get("mesh"), dict) and not (src / rv["mesh"]["path"]).is_file():
                 rep.errors.append(f"{where}.mesh : fichier absent {rv['mesh']['path']}")
             for lst in ("images", "derived", "samples", "clips", "videos"):
@@ -235,6 +267,9 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                 rep.errors.append(f"appearance.{vid} (intimate) : âge obligatoire (≥ {ADULT})")
             elif x < ADULT:
                 rep.errors.append(f"appearance.{vid} (intimate) : âge {x} < {ADULT} — interdit")
+    for cwhere, cobj in [("rights.consent", (manifest.get("rights", {}) or {}).get("consent")), *[(f"identities.{i}.consent", (x or {}).get("consent")) for i, x in ids.items()]]:
+        if isinstance(cobj, dict):
+            validate_subfile(cobj, "consent", rep, cwhere)
     if manifest.get("fictional") is False and not (manifest.get("rights", {}) or {}).get("consent"):
         rep.errors.append("personnage non fictif sans rights.consent")
 

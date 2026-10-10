@@ -34,7 +34,7 @@ Et une **innovation à part** qui mérite sa propre visibilité : **COF-Vector**
 | 4 | Exemples 1–2 (texte seul ; apparence) | ✅ (7 exemples) |
 | 5 | Découpage de planches + post-traitements (Python de référence) | ✅ (dérivés optionnels) |
 | 6 | Vocabulaires : FDV (visage descriptif), HAIR, FACS↔ARKit, LMA, squelettes | ⬜ (styles visuels fait) |
-| 7 | Schémas des sous-fichiers : attitude, pose, skeleton, voice profile, weights | ⬜ |
+| 7 | Schémas des sous-fichiers : card, psyche, weights, voice profile, attitude, pose, skeleton, hair, body, consent, visemes — validés par la CLI | ✅ (11 schémas ; reste `outfit`, `voice.vec`, `face.mesh`) |
 | 8 | `voice measure` (mesures acoustiques → code vocal) | ⬜ |
 | 9 | Pose depuis photo → OpenPose normalisé + rendu « bonhomme » | ⬜ |
 | 10 | Builder (identités, 7 catégories typées, presets multi-emplacements, fusion, export de preset) | ✅ (v0.5) |

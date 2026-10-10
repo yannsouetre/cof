@@ -1,0 +1,222 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cof.dev/schemas/0.5/voice-profile.schema.json",
+  "title": "elements/voice/<v>/profile.json — profil vocal canonique, échantillons, artefacts moteurs",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "canonical": {
+      "type": "object",
+      "properties": {
+        "gender_presentation": {
+          "enum": [
+            "",
+            "feminine",
+            "masculine",
+            "androgynous",
+            "neutral",
+            "nonhuman"
+          ]
+        },
+        "age_perceived": {
+          "type": "string",
+          "description": "'30s', 'child', 'elderly'… — perception, pas identité"
+        },
+        "accent": {
+          "type": "string"
+        },
+        "pitch": {
+          "type": "object",
+          "properties": {
+            "range": {
+              "enum": [
+                "",
+                "very-low",
+                "low",
+                "medium",
+                "high",
+                "very-high"
+              ]
+            },
+            "f0_median_hz": {
+              "type": "number",
+              "minimum": 40,
+              "maximum": 1200
+            }
+          }
+        },
+        "rate": {
+          "enum": [
+            "",
+            "slow",
+            "slow-medium",
+            "medium",
+            "medium-fast",
+            "fast"
+          ]
+        },
+        "loudness": {
+          "enum": [
+            "",
+            "soft",
+            "medium",
+            "loud"
+          ]
+        },
+        "timbre": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "expressivity": {
+          "enum": [
+            "",
+            "flat",
+            "moderate",
+            "expressive",
+            "theatrical"
+          ]
+        },
+        "vpa": {
+          "type": "object",
+          "description": "Vocal Profile Analysis (Laver) — valeurs ordinales 0–6 par paramètre",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 6
+          }
+        }
+      }
+    },
+    "speech_style": {
+      "type": "object",
+      "properties": {
+        "register": {
+          "type": "string"
+        },
+        "fillers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "laugh": {
+          "type": "string"
+        },
+        "pauses": {
+          "type": "string"
+        }
+      }
+    },
+    "emotion_range": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "catégories EmotionML couvertes par les échantillons"
+    },
+    "samples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "path"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9.-]{0,63}$"
+          },
+          "path": {
+            "type": "string",
+            "pattern": "^(?!/)(?!.*\\.\\.)[A-Za-z0-9._/-]+$"
+          },
+          "duration_s": {
+            "type": "number",
+            "minimum": 0
+          },
+          "transcript": {
+            "type": "string",
+            "pattern": "^(?!/)(?!.*\\.\\.)[A-Za-z0-9._/-]+$"
+          },
+          "emotion": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string",
+            "pattern": "^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
+          },
+          "canonical_slot": {
+            "enum": [
+              "8s",
+              "30s",
+              "2min",
+              "other"
+            ]
+          }
+        }
+      }
+    },
+    "engines": {
+      "type": "array",
+      "description": "artefacts dérivés nommés, versionnés, périssables",
+      "items": {
+        "type": "object",
+        "required": [
+          "engine",
+          "version"
+        ],
+        "properties": {
+          "engine": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "artifact": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9.-]{0,63}$"
+          },
+          "voice_id": {
+            "type": "string"
+          },
+          "expires": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      }
+    },
+    "prompt_renderings": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "rendus texte par moteur : parler-tts, elevenlabs-description, generic"
+    },
+    "ssml_template": {
+      "type": "string"
+    },
+    "fingerprint": {
+      "type": "object",
+      "properties": {
+        "model": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!/)(?!.*\\.\\.)[A-Za-z0-9._/-]+$"
+        },
+        "usage": {
+          "const": "verification-only"
+        }
+      }
+    },
+    "consent_asset": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9.-]{0,63}$"
+    }
+  }
+}
