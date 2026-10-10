@@ -12,8 +12,10 @@ KINDS = {
     "volume3d": ["mesh", "face-mesh", "point-cloud", "print", "other"],
     "voice": ["samples", "described"],
     "posture": ["photo", "photos", "openpose", "silhouette", "attitude", "description"],
-    "motion": ["clips", "video", "description"],
+    "motion": ["clips", "video", "attitude", "description"],   # 'attitude' (signature de mouvement) est admis ici ET dans posture
 }
+# categories that are LIBRARIES in a preset: several variants of any kind, none mandatory at inference
+LIBRARY_CATEGORIES = {"posture", "motion"}
 # kinds that may appear several times in one preset (subject to region rules)
 MULTI_KINDS = {"clothing", "accessory", "pilosity", "feature"}
 
@@ -190,6 +192,8 @@ def region_conflicts(res: dict[str, list[dict]]) -> list[str]:
 def single_kind_violations(res: dict[str, list[dict]]) -> list[str]:
     out = []
     for cat, lst in res.items():
+        if cat in LIBRARY_CATEGORIES:
+            continue
         seen = {}
         for v in lst:
             k = v.get("kind")

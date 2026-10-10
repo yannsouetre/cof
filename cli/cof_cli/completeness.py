@@ -80,6 +80,7 @@ def compute_preset(manifest: dict, pid: str | None, src: Path | None = None) -> 
     clips = [A[i] for v in mo for i in (v.get("clips") or []) if i in A]
     vids = [A[i] for v in mo for i in (v.get("videos") or []) if i in A]
     s = 60 * bool(clips or vids) + 25 * any(v.get("visemes") for v in mo) + 15 * (bool(clips) and all(a.get("rig") for a in clips))
+    s += 30 * any(v.get("kind") == "attitude" for v in mo)   # signature de mouvement (attitude.json) admise ici
     L["motion"] = min(100, s)
 
     rg = m.get("rights", {}) or {}
