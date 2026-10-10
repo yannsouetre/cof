@@ -66,7 +66,7 @@ def compute_preset(manifest: dict, pid: str | None, src: Path | None = None) -> 
     v = first(r, "voice"); samples = [A[i] for i in (v or {}).get("samples", []) if i in A]
     s = 0
     if samples:
-        s += 40 if all(a.get("transcript") for a in samples) else 20
+        s += 30 + 10 * all(a.get("transcript") for a in samples)   # transcription facultative : bonus
         d = sorted(a.get("duration_s", 0) for a in samples)
         s += 10 * (d[0] <= 12 and d[-1] >= 25)
     s += 25 * bool(v and (v.get("profile") or v.get("kind") == "described")) + 20 * bool(v and v.get("vec")) + 5 * bool(v and v.get("engines"))

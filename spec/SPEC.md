@@ -32,7 +32,7 @@ Fichier .cof
 | Apparence | visage, cheveux, pilosité, corps, tenues — en images, maillages, paramètres, descriptif | JPEG/PNG, glTF/FLAME/Anny, Fashionpedia, GarmentCode, Monk |
 | Poids d'identité **[NOUVEAU]** | LoRA / embeddings liés à un modèle de base | safetensors, Civitai/HF |
 | Attitude physique | signature de mouvement, postures OpenPose | LMA, BAP, BML, OpenPose |
-| Voix | échantillons + transcriptions, profil typé, code vocal | WAV, SSML, EmotionML, VPA |
+| Voix | échantillons (transcription facultative), profil typé, code vocal | WAV, SSML, EmotionML, VPA |
 | Volumétrie | avatar riggé, splat, version imprimable | VRM 1.0 / glTF, SPZ, 3MF |
 | Mouvement | clips, mapping de visèmes | BVH, VRMA |
 | Dérivés **[NOUVEAU]** | post-traitements optionnels (cartes Canny/lineart/softedge…) | préprocesseurs ControlNet |
@@ -137,7 +137,7 @@ Champs **obligatoires** de l'identité : `name`, `age` (valeur + unité + base :
 | `appearance` | photos | `reference-set` (photos en vrac, l'IA se débrouille), `character-sheet` (plusieurs angles sur une image), `face`, `body`, `hair`, `clothing` (+ `garment`), `accessory` (+ `accessory`), `intimate`, `pilosity` (+ `area` face/corps), `feature` (particularité : cornes, queue, prothèse… + `region`), `description` |
 | `identity_weights` | poids | `lora`, `lycoris`, `dora`, `textual-inversion`, `ip-adapter-embedding`, `dreambooth`, `other` (+ `covers`) |
 | `volume3d` | 3D | `mesh` (avatar riggé / maillage complet), `face-mesh`, `point-cloud` (splat), `print` (3MF), `other` |
-| `voice` | audio | `samples` (échantillons + transcriptions), `described` (profil sans audio) |
+| `voice` | audio | `samples` (échantillons, transcription facultative), `described` (profil sans audio) |
 | `posture` | pose (**bibliothèque**) | `photo` (une pose), `photos` (plusieurs vues d'une même pose), `openpose`, `silhouette`, `attitude` (signature de mouvement), `description` — avec `use: pose-only` (l'inférence ne retient que la pose) |
 | `motion` | mouvement (**bibliothèque**) | `clips` (BVH / VRMA), `video` (très court, basse résolution, plafond 20 Mo sauf `max_bytes_ack`), `attitude`, `description` |
 
@@ -248,8 +248,11 @@ Le validateur vérifie la cohérence des mesures entre `params` et `mesh` quand 
 ### 4.4 `body`
 `body.json` : Anny (phénotypes [0,1]), β SMPL-X pour interop, mesures ISO 7250, teint, descriptif, `renderings.prompt` ; vues `body.*`. **Morphologie estimée sous les vêtements** (`body.estimated`, optionnelle, marquée `estimated` + `confidence`) : pose + silhouette corrigée d'un offset vestimentaire + a priori anthropométriques ; **interdite si `age < 18`**, non appliquée aux classes `mechanical`/`amorphous`, jamais sur une personne réelle sans `consent.scope` ∋ `likeness-3d`.
 
-### 4.5 `intimate` (optionnel, verrouillé)
-Élément séparé, même schéma descriptif, **ignoré par défaut** par les lecteurs tant que `permissions.allowSexualUsage` n'est pas vrai ; sa présence rend le fichier **invalide** si l'âge le plus bas (manifeste ou `age_override` d'un preset) est < 18.
+### 4.5 `intimate` (optionnel, à activation explicite — *opt-in*)
+Type de déclinaison d'apparence (`kind: intimate`), même schéma que `face`/`body`. **Rien n'est chiffré ni caché** (principe du format) ; « opt-in » a trois conséquences techniques précises :
+1. **Non-chargement par défaut** : un lecteur conforme n'ouvre pas les images de cette déclinaison, ne les injecte dans aucun prompt et ne les affiche pas, sauf si *à la fois* `rights.permissions.allowSexualUsage` est vrai **et** l'application hôte le demande explicitement (paramètre d'ouverture, jamais un défaut).
+2. **Isolement physique** : ses fichiers vivent dans leur propre dossier `elements/appearance/<v>/`, référencés seulement par cette déclinaison, de sorte qu'un hôte ou `cof extract` puisse produire une copie « tout public » en supprimant un dossier et une entrée, sans toucher au reste.
+3. **Signalement obligatoire** : `tags.content` doit contenir `nudity` ou `sexual` dès qu'une telle déclinaison existe (erreur de validation sinon), et sa présence rend le fichier **invalide** si l'âge le plus bas (manifeste ou `age_override` d'un preset) est < 18.
 
 ### 4.6 `identity_weights` — LoRA et embeddings **[NOUVEAU]**
 ```jsonc
@@ -295,7 +298,7 @@ Vocabulaire `visual-styles-1.0` (CC0, extensible) : `photo-realistic`, `cinemati
 Les sections se renvoient par identifiants ; le validateur signale les doublons textuels > 80 %.
 
 ### 6.2 Contenu d'une déclinaison de voix
-`profile.json` (profil canonique typé : genre perçu, âge, accent, hauteur, débit, volume, timbre, expressivité ; VPA ordinal ; `speech_style` ; `emotion_range` EmotionML ; échantillons en durées canoniques ≈ 8 s / 30 s / 2 min **chacun avec transcription** ; `engines[]` = artefacts dérivés nommés, versionnés, périssables — latents XTTS, `se.pth` OpenVoice, `spk2info` CosyVoice, packs Kokoro, `voice_id` cloud ; `prompt_renderings` ; `ssml_template` ; `fingerprint` ECAPA pour vérification seulement) et `voice.vec.json` (code vocal COF-Voice : mesures acoustiques calculées F0/débit/pauses/HNR/jitter/shimmer, qualité ordinale, manière de s'exprimer, rendus phrase/SSML/Parler). Consentement obligatoire si personne réelle.
+`profile.json` (profil canonique typé : genre perçu, âge, accent, hauteur, débit, volume, timbre, expressivité ; VPA ordinal ; `speech_style` ; `emotion_range` EmotionML ; échantillons en durées canoniques ≈ 8 s / 30 s / 2 min, **transcription facultative mais recommandée** (fichier `.txt` à côté, référencé par `assets[].transcript`) : les moteurs de clonage zero-shot (ElevenLabs, XTTS, OpenVoice, Chatterbox) n'en ont pas besoin ; les moteurs à alignement texte (F5-TTS, CosyVoice, Fish Speech) et les contrôles de cohérence en profitent — d'où un bonus de complétude, jamais une obligation ; `engines[]` = artefacts dérivés nommés, versionnés, périssables — latents XTTS, `se.pth` OpenVoice, `spk2info` CosyVoice, packs Kokoro, `voice_id` cloud ; `prompt_renderings` ; `ssml_template` ; `fingerprint` ECAPA pour vérification seulement) et `voice.vec.json` (code vocal COF-Voice : mesures acoustiques calculées F0/débit/pauses/HNR/jitter/shimmer, qualité ordinale, manière de s'exprimer, rendus phrase/SSML/Parler). Consentement obligatoire si personne réelle.
 
 ---
 
