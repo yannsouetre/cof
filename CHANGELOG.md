@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.4 — 2026-10-10 — builder
+- En-tête allégé : plus de bouton « Build » (doublon de l'étape 6) ni « Importer et fusionner » (doublon) ; l'import-fusion vit à l'étape Build sous un seul bouton « Importer et fusionner un .cof (preset, personnage)… ». L'en-tête garde « Ouvrir un .cof » (remplace le travail en cours) et le thème.
+
 ## 0.5.3 — 2026-10-10 — builder
 - Logo (silhouette tête-épaules, monochrome + chevron accent) devant le titre ; bouton **clair / sombre** dans l'en-tête (mémorisé localement, suit le système par défaut) ; champs « Âge représenté » et « Base de l'âge » côte à côte, avant les tags de style.
 

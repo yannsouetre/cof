@@ -44,16 +44,14 @@ footer{padding:14px 28px;color:var(--muted);font-size:12.5px;border-top:1px soli
 <body>
 <header>
   <svg class="logo" viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><circle cx="16" cy="10" r="6" fill="currentColor"/><path d="M4 30a12 9 0 0 1 24 0Z" fill="currentColor"/><path d="M12 19.5 16 23l4-3.5" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-  <h1>COF Builder <span>· Character Open File v0.5 · builder 0.5.3</span></h1>
+  <h1>COF Builder <span>· Character Open File v0.5 · builder 0.5.4</span></h1>
   <span class="badge" id="hdrName">Nouveau personnage</span>
   <span class="badge" id="hdrScore">complétude —</span>
   <div class="spacer"></div>
   <button class="btn small" id="btnTheme" title="Basculer clair / sombre">🌙 Sombre</button>
   <button class="btn small" id="btnOpen">Ouvrir un .cof</button>
   <input type="file" id="fileOpen" accept=".cof,.zip" hidden>
-  <button class="btn small" id="btnMerge" title="Ajoute un ou plusieurs .cof (preset exporté, autre personnage…) à celui-ci">Importer et fusionner…</button>
   <input type="file" id="fileMerge" accept=".cof,.zip" multiple hidden>
-  <button class="btn small primary" id="btnGoBuild">Build</button>
 </header>
 <main>
   <nav id="nav">
@@ -139,7 +137,7 @@ footer{padding:14px 28px;color:var(--muted);font-size:12.5px;border-top:1px soli
     </fieldset>
     <div class="inline">
       <button class="btn primary" id="btnBuild">Construire et télécharger le .cof</button>
-      <span class="inline" style="gap:6px"><button class="btn" id="btnExportPreset">Exporter un preset</button><span class="hint">lequel :</span><select id="x_preset" style="width:auto" title="preset à exporter"></select><button class="btn" id="btnImportPreset" title="Un preset exporté est un .cof allégé : l'importer, c'est le fusionner dans ce fichier (ses déclinaisons et son preset s'ajoutent)">Importer un preset…</button></span>
+      <span class="inline" style="gap:6px"><button class="btn" id="btnExportPreset">Exporter un preset</button><span class="hint">lequel :</span><select id="x_preset" style="width:auto" title="preset à exporter"></select><button class="btn" id="btnImportPreset" title="Ajoute au fichier courant un ou plusieurs .cof : preset exporté, autre personnage (mêmes nom + surnom ⇒ même identité, sinon nouvelle identité)">Importer et fusionner un .cof (preset, personnage)…</button></span>
       <button class="btn" id="btnExportPng">Carte PNG (ccv3)</button>
       <button class="btn" id="btnExportSoul">SOUL.md / IDENTITY.md</button>
       <button class="btn" id="btnManifest">Voir le manifeste</button>
@@ -247,7 +245,6 @@ const sel=(k,opts,val,extra="")=>`<select ${k} ${extra}>${opts.map(([v,l])=>`<op
 /* ============================ navigation ============================ */
 $$("#nav button").forEach(b=>b.onclick=()=>go(b.dataset.step));
 function go(step){$$("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.step===step));$$("section.step").forEach(s=>s.classList.toggle("active",s.id==="step-"+step));if(step==="identity")renderIdentities();if(step==="presets")renderPresets();if(step==="checks")fillPresetSelect();if(step==="build"){fillPresetSelect();estimate()}if(step==="rights")renderPerms()}
-$("#btnGoBuild").onclick=()=>go("build");
 
 /* ============================ identités ============================ */
 function newIdentity(init){let i=1;while(S.identities["id"+i])i++;const id="id"+i;S.identities[id]={name:"",nickname:"",fictional:true,morph:"human",species:"",summary:"",tags:"",content:["none"],ip:"original",franchise:"",consent:null,...(init||{})};if(!S.defaultIdentity)S.defaultIdentity=id;curIdentity=id;return id}
@@ -454,14 +451,14 @@ async function assemble(opts){
     priorities:{visual:$("#prio_visual").value.split(",").map(s=>s.trim()).filter(Boolean),voice:$("#prio_voice").value.split(",").map(s=>s.trim()).filter(Boolean),by_target:{"game-3d":{visual:["avatar","images","identity_weights","descriptive"]},"chat-text":{visual:["descriptive","images"]},"video-realtime":{visual:["avatar","images","identity_weights","descriptive"]}}},
     mapping_vocabularies:{},assets,size_class:$("#b_class").value,container:{aligned:0,executableContent:"none"},
     rights:{permissions:{...S.perms},consent},
-    provenance:{created:S.loadedManifest?.provenance?.created||new Date().toISOString().replace(/\.\d+Z$/,"Z"),modified:new Date().toISOString().replace(/\.\d+Z$/,"Z"),generator:"cof-builder/0.5.3",source:[...(S.loadedManifest?.provenance?.source||[]),...($("#r_source").value?[$("#r_source").value]:[])].filter((x,i,a)=>a.indexOf(x)===i),c2pa:null,signatures:[]},
+    provenance:{created:S.loadedManifest?.provenance?.created||new Date().toISOString().replace(/\.\d+Z$/,"Z"),modified:new Date().toISOString().replace(/\.\d+Z$/,"Z"),generator:"cof-builder/0.5.4",source:[...(S.loadedManifest?.provenance?.source||[]),...($("#r_source").value?[$("#r_source").value]:[])].filter((x,i,a)=>a.indexOf(x)===i),c2pa:null,signatures:[]},
     metadata:{"@context":{dc:"http://purl.org/dc/elements/1.1/"},"dc:creator":[$("#r_creator").value||""]},extensions:{}};
   // languages = union
   const langs=new Set();for(const e of Object.values(elements.personality?.variants||{}))if(e.language)langs.add(e.language);for(const a of assets)if(a.role==="voice-sample"&&a.language)langs.add(a.language);manifest.languages=[...langs];
   const at=new Set([DR.morphology.class,la===null?"age-unknown":la<13?"child":la<18?"teen":la>=65?"elder":"adult",...manifest.languages]);if(elements.voice)at.add("has-voice");if(elements.volume3d)at.add("has-3d");if(elements.motion)at.add("has-motion");if(elements.identity_weights)at.add("has-weights");if(Object.keys(presets).length>1)at.add("multi-preset");if(Object.keys(identities).length>1)at.add("multi-identity");const ps=presets[S.defaultPreset]?.style;if(ps)at.add("style-"+ps);manifest.tags.auto=[...at].map(slug).filter(Boolean);
   const dres=resolved(S.defaultPreset);for(const id of first(dres,"appearance","face")?.images||[]){const a=assets.find(x=>x.id===id);if(a&&a.subject==="head"&&a.angle==="front"){manifest.thumbnail=a.path;break}}
-  const kpis={};for(const pid of Object.keys(presets)){kpis[pid]=completeness(pid);presets[pid].completeness={...kpis[pid],computed_by:"cof-builder/0.5.3",computed_at:manifest.provenance.modified};if(S.coherence[pid])presets[pid].coherence=S.coherence[pid]}
-  manifest.completeness={...kpis[S.defaultPreset],computed_by:"cof-builder/0.5.3",computed_at:manifest.provenance.modified};
+  const kpis={};for(const pid of Object.keys(presets)){kpis[pid]=completeness(pid);presets[pid].completeness={...kpis[pid],computed_by:"cof-builder/0.5.4",computed_at:manifest.provenance.modified};if(S.coherence[pid])presets[pid].coherence=S.coherence[pid]}
+  manifest.completeness={...kpis[S.defaultPreset],computed_by:"cof-builder/0.5.4",computed_at:manifest.provenance.modified};
   manifest.coverage={elements:Object.keys(elements),variants:Object.values(elements).reduce((n,e)=>n+Object.keys(e.variants).length,0),presets:Object.keys(presets).length,identities:Object.keys(identities).length};
   if(lowestAge()!==null&&lowestAge()<ADULT&&!Object.values(S.presets).some(p=>p.permissions_override?.allowSexualUsage===false))manifest.rights.permissions.allowSexualUsage=false;   // un preset mineur sans surcharge ⇒ pas d'usage sexuel au niveau fichier
   files.unshift({name:"manifest.json",data:enc.encode(JSON.stringify(manifest,null,2)+"\n"),store:false});files.unshift({name:"mimetype",data:enc.encode(MIME),store:true});
@@ -551,7 +548,7 @@ async function cannyPng(blob){const img=await createImageBitmap(blob);const w=im
   const mag=new Float32Array(w*h);let vals=[];for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const gx=-bl[(y-1)*w+x-1]+bl[(y-1)*w+x+1]-2*bl[y*w+x-1]+2*bl[y*w+x+1]-bl[(y+1)*w+x-1]+bl[(y+1)*w+x+1];const gy=-bl[(y-1)*w+x-1]-2*bl[(y-1)*w+x]-bl[(y-1)*w+x+1]+bl[(y+1)*w+x-1]+2*bl[(y+1)*w+x]+bl[(y+1)*w+x+1];mag[y*w+x]=Math.hypot(gx,gy)}
   for(let i=0;i<mag.length;i+=7)vals.push(mag[i]);vals.sort((a,b)=>a-b);const thr=vals[Math.floor(vals.length*0.92)]||40;const out=ctx.createImageData(w,h);for(let i=0;i<w*h;i++){const v=mag[i]>thr?0:255;out.data[i*4]=out.data[i*4+1]=out.data[i*4+2]=v;out.data[i*4+3]=255}ctx.putImageData(out,0,0);return (await new Promise(r=>cv.toBlob(r,"image/png"))).arrayBuffer()}
 
-$("#btnOpen").onclick=()=>$("#fileOpen").click();$("#btnMerge").onclick=()=>$("#fileMerge").click();$("#btnImportPreset").onclick=()=>$("#fileMerge").click();
+$("#btnOpen").onclick=()=>$("#fileOpen").click();$("#btnImportPreset").onclick=()=>$("#fileMerge").click();
 $("#fileOpen").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const {m,files}=await readCof(f);resetState();await loadManifest(m,files,{});alert("Fichier chargé : "+m.name)}catch(err){alert("Ouverture impossible : "+err.message)}e.target.value=""};
 $("#fileMerge").onchange=async e=>{for(const f of e.target.files){try{const {m,files}=await readCof(f);await loadManifest(m,files,{merge:true});}catch(err){alert("Fusion impossible ("+f.name+") : "+err.message)}}renderIdentities();renderTabs();renderPanel();renderPresets();runChecks();go("presets");e.target.value=""};
 async function readCof(f){const files=await zipRead(await f.arrayBuffer());if(dec.decode(files.get("mimetype")||new Uint8Array()).trim()!==MIME)throw new Error("pas un fichier COF (mimetype)");const m=JSON.parse(dec.decode(files.get("manifest.json")));if(!/^0\.[45]$/.test(String(m.cof)))throw new Error("version "+m.cof+" : lancez `cof migrate` (v0.5 attendue)");if(String(m.cof)==="0.4")migrate45(m);return {m,files}}
