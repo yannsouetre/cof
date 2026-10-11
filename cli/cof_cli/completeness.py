@@ -42,7 +42,8 @@ def compute_preset(manifest: dict, pid: str | None, src: Path | None = None) -> 
         s += 10 * bool(d.get("description")) + 10 * bool(d.get("personality")) + 5 * bool(d.get("scenario")) + 10 * bool(d.get("first_mes")) + 10 * bool(d.get("mes_example"))
         s += 10 * bool(p.get("story") or p.get("lorebook") or d.get("character_book"))
     elif p and p.get("kind") == "description":
-        s += 35
+        n = len(p.get("text") or "")
+        s += 35 + 15 * (n >= 400) + 10 * (n >= 1500)        # une fiche libre riche est utilisable en chat (≥ 50)
     s += 15 * bool(p and p.get("psyche"))
     L["personality"] = min(100, s)
 

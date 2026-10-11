@@ -239,6 +239,22 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
         _age_rules(manifest, pid, res, perms_all, rep)
     if not pids:
         _age_rules(manifest, None, implicit_resolved(manifest), perms_all, rep)
+    for etype, e in elements.items():
+        V = (e or {}).get("variants", {}) or {}
+        for vid, v in V.items():
+            par = V.get(v.get("derives_from") or "")
+            if par and par.get("kind") != v.get("kind"):
+                rep.warnings.append(f"elements.{etype}.{vid} ({v.get('kind')}) dérive de {v['derives_from']} ({par.get('kind')}) : types différents, l'héritage mélange des champs sans rapport")
+    ages_by_voice: dict[str, list] = {}
+    for pid in pids:
+        pa = preset_age(manifest, pid)
+        for v in resolved(manifest, pid).get("voice", []):
+            if pa is not None:
+                ages_by_voice.setdefault(v["_id"], []).append((pa, pid))
+    for vid, lst in ages_by_voice.items():
+        lo, hi = min(lst), max(lst)
+        if hi[0] - lo[0] > 15:
+            rep.warnings.append(f"voice.{vid} partagée par des presets d'âges très éloignés ({lo[1]} : {lo[0]:g} ans, {hi[1]} : {hi[0]:g} ans) — prévoir une voix par tranche d'âge")
     # intimate ⇒ tags.content must flag it (opt-in element, never hidden)
     has_intimate = any((v or {}).get("kind") == "intimate" for v in ((elements.get("appearance") or {}).get("variants", {}) or {}).values())
     content = set(((manifest.get("tags") or {}).get("content") or []))
@@ -336,14 +352,15 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
         manifest["coverage"] = comp["coverage"]
         for pid, c in comp["presets"].items():
             manifest["presets"][pid]["completeness"] = {**c, "computed_by": f"cof-cli/{__version__}", "computed_at": now}
-        # thumbnail = head.front of the default preset's face
+        # thumbnail = head.front of the default preset's face, else first image of face / character-sheet / reference-set / body
         r = resolved(manifest, dp)
-        fv = first(r, "appearance", "face")
-        for aid in (fv or {}).get("images", []) or []:
-            a = A.get(aid)
-            if a and a.get("subject") == "head" and a.get("angle") == "front" and a.get("path"):
-                manifest["thumbnail"] = a["path"]
-                break
+        cand = []
+        for k in ("face", "character-sheet", "reference-set", "body"):
+            for v in [x for x in r.get("appearance", []) if x.get("kind") == k]:
+                cand += [A[i] for i in v.get("images", []) or [] if i in A and A[i].get("path")]
+        best = next((a for a in cand if a.get("subject") == "head" and a.get("angle") == "front"), cand[0] if cand else None)
+        if best:
+            manifest["thumbnail"] = best["path"]
         # languages = union of personality / voice sample languages
         langs = set(manifest.get("languages") or [])
         for v in (elements.get("personality") or {}).get("variants", {}).values():

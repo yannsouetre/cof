@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.1 — 2026-10-11 — retours sur le premier fichier multi-presets réel
+- Builder : bouton « + Ajouter une déclinaison » aussi **en bas** de chaque catégorie (dès qu'une déclinaison existe), et « + Ajouter un preset » en bas des presets ; la nouvelle carte défile à l'écran.
+- Complétude (CLI + builder) : une personnalité **texte libre** riche compte enfin pour le chat (35 → +15 au-delà de 400 caractères, +10 au-delà de 1 500) ; avant, une fiche de 4 Ko n'était jamais « prête pour le chat ».
+- Vignette (`thumbnail`) : repli sur la première image visage → planche → photos en vrac → corps du preset par défaut (avant : visage de face uniquement).
+- Tags automatiques : tranche d'âge de **chaque** preset (`child`, `teen`, `adult`, `elder`) + `has-minor-preset` ; avant, seule celle du preset par défaut.
+- Nouveaux contrôles (avertissements, CLI + builder) : voix partagée par des presets d'âges éloignés de plus de 15 ans ; `derives_from` entre types différents (le builder ne propose plus que des parents de même type).
+
 ## 0.7.0 — 2026-10-11 — catégorie « fichiers », usage agent, fiche d'implémentation
 - **Nouvelle catégorie `files`** (bibliothèque, version avancée uniquement) : `skill` (dossier `SKILL.md` + ressources), `memory` (`MEMORY.md`…), `document`, `other` ; champs `files[]`, `entry` (détecté automatiquement), `target` (`agent-skills`, `openclaw`, `hermes`, `claude`, `custom`) ; rôles d'asset `skill-file`, `memory`, `file` ; cible `agent-runtime` et tags `has-skills` / `has-memory`. Scripts de skills refusés sauf déclaration « contenu exécutable » à l'étape Build.
 - **Spec § 7 bis — usage agent** : correspondance SOUL.md / IDENTITY.md / skills / MEMORY.md ↔ COF, vérifiée sur OpenClaw et Hermes Agent ; règles (bibliothèque ignorée des lecteurs non-agents, scripts déclarés, mémoire d'une personne réelle soumise au consentement).
