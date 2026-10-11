@@ -16,6 +16,12 @@
 
 **Ce qui tient lieu de « consommateur réel » dès le jour 1** (principe « une spec sans consommateur meurt ») : (1) la carte PNG exportée (`ccv3`) s'ouvre telle quelle dans SillyTavern, Chub, Risu — compatibilité native, sans attendre d'extension ; (2) `cof export --agent` produit un espace de travail OpenClaw / Hermes / Agent Skills ; (3) le builder rouvre et édite n'importe quel `.cof`. L'extension SillyTavern dédiée, le viewer web et le nœud ComfyUI restent en novembre (1.1).
 
+**Ajouts au plan (11 oct., après le fichier Clara v3)** — à traiter avant le gel du 14 :
+- *Exemple vitrine* : Clara Mercier (6 presets, 4 voix, poses OpenPose, persona agent) devient `spec/examples/10-clara-mercier` — sous réserve de l'accord de Yann sur la licence (CC-BY-4.0 proposé) et de la provenance déclarée des images et voix (outils de génération, `digitalSourceType: trainedAlgorithmicMedia`).
+- *Identifiants des schémas* : les `$id` pointent vers `cof.dev`, domaine que le projet ne possède pas. Les remplacer par l'adresse GitHub Pages (`https://yannsouetre.github.io/cof/schemas/1.0/…`) au moment de la numérotation 1.0.
+- *Langue normative* : spec en anglais pour l'annonce (le français devient la traduction) — décision de Yann.
+- *Activation de GitHub Pages* sur le dépôt (réglage administrateur, côté Yann) pour publier le builder et les schémas.
+
 **Indicateurs à J+14** : 10 `.cof` tiers, 1 contributeur externe, 1 outil tiers qui lit ou écrit le format, 300 étoiles.
 
 ---

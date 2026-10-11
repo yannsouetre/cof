@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.2 — 2026-10-11
+- Les étiquettes de langue sont acceptées dans toutes les casses (`FR`, `fr-FR`, `fr`) — BCP 47 est insensible à la casse (RFC 5646 § 2.1.1) ; le builder les normalise en minuscules.
+- Correctif builder : `profile.json` reprenait la langue d'échantillon saisie au moment du dépôt, pas celle de la déclinaison (fichier v3 de test rendu non conforme). Rouvrir et reconstruire un fichier corrige.
+
 ## 0.7.1 — 2026-10-11 — retours sur le premier fichier multi-presets réel
 - Builder : bouton « + Ajouter une déclinaison » aussi **en bas** de chaque catégorie (dès qu'une déclinaison existe), et « + Ajouter un preset » en bas des presets ; la nouvelle carte défile à l'écran.
 - Complétude (CLI + builder) : une personnalité **texte libre** riche compte enfin pour le chat (35 → +15 au-delà de 400 caractères, +10 au-delà de 1 500) ; avant, une fiche de 4 Ko n'était jamais « prête pour le chat ».
