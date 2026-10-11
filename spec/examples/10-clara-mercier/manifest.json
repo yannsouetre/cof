@@ -352,7 +352,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:47:08Z"
+        "computed_at": "2026-10-11T17:53:56Z"
       }
     },
     "en-manga": {
@@ -393,7 +393,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:47:08Z"
+        "computed_at": "2026-10-11T17:53:56Z"
       }
     },
     "en-12": {
@@ -437,7 +437,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:47:08Z"
+        "computed_at": "2026-10-11T17:53:56Z"
       }
     },
     "en-65": {
@@ -481,7 +481,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:47:08Z"
+        "computed_at": "2026-10-11T17:53:56Z"
       }
     },
     "en-future": {
@@ -525,7 +525,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:47:08Z"
+        "computed_at": "2026-10-11T17:53:56Z"
       }
     },
     "en-agent": {
@@ -567,7 +567,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:47:08Z"
+        "computed_at": "2026-10-11T17:53:56Z"
       }
     },
     "fr": {
@@ -608,7 +608,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:47:08Z"
+        "computed_at": "2026-10-11T17:53:56Z"
       }
     },
     "fr-manga": {
@@ -630,14 +630,14 @@
         ]
       },
       "completeness": {
-        "score": 52,
+        "score": 54,
         "level": "C",
         "layers": {
           "identity": 100,
           "personality": 60,
           "appearance": 20,
           "physique": 100,
-          "voice": 55,
+          "voice": 65,
           "volume": 0,
           "motion": 0,
           "rights": 85
@@ -649,7 +649,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:47:08Z"
+        "computed_at": "2026-10-11T17:53:56Z"
       }
     },
     "fr-12": {
@@ -693,7 +693,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:47:08Z"
+        "computed_at": "2026-10-11T17:53:56Z"
       }
     },
     "fr-65": {
@@ -737,7 +737,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:47:08Z"
+        "computed_at": "2026-10-11T17:53:56Z"
       }
     },
     "fr-futur": {
@@ -781,7 +781,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:47:08Z"
+        "computed_at": "2026-10-11T17:53:56Z"
       }
     },
     "fr-agent": {
@@ -823,7 +823,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:47:08Z"
+        "computed_at": "2026-10-11T17:53:56Z"
       }
     }
   },
@@ -1065,7 +1065,8 @@
       "duration_s": 11.7,
       "language": "fr",
       "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
-      "generator": "ElevenLabs (v4) / Typecast — free plans"
+      "generator": "ElevenLabs (v4) / Typecast — free plans",
+      "transcript": "elements/voice/v5/samples/clara-manga.txt"
     },
     {
       "id": "a-voice-v6-clara-mercier-en",
@@ -1224,7 +1225,7 @@
       "archive"
     ],
     "computed_by": "cof-cli/0.7.0",
-    "computed_at": "2026-10-11T17:47:08Z"
+    "computed_at": "2026-10-11T17:53:56Z"
   },
   "preset_tags": [
     {
