@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.2 — 2026-10-11 — builder : retour visuel et inventaire des fichiers
+- Version facile : zone de dépôt réduite de moitié, icônes de média doublées (grille 2 colonnes) ; au chargement d'un média : **animation** de grossissement avec halo vert, coche verte qui apparaît ensuite, fond de la tuile légèrement vert, **son** discret (deux notes, WebAudio, aucun fichier) ; **tableau des fichiers chargés** sous la zone de dépôt (fichier, emplacement dans le .cof, format, média).
+- Version avancée : tableau des fichiers de la déclinaison sous chaque zone de dépôt ; étape Build : **récapitulatif de tous les fichiers** (fichier, emplacement, format, taille, média, déclinaison, presets). Tables à filets fins gris clair.
+- Images `.jfif` et autres variantes JPEG acceptées (0.6.1).
+
 ## 0.6.0 — 2026-10-11 — builder : version facile et interface multilingue
 - **Version facile** (bouton en haut à droite ; la version avancée reste le défaut) : nom + grande zone de dépôt ; icônes des 7 médias sur le côté, coche verte quand un fichier est chargé (une carte PNG coche personnalité **et** apparence) ; seuls personnalité (fiche/texte), apparence (une image) et voix (un échantillon) sont acceptés, les autres sont grisés « version avancée » ; un seul fichier par média — un second propose de passer en version avancée (oui : bascule et ajoute le fichier) ; un seul preset ; champ « Âge apparent sur les photos » dès qu'une image est déposée (règle v0.5) ; message « Passez à la version avancée si… » ; ouvrir un `.cof` bascule automatiquement en version avancée.
 - **Langue de l'interface** : FR (source), EN, DE, ES, ZH, JA — sélecteur dans l'en-tête, mémorisé localement. Portée : navigation, titres, libellés de champs, catégories, types de déclinaison, boutons, version facile. Non traduits à ce stade : textes d'aide longs, messages de contrôle, spécification (feuille de route, phase 1).
