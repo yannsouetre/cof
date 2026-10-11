@@ -199,7 +199,7 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                             rep.errors.append(f"{where}.{fld} : JSON illisible ({ex})")
             if isinstance(rv.get("mesh"), dict) and not (src / rv["mesh"]["path"]).is_file():
                 rep.errors.append(f"{where}.mesh : fichier absent {rv['mesh']['path']}")
-            for lst in ("images", "derived", "samples", "clips", "videos"):
+            for lst in ("images", "derived", "samples", "clips", "videos", "files"):
                 for aid in rv.get(lst, []) or []:
                     if aid not in A:
                         rep.errors.append(f"{where}.{lst} : asset inconnu {aid}")

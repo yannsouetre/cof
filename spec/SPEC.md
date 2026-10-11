@@ -57,6 +57,7 @@ Six principes :
 | `image-video-gen` | poids d'identité, images, dérivés, prompts | Flux/SDXL + ControlNet, Kling, Veo, Runway, Sora |
 | `game-3d` | avatar riggé, mouvement, visèmes, droits → `meta` VRM | Unity, Unreal, Godot, VRChat, Blender |
 | `agent-persona` | SOUL/IDENTITY dérivés, psyche, `aiDisclosure` | OpenClaw, agents OpenAI/Anthropic/xAI |
+| `agent-runtime` | + `files` : skills (`SKILL.md`), mémoires (`MEMORY.md`), documents | OpenClaw, Hermes Agent, Claude, tout hôte Agent Skills |
 | `print-3d` | 3MF, licence | slicers |
 | `archive` | tout, hashes, C2PA, consentement | dépôts, registres, conformité |
 
@@ -140,6 +141,7 @@ Champs **obligatoires** de l'identité : `name`, `fictional`, `morphology` (`cla
 | `voice` | audio | `samples` (échantillons, transcription facultative), `described` (profil sans audio) |
 | `posture` | pose (**bibliothèque**) | `photo` (une pose), `photos` (plusieurs vues d'une même pose), `openpose`, `silhouette`, `attitude` (signature de mouvement), `description` — avec `use: pose-only` (l'inférence ne retient que la pose) |
 | `motion` | mouvement (**bibliothèque**) | `clips` (BVH / VRMA), `video` (très court, basse résolution, plafond 20 Mo sauf `max_bytes_ack`), `attitude`, `description` |
+| `files` | fichiers libres (**bibliothèque**) | `skill` (dossier d'un skill d'agent : `SKILL.md` + ressources, `entry`), `memory` (`MEMORY.md`, notes datées…), `document` (connaissances, lore, règles), `other` (tout type non prévu par le format) — `files[]` (assets, rôles `skill-file` / `memory` / `document` / `file`), `entry`, `target` (`agent-skills` \| `openclaw` \| `hermes` \| `claude` \| `custom`) |
 
 Règles :
 - Chaque déclinaison déclare `kind` (obligatoire), `label`, `style` / `style_tags` (visuel), `language` (texte/voix), `derives_from` (héritage de champs ; seule « hiérarchie »), `identity` (réservation optionnelle), et ses représentations (`images[]`, `samples[]`, `clips[]`, `videos[]` = identifiants d'assets ; `card`, `psyche`, `params`, `code`, `spec`, `profile`, `path`, `mesh`…).
@@ -311,6 +313,26 @@ Les sections se renvoient par identifiants ; le validateur signale les doublons 
 - Point d'accroche Khronos : `mapping_vocabularies` pourra nommer `KHR_character*` si ces extensions paraissent au registre (existence non confirmée).
 
 ---
+
+## 7 bis. Usage **agent** : personnalité structurée, skills, mémoires
+
+Un `.cof` peut décrire un **agent** autant qu'un personnage à afficher. La correspondance avec les architectures d'agents courantes (vérifiée sur OpenClaw et Hermes Agent, octobre 2026) est volontairement une projection, jamais un couplage :
+
+| Concept d'agent | Où ça vit dans COF | Projection (export) |
+|---|---|---|
+| Âme / style (`SOUL.md`) | `personality` — texte structuré (carte V3 : `description`, `personality`, `system_prompt`, exemples) ou texte libre ; `psyche.json` pour les traits typés | `cof export --soul` → `SOUL.md` + `IDENTITY.md` (déjà disponible) |
+| Identité courte (`IDENTITY.md`) | identité (`name`, `summary`, `morphology`) + vignette `thumbnail` | idem |
+| Skills (`skills/<nom>/SKILL.md`, en-tête YAML `name`, `description`, puis instructions ; ressources et scripts à côté) | `files` / `kind: skill` — une déclinaison par skill, `entry` = `SKILL.md`, `target` indique le dialecte si le skill n'est pas portable | copie du dossier `elements/files/<v>/` vers `skills/<nom>/` |
+| Mémoire persistante (`MEMORY.md`, `USER.md`, notes datées) | `files` / `kind: memory` — `entry` = fichier principal | copie vers la racine de l'espace de travail de l'agent |
+| Connaissances (lore, règles, FAQ) | `files` / `kind: document` | indexation ou contexte, au choix de l'hôte |
+| Outils (`TOOLS.md`, `AGENTS.md`, routage) | **hors périmètre** : ils décrivent l'hôte, pas le personnage. Un `document` peut les transporter, sans sémantique COF | — |
+
+Règles :
+1. `files` est une **bibliothèque** (§ 2.3) : un preset liste les skills et mémoires *disponibles* ; rien n'est chargé par un lecteur qui n'est pas un agent (générateur d'images, moteur vocal…). Les lecteurs non-agents **ignorent** la catégorie.
+2. Un skill qui embarque des scripts (`.py`, `.sh`, `.js`…) impose `container.executableContent: "scripts"` ; sinon le fichier est invalide (§ 9.3). L'hôte reste libre de ne pas exécuter ; la déclaration sert à ce qu'un `.cof` « inerte » le soit vraiment.
+3. Le format de `SKILL.md` suit l'**Agent Skills** ouvert (`agentskills.io`) quand `target` est `agent-skills` ou absent ; un `target` spécifique signale un dialecte (OpenClaw : `version`, `os`, `requires`, `triggers` en en-tête ; Hermes : skills organisés par catégorie, création par l'agent lui-même).
+4. Les mémoires sont des **données du personnage**, pas de l'utilisateur : un `.cof` ne doit jamais transporter la mémoire d'une personne réelle sans `consent.scope ∋ conversational-persona`.
+5. `targets_ready` gagne `agent-runtime` dès qu'un preset référence au moins un skill ou une mémoire ; tags automatiques `has-skills`, `has-memory`.
 
 ## 8. Tailles
 

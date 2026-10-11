@@ -1,0 +1,195 @@
+{
+  "cof": "0.5",
+  "id": "01M4NK5NRDCWM0CKEGEX1EY06F",
+  "name": "Léa Marchand",
+  "nickname": "Léa",
+  "languages": [
+    "fr",
+    "en"
+  ],
+  "summary": "Léa en agent : personnalité structurée + un skill (Agent Skills) + une mémoire. Montre l'usage agent (§ 7 bis).",
+  "fictional": true,
+  "morphology": {
+    "class": "human",
+    "species": "human"
+  },
+  "tags": {
+    "auto": [
+      "human",
+      "adult",
+      "fr",
+      "en",
+      "has-skills",
+      "has-memory"
+    ],
+    "manual": [
+      "agent",
+      "archiviste",
+      "exemple"
+    ],
+    "content": [
+      "none"
+    ],
+    "ip": {
+      "original": true,
+      "franchise": null,
+      "based_on": null
+    }
+  },
+  "elements": {
+    "personality": {
+      "variants": {
+        "p1": {
+          "kind": "card",
+          "label": "Léa Marchand",
+          "card": "elements/personality/p1/card.json",
+          "psyche": "elements/personality/p1/psyche.json",
+          "profiles": {
+            "summary": {
+              "tokens": 120,
+              "tokenizer": "heuristic-chars",
+              "blocks": [
+                "name",
+                "summary",
+                "psyche.core"
+              ]
+            },
+            "standard": {
+              "tokens": 420,
+              "tokenizer": "heuristic-chars",
+              "blocks": [
+                "card.description",
+                "card.personality",
+                "card.scenario",
+                "psyche"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "files": {
+      "variants": {
+        "fi1": {
+          "kind": "skill",
+          "label": "Archiver un son",
+          "files": [
+            "a-file-fi1-skill"
+          ],
+          "entry": "elements/files/fi1/SKILL.md",
+          "target": "agent-skills"
+        },
+        "fi2": {
+          "kind": "memory",
+          "label": "Mémoire de travail",
+          "files": [
+            "a-file-fi2-memory"
+          ],
+          "entry": "elements/files/fi2/MEMORY.md"
+        }
+      }
+    }
+  },
+  "presets": {
+    "default": {
+      "label": "Agent archiviste",
+      "slots": {
+        "personality": [
+          "p1"
+        ],
+        "files": [
+          "fi1",
+          "fi2"
+        ]
+      }
+    }
+  },
+  "default_preset": "default",
+  "priorities": {
+    "visual": [
+      "identity_weights",
+      "images",
+      "avatar",
+      "descriptive"
+    ],
+    "voice": [
+      "samples",
+      "described"
+    ]
+  },
+  "mapping_vocabularies": {},
+  "assets": [
+    {
+      "id": "a-file-fi1-skill",
+      "path": "elements/files/fi1/SKILL.md",
+      "role": "skill-file",
+      "mediaType": "text/markdown",
+      "bytes": 557,
+      "sha256": "b46d8ae29d314a9f2a372b3e83d3a5e89f9ece468d6f18ce632b4b8f24cf00b5",
+      "license": "CC-BY-4.0"
+    },
+    {
+      "id": "a-file-fi2-memory",
+      "path": "elements/files/fi2/MEMORY.md",
+      "role": "memory",
+      "mediaType": "text/markdown",
+      "bytes": 353,
+      "sha256": "90e9f916069403ce25ec8dd0ac800dbecb26256af9093609e9e89b571f2c5c5a",
+      "license": "CC-BY-4.0"
+    }
+  ],
+  "size_class": "lite",
+  "container": {
+    "aligned": 0,
+    "executableContent": "none"
+  },
+  "rights": {
+    "permissions": {
+      "avatarPermission": "everyone",
+      "commercialUsage": "personalNonProfit",
+      "modification": "allowModification",
+      "allowRedistribution": true,
+      "creditNotation": "required",
+      "allowExcessivelyViolentUsage": false,
+      "allowSexualUsage": false,
+      "allowPoliticalOrReligiousUsage": false,
+      "allowAntisocialOrHateUsage": false,
+      "allowVoiceCloning": false,
+      "allowTraining": "finetune-private",
+      "allowImpersonationOfRealPerson": false,
+      "ageRating": "PEGI-12",
+      "minUserAge": 13,
+      "aiDisclosure": true
+    },
+    "consent": null
+  },
+  "provenance": {
+    "created": "2026-10-09T19:40:00Z",
+    "modified": "2026-10-09T19:40:00Z",
+    "generator": "cof-cli/0.2.0",
+    "source": [
+      "https://github.com/yannsouetre/cof/tree/main/spec/examples/08-agent-skills"
+    ],
+    "c2pa": null,
+    "signatures": []
+  },
+  "metadata": {
+    "@context": {
+      "dc": "http://purl.org/dc/elements/1.1/",
+      "schema": "https://schema.org/"
+    },
+    "dc:creator": [
+      "Yann Souetre"
+    ],
+    "dc:rights": "CC-BY-4.0",
+    "schema:version": "1.0.0"
+  },
+  "extensions": {},
+  "coverage": {
+    "elements": [
+      "personality"
+    ],
+    "variants": 1,
+    "presets": 1
+  }
+}

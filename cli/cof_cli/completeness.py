@@ -98,6 +98,8 @@ def compute_preset(manifest: dict, pid: str | None, src: Path | None = None) -> 
     t = []
     if L["personality"] >= 50:
         t += ["chat-text", "agent-persona"]
+    if any(v.get("kind") in ("skill", "memory") for v in r.get("files", [])):
+        t.append("agent-runtime")       # skills / mémoires embarqués : prêt pour un agent (SOUL.md + skills/ + MEMORY.md)
     if L["personality"] >= 50 and L["voice"] >= 40:
         t.append("chat-voice")
     if L["appearance"] >= 25:

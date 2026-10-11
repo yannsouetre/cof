@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 from importlib import resources
 
-CATEGORIES = ["personality", "appearance", "identity_weights", "volume3d", "voice", "posture", "motion"]
+CATEGORIES = ["personality", "appearance", "identity_weights", "volume3d", "voice", "posture", "motion", "files"]
 KINDS = {
     "personality": ["card", "description"],
     "appearance": ["reference-set", "character-sheet", "face", "body", "hair", "clothing", "accessory", "intimate", "pilosity", "feature", "description"],
@@ -13,9 +13,10 @@ KINDS = {
     "voice": ["samples", "described"],
     "posture": ["photo", "photos", "openpose", "silhouette", "attitude", "description"],
     "motion": ["clips", "video", "attitude", "description"],   # 'attitude' (signature de mouvement) est admis ici ET dans posture
+    "files": ["skill", "memory", "document", "other"],          # fichiers libres : skills d'agent, mémoires, documents — bibliothèque
 }
 # categories that are LIBRARIES in a preset: several variants of any kind, none mandatory at inference
-LIBRARY_CATEGORIES = {"posture", "motion"}
+LIBRARY_CATEGORIES = {"posture", "motion", "files"}
 # kinds that may appear several times in one preset (subject to region rules)
 MULTI_KINDS = {"clothing", "accessory", "pilosity", "feature"}
 

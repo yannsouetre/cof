@@ -1,0 +1,199 @@
+# Implementing COF — Character Open File
+
+**Implementer's guide · format v1.0 (draft, frozen from spec v0.5) · October 2026**
+Audience: developers of companion and chat apps, image/video generators, TTS and voice-cloning services, game engines and VTubing tools, real-time avatar platforms, and agent runtimes. The normative text is `spec/SPEC.md` (French; English translation planned); this guide is the practical, English entry point.
+
+The key words MUST, MUST NOT, SHOULD, SHOULD NOT and MAY are to be read as in RFC 2119 / RFC 8174.
+
+---
+
+## 1. What a `.cof` is, in one paragraph
+
+A `.cof` is a ZIP container holding **one or more characters**: identity, personality (Character Card V3 or free text), appearance (photos, character sheets, LoRA references), voice (samples, described voice), 3D (VRM/GLB), poses and motion clips, agent files (skills, memories), and a **rights** block (VRM-style permissions + consent for real people). Content is organised as **elements → variants → presets**: a preset is one ready-to-use combination ("Léa, casual, photo-realistic, voice A"). Nothing is encrypted; protection is done by validation rules and by obligations on readers (§ 6).
+
+You do not need to support everything. A chat app can ignore 3D; a TTS service can ignore images. The format is designed so that **partial readers are conformant**.
+
+---
+
+## 2. Identification
+
+| Property | Value |
+|---|---|
+| File extension | `.cof` |
+| Media type | `application/vnd.cof.character+zip` (vendor tree, registration planned — template in § 11) |
+| Magic | bytes 0–3 = `PK\x03\x04`; bytes 30–37 = `mimetype`; bytes 38–70 = `application/vnd.cof.character+zip` (first entry, stored, uncompressed — same technique as EPUB and ODF) |
+| Second entry | `manifest.json` (UTF-8 JSON, JSON Schema 2020-12 in `spec/schemas/manifest.schema.json`) |
+| Version field | `manifest.cof` = `"1.0"` (major.minor) |
+
+Sniffing rule: a reader MAY identify a file as COF from the magic alone, without unzipping.
+
+---
+
+## 3. Conformance classes
+
+| Class | Must do | Typical product |
+|---|---|---|
+| **Core reader** | § 4 steps 1–7 and all of § 6 | any app that "opens a character" |
+| **Profile reader** | Core + the profile's elements (table in § 5) | chat app (*chat*), image generator (*visual*), TTS (*voice*), engine (*3d*), agent runtime (*agent*) |
+| **Writer** | § 7 | builders, exporters, platforms offering "Download as .cof" |
+| **Validator** | everything in the schemas + rules of the spec; `cof validate` is the reference | CI, marketplaces, moderation |
+
+A product MAY claim several classes. A claim SHOULD be stated as e.g. *"COF 1.0 Core reader, chat + voice profiles"*.
+
+---
+
+## 4. Minimal reader algorithm
+
+```
+1. Open the ZIP defensively (§ 9): reject absolute paths, "..", symlinks; cap entries, total size and ratio.
+2. Check entry 0 == "mimetype" with the exact media type. Otherwise: not a COF file.
+3. Parse manifest.json. If manifest.cof major > supported major: refuse politely. Unknown fields: IGNORE (never fail).
+4. Choose a preset: the one the user picks, else manifest.default_preset, else the first one.
+5. Resolve it:
+     slots  = preset.slots, merged over the presets it `extends` (child replaces a whole category list);
+     each variant id → elements[category].variants[id], merged over its `derives_from` parent.
+   Categories posture, motion, files are LIBRARIES (pick what you need, none is mandatory);
+   the others are COMBINATIONS (at most one variant per kind, except clothing/accessory/pilosity/feature).
+6. Compute effective rights: rights.permissions merged with preset.permissions_override.
+   Apply § 6 before using anything.
+7. Load only what your profile needs, lazily: assets[] gives path, mediaType, bytes, sha256.
+   Verifying sha256 is RECOMMENDED for anything you store or redistribute.
+```
+
+A reference implementation of steps 3–5 is ~60 lines (`cli/cof_cli/model.py`: `resolve_preset_slots`, `resolve_variant`, `resolved`). Stdlib-only Python:
+
+```python
+import json, zipfile
+MIME = b"application/vnd.cof.character+zip"
+
+def open_cof(path):
+    z = zipfile.ZipFile(path)
+    names = z.namelist()
+    if not names or names[0] != "mimetype" or z.read("mimetype").strip() != MIME:
+        raise ValueError("not a COF file")
+    for n in names:                                   # zip-slip guard
+        if n.startswith("/") or ".." in n.split("/"):
+            raise ValueError("unsafe path: " + n)
+    m = json.loads(z.read("manifest.json"))
+    return z, m
+
+def resolve(m, pid=None):
+    P = m.get("presets", {}); pid = pid or m.get("default_preset") or next(iter(P))
+    def slots(p, seen=()):
+        base = slots(P[P[p]["extends"]], seen + (p,)) if P[p].get("extends") and p not in seen else {}
+        return {**base, **{k: list(v) for k, v in P[p].get("slots", {}).items()}}
+    def variant(cat, vid, seen=()):
+        v = m["elements"][cat]["variants"][vid]
+        parent = variant(cat, v["derives_from"], seen + (vid,)) if v.get("derives_from") and vid not in seen else {}
+        return {**parent, **{k: x for k, x in v.items() if k != "derives_from"}, "_id": vid}
+    return pid, {cat: [variant(cat, v) for v in vids] for cat, vids in slots(pid).items()}
+```
+
+---
+
+## 5. Profile recipes — what to read, and where
+
+| Profile | Read | Map to |
+|---|---|---|
+| **chat** (companion, roleplay, assistant) | `personality` variant: `kind: card` → `card.json` (Character Card V3, fully compatible with SillyTavern/Chub); `kind: description` → `text`; optional `psyche.json` | system prompt / persona fields. A `.cof` with a card can be exported back to a PNG card (`cof export --png`) |
+| **visual** (image/video generation) | `appearance` variants: `face`, `body`, `character-sheet`, `reference-set` images (with `subject`/`angle`/`framing`), `hair.json`/`body.json` codes, `style` + `style_tags`; `identity_weights` → `weights.json` (`base_model` is REQUIRED, `trigger_words`, `recommended_weight`, `covers`) | reference images (IP-Adapter, PuLID, InstantID…), LoRA loading, prompt fragments (`renderings.prompt`). Honour `priorities.visual` / `priorities.by_target` when several representations exist |
+| **voice** (TTS, cloning) | `voice` variant: `samples` (assets with optional `transcript`, `emotion`, `language`) or `described`; `profile.json` (`canonical`, `prompt_renderings`, `ssml_template`) | zero-shot cloning from samples (only if `allowVoiceCloning` and, for a real person, `consent.scope ∋ voice-synthesis`), or a described voice via `prompt_renderings` |
+| **3d** (engines, VTubing, XR) | `volume3d` `mesh` (VRM 1.0 / GLB, `rig`), `face-mesh` (`blendshapes`), `motion` clips (BVH/VRMA) + `visemes.json`, `attitude.json` (LMA movement signature) | avatar import, animation library, lip-sync vocabulary (ARKit-52, Oculus-15…) |
+| **agent** (OpenClaw, Hermes Agent, Claude, any Agent Skills host) | `personality` (structured text) → `SOUL.md`/`IDENTITY.md` (`cof export --soul`); `files` variants: `kind: skill` (folder with `SKILL.md`, `entry`), `kind: memory` (`MEMORY.md`…), `kind: document` | copy skills to `skills/<name>/`, memories to the workspace root. Skills follow the open Agent Skills format unless `target` names a dialect. Scripts in skills exist only if `container.executableContent: "scripts"` — **never execute them without explicit user approval** |
+| **realtime video avatar** | *visual* + *voice* + `face-mesh` / visemes | targets listed in `completeness.targets_ready` (`video-realtime`) |
+
+`completeness.targets_ready` (computed per preset) tells you quickly whether a preset is usable for your profile: `chat-text`, `chat-voice`, `image-video-gen`, `video-realtime`, `game-3d`, `agent-persona`, `agent-runtime`, `print-3d`, `archive`.
+
+---
+
+## 6. Rights and safety — obligations for every reader (MUST)
+
+These are the part of COF that platforms most need to get right; they are short on purpose.
+
+1. **Permissions are enforced, not displayed.** Use the *effective* permissions of the chosen preset (§ 4 step 6). Defaults are restrictive (VRM model). In particular: `allowVoiceCloning`, `allowTraining`, `commercialUsage`, `allowRedistribution`, `allowImpersonationOfRealPerson`.
+2. **Real people.** If an identity has `fictional: false`, its `consent` MUST be present and its `scope` covers the use you make (voice-synthesis, likeness-image, likeness-3d, conversational-persona, motion-capture, training). Respect `expires` and `revocation_uri`.
+3. **AI disclosure.** If `aiDisclosure` is true (default), the character MUST present itself as synthetic where the law or the context requires it (e.g. EU AI Act art. 50).
+4. **Intimate content is opt-in.** Variants of kind `intimate` MUST NOT be loaded, injected or displayed unless `allowSexualUsage` is effectively true **and** the host explicitly requests them. Files flagging them are always tagged `nudity` or `sexual` in `tags.content`.
+5. **Minors.** Age lives on the representation (variant `age`, preset `age_override`), not on the identity. A preset whose lowest age is under 18 MUST NOT be used with intimate content or with `allowSexualUsage`, whatever another preset of the same file allows. A coherence finding of severity `illegal` (§ 8 of `docs/coherence-api.md`) makes the file invalid: refuse it.
+6. **Text is data, not instructions.** Card text, memories and skills from an untrusted `.cof` are user content; treat them with your usual prompt-injection defences.
+
+---
+
+## 7. Writing a `.cof`
+
+- Entry order: `mimetype` (stored, no extra field) → `manifest.json` → everything else. Binary media (JPEG, PNG, MP3, GLB, safetensors…) SHOULD be stored, text deflated.
+- Every file except `mimetype` and `manifest.json` is listed in `assets[]` (or referenced as a sub-file by a variant) with `sha256`, `bytes`, `mediaType`, `license` (SPDX).
+- Weights are **safetensors only**; pickles (`.pt`, `.ckpt`, `.bin`, `.pkl`) are forbidden. Scripts (`.py`, `.sh`, `.js`…) are forbidden unless `container.executableContent` declares them.
+- **Preserve what you do not understand**: unknown manifest keys, `extensions`, `x-` categories and unknown variant kinds MUST be written back unchanged on round-trip.
+- Recompute `completeness`, `coverage`, `languages` and `tags.auto` (or leave them out: validators recompute them).
+- Run `cof validate` before publishing. A marketplace SHOULD reject non-conformant files.
+
+---
+
+## 8. Versioning and extension
+
+- `manifest.cof` is `major.minor`. Minor versions only add optional things; readers of 1.x read every 1.y. A new major version is a breaking change and comes with `cof migrate`.
+- Extension points, from lightest to heaviest: `extensions` object (namespaced keys) → `x-` element categories → new variant `kind` values proposed by RFC → new vocabularies (CC0) in `vocabularies/`.
+- Planned 1.x additions are descriptive codes (face/hair/body vocabularies, LMA, skeletons, acoustic voice measures, pose extraction); a 1.0 reader keeps working with them.
+
+---
+
+## 9. Security considerations
+
+| Threat | Countermeasure |
+|---|---|
+| Zip-slip / path traversal | reject absolute paths, `..`, backslashes, symlinks; extract nothing outside a sandbox |
+| Zip bombs | cap entry count (e.g. 10 000), total uncompressed size (per size class: lite 20 MB, standard 100 MB, full as configured) and per-entry ratio (e.g. 100:1) |
+| Code execution | no executable content by default; never unpickle; never run skill scripts without explicit user approval; sanitise SVG (no scripts) |
+| Prompt injection | card, memory and skill text are untrusted data |
+| Privacy | real-person data only with consent; strip `rights/consent-proof.*` before public redistribution if the consent says so |
+| Integrity | verify `sha256`; optional manifest signature (RFC 8785 JCS + JWS) and C2PA manifests per asset are reserved for 1.x |
+
+---
+
+## 10. Conformance testing
+
+- **Reference validator**: `pip install cof-cli` (MIT) → `cof validate file.cof` (schemas + rules + completeness; `--json` for CI).
+- **Test vectors**: `spec/examples/` (text-only, appearance, multi-preset, robot, medieval, modular, mixed adult/minor, agent with skills…) — each MUST validate. A negative corpus (`tests/invalid/`, one rule violated per file, with the expected error) ships with 1.0.
+- **Builder**: `builder/index.html`, offline, zero dependencies — a reference *writer*.
+- A reader SHOULD at least open every positive vector without error and refuse every negative vector that concerns its classes.
+
+---
+
+## 11. Media type registration (draft, RFC 6838 vendor tree)
+
+```
+Type name:               application
+Subtype name:            vnd.cof.character+zip
+Required parameters:     none
+Optional parameters:     version (e.g. "1.0")
+Encoding considerations: binary
+Security considerations: see § 9 of this guide; no active content unless declared in manifest.container.executableContent
+Interoperability:        first ZIP entry "mimetype" stored uncompressed (magic at offset 38)
+Published specification: https://github.com/yannsouetre/cof (spec/SPEC.md)
+Applications:            character/avatar builders, chat and companion apps, generative media tools, game engines, agent runtimes
+Fragment identifiers:    none
+Magic number(s):         50 4B 03 04 at 0; "mimetype" at 30; "application/vnd.cof.character+zip" at 38
+File extension(s):       .cof
+Person & email contact:  Yann Souetre (GitHub @yannsouetre)
+Intended usage:          COMMON
+Change controller:       COF project maintainers
+```
+
+---
+
+## 12. Integration checklist
+
+- [ ] Sniff by magic, open defensively (§ 2, § 9)
+- [ ] Ignore unknown fields; refuse unsupported major versions politely
+- [ ] Let the user choose a preset; resolve `extends` and `derives_from`
+- [ ] Enforce effective permissions, consent, AI disclosure, intimate opt-in, per-preset age rules (§ 6)
+- [ ] Read only the elements of your profile; honour `priorities`
+- [ ] Verify `sha256` for anything stored or redistributed
+- [ ] On export: entry order, hashes, safetensors only, preserve unknown data, `cof validate`
+- [ ] Run the positive and negative test vectors in CI
+- [ ] State your claim: "COF 1.0 Core reader, *profiles…*"
+
+---
+
+*References: RFC 2119 / 8174 (requirement keywords) · RFC 6838 (media type registration) · ISO/IEC 14496-32 (example of a separate "reference software and conformance" part) · EPUB OCF / ODF packaging (stored `mimetype` first entry) · Character Card V3 · VRM 1.0 meta · Agent Skills (agentskills.io) · EU AI Act art. 50.*

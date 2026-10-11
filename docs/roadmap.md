@@ -1,3 +1,25 @@
+# Révision du 11 octobre 2026 — v1.0 du **conteneur**, annonce le week-end du 17–18 octobre
+
+**Décision** : COF est d'abord un conteneur. Il est publiable maintenant : spec v0.5 (structure stabilisée), 12 schémas, CLI de référence (20 tests), builder hors ligne (facile + avancé, 6 langues d'interface), 9 exemples conformes, fiche d'implémentation (`docs/IMPLEMENTING.md`, en anglais). Les **codes descriptifs** (vocabulaires visage / cheveux / FACS / LMA / squelettes, mesures vocales, extraction de pose) passent en **1.1 / 1.2**, par PR, sans casser les lecteurs 1.0 (§ 8 de la fiche d'implémentation).
+
+**Condition non négociable** : *gel de structure le mercredi 14 octobre au soir*. Depuis le 9, la structure a changé trois fois (catégories, âge, fichiers) ; une 1.0 qui casse dans le mois tue la confiance. Après le gel, seulement des ajouts optionnels.
+
+| Jour | Claude | Yann |
+|---|---|---|
+| lun. 12 | numérotation `cof: "1.0"` + `cof migrate` 0.5 → 1.0 ; README anglais ; corpus de tests **négatifs** (`tests/invalid/`, une règle violée par fichier) | tester le builder, enrichir le `.cof` de test, lister les irritants |
+| mar. 13 | `cof export --agent` (SOUL.md + IDENTITY.md + skills/ + MEMORY.md) ; dette connue : `tags.auto` recalculé par la CLI, `cof extract --no-intimate`, règle `allowVoiceCloning ⇒ consent.scope ∋ voice-synthesis` | relire la fiche d'implémentation comme un développeur extérieur |
+| mer. 14 | **gel de structure** ; relecture croisée (grille des notes de passation) par un autre modèle | arbitrer les points ouverts de la relecture |
+| jeu. 15 | builder en ligne (GitHub Pages) ; `SECURITY.md`, `CONTRIBUTING.md`, modèles d'issues ; notes de version | choisir le visuel d'annonce (logo validé) |
+| ven. 16 | textes d'annonce FR + EN (LinkedIn, X/Bluesky, Reddit, Discord, Show HN), captures, script de vidéo de 2 min | enregistrer la vidéo (builder → `.cof` → carte PNG dans SillyTavern → SOUL.md pour un agent) |
+| **sam. 17** | release GitHub **v1.0.0** (tag, binaires d'exemple) | **annonce douce** : LinkedIn FR/EN, r/SillyTavern, r/LocalLLaMA, Discords SillyTavern / OpenClaw / ComfyUI / VRM |
+| mar. 20 | réponses aux retours, correctifs 1.0.x | **Show HN** (mardi matin heure US : meilleure visibilité qu'un week-end) |
+
+**Ce qui tient lieu de « consommateur réel » dès le jour 1** (principe « une spec sans consommateur meurt ») : (1) la carte PNG exportée (`ccv3`) s'ouvre telle quelle dans SillyTavern, Chub, Risu — compatibilité native, sans attendre d'extension ; (2) `cof export --agent` produit un espace de travail OpenClaw / Hermes / Agent Skills ; (3) le builder rouvre et édite n'importe quel `.cof`. L'extension SillyTavern dédiée, le viewer web et le nœud ComfyUI restent en novembre (1.1).
+
+**Indicateurs à J+14** : 10 `.cof` tiers, 1 contributeur externe, 1 outil tiers qui lit ou écrit le format, 300 étoiles.
+
+---
+
 # COF — Feuille de route et stratégie de communication (v2, calendrier resserré)
 
 > Principe directeur tiré de l'état de l'art : **une spec sans consommateur meurt** (llms.txt, OMI_personality, elizaOS characterfile, rokoss21/soul.md). MCP, A2A, VRM, Character Cards et safetensors ont gagné avec : une implémentation de référence, un consommateur réel dès le jour 1, un second adoptant indépendant, une gouvernance neutre annoncée tôt.
@@ -33,13 +55,13 @@ Et une **innovation à part** qui mérite sa propre visibilité : **COF-Vector**
 | 3 | `cof-cli` : validate / pack / unpack / tokens / completeness / import-export PNG / SOUL / migrate / merge / extract | ✅ |
 | 4 | Exemples 1–2 (texte seul ; apparence) | ✅ (7 exemples) |
 | 5 | Découpage de planches + post-traitements (Python de référence) | ✅ (dérivés optionnels) |
-| 6 | Vocabulaires : FDV (visage descriptif), HAIR, FACS↔ARKit, LMA, squelettes | ⬜ (styles visuels fait) |
+| 6 | Vocabulaires : FDV (visage descriptif), HAIR, FACS↔ARKit, LMA, squelettes | → 1.1 (styles visuels fait) |
 | 7 | Schémas des sous-fichiers : card, psyche, weights, voice profile, attitude, pose, skeleton, hair, body, consent, visemes — validés par la CLI | ✅ (11 schémas ; reste `outfit`, `voice.vec`, `face.mesh`) |
-| 8 | `voice measure` (mesures acoustiques → code vocal) | ⬜ |
-| 9 | Pose depuis photo → OpenPose normalisé + rendu « bonhomme » | ⬜ |
+| 8 | `voice measure` (mesures acoustiques → code vocal) | → 1.1 |
+| 9 | Pose depuis photo → OpenPose normalisé + rendu « bonhomme » | → 1.2 |
 | 10 | Builder (identités, 7 catégories typées, presets multi-emplacements, fusion, export de preset, version facile, interface FR/EN/DE/ES/ZH/JA) | ✅ (0.6.0) |
-| 11 | Exemples : VRM + clips ; « personnage d'entreprise » ; flux de consentement complet | ⬜ |
-| 12 | Relecture croisée, spec v0.3 figée pour le lancement, builder ⇄ CLI validés | ⬜ |
+| 11 | Exemples : agent avec skills ✅, mixte adulte/mineur ✅ ; VRM + clips, entreprise, consentement complet → 1.1 | ⏳ |
+| 12 | Relecture croisée, **spec figée en 1.0** (gel de structure mer. 14 oct.), builder ⇄ CLI validés | ⏳ |
 
 ## Phases
 

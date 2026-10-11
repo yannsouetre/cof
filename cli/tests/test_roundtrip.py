@@ -282,3 +282,23 @@ def test_subfile_schemas(tmp_path):
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep)
     assert not any("consent" in e for e in rep.errors), rep.errors
+
+
+def test_examples_agent_and_mixed():
+    """08: agent-runtime ready (skill + memory). 09: adult preset with intimate + minor preset without is valid;
+    moving the intimate variant into the minor preset is refused."""
+    for ex in ("08-agent-skills", "09-mixte-adulte-mineur"):
+        rep = Report(); validate_dir(ROOT / "spec" / "examples" / ex, rep, recompute=False)
+        assert rep.ok, (ex, rep.errors)
+    from cof_cli.completeness import compute_preset
+    m8 = json.loads((ROOT / "spec/examples/08-agent-skills/manifest.json").read_text("utf-8"))
+    assert "agent-runtime" in compute_preset(m8, "default")["targets_ready"]
+
+
+def test_example_mixed_refuses_intimate_in_minor_preset(tmp_path):
+    d = tmp_path / "m"; shutil.copytree(ROOT / "spec/examples/09-mixte-adulte-mineur", d)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    m["presets"]["young"]["slots"]["appearance"].append("i1")
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep)
+    assert any("presets.young" in e and "intime" in e for e in rep.errors), rep.errors

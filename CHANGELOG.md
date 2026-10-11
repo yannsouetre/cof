@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.0 — 2026-10-11 — catégorie « fichiers », usage agent, fiche d'implémentation
+- **Nouvelle catégorie `files`** (bibliothèque, version avancée uniquement) : `skill` (dossier `SKILL.md` + ressources), `memory` (`MEMORY.md`…), `document`, `other` ; champs `files[]`, `entry` (détecté automatiquement), `target` (`agent-skills`, `openclaw`, `hermes`, `claude`, `custom`) ; rôles d'asset `skill-file`, `memory`, `file` ; cible `agent-runtime` et tags `has-skills` / `has-memory`. Scripts de skills refusés sauf déclaration « contenu exécutable » à l'étape Build.
+- **Spec § 7 bis — usage agent** : correspondance SOUL.md / IDENTITY.md / skills / MEMORY.md ↔ COF, vérifiée sur OpenClaw et Hermes Agent ; règles (bibliothèque ignorée des lecteurs non-agents, scripts déclarés, mémoire d'une personne réelle soumise au consentement).
+- **`docs/IMPLEMENTING.md`** (anglais) : identification (type MIME, octets magiques à l'offset 38), classes de conformité, algorithme de lecture minimal + code Python, recettes par profil (chat, visuel, voix, 3D, agent), obligations droits et sécurité, écriture, versionnage, sécurité, tests de conformité, modèle d'enregistrement IANA (RFC 6838), check-list.
+- Exemples **08-agent-skills** et **09-mixte-adulte-mineur** (9 exemples conformes) ; 20 tests.
+- Builder 0.7.0 : logo redessiné d'après le brouillon (clair, sombre, monochrome, PNG 512, favicon), icône LoRA « réseau de neurones » adaptée au thème, pictogramme d'avertissement (triangle jaune) devant les messages de règles et de cohérence, catégorie Fichiers grisée en version facile.
+- Feuille de route : v1.0 du conteneur annoncée le 17–18 octobre, gel de structure le 14, codes descriptifs en 1.1 / 1.2.
+
 ## 0.6.5 — 2026-10-11 — aperçus et lecture audio
 - Tableaux de fichiers (facile, par déclinaison, Build) : **survol** d'une ligne image → aperçu flottant (≤ 320 px) ; survol d'une ligne audio → lecture automatique avec **forme d'onde** et curseur de progression ; quitter la ligne arrête et ferme.
 - Version avancée : chaque échantillon audio a un **lecteur** ▶ ⏸ ⏹ avec forme d'onde cliquable (recherche) et temps ; les entrées de fichier natives (« Aucun fichier choisi », trompeuses après chargement) sont remplacées par un bouton « 📂 Choisir … » — la liste des fichiers chargés est dans le tableau dessous.

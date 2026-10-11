@@ -148,7 +148,7 @@
       "type": "object",
       "description": "Catégories (par nature de média) → déclinaisons ; chaque déclinaison déclare son `kind`.",
       "propertyNames": {
-        "pattern": "^(personality|appearance|identity_weights|volume3d|voice|posture|motion|x-[a-z0-9-]+)$"
+        "pattern": "^(personality|appearance|identity_weights|volume3d|voice|posture|motion|files|x-[a-z0-9-]+)$"
       },
       "additionalProperties": {
         "type": "object",
@@ -722,6 +722,21 @@
         "age": {
           "$ref": "#/$defs/age",
           "description": "Âge représenté par cette déclinaison. Obligatoire pour face, body, character-sheet, reference-set (si morphologie human / humanoid / anthropomorphic-animal) et intimate (≥ 18) ; optionnel pour hair, pilosity, 3D, poids d'identité ; absent pour clothing, accessory, feature, description."
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/aid"
+          },
+          "description": "catégorie files : assets de la déclinaison (skill : dossier SKILL.md + ressources ; memory : MEMORY.md… ; document / other)"
+        },
+        "entry": {
+          "$ref": "#/$defs/path",
+          "description": "fichier d'entrée (ex. SKILL.md, MEMORY.md)"
+        },
+        "target": {
+          "type": "string",
+          "description": "profil d'agent visé pour un skill / une mémoire : agent-skills (agentskills.io), openclaw, hermes, claude, custom"
         }
       },
       "required": [
@@ -747,7 +762,7 @@
         "slots": {
           "type": "object",
           "propertyNames": {
-            "pattern": "^(personality|appearance|identity_weights|volume3d|voice|posture|motion|x-[a-z0-9-]+)$"
+            "pattern": "^(personality|appearance|identity_weights|volume3d|voice|posture|motion|files|x-[a-z0-9-]+)$"
           },
           "additionalProperties": {
             "type": "array",
@@ -919,7 +934,8 @@
               "game-3d",
               "agent-persona",
               "print-3d",
-              "archive"
+              "archive",
+              "agent-runtime"
             ]
           }
         },
@@ -1043,7 +1059,10 @@
             "view",
             "voice-consent",
             "voice-sample",
-            "weights"
+            "weights",
+            "skill-file",
+            "memory",
+            "file"
           ]
         },
         "mediaType": {
@@ -1597,6 +1616,12 @@
         "video",
         "attitude",
         "description"
+      ],
+      "files": [
+        "skill",
+        "memory",
+        "document",
+        "other"
       ]
     }
   }
