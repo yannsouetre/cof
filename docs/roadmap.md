@@ -37,11 +37,13 @@ Et une **innovation à part** qui mérite sa propre visibilité : **COF-Vector**
 | 7 | Schémas des sous-fichiers : card, psyche, weights, voice profile, attitude, pose, skeleton, hair, body, consent, visemes — validés par la CLI | ✅ (11 schémas ; reste `outfit`, `voice.vec`, `face.mesh`) |
 | 8 | `voice measure` (mesures acoustiques → code vocal) | ⬜ |
 | 9 | Pose depuis photo → OpenPose normalisé + rendu « bonhomme » | ⬜ |
-| 10 | Builder (identités, 7 catégories typées, presets multi-emplacements, fusion, export de preset) | ✅ (v0.5) |
+| 10 | Builder (identités, 7 catégories typées, presets multi-emplacements, fusion, export de preset, version facile, interface FR/EN/DE/ES/ZH/JA) | ✅ (0.6.0) |
 | 11 | Exemples : VRM + clips ; « personnage d'entreprise » ; flux de consentement complet | ⬜ |
 | 12 | Relecture croisée, spec v0.3 figée pour le lancement, builder ⇄ CLI validés | ⬜ |
 
 ## Phases
+
+**Report phase 1** : traduction de la spécification et des messages de contrôle (EN d'abord, puis DE/ES/ZH/JA) ; l'interface du builder est déjà en six langues.
 
 ### Phase 0 — Fondations (→ 31 octobre 2026) · « rien n'est annoncé »
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0 — 2026-10-11 — builder : version facile et interface multilingue
+- **Version facile** (bouton en haut à droite ; la version avancée reste le défaut) : nom + grande zone de dépôt ; icônes des 7 médias sur le côté, coche verte quand un fichier est chargé (une carte PNG coche personnalité **et** apparence) ; seuls personnalité (fiche/texte), apparence (une image) et voix (un échantillon) sont acceptés, les autres sont grisés « version avancée » ; un seul fichier par média — un second propose de passer en version avancée (oui : bascule et ajoute le fichier) ; un seul preset ; champ « Âge apparent sur les photos » dès qu'une image est déposée (règle v0.5) ; message « Passez à la version avancée si… » ; ouvrir un `.cof` bascule automatiquement en version avancée.
+- **Langue de l'interface** : FR (source), EN, DE, ES, ZH, JA — sélecteur dans l'en-tête, mémorisé localement. Portée : navigation, titres, libellés de champs, catégories, types de déclinaison, boutons, version facile. Non traduits à ce stade : textes d'aide longs, messages de contrôle, spécification (feuille de route, phase 1).
+
 ## 0.5.4 — 2026-10-10 — builder
 - En-tête allégé : plus de bouton « Build » (doublon de l'étape 6) ni « Importer et fusionner » (doublon) ; l'import-fusion vit à l'étape Build sous un seul bouton « Importer et fusionner un .cof (preset, personnage)… ». L'en-tête garde « Ouvrir un .cof » (remplace le travail en cours) et le thème.
 
