@@ -1,0 +1,23 @@
+{
+  "canonical": {
+    "gender_presentation": "feminine",
+    "age_perceived": "12",
+    "accent": "French-accented English",
+    "pitch": {
+      "range": "very-high"
+    },
+    "rate": "medium-fast",
+    "timbre": []
+  },
+  "speech_style": {
+    "register": ""
+  },
+  "samples": [
+    {
+      "id": "a-voice-v9-clara-12-en",
+      "path": "elements/voice/v9/samples/clara-12-en.mp3",
+      "duration_s": 11.5,
+      "language": "en"
+    }
+  ]
+}

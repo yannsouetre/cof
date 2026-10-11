@@ -1,0 +1,23 @@
+{
+  "canonical": {
+    "gender_presentation": "feminine",
+    "age_perceived": "29",
+    "accent": "fr",
+    "pitch": {
+      "range": "high"
+    },
+    "rate": "medium",
+    "timbre": []
+  },
+  "speech_style": {
+    "register": ""
+  },
+  "samples": [
+    {
+      "id": "a-voice-v5-clara-manga",
+      "path": "elements/voice/v5/samples/clara-manga.mp3",
+      "duration_s": 11.7,
+      "language": "fr"
+    }
+  ]
+}

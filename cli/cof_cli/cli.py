@@ -12,7 +12,7 @@ from .completeness import compute as compute_completeness
 from .container import ContainerError, pack, read_manifest, unpack
 from .convert import card_to_cof_dir, export_soul, read_card_from_png, write_card_to_png
 from .migrate import migrate_any
-from .ops import extract_preset, merge_dirs
+from .ops import extract_preset, merge_dirs, extract_group
 from .model import asset_index, default_preset_id, first, preset_age, resolved
 from .validate import Report, validate_cof, validate_dir
 
@@ -197,9 +197,12 @@ def cmd_extract(a):
     src = Path(a.src)
     with tempfile.TemporaryDirectory() as td:
         d = src if src.is_dir() else unpack(src, td)
-        extract_preset(d, Path(a.out), a.preset)
+        if a.group:
+            extract_group(d, Path(a.out), a.group)
+        else:
+            extract_preset(d, Path(a.out), a.preset)
     rep = Report(); validate_dir(Path(a.out), rep, recompute=True)
-    print(f"preset '{a.preset}' extrait dans : {a.out}")
+    print(f"{'groupe' if a.group else 'preset'} '{a.group or a.preset}' extrait dans : {a.out}")
     return _print_report(rep, a.json)
 
 
@@ -250,7 +253,7 @@ def main(argv=None) -> int:
     s = sub.add_parser("export", help="dossier/.cof → png | soul | card (depuis le preset par défaut ou --preset)"); s.add_argument("src"); s.add_argument("--format", choices=["png", "soul", "card"], required=True); s.add_argument("-o", "--out"); s.add_argument("--preset"); s.set_defaults(fn=cmd_export)
     s = sub.add_parser("migrate", help="dossier v0.2/v0.3/v0.4 → v0.5"); s.add_argument("dir"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_migrate)
     s = sub.add_parser("merge", help="fusionne plusieurs .cof/dossiers (mêmes nom+surnom ⇒ même identité, sinon identités multiples)"); s.add_argument("sources", nargs="+"); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_merge)
-    s = sub.add_parser("extract", help="extrait un preset en dossier COF allégé"); s.add_argument("src"); s.add_argument("--preset", required=True); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_extract)
+    s = sub.add_parser("extract", help="extrait un preset ou un groupe de presets en dossier COF allégé"); s.add_argument("src"); g = s.add_mutually_exclusive_group(required=True); g.add_argument("--preset"); g.add_argument("--group"); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_extract)
 
     a = ap.parse_args(argv)
     try:

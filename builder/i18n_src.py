@@ -197,5 +197,16 @@ T = {
 "fichier(s) exécutable(s) ou sérialisé(s) non sûr(s)": ("executable or unsafe serialised file(s)","ausführbare oder unsicher serialisierte Datei(en)","archivo(s) ejecutable(s) o serializado(s) no seguro(s)","可执行或不安全的序列化文件","実行可能または安全でないシリアライズ済みファイル"),
 "déclarez le contenu exécutable à l'étape Build, ou retirez-les.": ("declare executable content in the Build step, or remove them.","deklarieren Sie ausführbaren Inhalt im Build-Schritt oder entfernen Sie sie.","declara el contenido ejecutable en el paso Build o elimínalos.","请在构建步骤中声明可执行内容，或移除它们。","ビルド手順で実行可能コンテンツを宣言するか、削除してください。"),
 "Contenu exécutable (scripts de skills)": ("Executable content (skill scripts)","Ausführbarer Inhalt (Skill-Skripte)","Contenido ejecutable (scripts de skills)","可执行内容（技能脚本）","実行可能コンテンツ（スキルのスクリプト）"),
+"+ Ajouter un groupe": ("+ Add a group","+ Gruppe hinzufügen","+ Añadir un grupo","+ 添加分组","+ グループを追加"),
+"Groupe": ("Group","Gruppe","Grupo","分组","グループ"),
+"Nom du groupe": ("Group name","Gruppenname","Nombre del grupo","分组名称","グループ名"),
+"Choisir les presets": ("Choose presets","Presets wählen","Elegir presets","选择预设","プリセットを選択"),
+"dans": ("in","in","en","位于","所属"),
+"Sans groupe": ("Ungrouped","Ohne Gruppe","Sin grupo","未分组","グループなし"),
+"Un preset ne peut être que dans un seul groupe : le cocher ici le retire de son groupe actuel.": ("A preset can belong to only one group: checking it here removes it from its current group.","Ein Preset kann nur in einer Gruppe sein: Hier anhaken entfernt es aus seiner aktuellen Gruppe.","Un preset solo puede estar en un grupo: marcarlo aquí lo quita de su grupo actual.","一个预设只能属于一个分组：在此勾选会将其从当前分组移出。","プリセットは1つのグループにしか属せません：ここでチェックすると現在のグループから外れます。"),
+"Exporter un groupe": ("Export a group","Gruppe exportieren","Exportar un grupo","导出分组","グループを書き出す"),
+"aucun groupe": ("no group","keine Gruppe","ningún grupo","无分组","グループなし"),
+"Ce groupe est vide.": ("This group is empty.","Diese Gruppe ist leer.","Este grupo está vacío.","该分组为空。","このグループは空です。"),
+"exporté": ("exported","exportiert","exportado","已导出","書き出し完了"),
 }
 LANGS = ["en","de","es","zh","ja"]

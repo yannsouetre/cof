@@ -194,6 +194,7 @@ Règles :
 - `default_preset` obligatoire dès qu'il y a ≥ 1 preset ; sans preset, preset implicite = première déclinaison de chaque catégorie. Vignette = `head.front` du `face` du preset par défaut.
 - KPI par preset (complétude, cohérence) ; KPI de fichier = preset par défaut.
 - `age_override` par preset (plancher) ; **règles d'âge par preset** (§ 9.4) : un preset dont un élément a moins de 18 ans n'admet ni `intimate`, ni `body.estimated`, ni `allowSexualUsage` effectif. `permissions_override` optionnel (jamais plus permissif que l'âge du preset).
+- **Groupes de presets** (`preset_groups`, optionnel) : `[{ "id", "label", "presets": [ids de presets] }]` au **niveau du conteneur** — jamais dans un preset, donc rien n'est hérité par `extends` et un preset exporté n'emporte aucun groupe. Un preset appartient à **au plus un** groupe ; des presets hors groupe sont permis. Les groupes sont du pur rangement (ex. un groupe par langue, ou par âge) : les lecteurs PEUVENT les ignorer, les builders les affichent en dossiers. `cof extract --group <id>` exporte un groupe en `.cof` allégé (les presets dont le parent est hors du groupe sont aplatis).
 - **Enregistrer sous / fusionner** : § 11.3.
 
 ### 2.4 Fichiers multi-personnages

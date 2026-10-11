@@ -260,6 +260,18 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
     content = set(((manifest.get("tags") or {}).get("content") or []))
     if has_intimate and not (content & {"nudity", "sexual"}):
         rep.errors.append("déclinaison intime présente : tags.content doit contenir 'nudity' ou 'sexual'")
+    seen_g, member = set(), {}
+    for g in manifest.get("preset_groups") or []:
+        gid = g.get("id")
+        if gid in seen_g:
+            rep.errors.append(f"preset_groups : identifiant de groupe en double '{gid}'")
+        seen_g.add(gid)
+        for pid in g.get("presets") or []:
+            if pid not in (manifest.get("presets") or {}):
+                rep.errors.append(f"preset_groups.{gid} : preset inconnu '{pid}'")
+            elif pid in member:
+                rep.errors.append(f"preset_groups : le preset '{pid}' est dans deux groupes ('{member[pid]}', '{gid}')")
+            member[pid] = gid
     dp = default_preset_id(manifest)
     if pids and dp not in manifest["presets"]:
         rep.errors.append(f"default_preset inconnu : {dp}")

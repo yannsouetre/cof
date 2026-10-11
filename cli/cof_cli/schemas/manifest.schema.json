@@ -382,6 +382,37 @@
     },
     "default_identity": {
       "$ref": "#/$defs/vid"
+    },
+    "preset_groups": {
+      "type": "array",
+      "description": "Organisation of presets into groups (folders), at container level — not inherited, not part of any preset. A preset belongs to at most one group. Readers MAY ignore it.",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "presets"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/vid"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "presets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/vid"
+            },
+            "uniqueItems": true
+          }
+        }
+      }
     }
   },
   "allOf": [

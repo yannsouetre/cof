@@ -1,0 +1,23 @@
+{
+  "canonical": {
+    "gender_presentation": "feminine",
+    "age_perceived": "29",
+    "accent": "French-accented English",
+    "pitch": {
+      "range": "high"
+    },
+    "rate": "medium-fast",
+    "timbre": []
+  },
+  "speech_style": {
+    "register": ""
+  },
+  "samples": [
+    {
+      "id": "a-voice-v8-clara-warrior-en",
+      "path": "elements/voice/v8/samples/clara-warrior-en.mp3",
+      "duration_s": 12.7,
+      "language": "en"
+    }
+  ]
+}

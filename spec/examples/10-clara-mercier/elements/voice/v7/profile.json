@@ -1,0 +1,23 @@
+{
+  "canonical": {
+    "gender_presentation": "feminine",
+    "age_perceived": "65",
+    "accent": "French-accented English",
+    "pitch": {
+      "range": "medium"
+    },
+    "rate": "medium",
+    "timbre": []
+  },
+  "speech_style": {
+    "register": ""
+  },
+  "samples": [
+    {
+      "id": "a-voice-v7-clara-65-en",
+      "path": "elements/voice/v7/samples/clara-65-en.mp3",
+      "duration_s": 13.7,
+      "language": "en"
+    }
+  ]
+}

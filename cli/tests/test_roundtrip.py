@@ -302,3 +302,23 @@ def test_example_mixed_refuses_intimate_in_minor_preset(tmp_path):
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep)
     assert any("presets.young" in e and "intime" in e for e in rep.errors), rep.errors
+
+
+def test_preset_groups_and_extract_group(tmp_path):
+    """Groups live at container level; a preset is in at most one group; extract --group keeps the group's presets only."""
+    from cof_cli.ops import extract_group
+    src = ROOT / "spec/examples/10-clara-mercier"
+    rep = Report(); validate_dir(src, rep, recompute=False); assert rep.ok, rep.errors
+    out = tmp_path / "fr"; extract_group(src, out, "francais")
+    rep = Report(); validate_dir(out, rep); assert rep.ok, rep.errors
+    m = json.loads((out / "manifest.json").read_text("utf-8"))
+    assert set(m["presets"]) == {"fr", "fr-manga", "fr-12", "fr-65", "fr-futur", "fr-agent"} and m["default_preset"] == "fr"
+    assert "extends" not in m["presets"]["fr"]                       # parent (default) outside the group → flattened
+    assert {v["language"] for v in m["elements"]["voice"]["variants"].values()} == {"fr"}
+    # a preset in two groups is refused
+    d = tmp_path / "dup"; shutil.copytree(src, d)
+    mm = json.loads((d / "manifest.json").read_text("utf-8"))
+    mm["preset_groups"][0]["presets"].append("fr-agent")
+    (d / "manifest.json").write_text(json.dumps(mm), "utf-8")
+    rep = Report(); validate_dir(d, rep)
+    assert any("dans deux groupes" in e for e in rep.errors), rep.errors

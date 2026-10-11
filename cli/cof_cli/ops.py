@@ -110,9 +110,11 @@ def merge_dirs(sources: list[Path], dst: Path) -> dict:
             for vid, v in e["variants"].items():
                 if v.get("derives_from") and (cat, v["derives_from"]) in vid_map:
                     v["derives_from"] = vid_map[(cat, v["derives_from"])]
+        pid_map = {}
         for pid, p in (m.get("presets") or {}).items():
             np_ = json.loads(json.dumps(p))
             new_pid = pid if pid not in out["presets"] else f"{prefix}-{pid}"
+            pid_map[pid] = new_pid
             np_["slots"] = {cat: [vid_map.get((cat, x), x) for x in vids] for cat, vids in (p.get("slots") or {}).items()}
             np_["identity"] = id_map.get(p.get("identity") or m.get("default_identity") or next(iter(src_ids)))
             if np_.get("extends") and np_["extends"] in (m.get("presets") or {}) and np_["extends"] != pid:
@@ -120,8 +122,10 @@ def merge_dirs(sources: list[Path], dst: Path) -> dict:
             out["presets"][new_pid] = np_
             if n == 0 and pid == m.get("default_preset"):
                 out["default_preset"] = new_pid
-        for a in list(taken_assets.values()):
-            pass
+        for g in m.get("preset_groups") or []:          # groups follow their presets (ids remapped, group ids made unique)
+            gl = out.setdefault("preset_groups", [])
+            gid = g["id"] if all(x["id"] != g["id"] for x in gl) else f"{prefix}-{g['id']}"
+            gl.append({**g, "id": gid, "presets": [pid_map.get(x, x) for x in g.get("presets") or []]})
     out["assets"] = list({a["id"]: a for a in taken_assets.values()}.values())
     out["id"] = ulid_like()
     di = out["identities"][out["default_identity"]]
@@ -138,25 +142,51 @@ def merge_dirs(sources: list[Path], dst: Path) -> dict:
 
 def extract_preset(src: Path, dst: Path, pid: str) -> dict:
     """Keep only what preset `pid` references (variants, their parents, assets, identity)."""
+    return extract_presets(src, dst, [pid])
+
+
+def extract_group(src: Path, dst: Path, gid: str) -> dict:
+    """Keep the presets of group `gid` (and what they reference); the group itself is kept."""
     m = json.loads((src / "manifest.json").read_text("utf-8"))
-    if pid not in (m.get("presets") or {}):
-        raise ValueError(f"preset inconnu : {pid}")
+    g = next((g for g in m.get("preset_groups") or [] if g.get("id") == gid), None)
+    if not g:
+        raise ValueError(f"groupe inconnu : {gid}")
+    if not g.get("presets"):
+        raise ValueError(f"groupe vide : {gid}")
+    return extract_presets(src, dst, list(g["presets"]), group=gid)
+
+
+def extract_presets(src: Path, dst: Path, pids: list[str], group: str | None = None) -> dict:
+    m = json.loads((src / "manifest.json").read_text("utf-8"))
+    for pid in pids:
+        if pid not in (m.get("presets") or {}):
+            raise ValueError(f"preset inconnu : {pid}")
     dst.mkdir(parents=True, exist_ok=True)
-    slots = resolve_preset_slots(m, pid)
+    sel = set(pids)
     keep_v: set[tuple[str, str]] = set()
-    for cat, vids in slots.items():
-        for vid in vids:
-            cur = vid
-            while cur and (cat, cur) not in keep_v:
-                keep_v.add((cat, cur))
-                cur = (m["elements"].get(cat, {}).get("variants", {}).get(cur) or {}).get("derives_from")
+    out_presets = {}
+    for pid in pids:
+        p = json.loads(json.dumps(m["presets"][pid]))
+        slots = resolve_preset_slots(m, pid)
+        if p.get("extends") in sel:          # parent kept: keep inheritance as is
+            own = p.get("slots") or {}
+        else:                                 # parent dropped: flatten
+            own = slots; p.pop("extends", None)
+        p["slots"] = own
+        out_presets[pid] = p
+        for cat, vids in slots.items():
+            for vid in vids:
+                cur = vid
+                while cur and (cat, cur) not in keep_v:
+                    keep_v.add((cat, cur))
+                    cur = (m["elements"].get(cat, {}).get("variants", {}).get(cur) or {}).get("derives_from")
     out = json.loads(json.dumps(m))
     out["elements"] = {}
     keep_assets: set[str] = set()
     for cat, vid in keep_v:
         v = m["elements"][cat]["variants"][vid]
         out["elements"].setdefault(cat, {"variants": {}})["variants"][vid] = v
-        for lst in ("images", "derived", "samples", "clips", "videos"):
+        for lst in ("images", "derived", "samples", "clips", "videos", "files"):
             keep_assets |= set(v.get(lst) or [])
         if isinstance(v.get("mesh"), dict):
             keep_assets |= set(v["mesh"].get("textures") or [])
@@ -165,16 +195,21 @@ def extract_preset(src: Path, dst: Path, pid: str) -> dict:
             if w.get("file"):
                 keep_assets.add(w["file"])
         _copy_variant_files(src, dst, v, "x")
-    p = m["presets"][pid]
-    out["presets"] = {pid: {**json.loads(json.dumps(p)), "slots": slots}}
-    out["presets"][pid].pop("extends", None)
-    out["default_preset"] = pid
-    ident = p.get("identity") or m.get("default_identity")
-    if m.get("identities") and ident in m["identities"]:
-        out["identities"] = {ident: m["identities"][ident]}; out["default_identity"] = ident
-        for k in ("name", "nickname", "summary", "fictional", "morphology"):
-            if m["identities"][ident].get(k) is not None:
-                out[k] = m["identities"][ident][k]
+    out["presets"] = out_presets
+    out["default_preset"] = m.get("default_preset") if m.get("default_preset") in sel else pids[0]
+    if group:
+        out["preset_groups"] = [g for g in m.get("preset_groups") or [] if g.get("id") == group]
+    else:
+        out.pop("preset_groups", None)
+    idents = {out_presets[p].get("identity") or m.get("default_identity") for p in pids}
+    if m.get("identities"):
+        out["identities"] = {i: m["identities"][i] for i in idents if i in m["identities"]}
+        dp_ident = out_presets[out["default_preset"]].get("identity") or m.get("default_identity")
+        if dp_ident in out["identities"]:
+            out["default_identity"] = dp_ident
+            for k in ("name", "nickname", "summary", "fictional", "morphology"):
+                if m["identities"][dp_ident].get(k) is not None:
+                    out[k] = m["identities"][dp_ident][k]
     out["assets"] = []
     for a in m.get("assets", []):
         if a["id"] in keep_assets or a.get("source") in keep_assets:
@@ -186,7 +221,8 @@ def extract_preset(src: Path, dst: Path, pid: str) -> dict:
         if (src / d).is_dir():
             shutil.copytree(src / d, dst / d, dirs_exist_ok=True)
     out["id"] = ulid_like()
-    out.setdefault("provenance", {})["source"] = list(dict.fromkeys((m.get("provenance", {}).get("source") or []) + [f"cof:{m.get('id')}#preset={pid}"]))
+    tag = f"#group={group}" if group else f"#preset={pids[0]}"
+    out.setdefault("provenance", {})["source"] = list(dict.fromkeys((m.get("provenance", {}).get("source") or []) + [f"cof:{m.get('id')}{tag}"]))
     out["provenance"]["modified"] = NOW(); out["provenance"]["generator"] = "cof-cli extract"
     for k in ("completeness", "coverage", "thumbnail"):
         out.pop(k, None)

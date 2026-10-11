@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.0 — 2026-10-11 — preset groups, bilingual flagship
+- **Preset groups** (`preset_groups`, optional, container level): folders of presets, a preset in at most one group, never inherited. Schema, validation (unknown preset, preset in two groups, duplicate ids), merge carries groups, `cof extract --group`. Spec § 2.3 (EN/FR). Fully backward compatible: files without groups are unchanged and valid.
+- Builder 0.8.0: presets page shows groups as collapsible folders (rename, choose presets by name, delete), an "Ungrouped" folder, "+ Add a group"; **Export a group** next to *Export a preset* in Build (presets whose parent is outside the group are flattened).
+- **Example 10 — Clara Mercier v4, bilingual**: 12 presets in two groups (English with the English young adult as default, Français), 10 personalities (EN translated by Claude), 10 voices incl. manga; built programmatically by Claude and validated. Voice samples CC BY-NC 4.0 (free plans, attribution to ElevenLabs and Typecast).
+
 ## 0.7.3 — 2026-10-11 — English becomes normative
 - `spec/SPEC.md` is now the **English normative text**; `spec/SPEC.fr.md` is the French translation. README, coherence API, completeness and tags rules, schemas README, vocabularies and builder READMEs translated (French originals kept as `*.fr.md`); schema descriptions in English.
 - Spec fixes found during translation: identity no longer lists `age` in the overview and in the `identities` pattern; 8 categories (incl. `files`); coherence checks "never blocking — except `illegal`"; intimate opt-in and real-person refusal stated with MUST / MUST NOT.
