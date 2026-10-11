@@ -354,7 +354,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:59:26Z"
+        "computed_at": "2026-10-11T18:03:56Z"
       }
     },
     "en-manga": {
@@ -395,7 +395,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:59:26Z"
+        "computed_at": "2026-10-11T18:03:56Z"
       }
     },
     "en-12": {
@@ -439,7 +439,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:59:26Z"
+        "computed_at": "2026-10-11T18:03:56Z"
       }
     },
     "en-65": {
@@ -483,7 +483,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:59:26Z"
+        "computed_at": "2026-10-11T18:03:56Z"
       }
     },
     "en-future": {
@@ -527,7 +527,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:59:26Z"
+        "computed_at": "2026-10-11T18:03:56Z"
       }
     },
     "en-agent": {
@@ -569,7 +569,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:59:26Z"
+        "computed_at": "2026-10-11T18:03:56Z"
       }
     },
     "fr": {
@@ -610,7 +610,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:59:26Z"
+        "computed_at": "2026-10-11T18:03:56Z"
       }
     },
     "fr-manga": {
@@ -651,7 +651,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:59:26Z"
+        "computed_at": "2026-10-11T18:03:56Z"
       }
     },
     "fr-12": {
@@ -695,7 +695,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:59:26Z"
+        "computed_at": "2026-10-11T18:03:56Z"
       }
     },
     "fr-65": {
@@ -739,7 +739,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:59:26Z"
+        "computed_at": "2026-10-11T18:03:56Z"
       }
     },
     "fr-futur": {
@@ -783,7 +783,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:59:26Z"
+        "computed_at": "2026-10-11T18:03:56Z"
       }
     },
     "fr-agent": {
@@ -825,7 +825,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:59:26Z"
+        "computed_at": "2026-10-11T18:03:56Z"
       }
     }
   },
@@ -1247,7 +1247,7 @@
       "archive"
     ],
     "computed_by": "cof-cli/0.7.0",
-    "computed_at": "2026-10-11T17:59:26Z"
+    "computed_at": "2026-10-11T18:03:56Z"
   },
   "preset_tags": [
     {
@@ -1307,6 +1307,15 @@
       "presets": [
         "en-65",
         "fr-65"
+      ]
+    },
+    {
+      "id": "agent",
+      "label": "Agent IA / AI agent",
+      "facet": "usage",
+      "presets": [
+        "en-agent",
+        "fr-agent"
       ]
     }
   ]

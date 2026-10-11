@@ -129,6 +129,11 @@ These are the part of COF that platforms most need to get right; they are short 
 - Recompute `completeness`, `coverage`, `languages` and `tags.auto` (or leave them out: validators recompute them).
 - Run `cof validate` before publishing. A marketplace SHOULD reject non-conformant files.
 
+### 7.1 Authoring with an AI agent
+COF is meant to be written by agents as well as by tools. What an agent needs is not prior knowledge of the format but a **feedback loop**: unpack → edit the folder → `cof pack` → `cof validate` → fix → repeat. The validator's messages name the rule and the path, which is enough for a capable model to converge. Give the agent the [`cof-author`](../skills/cof-author/SKILL.md) Agent Skill (format in one page, rules it will hit, recipes) and the CLI. The flagship example `spec/examples/10-clara-mercier` (v4: English variants, 12 presets, tags, voice transcripts, a lean agent card and a multi-file skill) was built and revised this way by Claude, then checked with the same validator as any other file.
+
+The skill itself was tested blind: fresh agents with no access to the spec, the examples or the code — only `SKILL.md` and the CLI — were asked to add an English personality, a preset, language tags and an agent skill to an existing file. The first run succeeded after 3 validate→fix iterations and surfaced gaps (truncated enum messages, undocumented asset roles, stale figures after `--force` packing); once those were fixed in the CLI and the skill, the second run produced a valid file on the first try.
+
 ---
 
 ## 8. Versioning and extension

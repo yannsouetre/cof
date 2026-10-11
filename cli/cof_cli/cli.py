@@ -9,7 +9,7 @@ from pathlib import Path
 
 from . import __version__
 from .completeness import compute as compute_completeness
-from .container import ContainerError, pack, read_manifest, unpack
+from .container import refresh_asset_index, ContainerError, pack, read_manifest, unpack
 from .convert import card_to_cof_dir, export_soul, read_card_from_png, write_card_to_png
 from .migrate import migrate_any
 from .ops import extract_preset, merge_dirs, extract_tag
@@ -53,6 +53,15 @@ def cmd_validate(a):
 
 def cmd_pack(a):
     src = Path(a.dir)
+    # hashes first: missing sha256/bytes are schema errors that would otherwise skip the recompute of
+    # completeness / coverage / languages and leave stale figures in the packed manifest
+    mpath = src / "manifest.json"
+    try:
+        m0 = json.loads(mpath.read_text("utf-8"))
+        refresh_asset_index(src, m0, strict=False)
+        mpath.write_text(json.dumps(m0, ensure_ascii=False, indent=2) + "\n", "utf-8")
+    except Exception:
+        pass
     rep = Report()
     manifest = validate_dir(src, rep, recompute=True)
     if rep.errors and not a.force:

@@ -18,9 +18,13 @@ COF est un format de fichier ouvert (`.cof`, conteneur ZIP) qui réunit tout ce 
 | `vector/` | COF-Vector : le « SVG du visage, du corps et des vêtements » |
 | `vocabularies/` | Vocabulaires et tables de correspondance (CC0) |
 | `rfcs/` | Propositions d'évolution |
-| `docs/` | État de l'art, feuille de route |
-| `cli/` | Outil en ligne de commande (validate, pack, convert) — à venir |
-| `builder/` | Le builder web — à venir |
+| `docs/` | Guide d'implémentation, état de l'art, feuille de route |
+| `cli/` | Outil en ligne de commande (validate, pack, import, export, extract, merge…) |
+| `builder/` | Le builder web (une page HTML) — <https://yannsouetre.github.io/cof/builder/> |
+| `skills/` | Skills d'agent pour manipuler des `.cof` (`cof-author`) |
+
+## Écrit par une IA
+COF est conçu pour être rédigé par des agents : donnez au vôtre la skill [`cof-author`](skills/cof-author/SKILL.md) (ou [`llms.txt`](llms.txt)) et l'outil `cof` ; il modifie un dossier décompressé, empaquette, valide et boucle jusqu'à ce que `cof validate` réponde OK. L'exemple phare Clara Mercier v4 (12 presets, deux langues, tags, une skill d'agent) a été assemblé et mis à jour ainsi par Claude.
 
 ## Englober, pas remplacer
 Un `.cof` contient une Character Card V3 valide et s'exporte en PNG `ccv3`, `.charx`, `SOUL.md`/`IDENTITY.md`, `.vrm`. Les outils existants n'ont rien à réécrire.

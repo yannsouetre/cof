@@ -37,6 +37,8 @@ cof export lea.cof --format png -o lea.png     # → PNG card (chara + ccv3 chun
 ```
 More commands (import, export to SOUL.md/IDENTITY.md, migrate, tokens…) in [`cli/README.md`](cli/README.md).
 
+**Let an AI agent write it** — COF is designed to be authored by agents: give yours the [`cof-author`](skills/cof-author/SKILL.md) skill (or point it to [`llms.txt`](llms.txt)) and the CLI; it edits an unpacked folder, packs, validates and loops until `cof validate` says OK. The flagship example, Clara Mercier v4 (12 presets, two languages, tags, an agent skill), was assembled and updated this way by Claude.
+
 ## Repository layout
 | Folder | Content |
 |---|---|
@@ -47,11 +49,13 @@ More commands (import, export to SOUL.md/IDENTITY.md, migrate, tokens…) in [`c
 | `docs/` | Implementer guide, state of the art, roadmap, completeness/tags/coherence rules |
 | `cli/` | Command-line tool (`validate`, `pack`, `import`, `export`, `migrate`…) |
 | `builder/` | The web builder (single HTML page) |
+| `skills/` | Agent Skills for working with `.cof` files (`cof-author`) |
 
 ## Key documents
 - [`spec/SPEC.md`](spec/SPEC.md) — the specification
 - [`docs/IMPLEMENTING.md`](docs/IMPLEMENTING.md) — how to read and write `.cof` files in your tool
-- [`spec/examples/`](spec/examples/) — 9 conformant example characters
+- [`spec/examples/`](spec/examples/) — 10 conformant example characters
+- [`skills/cof-author/SKILL.md`](skills/cof-author/SKILL.md) — the skill that teaches an AI agent to create and update `.cof` files
 - [`spec/schemas/`](spec/schemas/) — JSON Schemas (draft 2020-12)
 - [`CHANGELOG.md`](CHANGELOG.md), [`CONTRIBUTING.md`](CONTRIBUTING.md), [`GOVERNANCE.md`](GOVERNANCE.md)
 

@@ -69,13 +69,20 @@ def validate_subfile(obj: dict, schema: str, rep: "Report", where: str) -> None:
     """Validate a sub-file (or inline object) against spec/schemas/<schema>.schema.json. Errors are errors: these files are ours."""
     for e in sorted(sub_validator(schema).iter_errors(obj), key=lambda e: list(e.path)):
         loc = "/".join(str(p) for p in e.path) or "(racine)"
-        rep.errors.append(f"{where} [{schema}.schema {loc}] : {e.message[:160]}")
+        rep.errors.append(f"{where} [{schema}.schema {loc}] : {_schema_msg(e)}")
+
+
+def _schema_msg(e) -> str:
+    """Readable jsonschema message; enum errors always list every allowed value (agents rely on it)."""
+    if e.validator == "enum":
+        return f"{e.instance!r} n'est pas une valeur permise — valeurs : {', '.join(map(str, e.validator_value))}"
+    return e.message if len(e.message) <= 300 else e.message[:300] + "…"
 
 
 def validate_manifest(manifest: dict, rep: Report) -> None:
     for e in sorted(manifest_validator().iter_errors(manifest), key=lambda e: list(e.path)):
         loc = "/".join(str(p) for p in e.path) or "(racine)"
-        rep.errors.append(f"manifest.json [{loc}] : {e.message[:200]}")
+        rep.errors.append(f"manifest.json [{loc}] : {_schema_msg(e)}")
 
 
 def validate_card(card: dict, rep: Report, lang: str, where: str) -> dict:
@@ -299,6 +306,12 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
             validate_subfile(cobj, "consent", rep, cwhere)
     if manifest.get("fictional") is False and not (manifest.get("rights", {}) or {}).get("consent"):
         rep.errors.append("personnage non fictif sans rights.consent")
+
+    for vid, v in ((elements.get("personality") or {}).get("variants") or {}).items():
+        if v.get("kind") == "description" and not (v.get("text") or "").strip():
+            rep.warnings.append(f"personality.{vid} (description) : champ `text` vide — le texte libre se met en ligne dans `text`")
+        if v.get("kind") == "card" and not v.get("card"):
+            rep.errors.append(f"personality.{vid} (card) : chemin `card` (card.json) manquant")
 
     # per-preset checks: cards, psyche refs, duplicates, style coherence
     tokens_by_preset = {}

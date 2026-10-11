@@ -1,0 +1,11 @@
+# COF — Character Open File
+
+> Open container format (.cof, ZIP) for AI characters: identity, personality (Character Card V3 or free text), appearance, identity weights (LoRA), 3D, voice, poses, motion, agent files (skills, memories) and rights, organised as elements → variants → presets.
+
+- [Specification (normative, EN)](https://github.com/yannsouetre/cof/blob/main/spec/SPEC.md)
+- [Implementer's guide](https://github.com/yannsouetre/cof/blob/main/docs/IMPLEMENTING.md)
+- [Agent Skill for authoring .cof files](https://github.com/yannsouetre/cof/blob/main/skills/cof-author/SKILL.md)
+- [JSON Schemas](https://github.com/yannsouetre/cof/tree/main/spec/schemas)
+- [Examples](https://github.com/yannsouetre/cof/tree/main/spec/examples) — 10-clara-mercier is the flagship (bilingual, 12 presets, tags, agent skill)
+- [Reference CLI (validate, pack, extract, merge, export)](https://github.com/yannsouetre/cof/tree/main/cli)
+- [Builder (browser, no upload)](https://yannsouetre.github.io/cof/builder/)

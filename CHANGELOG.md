@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.3 — 2026-10-11 — skills visible, AI authoring
+- Builder 0.8.3: text files of a `files` variant (skills, memories, documents) are **shown and editable** in a frame, with one chip per file (entry file first); edits go into the next build. Hover preview now also shows text files; the zoom cursor only appears where a preview exists.
+- Example 10: tag `agent` (facet *usage*) on the two AI-agent presets.
+- **AI authoring**: new Agent Skill [`skills/cof-author`](skills/cof-author/SKILL.md) (format in one page, validator loop, rules, recipes), `llms.txt` at the site root, implementer's guide § 7.1, README sections (EN/FR).
+- **Blind-tested** with fresh agents given only the skill and the CLI: first run valid after 3 iterations, second run (after fixes) valid on the first try.
+- CLI fixes found by that test: enum errors now list **every** allowed value (were truncated); `cof pack` fills asset hashes *before* recomputing, so completeness / coverage / languages are no longer left stale when new assets lack `sha256`; warning for a `description` personality with empty `text`, error for a `card` personality without `card`.
+
 ## 0.8.2 — 2026-10-11 — build feedback
 - Builder 0.8.2: a **progress pop-up** (spinning ring around the logo, elapsed seconds, "keep this page open") while building, exporting a preset or a tag, opening a `.cof` or importing one — the page no longer looks frozen during long builds. Translated in the six interface languages.
 - Example 10: French manga voice transcript added — every voice sample now has one.

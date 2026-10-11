@@ -315,7 +315,7 @@ def test_preset_tags_and_extract_tag(tmp_path):
     assert set(m["presets"]) == {"fr", "fr-manga", "fr-12", "fr-65", "fr-futur", "fr-agent"} and m["default_preset"] == "fr"
     assert "extends" not in m["presets"]["fr"]                       # parent (default) outside the selection → flattened
     assert {v["language"] for v in m["elements"]["voice"]["variants"].values()} == {"fr"}
-    assert {t["id"] for t in m["preset_tags"]} == {"fr", "age-12", "age-29", "age-65"}   # tags kept, restricted
+    assert {t["id"] for t in m["preset_tags"]} == {"fr", "age-12", "age-29", "age-65", "agent"}   # tags kept, restricted
     out2 = tmp_path / "en12"; extract_tag(src, out2, ["en", "age-12"])
     m2 = json.loads((out2 / "manifest.json").read_text("utf-8"))
     assert list(m2["presets"]) == ["en-12"]
@@ -340,3 +340,32 @@ def test_legacy_preset_groups_migrate_to_tags(tmp_path):
     m = migrate_any(d)
     assert "preset_groups" not in m and m["preset_tags"] == [{"id": "fr", "label": "Français", "presets": ["fr", "fr-12"]}]
     rep = Report(); validate_dir(d, rep, recompute=False); assert rep.ok and not any("preset_groups" in w for w in rep.warnings)
+
+
+def test_enum_errors_list_every_value(tmp_path):
+    """Agents fix files from validator messages: an enum error must list all allowed values, untruncated."""
+    d = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/08-agent-skills", d)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    m["assets"][0]["role"] = "description"
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep, recompute=False)
+    msg = next(e for e in rep.errors if "'description'" in e)
+    assert "skill-file" in msg and "voice-sample" in msg and "file" in msg.split("valeurs :")[1]
+
+
+def test_pack_recomputes_after_new_assets(tmp_path):
+    """New assets without sha256/bytes must not block the recompute of coverage / completeness at pack time."""
+    import subprocess, sys
+    d = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/01-lea-text-only", d)
+    (d / "elements/files/f9").mkdir(parents=True)
+    (d / "elements/files/f9/SKILL.md").write_text("---\nname: t\ndescription: t\n---\nok\n", "utf-8")
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    m["elements"]["files"] = {"variants": {"f9": {"kind": "skill", "files": ["s9"], "entry": "elements/files/f9/SKILL.md", "target": "agent-skills"}}}
+    m.setdefault("assets", []).append({"id": "s9", "path": "elements/files/f9/SKILL.md", "role": "skill-file", "mediaType": "text/markdown", "license": "CC-BY-4.0"})
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    out = tmp_path / "o.cof"
+    r = subprocess.run([sys.executable, "-c", "import sys; from cof_cli.cli import main; sys.exit(main())", "pack", str(d), "-o", str(out), "--force"], capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    pm = json.loads(zipfile.ZipFile(out).read("manifest.json"))
+    assert "files" in pm["coverage"]["elements"]
+    rep = validate_cof(out); assert rep.ok, rep.errors
