@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.5 — 2026-10-11 — aperçus et lecture audio
+- Tableaux de fichiers (facile, par déclinaison, Build) : **survol** d'une ligne image → aperçu flottant (≤ 320 px) ; survol d'une ligne audio → lecture automatique avec **forme d'onde** et curseur de progression ; quitter la ligne arrête et ferme.
+- Version avancée : chaque échantillon audio a un **lecteur** ▶ ⏸ ⏹ avec forme d'onde cliquable (recherche) et temps ; les entrées de fichier natives (« Aucun fichier choisi », trompeuses après chargement) sont remplacées par un bouton « 📂 Choisir … » — la liste des fichiers chargés est dans le tableau dessous.
+
 ## 0.6.4 — 2026-10-11 — images porteuses de texte
 - Builder : une image **sans carte** mais avec un texte descriptif embarqué (PNG iTXt/tEXt/zTXt `Description`/`Comment`, XMP `dc:description`, EXIF `ImageDescription`/`UserComment`/`XPComment` — y compris `Raw profile type APP1` —, JPEG COM/XMP/EXIF) crée une déclinaison de personnalité **texte libre** *et* une déclinaison d'apparence **photos en vrac** (version facile : coches Personnalité et Apparence ; version avancée : import de personnalité). Le tableau des fichiers indique la source du texte.
 - CLI : `cof embed-text <png> <fiche.md>` (écrit un iTXt `Description` UTF-8, image inchangée) et `cof read-text <image>` ; spec §3.
