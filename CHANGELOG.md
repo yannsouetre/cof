@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.3 — 2026-10-11 — builder : retirer un fichier, déclinaisons vides
+- Bouton **✕ supprimer** à droite de chaque ligne des tableaux de fichiers (facile, par déclinaison, récapitulatif Build) : retire le fichier de l'état et de toutes les listes ; en version facile une déclinaison vidée disparaît, en version avancée une fiche importée redevient une déclinaison « import » vide.
+- Version avancée : en quittant l'étape Éléments, chaque déclinaison **qui ne vaut que par un fichier** (apparence hors description, poses image, échantillons, clips/vidéo, 3D, poids) et qui n'en a pas déclenche « Votre déclinaison … ne contient pas de fichier. Souhaitez-vous la conserver ? » (non = suppression). Au build, une telle déclinaison est une **erreur bloquante**.
+- Version facile : champ « Âge apparent » à droite, aligné sur la colonne des icônes.
+
 ## 0.6.2 — 2026-10-11 — builder : retour visuel et inventaire des fichiers
 - Version facile : zone de dépôt réduite de moitié, icônes de média doublées (grille 2 colonnes) ; au chargement d'un média : **animation** de grossissement avec halo vert, coche verte qui apparaît ensuite, fond de la tuile légèrement vert, **son** discret (deux notes, WebAudio, aucun fichier) ; **tableau des fichiers chargés** sous la zone de dépôt (fichier, emplacement dans le .cof, format, média).
 - Version avancée : tableau des fichiers de la déclinaison sous chaque zone de dépôt ; étape Build : **récapitulatif de tous les fichiers** (fichier, emplacement, format, taille, média, déclinaison, presets). Tables à filets fins gris clair.
