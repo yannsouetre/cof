@@ -24,7 +24,7 @@
     "id": {
       "type": "string",
       "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$",
-      "description": "ULID stable"
+      "description": "stable ULID"
     },
     "name": {
       "type": "string",
@@ -67,7 +67,7 @@
             "amorphous",
             "other"
           ],
-          "description": "human = humain ; humanoid = non-humain de forme humaine (elfe, androïde, alien)"
+          "description": "human = human; humanoid = human-shaped non-human (elf, android, alien)"
         },
         "species": {
           "type": "string"
@@ -146,7 +146,7 @@
     },
     "elements": {
       "type": "object",
-      "description": "Catégories (par nature de média) → déclinaisons ; chaque déclinaison déclare son `kind`.",
+      "description": "Categories (by media nature) → variants; each variant declares its `kind`.",
       "propertyNames": {
         "pattern": "^(personality|appearance|identity_weights|volume3d|voice|posture|motion|files|x-[a-z0-9-]+)$"
       },
@@ -378,7 +378,7 @@
       "additionalProperties": {
         "$ref": "#/$defs/identity"
       },
-      "description": "Optionnel : plusieurs identités (casting). La racine porte une copie de l'identité par défaut."
+      "description": "Optional: several identities (casting). The root carries a copy of the default identity."
     },
     "default_identity": {
       "$ref": "#/$defs/vid"
@@ -488,7 +488,7 @@
           "default": "declared"
         }
       },
-      "description": "Âge représenté par une déclinaison (ou plancher d'un preset via age_override). Jamais sur l'identité : l'âge est une propriété de la représentation. Obligatoire sur face / body / character-sheet / reference-set (morphologies de forme humaine) et sur intimate (≥ 18)."
+      "description": "Depicted age of a variant (or a preset's floor via age_override). Never on the identity: age is a property of the depiction. Required on face / body / character-sheet / reference-set (human-shaped morphologies) and on intimate (≥ 18)."
     },
     "style": {
       "type": "string",
@@ -649,14 +649,14 @@
             "$ref": "#/$defs/tag"
           },
           "maxItems": 8,
-          "description": "précisions libres complétant style (ex. anime-90s, ghibli-like)"
+          "description": "free-form refinements complementing style (e.g. anime-90s, ghibli-like)"
         },
         "kind": {
           "type": "string"
         },
         "identity": {
           "$ref": "#/$defs/vid",
-          "description": "identité à laquelle la déclinaison est réservée (optionnel)"
+          "description": "identity to which the variant is restricted (optional)"
         },
         "language": {
           "type": "string",
@@ -664,34 +664,34 @@
         },
         "garment": {
           "type": "string",
-          "description": "type de vêtement (vocabulaire garments-1.0) pour kind=clothing"
+          "description": "garment type (garments-1.0 vocabulary) for kind=clothing"
         },
         "accessory": {
           "type": "string",
-          "description": "type d'accessoire (garments-1.0/accessories) pour kind=accessory"
+          "description": "accessory type (garments-1.0/accessories) for kind=accessory"
         },
         "area": {
           "enum": [
             "face",
             "body"
           ],
-          "description": "pour kind=pilosity"
+          "description": "for kind=pilosity"
         },
         "region": {
           "type": "string",
-          "description": "région libre pour kind=feature (cornes, queue…)"
+          "description": "free-form region for kind=feature (horns, tail…)"
         },
         "text": {
           "type": "string",
           "maxLength": 8000,
-          "description": "pour kind=description"
+          "description": "for kind=description"
         },
         "use": {
           "enum": [
             "pose-only",
             "full"
           ],
-          "description": "posture : l'inférence ne retient que la pose"
+          "description": "posture: inference keeps only the pose"
         },
         "videos": {
           "type": "array",
@@ -713,30 +713,30 @@
         },
         "max_bytes_ack": {
           "type": "boolean",
-          "description": "l'auteur a accepté de dépasser le plafond vidéo"
+          "description": "the author has agreed to exceed the video cap"
         },
         "allow_multiple_sheets": {
           "type": "boolean",
-          "description": "character-sheet : plusieurs planches autorisées (cohérence à la charge de l'auteur)"
+          "description": "character-sheet: several sheets allowed (coherence is the author's responsibility)"
         },
         "age": {
           "$ref": "#/$defs/age",
-          "description": "Âge représenté par cette déclinaison. Obligatoire pour face, body, character-sheet, reference-set (si morphologie human / humanoid / anthropomorphic-animal) et intimate (≥ 18) ; optionnel pour hair, pilosity, 3D, poids d'identité ; absent pour clothing, accessory, feature, description."
+          "description": "Depicted age of this variant. Required for face, body, character-sheet, reference-set (if morphology is human / humanoid / anthropomorphic-animal) and intimate (≥ 18); optional for hair, pilosity, 3D, identity weights; absent for clothing, accessory, feature, description."
         },
         "files": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/aid"
           },
-          "description": "catégorie files : assets de la déclinaison (skill : dossier SKILL.md + ressources ; memory : MEMORY.md… ; document / other)"
+          "description": "files category: the variant's assets (skill: SKILL.md folder + resources; memory: MEMORY.md…; document / other)"
         },
         "entry": {
           "$ref": "#/$defs/path",
-          "description": "fichier d'entrée (ex. SKILL.md, MEMORY.md)"
+          "description": "entry file (e.g. SKILL.md, MEMORY.md)"
         },
         "target": {
           "type": "string",
-          "description": "profil d'agent visé pour un skill / une mémoire : agent-skills (agentskills.io), openclaw, hermes, claude, custom"
+          "description": "target agent profile for a skill / memory: agent-skills (agentskills.io), openclaw, hermes, claude, custom"
         }
       },
       "required": [
@@ -774,7 +774,7 @@
         },
         "age_override": {
           "$ref": "#/$defs/age",
-          "description": "Plancher d'âge du preset (utile aux presets sans élément morphologique, ex. texte seul). L'âge du preset = min(âges des déclinaisons résolues, age_override)."
+          "description": "Preset age floor (useful for presets without a morphological element, e.g. text only). Preset age = min(ages of the resolved variants, age_override)."
         },
         "completeness": {
           "$ref": "#/$defs/completeness"
@@ -790,7 +790,7 @@
         },
         "permissions_override": {
           "type": "object",
-          "description": "Optionnel, rarement utilisé : surcharge partielle des permissions globales pour ce preset (jamais plus permissif qu'autorisé par l'âge du preset).",
+          "description": "Optional, rarely used: partial override of the global permissions for this preset (never more permissive than the preset's age allows).",
           "properties": {
             "avatarPermission": {
               "enum": [
@@ -867,7 +867,7 @@
             "$ref": "#/$defs/tag"
           },
           "maxItems": 8,
-          "description": "précisions libres complétant style (ex. anime-90s, ghibli-like)"
+          "description": "free-form refinements complementing style (e.g. anime-90s, ghibli-like)"
         },
         "identity": {
           "$ref": "#/$defs/vid"
@@ -887,7 +887,7 @@
         },
         "defaults": {
           "type": "object",
-          "description": "déclinaison à utiliser par défaut dans une bibliothèque (posture, motion) — optionnel",
+          "description": "variant to use by default in a library (posture, motion) — optional",
           "additionalProperties": {
             "$ref": "#/$defs/vid"
           }
@@ -1239,7 +1239,7 @@
             "$ref": "#/$defs/tag"
           },
           "maxItems": 8,
-          "description": "précisions libres complétant style (ex. anime-90s, ghibli-like)"
+          "description": "free-form refinements complementing style (e.g. anime-90s, ghibli-like)"
         },
         "language": {
           "type": "string"
@@ -1377,7 +1377,7 @@
         },
         "subject_ref": {
           "type": "string",
-          "description": "référence interne non identifiante (jamais de numéro d'identité)"
+          "description": "non-identifying internal reference (never an ID number)"
         },
         "scope": {
           "type": "array",
@@ -1425,7 +1425,7 @@
         "age_of_subject_at_consent": {
           "type": "number",
           "minimum": 18,
-          "description": "le consentement d'un mineur n'est pas recevable dans ce format"
+          "description": "consent from a minor is not admissible in this format"
         },
         "proof": {
           "type": "array",
@@ -1488,7 +1488,7 @@
               "type": "string"
             }
           },
-          "description": "jamais de numéro d'identité ni de coordonnées en clair"
+          "description": "never an ID number or contact details in clear text"
         }
       },
       "required": [
@@ -1540,7 +1540,7 @@
                 "amorphous",
                 "other"
               ],
-              "description": "human = humain ; humanoid = non-humain de forme humaine (elfe, androïde, alien)"
+              "description": "human = human; humanoid = human-shaped non-human (elf, android, alien)"
             },
             "species": {
               "type": "string"

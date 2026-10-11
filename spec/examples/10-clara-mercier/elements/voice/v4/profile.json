@@ -1,0 +1,25 @@
+{
+  "canonical": {
+    "gender_presentation": "feminine",
+    "age_perceived": "12",
+    "accent": "fr",
+    "pitch": {
+      "range": "very-high"
+    },
+    "rate": "medium-fast",
+    "timbre": []
+  },
+  "speech_style": {
+    "register": ""
+  },
+  "samples": [
+    {
+      "id": "a-voice-v4-mixdown-7ksz",
+      "path": "elements/voice/v4/samples/mixdown.mp3",
+      "duration_s": 9.7,
+      "transcript": "elements/voice/v4/samples/mixdown.txt",
+      "emotion": "",
+      "language": "fr"
+    }
+  ]
+}

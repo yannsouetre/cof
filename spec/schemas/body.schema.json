@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://cof.dev/schemas/0.5/body.schema.json",
-  "title": "elements/appearance/<v>/body.json — paramètres corporels (mesures, phénotypes, descriptif)",
+  "title": "elements/appearance/<v>/body.json — body parameters (measurements, phenotypes, description)",
   "type": "object",
   "additionalProperties": true,
   "properties": {
@@ -36,7 +36,7 @@
       "additionalProperties": {
         "type": "number"
       },
-      "description": "clés ISO 7250 (stature, chest_circumference, waist_circumference, hip_circumference, shoulder_breadth…) en cm"
+      "description": "ISO 7250 keys (stature, chest_circumference, waist_circumference, hip_circumference, shoulder_breadth…) in cm"
     },
     "phenotypes_anny": {
       "type": "object",
@@ -45,7 +45,7 @@
         "minimum": 0,
         "maximum": 1
       },
-      "description": "phénotypes Anny [0,1]"
+      "description": "Anny phenotypes [0,1]"
     },
     "smplx_betas": {
       "type": "array",
@@ -79,7 +79,7 @@
     },
     "estimated": {
       "type": "boolean",
-      "description": "morphologie estimée sous les vêtements — interdite si âge < 18, jamais sur une personne réelle sans consent.scope ∋ likeness-3d"
+      "description": "estimated morphology under clothing — forbidden if age < 18, never for a real person without consent.scope ∋ likeness-3d"
     },
     "confidence": {
       "type": "number",

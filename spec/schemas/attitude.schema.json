@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://cof.dev/schemas/0.5/attitude.schema.json",
-  "title": "elements/{posture|motion}/<v>/attitude.json — signature de mouvement (LMA Effort), tempo, postures, gestes",
+  "title": "elements/{posture|motion}/<v>/attitude.json — motion signature (LMA Effort), tempo, postures, gestures",
   "type": "object",
   "additionalProperties": true,
   "properties": {
@@ -42,10 +42,10 @@
             "flick",
             "press"
           ],
-          "description": "les 8 actions d'effort de Laban"
+          "description": "Laban's 8 effort actions"
         }
       },
-      "description": "axes −1…+1 : space indirect→direct, weight light→strong, time sustained→sudden, flow free→bound"
+      "description": "axes −1…+1: space indirect→direct, weight light→strong, time sustained→sudden, flow free→bound"
     },
     "shape": {
       "type": "array",
@@ -110,7 +110,7 @@
           "items": {
             "type": "string"
           },
-          "description": "codes Body Action and Posture (Dael et al.)"
+          "description": "Body Action and Posture codes (Dael et al.)"
         }
       }
     },
@@ -125,11 +125,11 @@
           "id": {
             "type": "string",
             "pattern": "^[a-z]+:[A-Za-z0-9._-]+$",
-            "description": "identifiant référençable (trait:…, goal:…, fear:…, gesture:…)"
+            "description": "referenceable identifier (trait:…, goal:…, fear:…, gesture:…)"
           },
           "lexeme": {
             "type": "string",
-            "description": "lexème BML (beat, iconic, deictic, metaphoric, emblem…) ou nom libre"
+            "description": "BML lexeme (beat, iconic, deictic, metaphoric, emblem…) or free-form name"
           },
           "text": {
             "type": "string"
@@ -139,7 +139,7 @@
             "items": {
               "type": "string",
               "pattern": "^[a-z]+:[A-Za-z0-9._-]+$",
-              "description": "identifiant référençable (trait:…, goal:…, fear:…, gesture:…)"
+              "description": "referenceable identifier (trait:…, goal:…, fear:…, gesture:…)"
             }
           },
           "frequency": {
@@ -202,7 +202,7 @@
           "items": {
             "type": "string"
           },
-          "description": "labels 100STYLE / BABEL / Mixamo"
+          "description": "100STYLE / BABEL / Mixamo labels"
         }
       }
     },
@@ -228,7 +228,7 @@
           }
         }
       },
-      "description": "postures en points-clés (pose.schema.json) avec rendu « bonhomme » optionnel"
+      "description": "keypoint postures (pose.schema.json) with optional \"stick figure\" rendering"
     },
     "renderings": {
       "type": "object",

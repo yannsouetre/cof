@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://cof.dev/schemas/0.5/hair.schema.json",
-  "title": "elements/appearance/<v>/hair.json — code COF-HAIR-1",
+  "title": "elements/appearance/<v>/hair.json — COF-HAIR-1 code",
   "type": "object",
   "additionalProperties": true,
   "properties": {
@@ -15,7 +15,7 @@
       ],
       "minimum": 0,
       "maximum": 9,
-      "description": "0 chauve · 1 ras · 2 court · 3 oreilles · 4 menton · 5 épaules · 6 omoplates · 7 milieu du dos · 8 taille · 9 au-delà"
+      "description": "0 bald · 1 buzzed · 2 short · 3 ears · 4 chin · 5 shoulders · 6 shoulder blades · 7 mid-back · 8 waist · 9 beyond"
     },
     "curl": {
       "type": [
@@ -24,7 +24,7 @@
       ],
       "minimum": 0,
       "maximum": 9,
-      "description": "0 raide · 3 ondulé · 6 bouclé · 9 crépu (échelle Andre 1a–4c projetée)"
+      "description": "0 straight · 3 wavy · 6 curly · 9 coily (Andre 1a–4c scale, projected)"
     },
     "density": {
       "type": [

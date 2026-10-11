@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://cof.dev/schemas/0.5/psyche.schema.json",
-  "title": "elements/personality/<v>/psyche.json — traits typés, buts, craintes, valeurs, émotion de base",
-  "description": "Projection typée de la personnalité : la vérité narrative reste dans card.json ; psyche.json est un dérivé structuré pour moteurs, filtres et contrôles de cohérence.",
+  "title": "elements/personality/<v>/psyche.json — typed traits, goals, fears, values, baseline emotion",
+  "description": "Typed projection of the personality: the narrative truth stays in card.json; psyche.json is a structured derivative for engines, filters and coherence checks.",
   "type": "object",
   "additionalProperties": true,
   "properties": {
@@ -92,7 +92,7 @@
               "id": {
                 "type": "string",
                 "pattern": "^[a-z]+:[A-Za-z0-9._-]+$",
-                "description": "identifiant référençable (trait:…, goal:…, fear:…, gesture:…)"
+                "description": "referenceable identifier (trait:…, goal:…, fear:…, gesture:…)"
               },
               "label": {
                 "type": "string"
@@ -104,7 +104,7 @@
               },
               "evidence": {
                 "type": "string",
-                "description": "où la preuve se lit (card.personality, card.mes_example…)"
+                "description": "where the evidence can be read (card.personality, card.mes_example…)"
               }
             }
           }
@@ -123,7 +123,7 @@
           "id": {
             "type": "string",
             "pattern": "^[a-z]+:[A-Za-z0-9._-]+$",
-            "description": "identifiant référençable (trait:…, goal:…, fear:…, gesture:…)"
+            "description": "referenceable identifier (trait:…, goal:…, fear:…, gesture:…)"
           },
           "text": {
             "type": "string"
@@ -155,7 +155,7 @@
           "id": {
             "type": "string",
             "pattern": "^[a-z]+:[A-Za-z0-9._-]+$",
-            "description": "identifiant référençable (trait:…, goal:…, fear:…, gesture:…)"
+            "description": "referenceable identifier (trait:…, goal:…, fear:…, gesture:…)"
           },
           "text": {
             "type": "string"
@@ -179,7 +179,7 @@
       "items": {
         "type": "string"
       },
-      "description": "tensions internes assumées — ce qui rend le personnage crédible"
+      "description": "acknowledged inner tensions — what makes the character believable"
     },
     "baseline_emotion": {
       "type": "object",

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://cof.dev/schemas/0.5/voice-profile.schema.json",
-  "title": "elements/voice/<v>/profile.json — profil vocal canonique, échantillons, artefacts moteurs",
+  "title": "elements/voice/<v>/profile.json — canonical voice profile, samples, engine artifacts",
   "type": "object",
   "additionalProperties": true,
   "properties": {
@@ -20,7 +20,7 @@
         },
         "age_perceived": {
           "type": "string",
-          "description": "'30s', 'child', 'elderly'… — perception, pas identité"
+          "description": "'30s', 'child', 'elderly'… — perception, not identity"
         },
         "accent": {
           "type": "string"
@@ -80,7 +80,7 @@
         },
         "vpa": {
           "type": "object",
-          "description": "Vocal Profile Analysis (Laver) — valeurs ordinales 0–6 par paramètre",
+          "description": "Vocal Profile Analysis (Laver) — ordinal values 0–6 per parameter",
           "additionalProperties": {
             "type": "integer",
             "minimum": 0,
@@ -114,7 +114,7 @@
       "items": {
         "type": "string"
       },
-      "description": "catégories EmotionML couvertes par les échantillons"
+      "description": "EmotionML categories covered by the samples"
     },
     "samples": {
       "type": "array",
@@ -161,7 +161,7 @@
     },
     "engines": {
       "type": "array",
-      "description": "artefacts dérivés nommés, versionnés, périssables",
+      "description": "named, versioned, perishable derived artifacts",
       "items": {
         "type": "object",
         "required": [
@@ -194,7 +194,7 @@
       "additionalProperties": {
         "type": "string"
       },
-      "description": "rendus texte par moteur : parler-tts, elevenlabs-description, generic"
+      "description": "per-engine text renderings: parler-tts, elevenlabs-description, generic"
     },
     "ssml_template": {
       "type": "string"

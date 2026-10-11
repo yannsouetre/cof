@@ -1,33 +1,72 @@
 # COF — Character Open File
 
-**Un personnage = un fichier. Ouvert, portable, consenti.**
+**One character = one file. Open, portable, consented.**
 
-COF est un format de fichier ouvert (`.cof`, conteneur ZIP) qui réunit tout ce qui définit un personnage IA : personnalité, apparence (photos, code vectoriel, descriptif), voix, corps 3D, mouvement — **et** ses droits, son consentement et sa provenance. Un même fichier s'ouvre dans un chat, un générateur d'images ou de vidéo, un moteur de jeu, Blender, ou sert d'« âme » à un agent.
+COF is an open file format (`.cof`, a ZIP container) that bundles everything that defines an AI character: personality, appearance (photos, vector code, description), voice, 3D body, motion — **and** its rights, consent and provenance. The same file opens in a chat app, an image or video generator, a game engine, Blender, or serves as the "soul" of an agent.
 
-> Statut : **brouillon v0.2** (octobre 2026). Rien n'est encore figé ; les retours sont bienvenus via les RFC.
+> Status: **working draft** — specification v0.5, reference tooling 0.7.2 (October 2026). Nothing is frozen yet; feedback is welcome through the RFCs.
 
-## Pourquoi
-- Fin de la jonglerie entre PNG, WAV, VRM, LoRA et notes éparses.
-- Jamais prisonnier d'une plateforme : COF est le format de *sortie* que les outils propriétaires ne proposent pas.
-- Conforme par construction : permissions, tags de contenu, consentement, marquage « contenu synthétique » dans le manifeste.
+## Why
+- No more juggling PNGs, WAVs, VRMs, LoRAs and scattered notes.
+- Never locked into a platform: COF is the *export* format that proprietary tools don't offer.
+- Compliant by construction: permissions, content tags, consent and "synthetic content" labeling live in the manifest.
 
-## Contenu du dépôt
-| Dossier | Contenu |
+## What's in a `.cof`
+A `.cof` is a ZIP archive with a `mimetype` entry first and a `manifest.json` second, followed by the character's elements and rights:
+
+| Part | Content |
 |---|---|
-| `spec/` | La spécification (`SPEC.md`), les JSON Schemas, les exemples |
-| `vector/` | COF-Vector : le « SVG du visage, du corps et des vêtements » |
-| `vocabularies/` | Vocabulaires et tables de correspondance (CC0) |
-| `rfcs/` | Propositions d'évolution |
-| `docs/` | État de l'art, feuille de route |
-| `cli/` | Outil en ligne de commande (validate, pack, convert) — à venir |
-| `builder/` | Le builder web — à venir |
+| `manifest.json` | Identities, element variants, presets, tags, permissions, provenance, completeness KPI |
+| `elements/` | 7 media categories — personality (Character Card V3, psyche, free text), appearance (face/body views, character sheets, loose photos, hair/body codes), identity weights (LoRA), 3D, voice (samples + profile), postures, motion — plus a `files` library (agent skills, memories) |
+| `rights/` | Consent record and proofs when a real person is depicted |
+| Presets | Named combinations of variants (e.g. adult / young, realistic / anime), each with its own depicted age and coherence report |
 
-## Englober, pas remplacer
-Un `.cof` contient une Character Card V3 valide et s'exporte en PNG `ccv3`, `.charx`, `SOUL.md`/`IDENTITY.md`, `.vrm`. Les outils existants n'ont rien à réécrire.
+See [`spec/SPEC.md`](spec/SPEC.md) for the full definition.
 
-## Licences
-Code MIT · Spécifications CC BY 4.0 · Vocabulaires CC0 — voir `LICENSES.md`.
+## Quick start
+**Build a file in the browser** — no install, nothing leaves your machine:
+<https://yannsouetre.github.io/cof/builder/>
+
+**Validate with the CLI** (Python):
+```bash
+pip install -e cli
+cof validate file.cof                          # a .cof file or an unpacked folder
+cof validate spec/examples/01-lea-text-only
+cof pack spec/examples/01-lea-text-only -o lea.cof
+cof export lea.cof --format png -o lea.png     # → PNG card (chara + ccv3 chunks)
+```
+More commands (import, export to SOUL.md/IDENTITY.md, migrate, tokens…) in [`cli/README.md`](cli/README.md).
+
+## Repository layout
+| Folder | Content |
+|---|---|
+| `spec/` | The specification (`SPEC.md`, French original `SPEC.fr.md`), JSON Schemas, examples |
+| `vector/` | COF-Vector: the "SVG of the face, body and clothing" |
+| `vocabularies/` | Vocabularies and mapping tables (CC0) |
+| `rfcs/` | Change proposals |
+| `docs/` | Implementer guide, state of the art, roadmap, completeness/tags/coherence rules |
+| `cli/` | Command-line tool (`validate`, `pack`, `import`, `export`, `migrate`…) |
+| `builder/` | The web builder (single HTML page) |
+
+## Key documents
+- [`spec/SPEC.md`](spec/SPEC.md) — the specification
+- [`docs/IMPLEMENTING.md`](docs/IMPLEMENTING.md) — how to read and write `.cof` files in your tool
+- [`spec/examples/`](spec/examples/) — 9 conformant example characters
+- [`spec/schemas/`](spec/schemas/) — JSON Schemas (draft 2020-12)
+- [`CHANGELOG.md`](CHANGELOG.md), [`CONTRIBUTING.md`](CONTRIBUTING.md), [`GOVERNANCE.md`](GOVERNANCE.md)
+
+## Embrace, don't replace
+A `.cof` contains a valid Character Card V3 and exports to `ccv3` PNG, `.charx`, `SOUL.md`/`IDENTITY.md`, `.vrm`. Existing tools have nothing to rewrite.
+
+## License
+| Part | License |
+|---|---|
+| Code (`cli/`, `builder/`, `vector/py`, scripts) | MIT — see [`LICENSE`](LICENSE) |
+| Specifications (`spec/SPEC.md`, `vector/SPEC.md`, `rfcs/`, `docs/`) and examples (`spec/examples/`) | CC BY 4.0 |
+| Vocabularies, mapping tables and schemas (`vocabularies/`, `spec/schemas/`) | CC0 1.0 |
+
+Details in [`LICENSES.md`](LICENSES.md). Requested attribution for the specifications: "COF — Character Open File, Yann Souetre, https://github.com/yannsouetre/cof".
 
 ---
 
-*COF — Character Open File, by Yann Souetre. English version of the spec coming with the launch.*
+*COF — Character Open File, by Yann Souetre. French version of this page: [`README.fr.md`](README.fr.md).*

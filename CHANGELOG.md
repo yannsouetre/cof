@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.3 — 2026-10-11 — English becomes normative
+- `spec/SPEC.md` is now the **English normative text**; `spec/SPEC.fr.md` is the French translation. README, coherence API, completeness and tags rules, schemas README, vocabularies and builder READMEs translated (French originals kept as `*.fr.md`); schema descriptions in English.
+- Spec fixes found during translation: identity no longer lists `age` in the overview and in the `identities` pattern; 8 categories (incl. `files`); coherence checks "never blocking — except `illegal`"; intimate opt-in and real-person refusal stated with MUST / MUST NOT.
+- **Example 10 — Clara Mercier** (flagship): 6 presets, 4 voices, OpenPose library, agent preset; provenance per asset (`digitalSourceType: trainedAlgorithmicMedia`, generator), CC BY 4.0 for character, texts and images; voice samples pending confirmation of the voice tools' plan terms.
+- Root `index.html` landing page and `.nojekyll` for GitHub Pages (builder at `/builder/`).
+
 ## 0.7.2 — 2026-10-11
 - Les étiquettes de langue sont acceptées dans toutes les casses (`FR`, `fr-FR`, `fr`) — BCP 47 est insensible à la casse (RFC 5646 § 2.1.1) ; le builder les normalise en minuscules.
 - Correctif builder : `profile.json` reprenait la langue d'échantillon saisie au moment du dépôt, pas celle de la déclinaison (fichier v3 de test rendu non conforme). Rouvrir et reconstruire un fichier corrige.

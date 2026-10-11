@@ -1,18 +1,20 @@
-# Passerelle de contrôle de cohérence (builder → IA au choix) — contrat v0.1
+# Coherence check gateway (builder → AI of your choice) — contract v0.1
 
-Le builder peut déléguer le **contrôle de cohérence** d'un preset à une IA choisie par l'utilisateur. Deux modes :
-1. **API OpenAI-compatible** (`POST {base_url}/chat/completions`, modèle avec vision) : le builder construit un message système + un message utilisateur contenant le *dossier de preset* ci-dessous (texte + vignettes en `image_url` base64) et demande une réponse JSON stricte.
-2. **Intégration native** : une plateforme qui embarque le builder appelle sa propre IA avec le même dossier et renvoie le même résultat.
+The builder can delegate the **coherence check** of a preset to an AI chosen by the user. Two modes:
+1. **OpenAI-compatible API** (`POST {base_url}/chat/completions`, vision-capable model): the builder builds a system message + a user message containing the *preset bundle* below (text + thumbnails as base64 `image_url`) and requests a strict JSON response.
+2. **Native integration**: a platform that embeds the builder calls its own AI with the same bundle and returns the same result.
 
-## Dossier de preset (`cof coherence-bundle <dir> --preset <p>`)
+## Preset bundle (`cof coherence-bundle <dir> --preset <p>`)
 ```jsonc
 {
-  "cof": "0.5", "character": { "name": "…", "age": { "value": 34 },   // âge du preset (plus bas de ses déclinaisons), null si inconnu "fictional": true, "morphology": { "class": "humanoid", "species": "human" }, "languages": ["fr"] },
+  "cof": "0.5",
+  "character": { "name": "…", "age": { "value": 34 },   // preset age (lowest of its variants), null if unknown
+                 "fictional": true, "morphology": { "class": "humanoid", "species": "human" }, "languages": ["fr"] },
   "preset": { "id": "default", "label": "…", "style": "photo-realistic", "age_override": null },
   "elements": {
     "personality": { "summary": "…", "gender_presentation_declared": "feminine", "age_in_text": 34 },
     "face":  { "style": "photo-realistic", "age_declared": 34, "age_basis": "apparent", "thumbnails": ["data:image/jpeg;base64,…"] },
-    "intimate": { "age_declared": 34 },                         // présent ⇒ contrôle age-legality obligatoire
+    "intimate": { "age_declared": 34 },                         // present ⇒ age-legality check mandatory
     "body":  { "style": "photo-realistic", "thumbnails": ["…"] },
     "hair":  { "code": { "length": 5, "color_base_hex": "#4d2f27" } },
     "outfit":{ "prompt": "khaki cotton utility jacket…" },
@@ -23,14 +25,14 @@ Le builder peut déléguer le **contrôle de cohérence** d'un preset à une IA 
 }
 ```
 
-## Réponse attendue (JSON strict)
+## Expected response (strict JSON)
 ```jsonc
 { "score": 92,
   "issues": [
-    { "severity": "major", "elements": ["voice", "face"], "check": "gender", "message": "La voix est perçue masculine, le visage et le texte sont féminins." },
-    { "severity": "minor", "elements": ["outfit"], "check": "style", "message": "Tenue décrite en style manga dans un preset photo-réaliste." } ] }
+    { "severity": "major", "elements": ["voice", "face"], "check": "gender", "message": "The voice is perceived as masculine; the face and text are feminine." },
+    { "severity": "minor", "elements": ["outfit"], "check": "style", "message": "Outfit described in manga style in a photo-realistic preset." } ] }
 ```
-### Contrôle `age-legality` (sévérité `illegal`)
-Si le dossier contient une déclinaison `intimate`, le contrôleur **doit** estimer l'âge apparent de chaque image de visage et de corps. Si une image paraît clairement mineure (< 18, avec marge) alors que l'âge déclaré est majeur, il renvoie `{ "severity": "illegal", "check": "age-legality", "elements": [...], "message": "..." }`. Le builder affiche cette issue en rouge comme **combinaison illégale** et refuse de construire le fichier tant qu'elle subsiste ; un lecteur qui reçoit un fichier portant une telle issue dans `presets.<p>.coherence` doit le traiter comme invalide. Les sévérités `info | minor | major` restent non bloquantes.
+### `age-legality` check (severity `illegal`)
+If the bundle contains an `intimate` variant, the checker **must** estimate the apparent age of every face and body image. If an image clearly looks underage (< 18, with a margin) while the declared age is adult, it returns `{ "severity": "illegal", "check": "age-legality", "elements": [...], "message": "..." }`. The builder displays this issue in red as an **illegal combination** and refuses to build the file as long as it remains; a reader that receives a file carrying such an issue in `presets.<p>.coherence` must treat it as invalid. Severities `info | minor | major` remain non-blocking.
 
-Le builder écrit le résultat dans `presets.<p>.coherence` avec `method: "ai-api" | "platform-native"`, `computed_by` (nom du modèle), `computed_at`. Les contrôles **heuristiques locaux** (sans IA) produisent le même format avec `method: "heuristic"`. Un score bas n'invalide jamais le fichier ; seule une issue `illegal` bloque.
+The builder writes the result to `presets.<p>.coherence` with `method: "ai-api" | "platform-native"`, `computed_by` (model name), `computed_at`. **Local heuristic** checks (no AI) produce the same format with `method: "heuristic"`. A low score never invalidates the file; only an `illegal` issue blocks.

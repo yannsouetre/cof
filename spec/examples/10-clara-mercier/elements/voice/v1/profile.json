@@ -1,0 +1,25 @@
+{
+  "canonical": {
+    "gender_presentation": "feminine",
+    "age_perceived": "29",
+    "accent": "fr",
+    "pitch": {
+      "range": "high"
+    },
+    "rate": "medium",
+    "timbre": []
+  },
+  "speech_style": {
+    "register": ""
+  },
+  "samples": [
+    {
+      "id": "a-voice-v1-clara-mercier-farp",
+      "path": "elements/voice/v1/samples/clara-mercier.mp3",
+      "duration_s": 14.3,
+      "transcript": "elements/voice/v1/samples/clara-mercier.txt",
+      "emotion": "joy",
+      "language": "fr"
+    }
+  ]
+}

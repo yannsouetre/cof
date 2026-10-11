@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://cof.dev/schemas/0.5/skeleton.schema.json",
-  "title": "Définition d'un squelette (entrée de vocabularies/skeletons-1.0.json) et table de correspondance vers le squelette canonique COF",
+  "title": "Skeleton definition (entry of vocabularies/skeletons-1.0.json) and mapping table to the COF canonical skeleton",
   "type": "object",
   "additionalProperties": true,
   "properties": {
@@ -41,7 +41,7 @@
               "string",
               "null"
             ],
-            "description": "nom du joint canonique COF (hips, spine, chest, neck, head, l_shoulder, l_elbow, l_wrist, r_…, l_hip, l_knee, l_ankle, l_foot, …) ou null si sans équivalent"
+            "description": "COF canonical joint name (hips, spine, chest, neck, head, l_shoulder, l_elbow, l_wrist, r_…, l_hip, l_knee, l_ankle, l_foot, …) or null if there is no equivalent"
           }
         }
       },

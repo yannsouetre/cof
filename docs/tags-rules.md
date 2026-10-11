@@ -1,11 +1,11 @@
-# Règles des tags (v0.3)
+# Tag rules (v0.3)
 
-| Slot | Qui écrit | Règles |
+| Slot | Written by | Rules |
 |---|---|---|
-| `tags.auto` | le builder / `cof validate` (régénérables) | morphologie (`humanoid`…), tranche d'âge depuis l'âge le plus bas (`child` < 13, `teen` < 18, `adult`, `elder` ≥ 65), langues (ISO 639-1), couches présentes (`has-voice`, `has-3d`, `has-motion`, `has-weights`), `multi-preset` si ≥ 2 presets, `style-<style>` du preset par défaut, `imported-ccv3` à l'import |
-| `tags.manual` | l'auteur | ≤ 30, minuscules, `[a-z0-9-]` |
-| `tags.content` | l'auteur (proposé par le builder depuis les permissions et descriptifs) | vocabulaire fermé : `none`, `nudity`, `sexual`, `violence`, `gore`, `drugs`, `profanity`, `horror`, `political`, `religious` ; `allowSexualUsage: true` ou élément `intimate` ⇒ le builder propose `sexual`/`nudity` |
-| `tags.ip` | l'auteur | `original: true`, sinon `franchise` / `based_on` nommés ; le builder alerte par correspondance avec `vocabularies/franchises.txt` (liste contributive, non exhaustive) |
-| `style` / `style_tags` | builder (proposition) + auteur | `style` ∈ `visual-styles-1.0` ; précisions libres en `style_tags` |
+| `tags.auto` | the builder / `cof validate` (regenerable) | morphology (`humanoid`…), age bracket from the lowest age (`child` < 13, `teen` < 18, `adult`, `elder` ≥ 65), languages (ISO 639-1), layers present (`has-voice`, `has-3d`, `has-motion`, `has-weights`), `multi-preset` if ≥ 2 presets, `style-<style>` of the default preset, `imported-ccv3` on import |
+| `tags.manual` | the author | ≤ 30, lowercase, `[a-z0-9-]` |
+| `tags.content` | the author (suggested by the builder from permissions and descriptions) | closed vocabulary: `none`, `nudity`, `sexual`, `violence`, `gore`, `drugs`, `profanity`, `horror`, `political`, `religious`; `allowSexualUsage: true` or an `intimate` element ⇒ the builder suggests `sexual`/`nudity` |
+| `tags.ip` | the author | `original: true`, otherwise a named `franchise` / `based_on`; the builder warns on matches against `vocabularies/franchises.txt` (contributed list, not exhaustive) |
+| `style` / `style_tags` | builder (suggestion) + author | `style` ∈ `visual-styles-1.0`; free-form refinements in `style_tags` |
 
-Un tag n'est jamais une preuve : il est **déclaratif** et opposable via la provenance.
+A tag is never proof: it is **declarative** and can be held against the author through provenance.
