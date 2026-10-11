@@ -3,6 +3,7 @@
 ## 0.8.2 — 2026-10-11 — build feedback
 - Builder 0.8.2: a **progress pop-up** (spinning ring around the logo, elapsed seconds, "keep this page open") while building, exporting a preset or a tag, opening a `.cof` or importing one — the page no longer looks frozen during long builds. Translated in the six interface languages.
 - Example 10: French manga voice transcript added — every voice sample now has one.
+- Example 10: the generic `eco-ux-audit` skill is replaced by a real expert skill, **`accessible-color-palette`** (multi-file: `SKILL.md`, `reference/color-math.md` with the exact WCAG and OKLab formulas, `examples/eco-green-palette.md` with a palette whose contrast ratios were computed and checked).
 
 ## 0.8.1 — 2026-10-11 — preset tags replace groups
 - **Preset tags** (`preset_tags`, optional, container level) replace the same-day `preset_groups`: `[{id, label, facet?, description?, presets}]`, **many-to-many** (a preset can be `en` *and* `age-12`). Optional `facet` (language, age, style…): same-facet tags are alternatives in a filter, different facets intersect. Spec § 2.3 (EN/FR), schema, validation (duplicate id, unknown preset), merge carries tags, `cof extract --tag X [--tag Y]` (intersection; parents outside the selection are flattened, kept tags restricted). Legacy `preset_groups` → warning; `cof migrate` converts them; the builder reads them as tags.

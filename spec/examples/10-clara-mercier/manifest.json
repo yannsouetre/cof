@@ -297,9 +297,11 @@
       "variants": {
         "f1": {
           "kind": "skill",
-          "label": "Eco-UX audit (skill)",
+          "label": "Accessible colour palette (skill)",
           "files": [
-            "a-file-f1-skill"
+            "a-file-f1-skill",
+            "a-file-f1-color-math",
+            "a-file-f1-example"
           ],
           "entry": "elements/files/f1/SKILL.md",
           "target": "agent-skills",
@@ -352,7 +354,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:53:56Z"
+        "computed_at": "2026-10-11T17:59:26Z"
       }
     },
     "en-manga": {
@@ -393,7 +395,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:53:56Z"
+        "computed_at": "2026-10-11T17:59:26Z"
       }
     },
     "en-12": {
@@ -437,7 +439,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:53:56Z"
+        "computed_at": "2026-10-11T17:59:26Z"
       }
     },
     "en-65": {
@@ -481,7 +483,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:53:56Z"
+        "computed_at": "2026-10-11T17:59:26Z"
       }
     },
     "en-future": {
@@ -525,7 +527,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:53:56Z"
+        "computed_at": "2026-10-11T17:59:26Z"
       }
     },
     "en-agent": {
@@ -567,7 +569,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:53:56Z"
+        "computed_at": "2026-10-11T17:59:26Z"
       }
     },
     "fr": {
@@ -608,7 +610,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:53:56Z"
+        "computed_at": "2026-10-11T17:59:26Z"
       }
     },
     "fr-manga": {
@@ -649,7 +651,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:53:56Z"
+        "computed_at": "2026-10-11T17:59:26Z"
       }
     },
     "fr-12": {
@@ -693,7 +695,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:53:56Z"
+        "computed_at": "2026-10-11T17:59:26Z"
       }
     },
     "fr-65": {
@@ -737,7 +739,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:53:56Z"
+        "computed_at": "2026-10-11T17:59:26Z"
       }
     },
     "fr-futur": {
@@ -781,7 +783,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:53:56Z"
+        "computed_at": "2026-10-11T17:59:26Z"
       }
     },
     "fr-agent": {
@@ -823,7 +825,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T17:53:56Z"
+        "computed_at": "2026-10-11T17:59:26Z"
       }
     }
   },
@@ -1143,8 +1145,28 @@
       "path": "elements/files/f1/SKILL.md",
       "role": "skill-file",
       "mediaType": "text/markdown",
-      "bytes": 3299,
-      "sha256": "8e7c694b45a09e0fd5f70a8f39ab86652b9dd1101babb9cc15ee5fd761680dc8",
+      "bytes": 5503,
+      "sha256": "52b067811d4b56fb73a108a1490e0046af0f456ebc91bb12040c36f6ccfb260e",
+      "license": "CC-BY-4.0",
+      "language": "en"
+    },
+    {
+      "id": "a-file-f1-color-math",
+      "path": "elements/files/f1/reference/color-math.md",
+      "role": "skill-file",
+      "mediaType": "text/markdown",
+      "bytes": 2161,
+      "sha256": "03d74ede3f41bd6854b7da75e6dc79bcc5e01c3719eb7aa142a37b7ce4e78771",
+      "license": "CC-BY-4.0",
+      "language": "en"
+    },
+    {
+      "id": "a-file-f1-example",
+      "path": "elements/files/f1/examples/eco-green-palette.md",
+      "role": "skill-file",
+      "mediaType": "text/markdown",
+      "bytes": 5114,
+      "sha256": "cbb29b75f0692b11b1b937f629d67d1ff301e7f271999f623b647d260868e908",
       "license": "CC-BY-4.0",
       "language": "en"
     }
@@ -1225,7 +1247,7 @@
       "archive"
     ],
     "computed_by": "cof-cli/0.7.0",
-    "computed_at": "2026-10-11T17:53:56Z"
+    "computed_at": "2026-10-11T17:59:26Z"
   },
   "preset_tags": [
     {
