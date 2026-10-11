@@ -86,6 +86,7 @@ Aucune contrainte sur la nature du personnage. `morphology.class` ∈ `humanoid 
 - **ZIP** ; zip64 accepté en lecture.
 - 1re entrée : `mimetype`, stockée sans compression, = `application/vnd.cof.character+zip`.
 - 2e entrée : `manifest.json`. Un lecteur doit pouvoir fonctionner après ces deux entrées.
+- 3e entrée facultative : `Thumbnails/thumbnail.png` (chemin réservé, convention ODF), PNG d'au plus 256 px sur le grand côté, stocké sans compression, dérivé de la meilleure vue du preset par défaut (asset `role: derived`, `method: thumbnail`) et référencé par `manifest.thumbnail`. Les générateurs de miniatures des explorateurs (Windows, Quick Look sur macOS, freedesktop) lisent ce chemin fixe sans analyser le manifeste. Les rédacteurs DEVRAIENT l'inclure ; il est régénéré, jamais modifié à la main.
 - Chemins ASCII `[A-Za-z0-9._/-]`, pas de `..`, pas d'absolu, pas de lien symbolique.
 - Binaires haute entropie stockés sans compression (`store`), JSON/texte en `deflate`.
 - Alignement 64 octets optionnel (`container.aligned`), chiffrement interdit.
@@ -95,14 +96,16 @@ Aucune contrainte sur la nature du personnage. `morphology.class` ∈ `humanoid 
 ```
 mimetype
 manifest.json                              ← identités, éléments, presets, assets, droits (§ 2)
+Thumbnails/thumbnail.png                   ← vignette système facultative, ≤ 256 px (§ 1.1)
 elements/
   personality/<v>/   card.json  psyche.json  story.md  lorebook.json  SOUL.md  IDENTITY.md
   appearance/<v>/    images (head.front.jpg…), face.json / body.json / hair.json / outfit.json selon le type
   identity_weights/<v>/  weights.json  [weights.safetensors]
-  volume3d/<v>/      avatar.vrm | mesh.glb | face.glb | splat.spz | figurine.3mf  skeleton.json
+  volume3d/<v>/      avatar.vrm | mesh.glb | face.glb | splat.spz | figurine.3mf | environment.glb  skeleton.json
   voice/<v>/         profile.json  voice.vec.json  samples/  engines/
   posture/<v>/       photos, pose.json (OpenPose), silhouette.png, attitude.json
   motion/<v>/        clips/ (BVH, VRMA)  videos/ (courtes, basse résolution)  visemes.json
+  files/<v>/         SKILL.md + ressources | MEMORY.md | documents
 derived/<cat>/<v>/   post-traitements optionnels (§ 4.8)
 sheets/              planches d'origine + regions (§ 4.1)
 rights/              consent.json (par identité : consent.<identité>.json)  licenses/  manifest.c2pa
@@ -137,9 +140,9 @@ Champs **obligatoires** de l'identité : `name`, `fictional`, `morphology` (`cla
 | Catégorie | Nature | Types (`kind`) d'une déclinaison |
 |---|---|---|
 | `personality` | texte | `card` (Character Card V3 + psyche, story, lore), `description` (texte libre) |
-| `appearance` | photos | `reference-set` (photos en vrac, l'IA se débrouille), `character-sheet` (plusieurs angles sur une image), `face`, `body`, `hair`, `clothing` (+ `garment`), `accessory` (+ `accessory`), `intimate`, `pilosity` (+ `area` face/corps), `feature` (particularités : cornes, queue, prothèse… + `region`), `description` |
+| `appearance` | photos | `reference-set` (photos en vrac, l'IA se débrouille), `character-sheet` (plusieurs angles sur une image), `face`, `body`, `hair`, `clothing` (+ `garment`), `accessory` (+ `accessory`), `intimate`, `pilosity` (+ `area` face/corps), `feature` (particularités : cornes, queue, prothèse… + `region`), `environment` (arrière-plans et lieux liés au personnage + `use` : `background` pour les fonds de discussion / avatar vidéo, `location` pour le domicile, le lieu de travail…), `description` |
 | `identity_weights` | poids | `lora`, `lycoris`, `dora`, `textual-inversion`, `ip-adapter-embedding`, `dreambooth`, `other` (+ `covers`) |
-| `volume3d` | 3D | `mesh` (avatar riggé / maillage complet), `face-mesh`, `point-cloud` (splat), `print` (3MF), `other` |
+| `volume3d` | 3D | `mesh` (avatar riggé / maillage complet), `face-mesh`, `point-cloud` (splat), `print` (3MF), `other`, `environment` (un lieu, en un seul fichier GLB, USDZ ou splat) — **toute déclinaison 3D est un fichier autonome** qui porte maillages, textures et rig (VRM, GLB, USDZ, 3MF, SPZ/PLY/SPLAT) ; OBJ et glTF à ressources externes sont refusés, FBX est déconseillé |
 | `voice` | audio | `samples` (échantillons, transcription facultative), `described` (profil sans audio) |
 | `posture` | pose (**bibliothèque**) | `photo` (une pose), `photos` (plusieurs vues d'une même pose), `openpose`, `silhouette`, `attitude` (signature de mouvement), `description` — avec `use: pose-only` (l'inférence ne retient que la pose) |
 | `motion` | mouvement (**bibliothèque**) | `clips` (BVH / VRMA), `video` (très court, basse résolution, plafond 20 Mo sauf `max_bytes_ack`), `attitude`, `description` |
@@ -149,7 +152,7 @@ Règles :
 - Chaque déclinaison déclare `kind` (obligatoire), `label`, `style` / `style_tags` (visuel), `language` (texte/voix), `derives_from` (héritage de champs ; seule « hiérarchie »), `identity` (réservation optionnelle), et ses représentations (`images[]`, `samples[]`, `clips[]`, `videos[]` = identifiants d'assets ; `card`, `psyche`, `params`, `code`, `spec`, `profile`, `path`, `mesh`…).
 - Une déclinaison `face` / `body` / `hair` / `clothing` / `accessory` / `pilosity` / `feature` décrit **un seul** visage / corps / coupe / vêtement / accessoire cohérent — pour un autre, on crée une autre déclinaison. La subdivision est **possible, jamais imposée** : avec une seule planche, on renseigne `character-sheet` et c'est valide.
 - Les images sont référencées par identifiant d'asset et peuvent être partagées entre déclinaisons.
-- **`age` par déclinaison** (`{ value, unit?: years|months, basis?: declared|apparent|canonical }`) sur tout ce qui touche à la morphologie : `appearance` sauf `clothing` / `accessory` / `feature` / `description`, `volume3d`, `identity_weights`. **Obligatoire** sur `face`, `body`, `character-sheet`, `reference-set` quand la morphologie de l'identité est de forme humaine (`human`, `humanoid`, `anthropomorphic-animal`) — un corps de forme humaine a toujours un âge apparent, d'où `basis: apparent` quand l'âge canonique est inconnu — et sur `intimate` (**≥ 18**) ; optionnel sur `hair`, `pilosity`, 3D, poids ; sans objet sur les classes `mechanical`, `amorphous`, etc. L'**âge d'un preset** = le plus bas des âges de ses déclinaisons résolues et de son `age_override` ; inconnu si aucun.
+- **`age` par déclinaison** (`{ value, unit?: years|months, basis?: declared|apparent|canonical }`) sur tout ce qui touche à la morphologie : `appearance` sauf `clothing` / `accessory` / `feature` / `environment` / `description`, `volume3d` (sauf `environment`), `identity_weights`. **Obligatoire** sur `face`, `body`, `character-sheet`, `reference-set` quand la morphologie de l'identité est de forme humaine (`human`, `humanoid`, `anthropomorphic-animal`) — un corps de forme humaine a toujours un âge apparent, d'où `basis: apparent` quand l'âge canonique est inconnu — et sur `intimate` (**≥ 18**) ; optionnel sur `hair`, `pilosity`, 3D, poids ; sans objet sur les classes `mechanical`, `amorphous`, etc. L'**âge d'un preset** = le plus bas des âges de ses déclinaisons résolues et de son `age_override` ; inconnu si aucun.
 - `character-sheet` : **une seule planche par déclinaison** par défaut ; `allow_multiple_sheets: true` en autorise plusieurs, à charge pour l'auteur de garantir la cohérence du personnage entre elles. `reference-set` : plusieurs photos d'office, même exigence de cohérence (le builder le rappelle).
 - Un même type d'information peut légitimement relever de **deux catégories** : `attitude` (signature de mouvement LMA, postures habituelles, gestes) est admis dans `posture` *et* dans `motion` ; une déclinaison vit dans l'une des deux, les lecteurs cherchent dans les deux.
 
@@ -187,7 +190,7 @@ Règles :
 "default_preset": "default"
 ```
 - Les emplacements sont des **listes par catégorie**, avec **deux régimes** :
-  - **Combinaison** (`personality`, `appearance`, `identity_weights`, `volume3d`, `voice`) : ce que le preset *est* / *porte*. Règle `single_per_kind` (défaut vrai) : au plus une déclinaison par type, sauf les cumulables `clothing`, `accessory`, `pilosity`, `feature` (et plusieurs `identity_weights` à `covers` disjoints). Pour les vêtements et accessoires, la liste du preset = ce qui est **porté** ; toutes les autres déclinaisons du fichier forment la **garde-robe**, disponible à l'inférence pour changer de tenue sans sortir du personnage.
+  - **Combinaison** (`personality`, `appearance`, `identity_weights`, `volume3d`, `voice`) : ce que le preset *est* / *porte*. Règle `single_per_kind` (défaut vrai) : au plus une déclinaison par type, sauf les cumulables `clothing`, `accessory`, `pilosity`, `feature`, `environment` (et plusieurs `identity_weights` à `covers` disjoints). Pour les vêtements et accessoires, la liste du preset = ce qui est **porté** ; toutes les autres déclinaisons du fichier forment la **garde-robe**, disponible à l'inférence pour changer de tenue sans sortir du personnage.
   - **Bibliothèque** (`posture`, `motion`) : le preset liste le **répertoire** de poses et de mouvements *typiques* du personnage — plusieurs déclinaisons de tout type, **aucune n'est obligatoire à l'inférence** ; l'outil y puise quand il en a besoin (une pose de référence, un cycle de marche) et peut l'ignorer. `defaults` (optionnel) désigne la déclinaison à préférer quand l'outil doit en choisir une (`"defaults": { "posture": "ps1", "motion": "mo1" }`). L'intérêt est d'**associer** un personnage à ses postures et mouvements caractéristiques, pas de les imposer.
 - Règle `exclusive_regions` (défaut vrai, désactivable par preset) : deux vêtements sont en conflit s'ils couvrent la **même région du corps sur la même couche** (vocabulaire `garments-1.0` : `full-outfit` exclusif ; `top`/`bottom`/`dress`/`jumpsuit` en couche de base ; `outerwear`/`shoes`/`headwear`/`gloves`/`scarf`/`belt`/`armor` en couche extérieure ; sous-vêtements et chaussettes en couche inférieure ; `cape`/`other` cumulables) ; deux accessoires sont en conflit sur la même région sauf cumulables (`necklace`, `bracelet`, `ring`, `bag`) ; une pilosité par zone (`face`, `body`) ; les particularités se cumulent librement. Les conflits sont des **avertissements** (le format n'interdit pas), les doublons de type des **erreurs**.
 - `extends` hérite des listes du parent et **remplace** une catégorie entière quand elle est redéclarée. `identity` rattache le preset à une identité ; une déclinaison réservée à une autre identité est une erreur.

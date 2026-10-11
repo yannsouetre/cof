@@ -369,3 +369,32 @@ def test_pack_recomputes_after_new_assets(tmp_path):
     pm = json.loads(zipfile.ZipFile(out).read("manifest.json"))
     assert "files" in pm["coverage"]["elements"]
     rep = validate_cof(out); assert rep.ok, rep.errors
+
+
+def test_environment_variants_and_self_contained_3d(tmp_path):
+    """environment: stackable, ageless, in appearance and volume3d; 3D must be one self-contained file."""
+    d = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/10-clara-mercier", d)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    img = next(a for a in m["assets"] if a.get("role") in ("reference", "view"))
+    for i, use in ((1, "background"), (2, "location")):
+        (d / f"elements/appearance/e{i}").mkdir(parents=True)
+        shutil.copy(d / img["path"], d / f"elements/appearance/e{i}/place.jpg")
+        m["assets"].append({"id": f"a-env-{i}", "path": f"elements/appearance/e{i}/place.jpg", "role": "environment", "mediaType": "image/jpeg", "license": "CC-BY-4.0", "bytes": 0, "sha256": "0" * 64})
+        m["elements"]["appearance"]["variants"][f"e{i}"] = {"kind": "environment", "use": use, "label": f"place {i}", "images": [f"a-env-{i}"]}
+    m["presets"]["default"]["slots"]["appearance"] = m["presets"]["default"]["slots"]["appearance"] + ["e1", "e2"]
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    from cof_cli.container import refresh_asset_index
+    refresh_asset_index(d, m); (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep, recompute=False); assert rep.ok, rep.errors
+    # OBJ and glTF with external buffers are refused, a self-contained glTF passes
+    for name, body, ok in (("avatar.obj", "v 0 0 0\n", False),
+                           ("avatar.gltf", json.dumps({"asset": {"version": "2.0"}, "buffers": [{"uri": "avatar.bin", "byteLength": 4}]}), False),
+                           ("avatar.gltf", json.dumps({"asset": {"version": "2.0"}, "buffers": [{"uri": "data:application/octet-stream;base64,AAAAAA==", "byteLength": 4}]}), True)):
+        mm = json.loads(json.dumps(m)); (d / "elements/volume3d/m1").mkdir(parents=True, exist_ok=True)
+        (d / "elements/volume3d/m1" / name).write_text(body, "utf-8")
+        mm["assets"].append({"id": "a-3d", "path": f"elements/volume3d/m1/{name}", "role": "mesh", "mediaType": "model/gltf+json", "license": "CC-BY-4.0", "bytes": 0, "sha256": "0" * 64})
+        mm["elements"]["volume3d"] = {"variants": {"m1": {"kind": "environment", "path": f"elements/volume3d/m1/{name}"}}}
+        refresh_asset_index(d, mm); (d / "manifest.json").write_text(json.dumps(mm), "utf-8")
+        rep = Report(); validate_dir(d, rep, recompute=False)
+        assert any("autonome" in e or "externes" in e for e in rep.errors) != ok, (name, rep.errors)
+        (d / "elements/volume3d/m1" / name).unlink()

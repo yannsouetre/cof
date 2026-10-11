@@ -28,6 +28,39 @@ class ContainerError(Exception):
     pass
 
 
+THUMBNAIL_PATH = "Thumbnails/thumbnail.png"   # reserved: ≤ 256 px PNG for file managers (ODF convention)
+
+
+def make_thumbnail(src: Path, manifest: dict, size: int = 256) -> str | None:
+    """Derive Thumbnails/thumbnail.png from manifest['thumbnail'] (an image asset). Returns the path or None."""
+    rel = manifest.get("thumbnail")
+    if not rel or rel == THUMBNAIL_PATH or not (src / rel).is_file():
+        return None
+    try:
+        from PIL import Image
+    except ImportError:
+        return None
+    try:
+        im = Image.open(src / rel)
+        im.thumbnail((size, size))
+        if im.mode not in ("RGB", "RGBA"):
+            im = im.convert("RGBA")
+        out = src / THUMBNAIL_PATH
+        out.parent.mkdir(parents=True, exist_ok=True)
+        im.save(out, "PNG", optimize=True)
+    except Exception:
+        return None
+    srca = next((a for a in manifest.get("assets", []) if a.get("path") == rel), {})
+    manifest["assets"] = [a for a in manifest.get("assets", []) if a.get("path") != THUMBNAIL_PATH]
+    manifest["assets"].append({"id": "thumbnail", "path": THUMBNAIL_PATH, "role": "derived", "method": "thumbnail",
+                               "source": srca.get("id"), "mediaType": "image/png", "bytes": out.stat().st_size,
+                               "sha256": sha256_file(out), "license": srca.get("license", "LicenseRef-Unknown")})
+    if not manifest["assets"][-1]["source"]:
+        manifest["assets"][-1].pop("source")
+    manifest["thumbnail"] = THUMBNAIL_PATH
+    return THUMBNAIL_PATH
+
+
 def sha256_file(path: Path) -> str:
     h = hashlib.sha256()
     with open(path, "rb") as f:
@@ -95,9 +128,13 @@ def pack(src: str | os.PathLike, dest: str | os.PathLike, *, refresh: bool = Tru
         z.writestr(zi, MIMETYPE)
         # 2) manifest second
         z.write(mpath, "manifest.json", compress_type=zipfile.ZIP_DEFLATED)
-        # 3) everything else, deterministic order
+        # 3) OS thumbnail third (reserved path, stored) so file-manager thumbnailers find it at once
+        tp = src / THUMBNAIL_PATH
+        if tp.is_file():
+            z.write(tp, THUMBNAIL_PATH, compress_type=zipfile.ZIP_STORED)
+        # 4) everything else, deterministic order
         for rel, p in iter_source_files(src):
-            if rel == "manifest.json":
+            if rel in ("manifest.json", THUMBNAIL_PATH):
                 continue
             check_path(rel)
             ct = zipfile.ZIP_STORED if p.suffix.lower() in STORED_EXT else zipfile.ZIP_DEFLATED

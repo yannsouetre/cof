@@ -22,6 +22,17 @@
 - *Langue normative* : spec en anglais pour l'annonce (le français devient la traduction) — décision de Yann.
 - *Activation de GitHub Pages* sur le dépôt (réglage administrateur, côté Yann) pour publier le builder et les schémas.
 
+**Ajouts au plan (11 oct. soir, retours de Yann)** — faits avant le gel :
+- *Environnements* : type `appearance/environment` (cumulable, sans âge, `use: background | location`) pour les arrière-plans de discussion et les lieux liés au personnage ; type `volume3d/environment` (un lieu en GLB, USDZ ou splat). Pas de pack de décors : un autre conteneur, plus tard, si le besoin se confirme.
+- *3D autonome* : toute déclinaison 3D est **un seul fichier** qui porte maillages, textures et rig (VRM, GLB, USDZ, 3MF, splats) ; OBJ et glTF à ressources externes refusés par le validateur, FBX déconseillé. Pas de « sous-conteneur » de fichiers en vrac : chemins relatifs fragiles, invérifiables, et les convertisseurs (Blender, gltf-transform, obj2gltf) existent.
+- *Vignette système* : chemin réservé `Thumbnails/thumbnail.png` (≤ 256 px, 3e entrée, stockée), généré par la CLI et le builder.
+- *Taille* : badge de taille totale dans l'en-tête du builder (détail par catégorie, orange au-delà de la classe visée).
+
+**Après la 1.0** :
+- *Miniatures dans les explorateurs* (un champ du fichier ne suffit pas : chaque OS exige un petit programme installé) — 1.1 : thumbnailer freedesktop pour Linux (un fichier `.thumbnailer` + un script de 20 lignes) ; 1.2 : extension Windows (fournisseur de miniatures COM, installeur signé) et extension Quick Look pour macOS (dans une appli) — bons candidats pour des contributeurs ; Android : aucune intégration système, seulement dans une future appli de visualisation.
+- *Plafonds de taille* : tailles recommandées par usage / plateforme, plafond par défaut modifiable dans le builder, alerte au dépassement — à définir avec Yann. Pistes pour alléger : compression Draco / meshopt et textures KTX2 dans les GLB, LoRA référencés par URL + hash (`uri`) plutôt qu'embarqués, vidéos plafonnées.
+- *Arrière-plans animés* : boucles vidéo courtes pour les avatars vidéo (`environment` + `videos`) si la demande apparaît.
+
 **Indicateurs à J+14** : 10 `.cof` tiers, 1 contributeur externe, 1 outil tiers qui lit ou écrit le format, 300 étoiles.
 
 ---

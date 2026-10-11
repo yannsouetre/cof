@@ -354,7 +354,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T18:03:56Z"
+        "computed_at": "2026-10-11T21:50:28Z"
       }
     },
     "en-manga": {
@@ -395,7 +395,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T18:03:56Z"
+        "computed_at": "2026-10-11T21:50:28Z"
       }
     },
     "en-12": {
@@ -439,7 +439,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T18:03:56Z"
+        "computed_at": "2026-10-11T21:50:28Z"
       }
     },
     "en-65": {
@@ -483,7 +483,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T18:03:56Z"
+        "computed_at": "2026-10-11T21:50:28Z"
       }
     },
     "en-future": {
@@ -527,7 +527,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T18:03:56Z"
+        "computed_at": "2026-10-11T21:50:28Z"
       }
     },
     "en-agent": {
@@ -569,7 +569,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T18:03:56Z"
+        "computed_at": "2026-10-11T21:50:28Z"
       }
     },
     "fr": {
@@ -610,7 +610,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T18:03:56Z"
+        "computed_at": "2026-10-11T21:50:28Z"
       }
     },
     "fr-manga": {
@@ -651,7 +651,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T18:03:56Z"
+        "computed_at": "2026-10-11T21:50:28Z"
       }
     },
     "fr-12": {
@@ -695,7 +695,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T18:03:56Z"
+        "computed_at": "2026-10-11T21:50:28Z"
       }
     },
     "fr-65": {
@@ -739,7 +739,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T18:03:56Z"
+        "computed_at": "2026-10-11T21:50:28Z"
       }
     },
     "fr-futur": {
@@ -783,7 +783,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T18:03:56Z"
+        "computed_at": "2026-10-11T21:50:28Z"
       }
     },
     "fr-agent": {
@@ -825,7 +825,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T18:03:56Z"
+        "computed_at": "2026-10-11T21:50:28Z"
       }
     }
   },
@@ -1169,6 +1169,17 @@
       "sha256": "cbb29b75f0692b11b1b937f629d67d1ff301e7f271999f623b647d260868e908",
       "license": "CC-BY-4.0",
       "language": "en"
+    },
+    {
+      "id": "thumbnail",
+      "path": "Thumbnails/thumbnail.png",
+      "role": "derived",
+      "method": "thumbnail",
+      "source": "a-appearance-a1-clara-mercier-0-face-unge",
+      "mediaType": "image/png",
+      "bytes": 26582,
+      "sha256": "5cedcdb5f4e6834d5ee0e08892ac122c9f244b1bf3dd7400ecb2e707f2570ec4",
+      "license": "CC-BY-4.0"
     }
   ],
   "size_class": "lite",
@@ -1214,7 +1225,7 @@
     "dc:rights": "Character, texts and images: CC BY 4.0, Yann Souetre. Voice samples: CC BY-NC 4.0 (generated on free plans; non-commercial use only). Texts and character sheets generated with Google Gemini and translated to English with Claude; images with Google Gemini (Nano Banana 2); voices generated with ElevenLabs (elevenlabs.io, model v4) and Typecast — Voice generated with Typecast (https://typecast.ai). Fictional character; any resemblance to a real person is coincidental."
   },
   "extensions": {},
-  "thumbnail": "elements/appearance/a1/head.front.jpg",
+  "thumbnail": "Thumbnails/thumbnail.png",
   "coverage": {
     "elements": [
       "personality",
@@ -1247,7 +1258,7 @@
       "archive"
     ],
     "computed_by": "cof-cli/0.7.0",
-    "computed_at": "2026-10-11T18:03:56Z"
+    "computed_at": "2026-10-11T21:50:28Z"
   },
   "preset_tags": [
     {

@@ -7,9 +7,9 @@ from importlib import resources
 CATEGORIES = ["personality", "appearance", "identity_weights", "volume3d", "voice", "posture", "motion", "files"]
 KINDS = {
     "personality": ["card", "description"],
-    "appearance": ["reference-set", "character-sheet", "face", "body", "hair", "clothing", "accessory", "intimate", "pilosity", "feature", "description"],
+    "appearance": ["reference-set", "character-sheet", "face", "body", "hair", "clothing", "accessory", "intimate", "pilosity", "feature", "environment", "description"],
     "identity_weights": ["lora", "lycoris", "dora", "textual-inversion", "ip-adapter-embedding", "dreambooth", "other"],
-    "volume3d": ["mesh", "face-mesh", "point-cloud", "print", "other"],
+    "volume3d": ["mesh", "face-mesh", "point-cloud", "print", "other", "environment"],
     "voice": ["samples", "described"],
     "posture": ["photo", "photos", "openpose", "silhouette", "attitude", "description"],
     "motion": ["clips", "video", "attitude", "description"],   # 'attitude' (signature de mouvement) est admis ici ET dans posture
@@ -18,7 +18,7 @@ KINDS = {
 # categories that are LIBRARIES in a preset: several variants of any kind, none mandatory at inference
 LIBRARY_CATEGORIES = {"posture", "motion", "files"}
 # kinds that may appear several times in one preset (subject to region rules)
-MULTI_KINDS = {"clothing", "accessory", "pilosity", "feature"}
+MULTI_KINDS = {"clothing", "accessory", "pilosity", "feature", "environment"}
 
 _garments = None
 
@@ -127,7 +127,7 @@ def preset_identity(manifest: dict, pid: str | None) -> dict:
 
 # Age is a property of the REPRESENTATION, never of the identity (v0.5).
 AGE_CATEGORIES = {"appearance", "volume3d", "identity_weights"}       # variants that MAY carry `age`
-AGELESS_KINDS = {"clothing", "accessory", "feature", "description"}    # variants that never do
+AGELESS_KINDS = {"clothing", "accessory", "feature", "description", "environment"}    # variants that never do
 AGE_REQUIRED_KINDS = {"face", "body", "character-sheet", "reference-set"}   # MUST carry `age` for human-form morphologies
 HUMAN_FORM = {"human", "humanoid", "anthropomorphic-animal"}
 ADULT = 18

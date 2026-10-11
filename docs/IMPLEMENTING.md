@@ -124,6 +124,7 @@ These are the part of COF that platforms most need to get right; they are short 
 
 - Entry order: `mimetype` (stored, no extra field) → `manifest.json` → everything else. Binary media (JPEG, PNG, MP3, GLB, safetensors…) SHOULD be stored, text deflated.
 - Every file except `mimetype` and `manifest.json` is listed in `assets[]` (or referenced as a sub-file by a variant) with `sha256`, `bytes`, `mediaType`, `license` (SPDX).
+- Write `Thumbnails/thumbnail.png` (PNG ≤ 256 px, stored, third entry) so file managers can show the character; 3D variants are single self-contained files (VRM/GLB/USDZ/3MF/splats), never OBJ or glTF with external resources.
 - Weights are **safetensors only**; pickles (`.pt`, `.ckpt`, `.bin`, `.pkl`) are forbidden. Scripts (`.py`, `.sh`, `.js`…) are forbidden unless `container.executableContent` declares them.
 - **Preserve what you do not understand**: unknown manifest keys, `extensions`, `x-` categories and unknown variant kinds MUST be written back unchanged on round-trip.
 - Recompute `completeness`, `coverage`, `languages` and `tags.auto` (or leave them out: validators recompute them).

@@ -9,7 +9,7 @@ from pathlib import Path
 
 from . import __version__
 from .completeness import compute as compute_completeness
-from .container import refresh_asset_index, ContainerError, pack, read_manifest, unpack
+from .container import make_thumbnail, refresh_asset_index, ContainerError, pack, read_manifest, unpack
 from .convert import card_to_cof_dir, export_soul, read_card_from_png, write_card_to_png
 from .migrate import migrate_any
 from .ops import extract_preset, merge_dirs, extract_tag
@@ -69,6 +69,7 @@ def cmd_pack(a):
         print("Dossier non conforme : corrigez ou utilisez --force.", file=sys.stderr)
         return 1
     if manifest:
+        make_thumbnail(src, manifest)
         (src / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", "utf-8")
     out = Path(a.out) if a.out else src.with_suffix(".cof")
     try:

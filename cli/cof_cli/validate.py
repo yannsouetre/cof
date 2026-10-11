@@ -313,6 +313,28 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
         if v.get("kind") == "card" and not v.get("card"):
             rep.errors.append(f"personality.{vid} (card) : chemin `card` (card.json) manquant")
 
+    # 3D must be self-contained: one file carrying meshes AND textures (GLB/VRM/USDZ/3MF/splats)
+    for vid, v in ((elements.get("volume3d") or {}).get("variants") or {}).items():
+        for rel in [v.get("path"), (v.get("mesh") or {}).get("path")]:
+            if not rel:
+                continue
+            ext = rel.rsplit(".", 1)[-1].lower()
+            where3 = f"volume3d.{vid} ({v.get('kind')})"
+            if ext == "obj":
+                rep.errors.append(f"{where3} : OBJ n'est pas autonome (MTL et textures séparés) — convertir en GLB (Blender, obj2gltf)")
+            elif ext == "gltf":
+                try:
+                    g = json.loads((src / rel).read_text("utf-8"))
+                    ext_uris = [x.get("uri") for k in ("buffers", "images") for x in g.get(k, []) if x.get("uri") and not str(x.get("uri")).startswith("data:")]
+                except Exception:
+                    ext_uris = ["?"]
+                if ext_uris:
+                    rep.errors.append(f"{where3} : glTF avec ressources externes ({len(ext_uris)}) — convertir en GLB (gltf-transform copy in.gltf out.glb)")
+            elif ext == "fbx":
+                rep.warnings.append(f"{where3} : FBX peut référencer des textures externes et reste propriétaire — préférer GLB/VRM")
+            elif v.get("kind") == "environment" and ext not in ("glb", "usdz", "spz", "ply", "splat", "gltf"):
+                rep.warnings.append(f"{where3} : format inattendu pour un environnement 3D (.{ext}) — attendus : GLB, USDZ, splats (SPZ/PLY/SPLAT)")
+
     # per-preset checks: cards, psyche refs, duplicates, style coherence
     tokens_by_preset = {}
     for pid in (pids or [None]):

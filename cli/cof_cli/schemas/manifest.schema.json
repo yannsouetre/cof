@@ -724,10 +724,11 @@
         },
         "use": {
           "enum": [
-            "pose-only",
-            "full"
+            "background",
+            "location",
+            "other"
           ],
-          "description": "posture: inference keeps only the pose"
+          "description": "environment variants: chat / video-avatar background, or a place tied to the character (home, workplace…)"
         },
         "videos": {
           "type": "array",
@@ -1081,6 +1082,7 @@
             "document",
             "engine-artifact",
             "expression",
+            "environment",
             "mesh",
             "motion-clip",
             "motion-reference",
@@ -1199,6 +1201,7 @@
             "normal",
             "openpose",
             "segmentation",
+            "thumbnail",
             "other"
           ]
         },
@@ -1617,6 +1620,7 @@
         "intimate",
         "pilosity",
         "feature",
+        "environment",
         "description"
       ],
       "identity_weights": [
@@ -1633,7 +1637,8 @@
         "face-mesh",
         "point-cloud",
         "print",
-        "other"
+        "other",
+        "environment"
       ],
       "voice": [
         "samples",

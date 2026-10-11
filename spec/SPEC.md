@@ -86,6 +86,7 @@ No constraint on the nature of the character. `morphology.class` ∈ `humanoid |
 - **ZIP**; zip64 accepted for reading.
 - 1st entry: `mimetype`, stored uncompressed, = `application/vnd.cof.character+zip`.
 - 2nd entry: `manifest.json`. A reader MUST be able to operate after these two entries.
+- Optional 3rd entry: `Thumbnails/thumbnail.png` (reserved path, ODF convention), a PNG of at most 256 px on its longest side, stored uncompressed, derived from the default preset's best view (asset `role: derived`, `method: thumbnail`) and referenced by `manifest.thumbnail`. File-manager thumbnailers (Windows, macOS Quick Look, freedesktop) read this fixed path without parsing the manifest. Writers SHOULD include it; it is regenerated, never edited.
 - ASCII paths `[A-Za-z0-9._/-]`, no `..`, no absolute paths, no symbolic links.
 - High-entropy binaries stored uncompressed (`store`), JSON/text as `deflate`.
 - Optional 64-byte alignment (`container.aligned`); encryption forbidden.
@@ -95,14 +96,16 @@ No constraint on the nature of the character. `morphology.class` ∈ `humanoid |
 ```
 mimetype
 manifest.json                              ← identities, elements, presets, assets, rights (§ 2)
+Thumbnails/thumbnail.png                   ← optional OS thumbnail, ≤ 256 px (§ 1.1)
 elements/
   personality/<v>/   card.json  psyche.json  story.md  lorebook.json  SOUL.md  IDENTITY.md
   appearance/<v>/    images (head.front.jpg…), face.json / body.json / hair.json / outfit.json depending on the type
   identity_weights/<v>/  weights.json  [weights.safetensors]
-  volume3d/<v>/      avatar.vrm | mesh.glb | face.glb | splat.spz | figurine.3mf  skeleton.json
+  volume3d/<v>/      avatar.vrm | mesh.glb | face.glb | splat.spz | figurine.3mf | environment.glb  skeleton.json
   voice/<v>/         profile.json  voice.vec.json  samples/  engines/
   posture/<v>/       photos, pose.json (OpenPose), silhouette.png, attitude.json
   motion/<v>/        clips/ (BVH, VRMA)  videos/ (short, low resolution)  visemes.json
+  files/<v>/         SKILL.md + resources | MEMORY.md | documents
 derived/<cat>/<v>/   optional post-processing (§ 4.8)
 sheets/              original character sheets + regions (§ 4.1)
 rights/              consent.json (per identity: consent.<identity>.json)  licenses/  manifest.c2pa
@@ -137,9 +140,9 @@ PNG `chara`+`ccv3` (text + thumbnail), `.charx`, `SOUL.md`/`IDENTITY.md`, `.vrm`
 | Category | Nature | Variant types (`kind`) |
 |---|---|---|
 | `personality` | text | `card` (Character Card V3 + psyche, story, lore), `description` (free text) |
-| `appearance` | photos | `reference-set` (loose photos, the AI works it out), `character-sheet` (several angles in one image), `face`, `body`, `hair`, `clothing` (+ `garment`), `accessory` (+ `accessory`), `intimate`, `pilosity` (+ `area` face/body), `feature` (special features: horns, tail, prosthesis… + `region`), `description` |
+| `appearance` | photos | `reference-set` (loose photos, the AI works it out), `character-sheet` (several angles in one image), `face`, `body`, `hair`, `clothing` (+ `garment`), `accessory` (+ `accessory`), `intimate`, `pilosity` (+ `area` face/body), `feature` (special features: horns, tail, prosthesis… + `region`), `environment` (backgrounds and places tied to the character + `use`: `background` for chat / video-avatar backgrounds, `location` for home, workplace…), `description` |
 | `identity_weights` | weights | `lora`, `lycoris`, `dora`, `textual-inversion`, `ip-adapter-embedding`, `dreambooth`, `other` (+ `covers`) |
-| `volume3d` | 3D | `mesh` (rigged avatar / complete mesh), `face-mesh`, `point-cloud` (splat), `print` (3MF), `other` |
+| `volume3d` | 3D | `mesh` (rigged avatar / complete mesh), `face-mesh`, `point-cloud` (splat), `print` (3MF), `other`, `environment` (a place, as one self-contained GLB, USDZ or splat) — **every 3D variant is one self-contained file** carrying meshes, textures and rig (VRM, GLB, USDZ, 3MF, SPZ/PLY/SPLAT); OBJ and glTF with external resources are refused, FBX is discouraged |
 | `voice` | audio | `samples` (samples, optional transcript), `described` (profile without audio) |
 | `posture` | pose (**library**) | `photo` (one pose), `photos` (several views of the same pose), `openpose`, `silhouette`, `attitude` (motion signature), `description` — with `use: pose-only` (inference retains only the pose) |
 | `motion` | motion (**library**) | `clips` (BVH / VRMA), `video` (very short, low resolution, 20 MB cap unless `max_bytes_ack`), `attitude`, `description` |
@@ -149,7 +152,7 @@ Rules:
 - Each variant declares `kind` (REQUIRED), `label`, `style` / `style_tags` (visual), `language` (text/voice), `derives_from` (field inheritance; the only "hierarchy"), `identity` (optional reservation), and its representations (`images[]`, `samples[]`, `clips[]`, `videos[]` = asset identifiers; `card`, `psyche`, `params`, `code`, `spec`, `profile`, `path`, `mesh`…).
 - A `face` / `body` / `hair` / `clothing` / `accessory` / `pilosity` / `feature` variant describes **a single** coherent face / body / haircut / garment / accessory — for another one, create another variant. Subdivision is **possible, never mandatory**: with a single character sheet, filling in `character-sheet` is valid.
 - Images are referenced by asset identifier and MAY be shared between variants.
-- **`age` per variant** (`{ value, unit?: years|months, basis?: declared|apparent|canonical }`) on everything related to morphology: `appearance` except `clothing` / `accessory` / `feature` / `description`, `volume3d`, `identity_weights`. **Required** on `face`, `body`, `character-sheet`, `reference-set` when the identity's morphology is human-shaped (`human`, `humanoid`, `anthropomorphic-animal`) — a human-shaped body always has an apparent age, hence `basis: apparent` when the canonical age is unknown — and on `intimate` (**≥ 18**); optional on `hair`, `pilosity`, 3D, weights; not applicable to the `mechanical`, `amorphous`, etc. classes. The **age of a preset** = the lowest of the ages of its resolved variants and of its `age_override`; unknown if there is none.
+- **`age` per variant** (`{ value, unit?: years|months, basis?: declared|apparent|canonical }`) on everything related to morphology: `appearance` except `clothing` / `accessory` / `feature` / `environment` / `description`, `volume3d` (except `environment`), `identity_weights`. **Required** on `face`, `body`, `character-sheet`, `reference-set` when the identity's morphology is human-shaped (`human`, `humanoid`, `anthropomorphic-animal`) — a human-shaped body always has an apparent age, hence `basis: apparent` when the canonical age is unknown — and on `intimate` (**≥ 18**); optional on `hair`, `pilosity`, 3D, weights; not applicable to the `mechanical`, `amorphous`, etc. classes. The **age of a preset** = the lowest of the ages of its resolved variants and of its `age_override`; unknown if there is none.
 - `character-sheet`: **a single character sheet per variant** by default; `allow_multiple_sheets: true` allows several, the author being responsible for ensuring the character's coherence across them. `reference-set`: several photos by design, with the same coherence requirement (the builder reminds the author).
 - The same type of information can legitimately belong to **two categories**: `attitude` (LMA motion signature, habitual postures, gestures) is allowed in `posture` *and* in `motion`; a variant lives in one of the two, and readers look in both.
 
@@ -187,7 +190,7 @@ Rules:
 "default_preset": "default"
 ```
 - Slots are **lists per category**, with **two regimes**:
-  - **Combination** (`personality`, `appearance`, `identity_weights`, `volume3d`, `voice`): what the preset *is* / *wears*. Rule `single_per_kind` (default true): at most one variant per type, except the stackable `clothing`, `accessory`, `pilosity`, `feature` (and several `identity_weights` with disjoint `covers`). For clothing and accessories, the preset's list = what is **worn**; all the other variants in the file form the **wardrobe**, available at inference time to change outfits without breaking character.
+  - **Combination** (`personality`, `appearance`, `identity_weights`, `volume3d`, `voice`): what the preset *is* / *wears*. Rule `single_per_kind` (default true): at most one variant per type, except the stackable `clothing`, `accessory`, `pilosity`, `feature`, `environment` (and several `identity_weights` with disjoint `covers`). For clothing and accessories, the preset's list = what is **worn**; all the other variants in the file form the **wardrobe**, available at inference time to change outfits without breaking character.
   - **Library** (`posture`, `motion`): the preset lists the **repertoire** of the character's *typical* poses and movements — several variants of any type, **none of which is mandatory at inference time**; the tool draws on it when it needs to (a reference pose, a walk cycle) and MAY ignore it. `defaults` (optional) designates the variant to prefer when the tool must choose one (`"defaults": { "posture": "ps1", "motion": "mo1" }`). The point is to **associate** a character with their characteristic postures and movements, not to impose them.
 - Rule `exclusive_regions` (default true, can be disabled per preset): two garments conflict if they cover the **same body region on the same layer** (`garments-1.0` vocabulary: `full-outfit` exclusive; `top`/`bottom`/`dress`/`jumpsuit` on the base layer; `outerwear`/`shoes`/`headwear`/`gloves`/`scarf`/`belt`/`armor` on the outer layer; underwear and socks on the under layer; `cape`/`other` stackable); two accessories conflict on the same region unless stackable (`necklace`, `bracelet`, `ring`, `bag`); one body/facial hair variant per area (`face`, `body`); special features stack freely. Conflicts are **warnings** (the format does not forbid), type duplicates are **errors**.
 - `extends` inherits the parent's lists and **replaces** an entire category when it is redeclared. `identity` attaches the preset to an identity; a variant reserved for another identity is an error.
