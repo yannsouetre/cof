@@ -383,9 +383,9 @@
     "default_identity": {
       "$ref": "#/$defs/vid"
     },
-    "preset_groups": {
+    "preset_tags": {
       "type": "array",
-      "description": "Organisation of presets into groups (folders), at container level — not inherited, not part of any preset. A preset belongs to at most one group. Readers MAY ignore it.",
+      "description": "Tags that organise presets (e.g. by language, by age, by style), at container level — never inside a preset, so nothing is inherited through `extends`. A preset may carry several tags. Tags sharing a `facet` are alternatives (e.g. facet \"language\": English / Français); tags of different facets combine. Readers MAY ignore them; builders use them as filters.",
       "items": {
         "type": "object",
         "required": [
@@ -399,6 +399,11 @@
           "label": {
             "type": "string",
             "maxLength": 120
+          },
+          "facet": {
+            "type": "string",
+            "maxLength": 60,
+            "description": "optional family of tags (language, age, style…)"
           },
           "description": {
             "type": "string",

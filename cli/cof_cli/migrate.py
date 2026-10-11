@@ -270,4 +270,13 @@ def migrate_any(src: Path) -> dict:
         m = migrate_v3_to_v4(src); v = "0.4"
     if v == "0.4":
         m = migrate_v4_to_v5(src)
+    if m.get("preset_groups") is not None:          # builder 0.8.0 (short-lived) → preset_tags
+        tags = m.setdefault("preset_tags", [])
+        known = {t.get("id") for t in tags}
+        for g in m.pop("preset_groups") or []:
+            if g.get("id") not in known:
+                tags.append({"id": g.get("id"), "label": g.get("label") or g.get("id"), "presets": list(g.get("presets") or [])})
+        if not tags:
+            m.pop("preset_tags")
+        (src / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
     return m

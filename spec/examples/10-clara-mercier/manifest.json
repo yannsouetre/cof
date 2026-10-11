@@ -1166,32 +1166,6 @@
     "presets": 12,
     "identities": 1
   },
-  "preset_groups": [
-    {
-      "id": "english",
-      "label": "English",
-      "presets": [
-        "default",
-        "en-manga",
-        "en-12",
-        "en-65",
-        "en-future",
-        "en-agent"
-      ]
-    },
-    {
-      "id": "francais",
-      "label": "Français",
-      "presets": [
-        "fr",
-        "fr-manga",
-        "fr-12",
-        "fr-65",
-        "fr-futur",
-        "fr-agent"
-      ]
-    }
-  ],
   "completeness": {
     "score": 52,
     "level": "C",
@@ -1213,5 +1187,66 @@
     ],
     "computed_by": "cof-cli/0.7.0",
     "computed_at": "2026-10-11T17:22:14Z"
-  }
+  },
+  "preset_tags": [
+    {
+      "id": "en",
+      "label": "English",
+      "facet": "language",
+      "presets": [
+        "default",
+        "en-manga",
+        "en-12",
+        "en-65",
+        "en-future",
+        "en-agent"
+      ]
+    },
+    {
+      "id": "fr",
+      "label": "Français",
+      "facet": "language",
+      "presets": [
+        "fr",
+        "fr-manga",
+        "fr-12",
+        "fr-65",
+        "fr-futur",
+        "fr-agent"
+      ]
+    },
+    {
+      "id": "age-12",
+      "label": "12 ans / age 12",
+      "facet": "age",
+      "presets": [
+        "en-12",
+        "fr-12"
+      ]
+    },
+    {
+      "id": "age-29",
+      "label": "29 ans / age 29",
+      "facet": "age",
+      "presets": [
+        "default",
+        "en-manga",
+        "en-future",
+        "en-agent",
+        "fr",
+        "fr-manga",
+        "fr-futur",
+        "fr-agent"
+      ]
+    },
+    {
+      "id": "age-65",
+      "label": "65 ans / age 65",
+      "facet": "age",
+      "presets": [
+        "en-65",
+        "fr-65"
+      ]
+    }
+  ]
 }

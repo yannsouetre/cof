@@ -122,10 +122,15 @@ def merge_dirs(sources: list[Path], dst: Path) -> dict:
             out["presets"][new_pid] = np_
             if n == 0 and pid == m.get("default_preset"):
                 out["default_preset"] = new_pid
-        for g in m.get("preset_groups") or []:          # groups follow their presets (ids remapped, group ids made unique)
-            gl = out.setdefault("preset_groups", [])
-            gid = g["id"] if all(x["id"] != g["id"] for x in gl) else f"{prefix}-{g['id']}"
-            gl.append({**g, "id": gid, "presets": [pid_map.get(x, x) for x in g.get("presets") or []]})
+        for tg in m.get("preset_tags") or []:            # tags follow their presets; same id + same label ⇒ same tag
+            tl = out.setdefault("preset_tags", [])
+            pres = [pid_map.get(x, x) for x in tg.get("presets") or []]
+            same = next((x for x in tl if x["id"] == tg["id"] and x.get("label") == tg.get("label")), None)
+            if same:
+                same["presets"] = list(dict.fromkeys(same["presets"] + pres))
+            else:
+                tid = tg["id"] if all(x["id"] != tg["id"] for x in tl) else f"{prefix}-{tg['id']}"
+                tl.append({**tg, "id": tid, "presets": pres})
     out["assets"] = list({a["id"]: a for a in taken_assets.values()}.values())
     out["id"] = ulid_like()
     di = out["identities"][out["default_identity"]]
@@ -145,18 +150,20 @@ def extract_preset(src: Path, dst: Path, pid: str) -> dict:
     return extract_presets(src, dst, [pid])
 
 
-def extract_group(src: Path, dst: Path, gid: str) -> dict:
-    """Keep the presets of group `gid` (and what they reference); the group itself is kept."""
+def extract_tag(src: Path, dst: Path, tids: list[str]) -> dict:
+    """Keep the presets carrying ALL the given tags (intersection), and what they reference."""
     m = json.loads((src / "manifest.json").read_text("utf-8"))
-    g = next((g for g in m.get("preset_groups") or [] if g.get("id") == gid), None)
-    if not g:
-        raise ValueError(f"groupe inconnu : {gid}")
-    if not g.get("presets"):
-        raise ValueError(f"groupe vide : {gid}")
-    return extract_presets(src, dst, list(g["presets"]), group=gid)
+    T = {t.get("id"): t for t in m.get("preset_tags") or []}
+    for tid in tids:
+        if tid not in T:
+            raise ValueError(f"tag inconnu : {tid}")
+    pids = [p for p in (m.get("presets") or {}) if all(p in (T[t].get("presets") or []) for t in tids)]
+    if not pids:
+        raise ValueError("aucun preset ne porte " + " + ".join(tids))
+    return extract_presets(src, dst, pids, tags=tids)
 
 
-def extract_presets(src: Path, dst: Path, pids: list[str], group: str | None = None) -> dict:
+def extract_presets(src: Path, dst: Path, pids: list[str], tags: list[str] | None = None) -> dict:
     m = json.loads((src / "manifest.json").read_text("utf-8"))
     for pid in pids:
         if pid not in (m.get("presets") or {}):
@@ -197,10 +204,15 @@ def extract_presets(src: Path, dst: Path, pids: list[str], group: str | None = N
         _copy_variant_files(src, dst, v, "x")
     out["presets"] = out_presets
     out["default_preset"] = m.get("default_preset") if m.get("default_preset") in sel else pids[0]
-    if group:
-        out["preset_groups"] = [g for g in m.get("preset_groups") or [] if g.get("id") == group]
+    kept = []                                   # tags are kept, restricted to the exported presets
+    for tg in m.get("preset_tags") or []:
+        pres = [p for p in tg.get("presets") or [] if p in sel]
+        if pres:
+            kept.append({**tg, "presets": pres})
+    if kept:
+        out["preset_tags"] = kept
     else:
-        out.pop("preset_groups", None)
+        out.pop("preset_tags", None)
     idents = {out_presets[p].get("identity") or m.get("default_identity") for p in pids}
     if m.get("identities"):
         out["identities"] = {i: m["identities"][i] for i in idents if i in m["identities"]}
@@ -221,7 +233,7 @@ def extract_presets(src: Path, dst: Path, pids: list[str], group: str | None = N
         if (src / d).is_dir():
             shutil.copytree(src / d, dst / d, dirs_exist_ok=True)
     out["id"] = ulid_like()
-    tag = f"#group={group}" if group else f"#preset={pids[0]}"
+    tag = ("#tags=" + "+".join(tags)) if tags else f"#preset={pids[0]}"
     out.setdefault("provenance", {})["source"] = list(dict.fromkeys((m.get("provenance", {}).get("source") or []) + [f"cof:{m.get('id')}{tag}"]))
     out["provenance"]["modified"] = NOW(); out["provenance"]["generator"] = "cof-cli extract"
     for k in ("completeness", "coverage", "thumbnail"):

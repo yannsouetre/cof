@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.1 — 2026-10-11 — preset tags replace groups
+- **Preset tags** (`preset_tags`, optional, container level) replace the same-day `preset_groups`: `[{id, label, facet?, description?, presets}]`, **many-to-many** (a preset can be `en` *and* `age-12`). Optional `facet` (language, age, style…): same-facet tags are alternatives in a filter, different facets intersect. Spec § 2.3 (EN/FR), schema, validation (duplicate id, unknown preset), merge carries tags, `cof extract --tag X [--tag Y]` (intersection; parents outside the selection are flattened, kept tags restricted). Legacy `preset_groups` → warning; `cof migrate` converts them; the builder reads them as tags.
+- Builder 0.8.1: presets page gets a **filter bar grouped by facet** (chips with counts, *All*, *Untagged*, "n / N presets shown"), each preset shown once; **+ Create a tag** (name, facet with suggestions, presets checklist; ✎ to edit or delete); per-preset tag toggles on each card; a new preset inherits the active filter tags; **Export a tag** in Build.
+- Example 10 (Clara v4): tags `en`/`fr` (facet language) and `age-12`/`age-29`/`age-65` (facet age); EN and FR presets share the same images and poses.
+
 ## 0.8.0 — 2026-10-11 — preset groups, bilingual flagship
 - **Preset groups** (`preset_groups`, optional, container level): folders of presets, a preset in at most one group, never inherited. Schema, validation (unknown preset, preset in two groups, duplicate ids), merge carries groups, `cof extract --group`. Spec § 2.3 (EN/FR). Fully backward compatible: files without groups are unchanged and valid.
 - Builder 0.8.0: presets page shows groups as collapsible folders (rename, choose presets by name, delete), an "Ungrouped" folder, "+ Add a group"; **Export a group** next to *Export a preset* in Build (presets whose parent is outside the group are flattened).

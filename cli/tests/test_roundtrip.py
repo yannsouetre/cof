@@ -304,21 +304,39 @@ def test_example_mixed_refuses_intimate_in_minor_preset(tmp_path):
     assert any("presets.young" in e and "intime" in e for e in rep.errors), rep.errors
 
 
-def test_preset_groups_and_extract_group(tmp_path):
-    """Groups live at container level; a preset is in at most one group; extract --group keeps the group's presets only."""
-    from cof_cli.ops import extract_group
+def test_preset_tags_and_extract_tag(tmp_path):
+    """Tags live at container level, a preset may carry several; extract --tag keeps the intersection."""
+    from cof_cli.ops import extract_tag
     src = ROOT / "spec/examples/10-clara-mercier"
     rep = Report(); validate_dir(src, rep, recompute=False); assert rep.ok, rep.errors
-    out = tmp_path / "fr"; extract_group(src, out, "francais")
+    out = tmp_path / "fr"; extract_tag(src, out, ["fr"])
     rep = Report(); validate_dir(out, rep); assert rep.ok, rep.errors
     m = json.loads((out / "manifest.json").read_text("utf-8"))
     assert set(m["presets"]) == {"fr", "fr-manga", "fr-12", "fr-65", "fr-futur", "fr-agent"} and m["default_preset"] == "fr"
-    assert "extends" not in m["presets"]["fr"]                       # parent (default) outside the group → flattened
+    assert "extends" not in m["presets"]["fr"]                       # parent (default) outside the selection → flattened
     assert {v["language"] for v in m["elements"]["voice"]["variants"].values()} == {"fr"}
-    # a preset in two groups is refused
-    d = tmp_path / "dup"; shutil.copytree(src, d)
+    assert {t["id"] for t in m["preset_tags"]} == {"fr", "age-12", "age-29", "age-65"}   # tags kept, restricted
+    out2 = tmp_path / "en12"; extract_tag(src, out2, ["en", "age-12"])
+    m2 = json.loads((out2 / "manifest.json").read_text("utf-8"))
+    assert list(m2["presets"]) == ["en-12"]
+    rep = Report(); validate_dir(out2, rep); assert rep.ok, rep.errors
+    # unknown preset in a tag is refused
+    d = tmp_path / "bad"; shutil.copytree(src, d)
     mm = json.loads((d / "manifest.json").read_text("utf-8"))
-    mm["preset_groups"][0]["presets"].append("fr-agent")
+    mm["preset_tags"][0]["presets"].append("nope")
     (d / "manifest.json").write_text(json.dumps(mm), "utf-8")
     rep = Report(); validate_dir(d, rep)
-    assert any("dans deux groupes" in e for e in rep.errors), rep.errors
+    assert any("preset inconnu 'nope'" in e for e in rep.errors), rep.errors
+
+
+def test_legacy_preset_groups_migrate_to_tags(tmp_path):
+    """builder 0.8.0 wrote preset_groups: validation warns, `cof migrate` turns them into tags."""
+    from cof_cli.migrate import migrate_any
+    d = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/10-clara-mercier", d)
+    m = json.loads((d / "manifest.json").read_text("utf-8")); m.pop("preset_tags")
+    m["preset_groups"] = [{"id": "fr", "label": "Français", "presets": ["fr", "fr-12"]}]
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep, recompute=False); assert any("preset_groups" in w for w in rep.warnings)
+    m = migrate_any(d)
+    assert "preset_groups" not in m and m["preset_tags"] == [{"id": "fr", "label": "Français", "presets": ["fr", "fr-12"]}]
+    rep = Report(); validate_dir(d, rep, recompute=False); assert rep.ok and not any("preset_groups" in w for w in rep.warnings)

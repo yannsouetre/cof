@@ -1,8 +1,8 @@
 # Example 10 — Clara Mercier (flagship, bilingual)
 
-One character, **twelve presets in two groups**, one file:
+One character, **twelve presets tagged by language and by age**, one file:
 
-| Group | Presets |
+| Language tag | Presets |
 |---|---|
 | **English** | young adult (**default**), manga, at 12, at 65, near-future combatant, AI agent |
 | **Français** | jeune adulte, manga, à 12 ans, à 65 ans, combattante du futur, agent IA |
@@ -12,10 +12,10 @@ Ten personality variants (5 FR, 5 EN — free text and Character Card V3), five 
 What it demonstrates:
 - **Languages per variant** — the same images serve both languages; only personality and voice change.
 - **Presets with inheritance** — English presets `extend` the default; French presets extend `fr`, which itself extends the default and only swaps personality and voice.
-- **Preset groups** — container-level folders (`preset_groups`), exportable one at a time: `cof extract clara.cof --group francais -o clara-fr/`.
+- **Preset tags** — container-level tags in two facets, *language* (`en`, `fr`) and *age* (`age-12`, `age-29`, `age-65`); a preset carries one tag of each. Export any slice: `cof extract clara.cof --tag fr -o clara-fr/`, or the intersection `--tag en --tag age-12`.
 - **Age on the representation** — each appearance variant declares its depicted age (12, 29, 65); the two 12-year-old presets are minor presets and the § 9.4 rules apply to them alone.
 - **Agent use** — the *AI agent* presets use a Character Card V3 exportable to `SOUL.md`.
-- **Built by an AI** — version 4 (English variants, voices wiring, presets and groups) was assembled programmatically by Claude from the French version, then validated with `cof validate`.
+- **Built by an AI** — version 4 (English variants, voices wiring, presets and tags) was assembled programmatically by Claude from the French version, then validated with `cof validate`.
 
 Provenance: texts and character sheets generated with Google Gemini, English versions translated with Claude; images with Google Gemini (Nano Banana 2); voices with ElevenLabs (model v4) and Typecast, free plans — *Voice generated with Typecast (https://typecast.ai)*. Fictional character; any resemblance to a real person is coincidental.
 

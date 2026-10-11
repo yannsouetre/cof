@@ -49,6 +49,7 @@ A product MAY claim several classes. A claim SHOULD be stated as e.g. *"COF 1.0 
 2. Check entry 0 == "mimetype" with the exact media type. Otherwise: not a COF file.
 3. Parse manifest.json. If manifest.cof major > supported major: refuse politely. Unknown fields: IGNORE (never fail).
 4. Choose a preset: the one the user picks, else manifest.default_preset, else the first one.
+   (Optional `preset_tags` at container level let a picker filter presets: same-facet tags are alternatives, different facets intersect. Pure organisation — ignore them if you show no picker.)
 5. Resolve it:
      slots  = preset.slots, merged over the presets it `extends` (child replaces a whole category list);
      each variant id → elements[category].variants[id], merged over its `derives_from` parent.
@@ -186,7 +187,7 @@ Change controller:       COF project maintainers
 
 - [ ] Sniff by magic, open defensively (§ 2, § 9)
 - [ ] Ignore unknown fields; refuse unsupported major versions politely
-- [ ] Let the user choose a preset; resolve `extends` and `derives_from`
+- [ ] Let the user choose a preset (optionally filtered by `preset_tags`); resolve `extends` and `derives_from`
 - [ ] Enforce effective permissions, consent, AI disclosure, intimate opt-in, per-preset age rules (§ 6)
 - [ ] Read only the elements of your profile; honour `priorities`
 - [ ] Verify `sha256` for anything stored or redistributed
