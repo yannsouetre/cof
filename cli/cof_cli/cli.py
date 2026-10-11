@@ -102,6 +102,21 @@ def cmd_tokens(a):
     return 0
 
 
+def cmd_embed_text(a):
+    from .convert import write_text_to_png
+    png = Path(a.png).read_bytes(); text = Path(a.text).read_text("utf-8")
+    out = Path(a.out) if a.out else Path(a.png).with_name(Path(a.png).stem + ".cof.png")
+    out.write_bytes(write_text_to_png(png, text)); print(f"{out} — {len(text)} caractères en iTXt Description")
+
+
+def cmd_read_text(a):
+    from .convert import read_text_from_image
+    r = read_text_from_image(Path(a.image).read_bytes())
+    if not r:
+        print("aucun texte descriptif embarqué"); return 1
+    print(f"[{r['source']}] {len(r['text'])} caractères\n"); print(r["text"])
+
+
 def cmd_import(a):
     src = Path(a.src)
     if src.suffix.lower() == ".png":
@@ -229,6 +244,8 @@ def main(argv=None) -> int:
     s = sub.add_parser("unpack", help=".cof → dossier"); s.add_argument("cof"); s.add_argument("-o", "--out"); s.set_defaults(fn=cmd_unpack)
     s = sub.add_parser("info", help="résumé d'un .cof"); s.add_argument("cof"); s.set_defaults(fn=cmd_info)
     s = sub.add_parser("tokens", help="estimation des tokens par bloc"); s.add_argument("path"); s.set_defaults(fn=cmd_tokens)
+    s = sub.add_parser("embed-text", help="écrit un texte (.md/.txt) dans un PNG en iTXt 'Description' — lisible par le builder (personnalité + apparence)"); s.add_argument("png"); s.add_argument("text"); s.add_argument("-o", "--out"); s.set_defaults(fn=cmd_embed_text)
+    s = sub.add_parser("read-text", help="affiche le texte descriptif embarqué dans une image (PNG/JPEG : iTXt, XMP, EXIF)"); s.add_argument("image"); s.set_defaults(fn=cmd_read_text)
     s = sub.add_parser("import", help="carte PNG/JSON (CCv2/V3) → dossier COF"); s.add_argument("src"); s.add_argument("-o", "--out"); s.add_argument("--age", type=int); s.add_argument("--real", action="store_true", help="personnage basé sur une personne réelle (consentement requis)"); s.add_argument("--lang", default="en"); s.add_argument("--keep-png", action="store_true", help="garde le PNG comme vue head.front"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_import)
     s = sub.add_parser("export", help="dossier/.cof → png | soul | card (depuis le preset par défaut ou --preset)"); s.add_argument("src"); s.add_argument("--format", choices=["png", "soul", "card"], required=True); s.add_argument("-o", "--out"); s.add_argument("--preset"); s.set_defaults(fn=cmd_export)
     s = sub.add_parser("migrate", help="dossier v0.2/v0.3/v0.4 → v0.5"); s.add_argument("dir"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_migrate)

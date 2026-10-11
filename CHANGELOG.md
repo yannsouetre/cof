@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.4 — 2026-10-11 — images porteuses de texte
+- Builder : une image **sans carte** mais avec un texte descriptif embarqué (PNG iTXt/tEXt/zTXt `Description`/`Comment`, XMP `dc:description`, EXIF `ImageDescription`/`UserComment`/`XPComment` — y compris `Raw profile type APP1` —, JPEG COM/XMP/EXIF) crée une déclinaison de personnalité **texte libre** *et* une déclinaison d'apparence **photos en vrac** (version facile : coches Personnalité et Apparence ; version avancée : import de personnalité). Le tableau des fichiers indique la source du texte.
+- CLI : `cof embed-text <png> <fiche.md>` (écrit un iTXt `Description` UTF-8, image inchangée) et `cof read-text <image>` ; spec §3.
+
 ## 0.6.3 — 2026-10-11 — builder : retirer un fichier, déclinaisons vides
 - Bouton **✕ supprimer** à droite de chaque ligne des tableaux de fichiers (facile, par déclinaison, récapitulatif Build) : retire le fichier de l'état et de toutes les listes ; en version facile une déclinaison vidée disparaît, en version avancée une fiche importée redevient une déclinaison « import » vide.
 - Version avancée : en quittant l'étape Éléments, chaque déclinaison **qui ne vaut que par un fichier** (apparence hors description, poses image, échantillons, clips/vidéo, 3D, poids) et qui n'en a pas déclenche « Votre déclinaison … ne contient pas de fichier. Souhaitez-vous la conserver ? » (non = suppression). Au build, une telle déclinaison est une **erreur bloquante**.

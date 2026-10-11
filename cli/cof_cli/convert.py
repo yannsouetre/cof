@@ -72,6 +72,116 @@ def write_card_to_png(png: bytes, card: dict) -> bytes:
     return png_build(chunks)
 
 
+# ---------- description text embedded in an image (no card) ----------
+
+def write_text_to_png(png: bytes, text: str, keyword: str = "Description") -> bytes:
+    """Embed a UTF-8 text as a PNG iTXt chunk (standard keyword 'Description'), replacing an existing one."""
+    chunks = []
+    for t, b in png_chunks(png):
+        if t == b"iTXt" and b.split(b"\x00", 1)[0].decode("latin1") == keyword:
+            continue
+        chunks.append((t, b))
+    iend = chunks.pop()
+    body = keyword.encode("latin1") + b"\x00" + b"\x00\x00" + b"\x00" + b"\x00" + text.encode("utf-8")   # compression flag 0, method 0, no language, no translated keyword
+    chunks.append((b"iTXt", body)); chunks.append(iend)
+    return png_build(chunks)
+
+
+def _exif_texts(ex: bytes) -> dict:
+    out = {}
+    if len(ex) < 8:
+        return out
+    le = ex[:2] == b"II"; fmt = "<" if le else ">"
+    u16 = lambda o: struct.unpack(fmt + "H", ex[o:o + 2])[0]; u32 = lambda o: struct.unpack(fmt + "I", ex[o:o + 4])[0]
+    SZ = {1: 1, 2: 1, 3: 2, 4: 4, 5: 8, 7: 1, 9: 4, 10: 8}
+
+    def ifd(off, depth=0):
+        if depth > 3 or off + 2 > len(ex):
+            return
+        for k in range(u16(off)):
+            e = off + 2 + 12 * k
+            if e + 12 > len(ex):
+                break
+            tag, typ, cnt = u16(e), u16(e + 2), u32(e + 4); sz = SZ.get(typ, 1) * cnt
+            vo = e + 8 if sz <= 4 else u32(e + 8); val = ex[vo:vo + sz]
+            if tag == 0x8769:
+                ifd(u32(e + 8), depth + 1)
+            elif tag == 0x010E:
+                out["ImageDescription"] = val.rstrip(b"\x00").decode("utf-8", "replace")
+            elif tag == 0x9286:
+                h = val[:8]
+                out["UserComment"] = (val[8:].decode("utf-16-le" if le else "utf-16-be", "replace") if h.startswith(b"UNICODE") else (val[8:] if h.startswith((b"ASCII", b"JIS")) else val).decode("utf-8", "replace")).rstrip("\x00")
+            elif tag == 0x9C9C:
+                out["XPComment"] = val.decode("utf-16-le", "replace").rstrip("\x00")
+    try:
+        ifd(u32(4))
+    except Exception:
+        pass
+    return out
+
+
+def _xmp_description(xml: str) -> str:
+    m = re.search(r"<dc:description>[\s\S]*?<rdf:li[^>]*>([\s\S]*?)</rdf:li>", xml) or re.search(r'dc:description="([^"]*)"', xml)
+    return (m.group(1) if m else "").replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&").replace("&quot;", '"').strip()
+
+
+def read_text_from_image(data: bytes) -> dict | None:
+    """Longest descriptive text found in a PNG (iTXt/tEXt/zTXt Description|Comment, XMP, EXIF incl. 'Raw profile type') or JPEG (EXIF, XMP, COM)."""
+    cands = []
+    push = lambda source, text: cands.append({"source": source, "text": text.strip()}) if text and len(text.strip()) >= 20 else None
+    if data.startswith(PNG_SIG):
+        for t, b in png_chunks(data):
+            try:
+                if t == b"tEXt":
+                    k, v = b.split(b"\x00", 1); key = k.decode("latin1")
+                    if key.lower() in ("description", "comment", "cof:description"):
+                        push("PNG tEXt " + key, v.decode("latin1"))
+                    elif key == "XML:com.adobe.xmp":
+                        push("PNG XMP", _xmp_description(v.decode("utf-8", "replace")))
+                elif t == b"iTXt":
+                    k, rest = b.split(b"\x00", 1); key = k.decode("latin1"); cf = rest[0]; rest = rest[2:]
+                    _lang, rest = rest.split(b"\x00", 1); _tk, txt = rest.split(b"\x00", 1)
+                    if cf:
+                        txt = zlib.decompress(txt)
+                    if key.lower() in ("description", "comment", "cof:description"):
+                        push("PNG iTXt " + key, txt.decode("utf-8", "replace"))
+                    elif key == "XML:com.adobe.xmp":
+                        push("PNG XMP", _xmp_description(txt.decode("utf-8", "replace")))
+                elif t == b"zTXt":
+                    k, rest = b.split(b"\x00", 1); key = k.decode("latin1"); txt = zlib.decompress(rest[1:]).decode("latin1")
+                    if key.lower() in ("description", "comment"):
+                        push("PNG zTXt " + key, txt)
+                    elif re.match(r"Raw profile type (APP1|exif)$", key, re.I):
+                        hexs = "".join(txt.split("\n")[3:]).replace(" ", ""); ex = bytes.fromhex(hexs)
+                        for kk, vv in _exif_texts(ex[6:] if ex.startswith(b"Exif") else ex).items():
+                            push("EXIF " + kk, vv)
+                    elif re.match(r"Raw profile type xmp$", key, re.I):
+                        push("PNG XMP", _xmp_description(bytes.fromhex("".join(txt.split("\n")[3:]).replace(" ", "")).decode("utf-8", "replace")))
+                elif t == b"eXIf":
+                    for kk, vv in _exif_texts(b).items():
+                        push("EXIF " + kk, vv)
+            except Exception:
+                continue
+    elif data[:2] == b"\xff\xd8":
+        p = 2
+        while p + 4 < len(data) and data[p] == 0xFF:
+            marker = data[p + 1]
+            if marker in (0xDA, 0xD9):
+                break
+            ln = struct.unpack(">H", data[p + 2:p + 4])[0]; seg = data[p + 4:p + 2 + ln]
+            if marker == 0xE1:
+                if seg.startswith(b"Exif\x00\x00"):
+                    for kk, vv in _exif_texts(seg[6:]).items():
+                        push("EXIF " + kk, vv)
+                elif seg.startswith(b"http://ns.adobe.com/xap/1.0/"):
+                    push("JPEG XMP", _xmp_description(seg[29:].decode("utf-8", "replace")))
+            elif marker == 0xFE:
+                push("JPEG COM", seg.decode("utf-8", "replace"))
+            p += 2 + ln
+    cands.sort(key=lambda c: -len(c["text"]))
+    return cands[0] if cands else None
+
+
 # ---------- card → COF directory ----------
 
 def _slug(s: str) -> str:

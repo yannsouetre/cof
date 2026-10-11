@@ -223,6 +223,8 @@ Index exhaustif de tout fichier non-JSON, chacun avec un **`id`** (référencé 
 ---
 
 ## 3. Élément `personality`
+**Images porteuses de texte.** Une image peut transporter sa fiche : carte Character Card V2/V3 (`tEXt chara` / `ccv3`, base64 JSON) ou **texte descriptif libre** dans un champ standard — PNG `iTXt`/`tEXt`/`zTXt` à mot-clé `Description` (ou `Comment`), XMP `dc:description`, EXIF `ImageDescription` / `UserComment` / `XPComment` (y compris le profil brut `Raw profile type APP1` écrit par ImageMagick), JPEG `COM`. Un lecteur ou un builder qui reçoit une telle image crée **deux** déclinaisons : la personnalité (carte → `card`, texte → `description`) et l'apparence (`reference-set`, image conservée). Pour écrire : `cof embed-text image.png fiche.md` (iTXt `Description`, UTF-8) ; pour vérifier : `cof read-text image.png`.
+
 
 Déclinaison = une **Character Card V3** complète (`card`), optionnellement `psyche.json` (traits typés OCEAN/HEXACO, buts, craintes, valeurs, contradictions, émotion de base EmotionML, rendus en phrase et en curseurs), `story.md` (long), `lorebook.json` (`lorebook_v3`), projections `SOUL.md`/`IDENTITY.md` (OpenClaw, troncature 20 000 caractères). Conventions inchangées depuis v0.2 : `creator_notes` jamais dans le prompt, clés COF sous `data.extensions.cof`, `behavior` = manifestations observables (distinctes des dispositions de `psyche`), identifiants `trait:`/`goal:`/`fear:` pour les renvois. Profils de tokens (`summary` ≤ 512, `standard` 1–2 k, `full` ~4 k, `lore` ≤ 32 k par entrée) déclarés par déclinaison.
 
