@@ -6,6 +6,7 @@
 - **Negative conformance corpus** `tests/invalid/`: 22 files, one rule broken each (version, required fields, references, ages, intimate / minor rules, consent, base model, pickles, scripts, self-contained 3D, tags, `illegal` coherence finding, mimetype position / compression / value, path traversal, hash mismatch, missing asset), `cases.json` with rule and spec section, generator `build.py`; checked in CI tests.
 - Found by the corpus: the `illegal` coherence severity was in the spec but not in the schema nor enforced — now both; `validate_cof` reported a path-traversal archive as a crash instead of an error — fixed.
 - **CLI messages in English** (≈ 165 messages, report labels `ERROR` / `WARN`).
+- **Builder 0.9.0 fully localised**: ~250 more interface strings made translatable (intros, hints, option lists, check and build messages) and translated in the six languages; missing translations fall back to English instead of French.
 - Daz: `.zip` by default; a `.rar` asks first (not inspectable, may hide scripts). `cof-author` skill: security sweep (scripts, executables, pickles inside archives, optional malware scan, no secrets).
 
 ## 0.8.7 — 2026-10-12 — foldable blocks, safe deletes, voice embedding kind, Daz archives
