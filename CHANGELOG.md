@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.7 — 2026-10-12 — foldable blocks, safe deletes, voice embedding kind, Daz archives
+- Builder 0.8.7: identities, variants and presets are **foldable** (± button before the title; folded = first line only: title, type, delete); folded by default from two items, unfolded when alone, new items open; *Collapse all / Expand all*.
+- **Delete and remove ask for confirmation**, and say the original `.cof` is unchanged until the next build; removing the last file of a variant warns that it will be empty.
+- **Voice embeddings are a voice kind** (`embedding`, next to `samples` and `described`), linked to their samples with `derives_from`, instead of a panel under every voice.
+- **No visual style in 3D**: style and style tags removed from `volume3d` variants (rendering decides the look, not the file); spec § 4.7 says so.
+- **Daz**: content kept as the product / export **archive** (`.zip` / `.rar`, new asset role `archive`); other formats accepted after a warning recommending an archive; category list in the interface language only; *base figure* hidden for environments and props; validator lists scripts found in zip archives (`.dsa`…), warns that RAR is not inspected and that a store-licensed archive must not be shared.
+- Example 10: the four photo reference sets carry `style: photo-realistic` (manga ones: `manga`).
+
 ## 0.8.6 — 2026-10-12 — voice embeddings, Daz Studio, Clara's environments
 - **Voice embeddings** (advanced mode): `profile.json` `engines[]` now documents `{engine, version, model, kind, files, voice_id}` — speaker embeddings, fine-tuned weights, RVC indexes or cloud voice IDs, each tied to the exact model that reads it, so a voice moves to another machine or platform without retraining. Builder panel per voice variant; validator checks references, formats and `allowVoiceCloning`.
 - **Pickles always refused** (`.pt`, `.pth`, `.ckpt`, `.pkl`), even when executable content is declared; ambiguous `.bin` is sniffed (raw glTF buffers pass); object `.npy` / `.npz` refused. The builder explains why and shows the one-off conversion to safetensors. (The spec previously cited OpenVoice `se.pth` as an example — corrected.)

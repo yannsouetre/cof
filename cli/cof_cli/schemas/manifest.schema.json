@@ -1148,7 +1148,8 @@
             "weights",
             "skill-file",
             "memory",
-            "file"
+            "file",
+            "archive"
           ]
         },
         "mediaType": {
@@ -1691,7 +1692,8 @@
       ],
       "voice": [
         "samples",
-        "described"
+        "described",
+        "embedding"
       ],
       "posture": [
         "photo",

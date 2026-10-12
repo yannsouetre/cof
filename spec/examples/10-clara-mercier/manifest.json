@@ -133,7 +133,8 @@
           },
           "images": [
             "a-appearance-a1-clara-mercier-0-face-unge"
-          ]
+          ],
+          "style": "photo-realistic"
         },
         "a2": {
           "kind": "reference-set",
@@ -145,7 +146,8 @@
           },
           "images": [
             "a-appearance-a2-gemini-generated-image-y46-2inr"
-          ]
+          ],
+          "style": "photo-realistic"
         },
         "a3": {
           "kind": "reference-set",
@@ -157,7 +159,8 @@
           },
           "images": [
             "a-appearance-a3-face-2u2o"
-          ]
+          ],
+          "style": "photo-realistic"
         },
         "a4": {
           "kind": "reference-set",
@@ -169,7 +172,8 @@
           },
           "images": [
             "a-appearance-a4-gemini-generated-image-fwe-ms1p"
-          ]
+          ],
+          "style": "photo-realistic"
         },
         "a5": {
           "kind": "reference-set",

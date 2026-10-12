@@ -375,6 +375,24 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
             rep.warnings.append(f"{w} : précisez daz_category (characters, wearables, hair, environments, props, poses-animations)")
         if not v.get("requires"):
             rep.warnings.append(f"{w} : listez dans `requires` les produits Daz dont dépendent les fichiers .duf (figure de base, morphs, textures)")
+        for aid in v.get("files") or []:
+            a = A.get(aid) or {}
+            ap = src / a.get("path", "") if a.get("path") else None
+            if not ap or not ap.is_file():
+                continue
+            if ap.suffix.lower() == ".zip":
+                try:
+                    import zipfile as _z
+                    names = _z.ZipFile(ap).namelist()
+                    risky = [x for x in names if x.lower().endswith((".dsa", ".dse", ".exe", ".dll", ".bat", ".ps1", ".sh", ".py", ".js"))]
+                    if risky:
+                        rep.warnings.append(f"{w} : l'archive {ap.name} contient {len(risky)} script(s) ou exécutable(s) (ex. {risky[0]}) — les scripts Daz (.dsa/.dse) s'exécutent dans Daz Studio : n'ouvrez que des archives de confiance")
+                except Exception:
+                    rep.errors.append(f"{w} : archive illisible {ap.name}")
+            elif ap.suffix.lower() == ".rar":
+                rep.warnings.append(f"{w} : archive RAR {ap.name} non inspectée par le validateur — préférez .zip, ou n'ouvrez que des archives de confiance")
+            if str(a.get("license", "")).startswith("LicenseRef-Daz") and perms0.get("allowRedistribution"):
+                rep.warnings.append(f"{w} : {ap.name} est sous licence Daz (produit du Store) alors que allowRedistribution = true — un tel .cof ne doit pas être partagé")
         rep.warnings.append(f"{w} : licence Daz — la licence standard couvre les rendus, pas la redistribution des fichiers 3D du Store (une Interactive License est requise) ; n'intégrez que vos propres fichiers (.duf de preset ou de pose, morphs faits par vous)")
     # assets by link (e.g. LoRA weights): allowed, flagged
     for a in manifest.get("assets", []) or []:

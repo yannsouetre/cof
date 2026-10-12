@@ -10,7 +10,7 @@ KINDS = {
     "appearance": ["reference-set", "character-sheet", "face", "body", "hair", "clothing", "accessory", "intimate", "pilosity", "feature", "environment", "description"],
     "identity_weights": ["lora", "lycoris", "dora", "textual-inversion", "ip-adapter-embedding", "dreambooth", "other"],
     "volume3d": ["mesh", "face-mesh", "point-cloud", "print", "other", "environment", "daz"],
-    "voice": ["samples", "described"],
+    "voice": ["samples", "described", "embedding"],
     "posture": ["photo", "photos", "openpose", "silhouette", "attitude", "description"],
     "motion": ["clips", "video", "attitude", "description"],   # 'attitude' (signature de mouvement) est admis ici ET dans posture
     "files": ["skill", "memory", "document", "other"],          # fichiers libres : skills d'agent, mémoires, documents — bibliothèque

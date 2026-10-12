@@ -459,3 +459,23 @@ def test_voice_engines_daz_and_pickles(tmp_path):
     np.save(d / "elements/voice/v6/engines/bad.npy", np.array([{"a": 1}], dtype=object), allow_pickle=True)
     rep = Report(); validate_dir(d, rep, recompute=False)
     assert any("se.pth" in e for e in rep.errors) and any("bad.npy" in e for e in rep.errors) and not any("raw.bin" in e for e in rep.errors), rep.errors
+
+
+def test_daz_archive_and_voice_embedding_kind(tmp_path):
+    """Daz content travels as an archive (scripts inside are flagged); voice embeddings are their own kind."""
+    import zipfile as _z, numpy as np
+    from cof_cli.container import refresh_asset_index
+    d = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/10-clara-mercier", d)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    (d / "elements/volume3d/z1").mkdir(parents=True)
+    with _z.ZipFile(d / "elements/volume3d/z1/clara-g9.zip", "w") as z:
+        z.writestr("Content/People/Genesis 9/Clara.duf", "{}"); z.writestr("Content/Scripts/fix.dsa", "// script")
+    m["assets"].append({"id": "a-daz", "path": "elements/volume3d/z1/clara-g9.zip", "role": "archive", "mediaType": "application/zip", "license": "LicenseRef-Daz-EULA"})
+    m["elements"]["volume3d"] = {"variants": {"z1": {"kind": "daz", "daz_category": "props", "files": ["a-daz"], "requires": [{"name": "Genesis 9 Starter Essentials"}]}}}
+    (d / "elements/voice/v11").mkdir(parents=True); np.savez(d / "elements/voice/v11/xtts.npz", e=np.zeros(4, "float32"))
+    (d / "elements/voice/v11/profile.json").write_text(json.dumps({"engines": [{"engine": "xtts", "version": "2.0.3", "model": "coqui/XTTS-v2", "kind": "speaker-embedding", "files": ["a-x11"]}]}), "utf-8")
+    m["assets"].append({"id": "a-x11", "path": "elements/voice/v11/xtts.npz", "role": "engine-artifact", "mediaType": "application/octet-stream", "license": "CC-BY-NC-4.0"})
+    m["elements"]["voice"]["variants"]["v11"] = {"kind": "embedding", "language": "en", "derives_from": "v6", "profile": "elements/voice/v11/profile.json"}
+    refresh_asset_index(d, m); (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep, recompute=False); assert rep.ok, rep.errors
+    assert any("fix.dsa" in w for w in rep.warnings)

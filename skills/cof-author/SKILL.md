@@ -44,8 +44,9 @@ Other commands: `import` (PNG/JSON character card → folder), `export --format 
 - **Voice**: `samples` = asset ids (`role: "voice-sample"`, `duration_s`, optional `transcript` = path of a `.txt` next to the audio), plus `profile.json`. Respect the licence of the TTS plan (free plans are often non-commercial).
 - **Places**: `appearance` variants of `kind: "environment"` (images with `role: "environment"`, `use: "background"` or `"location"`, no age, several per preset); a 3D place is `volume3d` `kind: "environment"` (one GLB/USDZ/splat).
 - **Thumbnail**: `cof pack` writes `Thumbnails/thumbnail.png` (≤ 256 px) from the default preset's best view; never edit it by hand.
-- **Voice embeddings**: in `profile.json` → `engines[]`: `{ engine, version, model, kind, files: [asset ids, role engine-artifact] }` or `{ engine, kind: "cloud-voice-id", voice_id }`. Name the exact model (an embedding is unreadable by any other); never ship `.pt` / `.pth` / `.ckpt` / `.pkl` (refused) — convert to `.safetensors` or numeric `.npz`.
-- **Daz Studio content**: `volume3d` `kind: "daz"`, `daz_category`, `figure`, `files` (own `.duf` / `.dsf` / textures), `entry` (main `.duf`), `requires` (store products, not embedded); `age` required for `characters`. Never embed purchased store meshes or textures.
+- **Voice embeddings**: a voice variant of `kind: "embedding"` (with `derives_from` → its samples variant); in its `profile.json` → `engines[]`: `{ engine, version, model, kind, files: [asset ids, role engine-artifact] }` or `{ engine, kind: "cloud-voice-id", voice_id }`. Name the exact model (an embedding is unreadable by any other); never ship `.pt` / `.pth` / `.ckpt` / `.pkl` (refused) — convert to `.safetensors` or numeric `.npz`.
+- **Daz Studio content**: `volume3d` `kind: "daz"`, `daz_category`, `figure` (not for environments / props), `files` = the product or export archive (`.zip` / `.rar`, `role: "archive"`), `requires` (store products); `age` required for `characters`. A purchased archive is for personal use only: never in a `.cof` meant to be shared.
+- **3D has no visual style**: do not set `style` on `volume3d` variants.
 - **Slice for a platform**: `cof extract big.cof --tag fr -o fr/` (parents outside the selection are flattened, unused assets dropped).
 
 ## 4. Coherence review — your job, the validator cannot see images
