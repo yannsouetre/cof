@@ -377,11 +377,11 @@ def test_environment_variants_and_self_contained_3d(tmp_path):
     m = json.loads((d / "manifest.json").read_text("utf-8"))
     img = next(a for a in m["assets"] if a.get("role") in ("reference", "view"))
     for i, use in ((1, "background"), (2, "location")):
-        (d / f"elements/appearance/e{i}").mkdir(parents=True)
-        shutil.copy(d / img["path"], d / f"elements/appearance/e{i}/place.jpg")
-        m["assets"].append({"id": f"a-env-{i}", "path": f"elements/appearance/e{i}/place.jpg", "role": "environment", "mediaType": "image/jpeg", "license": "CC-BY-4.0", "bytes": 0, "sha256": "0" * 64})
-        m["elements"]["appearance"]["variants"][f"e{i}"] = {"kind": "environment", "use": use, "label": f"place {i}", "images": [f"a-env-{i}"]}
-    m["presets"]["default"]["slots"]["appearance"] = m["presets"]["default"]["slots"]["appearance"] + ["e1", "e2"]
+        (d / f"elements/appearance/x{i}").mkdir(parents=True)
+        shutil.copy(d / img["path"], d / f"elements/appearance/x{i}/place.jpg")
+        m["assets"].append({"id": f"a-env-{i}", "path": f"elements/appearance/x{i}/place.jpg", "role": "environment", "mediaType": "image/jpeg", "license": "CC-BY-4.0", "bytes": 0, "sha256": "0" * 64})
+        m["elements"]["appearance"]["variants"][f"x{i}"] = {"kind": "environment", "use": use, "label": f"place {i}", "images": [f"a-env-{i}"]}
+    m["presets"]["default"]["slots"]["appearance"] = m["presets"]["default"]["slots"]["appearance"] + ["x1", "x2"]
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     from cof_cli.container import refresh_asset_index
     refresh_asset_index(d, m); (d / "manifest.json").write_text(json.dumps(m), "utf-8")
@@ -423,3 +423,39 @@ def test_escape_hatches_and_thumbnail_source(tmp_path):
     assert any("non autonome" in w for w in rep.warnings) and any("sans sha256" in w for w in rep.warnings)
     pm = json.loads(zipfile.ZipFile(out).read("manifest.json"))
     assert next(a for a in pm["assets"] if a["id"] == "thumbnail")["source"] == sheet["id"]
+
+
+def test_voice_engines_daz_and_pickles(tmp_path):
+    """Voice embeddings tied to a model; Daz content with category, age for characters; pickles always refused."""
+    import io as _io, numpy as np
+    d = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/10-clara-mercier", d)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    from cof_cli.container import refresh_asset_index
+    # XTTS speaker embedding as numeric .npz
+    (d / "elements/voice/v6/engines").mkdir(parents=True)
+    np.savez(d / "elements/voice/v6/engines/xtts-speaker.npz", gpt_cond_latent=np.zeros((1, 32, 1024), "float32"), speaker_embedding=np.zeros((1, 512, 1), "float32"))
+    m["assets"].append({"id": "a-xtts-v6", "path": "elements/voice/v6/engines/xtts-speaker.npz", "role": "engine-artifact", "mediaType": "application/octet-stream", "license": "CC-BY-NC-4.0"})
+    prof = json.loads((d / "elements/voice/v6/profile.json").read_text("utf-8"))
+    prof["engines"] = [{"engine": "xtts", "version": "2.0.3", "model": "coqui/XTTS-v2", "kind": "speaker-embedding", "files": ["a-xtts-v6"]},
+                       {"engine": "elevenlabs", "version": "v3", "kind": "cloud-voice-id", "voice_id": "abc123"}]
+    (d / "elements/voice/v6/profile.json").write_text(json.dumps(prof), "utf-8")
+    # Daz character without age → error; with age → ok (+ licence warning)
+    (d / "elements/volume3d/z1").mkdir(parents=True); (d / "elements/volume3d/z1/clara.duf").write_text('{"file_version":"0.6.0.0"}', "utf-8")
+    m["assets"].append({"id": "a-daz-z1", "path": "elements/volume3d/z1/clara.duf", "role": "mesh", "mediaType": "application/json", "license": "CC-BY-4.0"})
+    m["elements"]["volume3d"] = {"variants": {"z1": {"kind": "daz", "daz_category": "characters", "figure": "Genesis 9", "files": ["a-daz-z1"], "entry": "elements/volume3d/z1/clara.duf",
+                                                     "requires": [{"name": "Genesis 9 Starter Essentials", "url": "https://www.daz3d.com/genesis-9-starter-essentials"}]}}}
+    m["presets"]["default"]["slots"]["volume3d"] = ["z1"]
+    refresh_asset_index(d, m); (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep, recompute=False)
+    assert any("z1" in e and "âge" in e for e in rep.errors), rep.errors
+    m["elements"]["volume3d"]["variants"]["z1"]["age"] = {"value": 29, "unit": "years", "basis": "canonical"}
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep, recompute=False); assert rep.ok, rep.errors
+    assert any("licence Daz" in w for w in rep.warnings)
+    # pickles: refused even with executable content declared; a raw .bin is fine; object .npy refused
+    m["container"]["executableContent"] = "scripts"; (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    (d / "elements/voice/v6/engines/se.pth").write_bytes(b"\x80\x02}q\x00.")
+    (d / "elements/voice/v6/engines/raw.bin").write_bytes(b"\x00\x00\x80\x3f")
+    np.save(d / "elements/voice/v6/engines/bad.npy", np.array([{"a": 1}], dtype=object), allow_pickle=True)
+    rep = Report(); validate_dir(d, rep, recompute=False)
+    assert any("se.pth" in e for e in rep.errors) and any("bad.npy" in e for e in rep.errors) and not any("raw.bin" in e for e in rep.errors), rep.errors

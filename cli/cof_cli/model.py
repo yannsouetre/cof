@@ -9,7 +9,7 @@ KINDS = {
     "personality": ["card", "description"],
     "appearance": ["reference-set", "character-sheet", "face", "body", "hair", "clothing", "accessory", "intimate", "pilosity", "feature", "environment", "description"],
     "identity_weights": ["lora", "lycoris", "dora", "textual-inversion", "ip-adapter-embedding", "dreambooth", "other"],
-    "volume3d": ["mesh", "face-mesh", "point-cloud", "print", "other", "environment"],
+    "volume3d": ["mesh", "face-mesh", "point-cloud", "print", "other", "environment", "daz"],
     "voice": ["samples", "described"],
     "posture": ["photo", "photos", "openpose", "silhouette", "attitude", "description"],
     "motion": ["clips", "video", "attitude", "description"],   # 'attitude' (signature de mouvement) est admis ici ET dans posture
@@ -184,7 +184,10 @@ def age_required(manifest: dict, pid: str | None, v: dict) -> bool:
     """Does this (resolved) variant have to carry an age? intimate: always; face/body/sheet/reference: for human-form morphologies."""
     if v.get("kind") == "intimate":
         return True
-    if v.get("kind") not in AGE_REQUIRED_KINDS:
+    if v.get("kind") == "daz":                      # Daz Studio content: only a character carries an age
+        if v.get("daz_category") != "characters":
+            return False
+    elif v.get("kind") not in AGE_REQUIRED_KINDS:
         return False
     cls = ((preset_identity(manifest, pid) or {}).get("morphology") or {}).get("class") or "human"
     return cls in HUMAN_FORM

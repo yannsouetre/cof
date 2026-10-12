@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.6 — 2026-10-12 — voice embeddings, Daz Studio, Clara's environments
+- **Voice embeddings** (advanced mode): `profile.json` `engines[]` now documents `{engine, version, model, kind, files, voice_id}` — speaker embeddings, fine-tuned weights, RVC indexes or cloud voice IDs, each tied to the exact model that reads it, so a voice moves to another machine or platform without retraining. Builder panel per voice variant; validator checks references, formats and `allowVoiceCloning`.
+- **Pickles always refused** (`.pt`, `.pth`, `.ckpt`, `.pkl`), even when executable content is declared; ambiguous `.bin` is sniffed (raw glTF buffers pass); object `.npy` / `.npz` refused. The builder explains why and shows the one-off conversion to safetensors. (The spec previously cited OpenVoice `se.pth` as an example — corrected.)
+- **Daz Studio** (`volume3d/daz`): `.duf` / `.dsf` + own textures, `daz_category` (Daz store taxonomy), `figure`, `requires[]` (products, not embedded), age required for characters; licence warning (standard licence = renders only).
+- **Example 10**: five environments (studio facing the park, tactical hangar, cosy living room, school atrium, manga study), each with a 16:9 desktop and a 9:16 mobile background, slotted next to the matching look; file 7 MB (lite).
+- Builder 0.8.6: the top “+ Add a variant” button scrolls to the new variant and focuses its label; 3D flag and Daz fields survive reopening.
+
 ## 0.8.5 — 2026-10-12 — escape hatches, discipline, thumbnail choice
 - **3D escape hatch**: OBJ / glTF with external resources are accepted when the variant declares `self_contained: false` (e.g. an untextured posing mesh); the builder explains why in a dialog and asks first; the validator then warns instead of refusing.
 - **LoRA storage**: embedded by default (warning on size) or **by link** — an asset with `uri` and no `path`; `sha256` pins the version, without it the link follows the latest one (warning on link rot). Schema: `sha256` / `bytes` required only for embedded assets.

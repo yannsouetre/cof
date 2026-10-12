@@ -18,7 +18,37 @@ from .model import ADULT, implicit_resolved, AGELESS_KINDS, AGE_CATEGORIES, CATE
 from .tokens import count as count_tokens, tokenizer_name
 
 PROMPT_FIELDS = ("description", "personality", "scenario", "first_mes", "mes_example", "system_prompt", "post_history_instructions")
-EXEC_EXT = {".js", ".lua", ".py", ".wasm", ".exe", ".sh", ".bat", ".ps1", ".pkl", ".pickle", ".ckpt", ".pt", ".pth", ".bin"}
+EXEC_EXT = {".js", ".lua", ".py", ".wasm", ".exe", ".sh", ".bat", ".ps1"}
+PICKLE_EXT = {".pkl", ".pickle", ".ckpt", ".pt", ".pth"}          # never allowed: loading them runs arbitrary code
+ENGINE_EXT = {".safetensors", ".npz", ".npy", ".json", ".onnx", ".index"}
+
+
+def _is_pickle(path: Path) -> bool:
+    """Pickle by extension, or by content for ambiguous .bin (raw glTF buffers are fine)."""
+    suf = path.suffix.lower()
+    if suf in PICKLE_EXT:
+        return True
+    if suf == ".bin":
+        try:
+            head = path.open("rb").read(4)
+            if head[:1] == b"\x80":
+                return True
+            if head == b"PK\x03\x04":
+                import zipfile as _z
+                return any(n.endswith((".pkl", "data.pkl")) for n in _z.ZipFile(path).namelist())
+        except Exception:
+            return False
+    return False
+
+
+def _npy_has_objects(data: bytes) -> bool:
+    """A .npy whose dtype is object needs pickle to load: refuse it."""
+    if not data.startswith(b"\x93NUMPY"):
+        return True
+    major = data[6]
+    hl = int.from_bytes(data[8:10], "little") if major == 1 else int.from_bytes(data[8:12], "little")
+    header = data[10 if major == 1 else 12:(10 if major == 1 else 12) + hl].decode("latin1")
+    return "'|O'" in header or "'O'" in header or "object" in header
 PATH_FIELDS = ("card", "psyche", "story", "lorebook", "params", "code", "spec", "profile", "vec", "visemes", "path", "skeleton")
 
 
@@ -313,6 +343,39 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
         if v.get("kind") == "card" and not v.get("card"):
             rep.errors.append(f"personality.{vid} (card) : chemin `card` (card.json) manquant")
 
+    # voice engine artifacts: tied to an exact engine/model, safe formats only
+    perms0 = (manifest.get("rights") or {}).get("permissions") or {}
+    for vid, v in ((elements.get("voice") or {}).get("variants") or {}).items():
+        prof_path = v.get("profile")
+        try:
+            prof = json.loads((src / prof_path).read_text("utf-8")) if prof_path and (src / prof_path).is_file() else {}
+        except Exception:
+            prof = {}
+        for i, en in enumerate(prof.get("engines") or []):
+            w = f"voice.{vid}.engines[{i}] ({en.get('engine')})"
+            ids = list(en.get("files") or []) + ([en["artifact"]] if en.get("artifact") else [])
+            if not ids and not en.get("voice_id"):
+                rep.warnings.append(f"{w} : ni fichier ni voice_id — entrée sans effet")
+            if ids and not en.get("model"):
+                rep.warnings.append(f"{w} : précisez `model` (modèle exact, ex. coqui/XTTS-v2) — une empreinte n'est lisible que par le modèle qui l'a produite")
+            for aid in ids:
+                a = A.get(aid)
+                if not a:
+                    rep.errors.append(f"{w} : asset inconnu '{aid}'")
+                elif a.get("path") and Path(a["path"]).suffix.lower() not in ENGINE_EXT:
+                    rep.warnings.append(f"{w} : format inattendu {Path(a['path']).suffix} — attendus : {', '.join(sorted(ENGINE_EXT))}")
+            if ids and perms0.get("allowVoiceCloning") is False:
+                rep.warnings.append(f"{w} : empreinte de voix incluse alors que allowVoiceCloning = false — les lecteurs ne peuvent l'utiliser que pour faire parler CE personnage")
+    # Daz Studio content: references a content library by design; licence of store products
+    for vid, v in ((elements.get("volume3d") or {}).get("variants") or {}).items():
+        if v.get("kind") != "daz":
+            continue
+        w = f"volume3d.{vid} (daz)"
+        if not v.get("daz_category"):
+            rep.warnings.append(f"{w} : précisez daz_category (characters, wearables, hair, environments, props, poses-animations)")
+        if not v.get("requires"):
+            rep.warnings.append(f"{w} : listez dans `requires` les produits Daz dont dépendent les fichiers .duf (figure de base, morphs, textures)")
+        rep.warnings.append(f"{w} : licence Daz — la licence standard couvre les rendus, pas la redistribution des fichiers 3D du Store (une Interactive License est requise) ; n'intégrez que vos propres fichiers (.duf de preset ou de pose, morphs faits par vous)")
     # assets by link (e.g. LoRA weights): allowed, flagged
     for a in manifest.get("assets", []) or []:
         if a.get("uri") and not a.get("path"):
@@ -397,8 +460,23 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
     # executable / unsafe serialized content
     declared = (manifest.get("container") or {}).get("executableContent", "none")
     for pth in src.rglob("*"):
-        if pth.is_file() and pth.suffix.lower() in EXEC_EXT and declared == "none":
-            rep.errors.append(f"contenu exécutable ou sérialisé non sûr : {pth.relative_to(src).as_posix()} (poids → safetensors)")
+        if not pth.is_file():
+            continue
+        rel = pth.relative_to(src).as_posix()
+        if _is_pickle(pth):
+            rep.errors.append(f"fichier pickle refusé : {rel} — son chargement exécute du code ; convertir en .safetensors (ou .npz numérique)")
+        elif pth.suffix.lower() in EXEC_EXT and declared == "none":
+            rep.errors.append(f"contenu exécutable non déclaré : {rel} — déclarer container.executableContent: \"scripts\" ou retirer le fichier")
+        elif pth.suffix.lower() == ".npy" and _npy_has_objects(pth.read_bytes()[:4096]):
+            rep.errors.append(f"tableau NumPy à objets (exige pickle) : {rel} — enregistrer un tableau numérique")
+        elif pth.suffix.lower() == ".npz":
+            import zipfile as _z
+            try:
+                with _z.ZipFile(pth) as z:
+                    if any(_npy_has_objects(z.open(nm).read(4096)) for nm in z.namelist() if nm.endswith(".npy")):
+                        rep.errors.append(f"archive NumPy à objets (exige pickle) : {rel} — enregistrer des tableaux numériques")
+            except Exception:
+                rep.errors.append(f"archive NumPy illisible : {rel}")
 
     # KPIs
     comp = compute_completeness(manifest, src)

@@ -161,7 +161,7 @@
     },
     "engines": {
       "type": "array",
-      "description": "named, versioned, perishable derived artifacts",
+      "description": "engine artifacts: speaker embeddings, fine-tuned voice weights, indexes or cloud voice ids, each tied to the exact engine and model that can read it",
       "items": {
         "type": "object",
         "required": [
@@ -170,10 +170,12 @@
         ],
         "properties": {
           "engine": {
-            "type": "string"
+            "type": "string",
+            "description": "engine family: xtts, openvoice, cosyvoice, f5-tts, fish-speech, chatterbox, kokoro, gpt-sovits, rvc, so-vits-svc, piper, elevenlabs, typecast, other…"
           },
           "version": {
-            "type": "string"
+            "type": "string",
+            "description": "engine / model version that produced the artifact (e.g. 2.0.3, v2)"
           },
           "artifact": {
             "type": "string",
@@ -185,6 +187,36 @@
           "expires": {
             "type": "string",
             "format": "date"
+          },
+          "model": {
+            "type": "string",
+            "description": "exact model or checkpoint: Hugging Face repo id, file name or vendor model id (e.g. coqui/XTTS-v2, eleven_v3)"
+          },
+          "model_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "kind": {
+            "enum": [
+              "speaker-embedding",
+              "fine-tuned-weights",
+              "index",
+              "cloud-voice-id",
+              "other"
+            ]
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "asset ids (role engine-artifact): .safetensors, .npz/.npy (numeric), .json, .onnx, .index — never pickles (.pt/.pth/.ckpt/.pkl)"
+          },
+          "sample_rate": {
+            "type": "integer"
+          },
+          "notes": {
+            "type": "string"
           }
         }
       }

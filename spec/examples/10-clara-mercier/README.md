@@ -7,7 +7,7 @@ One character, **twelve presets tagged by language and by age**, one file:
 | **English** | young adult (**default**), manga, at 12, at 65, near-future combatant, AI agent |
 | **Français** | jeune adulte, manga, à 12 ans, à 65 ans, combattante du futur, agent IA |
 
-Ten personality variants (5 FR, 5 EN — free text and Character Card V3), five appearance variants shared by both languages, ten voices (one per age group and language, all with transcripts), and an OpenPose posture library.
+Ten personality variants (5 FR, 5 EN — free text and Character Card V3), five appearance variants and five **environments** (chat / video-avatar backgrounds, each in a desktop 16:9 and a mobile 9:16 version) shared by both languages, ten voices (one per age group and language, all with transcripts), and an OpenPose posture library.
 
 What it demonstrates:
 - **Languages per variant** — the same images serve both languages; only personality and voice change.

@@ -183,6 +183,56 @@
           "images": [
             "a-appearance-a5-gemini-generated-image-fwe-y33e"
           ]
+        },
+        "e1": {
+          "kind": "environment",
+          "use": "background",
+          "label": "Atelier lumineux face au parc / Bright studio facing the park",
+          "style": "photo-realistic",
+          "images": [
+            "a-env-e1-desktop",
+            "a-env-e1-mobile"
+          ]
+        },
+        "e2": {
+          "kind": "environment",
+          "use": "background",
+          "label": "Hangar tactique, table holographique / Tactical hangar, holographic table",
+          "style": "photo-realistic",
+          "images": [
+            "a-env-e2-desktop",
+            "a-env-e2-mobile"
+          ]
+        },
+        "e3": {
+          "kind": "environment",
+          "use": "background",
+          "label": "Salon chaleureux, livres et vinyles / Cosy living room, books and records",
+          "style": "photo-realistic",
+          "images": [
+            "a-env-e3-desktop",
+            "a-env-e3-mobile"
+          ]
+        },
+        "e4": {
+          "kind": "environment",
+          "use": "background",
+          "label": "Hall du collège (CDI) / School atrium",
+          "style": "photo-realistic",
+          "images": [
+            "a-env-e4-desktop",
+            "a-env-e4-mobile"
+          ]
+        },
+        "e5": {
+          "kind": "environment",
+          "use": "background",
+          "label": "Bureau manga, fenêtre sur la campagne / Manga study, window on the countryside",
+          "style": "manga",
+          "images": [
+            "a-env-e5-desktop",
+            "a-env-e5-mobile"
+          ]
         }
       }
     },
@@ -325,7 +375,8 @@
           "p6"
         ],
         "appearance": [
-          "a1"
+          "a1",
+          "e1"
         ],
         "voice": [
           "v6"
@@ -354,7 +405,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-12T08:38:45Z"
+        "computed_at": "2026-10-12T12:00:39Z"
       }
     },
     "en-manga": {
@@ -369,7 +420,8 @@
       "extends": "default",
       "slots": {
         "appearance": [
-          "a5"
+          "a5",
+          "e5"
         ],
         "voice": [
           "v10"
@@ -395,7 +447,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-12T08:38:45Z"
+        "computed_at": "2026-10-12T12:00:39Z"
       }
     },
     "en-12": {
@@ -413,7 +465,8 @@
           "p8"
         ],
         "appearance": [
-          "a2"
+          "a2",
+          "e4"
         ],
         "voice": [
           "v9"
@@ -439,7 +492,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-12T08:38:45Z"
+        "computed_at": "2026-10-12T12:00:39Z"
       }
     },
     "en-65": {
@@ -457,7 +510,8 @@
           "p9"
         ],
         "appearance": [
-          "a3"
+          "a3",
+          "e3"
         ],
         "voice": [
           "v7"
@@ -483,7 +537,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-12T08:38:45Z"
+        "computed_at": "2026-10-12T12:00:39Z"
       }
     },
     "en-future": {
@@ -501,7 +555,8 @@
           "p10"
         ],
         "appearance": [
-          "a4"
+          "a4",
+          "e2"
         ],
         "voice": [
           "v8"
@@ -527,7 +582,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-12T08:38:45Z"
+        "computed_at": "2026-10-12T12:00:39Z"
       }
     },
     "en-agent": {
@@ -569,7 +624,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-12T08:38:45Z"
+        "computed_at": "2026-10-12T12:00:39Z"
       }
     },
     "fr": {
@@ -610,7 +665,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-12T08:38:45Z"
+        "computed_at": "2026-10-12T12:00:39Z"
       }
     },
     "fr-manga": {
@@ -625,7 +680,8 @@
       "extends": "fr",
       "slots": {
         "appearance": [
-          "a5"
+          "a5",
+          "e5"
         ],
         "voice": [
           "v5"
@@ -651,7 +707,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-12T08:38:45Z"
+        "computed_at": "2026-10-12T12:00:39Z"
       }
     },
     "fr-12": {
@@ -669,7 +725,8 @@
           "p3"
         ],
         "appearance": [
-          "a2"
+          "a2",
+          "e4"
         ],
         "voice": [
           "v4"
@@ -695,7 +752,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-12T08:38:45Z"
+        "computed_at": "2026-10-12T12:00:39Z"
       }
     },
     "fr-65": {
@@ -713,7 +770,8 @@
           "p4"
         ],
         "appearance": [
-          "a3"
+          "a3",
+          "e3"
         ],
         "voice": [
           "v2"
@@ -739,7 +797,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-12T08:38:45Z"
+        "computed_at": "2026-10-12T12:00:39Z"
       }
     },
     "fr-futur": {
@@ -757,7 +815,8 @@
           "p5"
         ],
         "appearance": [
-          "a4"
+          "a4",
+          "e2"
         ],
         "voice": [
           "v3"
@@ -783,7 +842,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-12T08:38:45Z"
+        "computed_at": "2026-10-12T12:00:39Z"
       }
     },
     "fr-agent": {
@@ -825,7 +884,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-12T08:38:45Z"
+        "computed_at": "2026-10-12T12:00:39Z"
       }
     }
   },
@@ -1171,6 +1230,136 @@
       "language": "en"
     },
     {
+      "id": "a-env-e1-desktop",
+      "path": "elements/appearance/e1/background.desktop.jpg",
+      "role": "environment",
+      "mediaType": "image/jpeg",
+      "bytes": 474899,
+      "sha256": "f0263e2e154a38337d89512d593104e4802d67ceb1ea53588e11d88aeccde358",
+      "license": "CC-BY-4.0",
+      "width": 1920,
+      "height": 1072,
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-env-e1-mobile",
+      "path": "elements/appearance/e1/background.mobile.jpg",
+      "role": "environment",
+      "mediaType": "image/jpeg",
+      "bytes": 444846,
+      "sha256": "c7ab5fc91f4f904f8e7a47ee3ebce6b8ff8cc0228f7cd3a435e7385b3ea50f91",
+      "license": "CC-BY-4.0",
+      "width": 1072,
+      "height": 1920,
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-env-e2-desktop",
+      "path": "elements/appearance/e2/background.desktop.jpg",
+      "role": "environment",
+      "mediaType": "image/jpeg",
+      "bytes": 409122,
+      "sha256": "5d6d186e7907ffeb8fe17931fac0721d0fd15d1cfb7a0cf596555dd2d68c90d6",
+      "license": "CC-BY-4.0",
+      "width": 1920,
+      "height": 1072,
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-env-e2-mobile",
+      "path": "elements/appearance/e2/background.mobile.jpg",
+      "role": "environment",
+      "mediaType": "image/jpeg",
+      "bytes": 375169,
+      "sha256": "277e4ab9395ceeaed8b97292455bc9dfdc5516f07fd68f21c0184176e513d655",
+      "license": "CC-BY-4.0",
+      "width": 1072,
+      "height": 1920,
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-env-e3-desktop",
+      "path": "elements/appearance/e3/background.desktop.jpg",
+      "role": "environment",
+      "mediaType": "image/jpeg",
+      "bytes": 479741,
+      "sha256": "cc700a5aa15cd5b020b707e3a98fc37526f52f720669437917d73585fbf2924f",
+      "license": "CC-BY-4.0",
+      "width": 1920,
+      "height": 1072,
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-env-e3-mobile",
+      "path": "elements/appearance/e3/background.mobile.jpg",
+      "role": "environment",
+      "mediaType": "image/jpeg",
+      "bytes": 456974,
+      "sha256": "dc32da2a3cc4f4e689285b5426f1fc47abb0fca8ddaa236f2370a3eafaf0b7eb",
+      "license": "CC-BY-4.0",
+      "width": 1072,
+      "height": 1920,
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-env-e4-desktop",
+      "path": "elements/appearance/e4/background.desktop.jpg",
+      "role": "environment",
+      "mediaType": "image/jpeg",
+      "bytes": 364215,
+      "sha256": "0072da30dd3c9047b6195f477159ae2547cc58635c36cff26407c41badb9d14e",
+      "license": "CC-BY-4.0",
+      "width": 1920,
+      "height": 1072,
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-env-e4-mobile",
+      "path": "elements/appearance/e4/background.mobile.jpg",
+      "role": "environment",
+      "mediaType": "image/jpeg",
+      "bytes": 321752,
+      "sha256": "958f5159b1703fc7c617c36dcba70045d7094689d6932a106c88318d7531c3d6",
+      "license": "CC-BY-4.0",
+      "width": 1072,
+      "height": 1920,
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-env-e5-desktop",
+      "path": "elements/appearance/e5/background.desktop.jpg",
+      "role": "environment",
+      "mediaType": "image/jpeg",
+      "bytes": 407042,
+      "sha256": "93f0017148c4cd509b7d411f428238a1341f55fcc086f322080a92e6c8385121",
+      "license": "CC-BY-4.0",
+      "width": 1920,
+      "height": 1072,
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-env-e5-mobile",
+      "path": "elements/appearance/e5/background.mobile.jpg",
+      "role": "environment",
+      "mediaType": "image/jpeg",
+      "bytes": 338599,
+      "sha256": "78afa5af5b972f3268aa47619f5255eb66e58737b4de89485e5725e6a3403db9",
+      "license": "CC-BY-4.0",
+      "width": 1072,
+      "height": 1920,
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
       "id": "thumbnail",
       "path": "Thumbnails/thumbnail.png",
       "role": "derived",
@@ -1234,7 +1423,7 @@
       "posture",
       "files"
     ],
-    "variants": 27,
+    "variants": 32,
     "presets": 12,
     "identities": 1
   },
@@ -1258,7 +1447,7 @@
       "archive"
     ],
     "computed_by": "cof-cli/0.7.0",
-    "computed_at": "2026-10-12T08:38:45Z"
+    "computed_at": "2026-10-12T12:00:39Z"
   },
   "preset_tags": [
     {

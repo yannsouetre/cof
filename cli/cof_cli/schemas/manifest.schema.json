@@ -782,6 +782,45 @@
         "self_contained": {
           "type": "boolean",
           "description": "volume3d: false = the author accepts a 3D file whose external resources (MTL, textures, .bin) are absent, e.g. an untextured posing mesh"
+        },
+        "daz_category": {
+          "enum": [
+            "characters",
+            "wearables",
+            "hair",
+            "environments",
+            "props",
+            "poses-animations"
+          ],
+          "description": "volume3d/daz: Daz Studio content category (Daz 3D store taxonomy)"
+        },
+        "figure": {
+          "type": "string",
+          "description": "volume3d/daz: base figure generation, e.g. Genesis 9, Genesis 8.1 Female"
+        },
+        "requires": {
+          "type": "array",
+          "description": "volume3d/daz: store products the DUF files depend on (not embedded)",
+          "items": {
+            "type": "object",
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              },
+              "sku": {
+                "type": "string"
+              },
+              "vendor": {
+                "type": "string"
+              }
+            }
+          }
         }
       },
       "required": [
@@ -1647,7 +1686,8 @@
         "point-cloud",
         "print",
         "other",
-        "environment"
+        "environment",
+        "daz"
       ],
       "voice": [
         "samples",
