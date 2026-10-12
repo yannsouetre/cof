@@ -52,6 +52,17 @@ def _(d): m = load(d); V(m, "appearance")["f1"].pop("age"); save(d, m)
 @case("intimate-under-18", "intimate content requires an age ≥ 18", "§ 4.5 / § 9.4", "intimate")
 def _(d): m = load(d); V(m, "appearance")["i1"]["age"] = {"value": 17, "unit": "years", "basis": "declared"}; save(d, m)
 
+@case("minor-preset-offers-intimate", "a preset under 18 never OFFERS intimate content either (age rules cover slots ∪ alternatives)", "§ 2.3 / § 9.4", "intimate")
+def _(d): m = load(d); m["presets"]["young"]["alternatives"] = {"appearance": ["i1"]}; save(d, m)
+
+@case("primary-image-not-applied", "a preset's primary_image is an image of a variant the preset applies", "§ 2.3", "primary_image")
+def _(d):
+    m = load(d); adult = V(m, "appearance")["o1"]["images"][0]          # the adult outfit, not applied by "young"
+    m["presets"]["young"]["primary_image"] = adult; save(d, m)
+
+@case("alternative-in-library", "alternatives are not allowed on the libraries (posture, motion, files)", "§ 2.3", "alternatives")
+def _(d): m = load(d); m["presets"]["default"]["alternatives"] = {"motion": ["z1"]}; save(d, m)
+
 @case("intimate-without-content-tag", "a file with intimate content flags it in tags.content", "§ 4.5", "nudity")
 def _(d): m = load(d); m["tags"]["content"] = ["none"]; save(d, m)
 

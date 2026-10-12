@@ -513,3 +513,65 @@ def test_negative_corpus():
         rep = validate_cof(corpus / c["file"])
         assert not rep.ok, c["file"]
         assert any(c["expect"].lower() in e.lower() for e in rep.errors), (c["file"], rep.errors)
+
+
+def test_slots_alternatives_and_primary_image(tmp_path):
+    """slots = applied by default; alternatives = offered for that preset only. Age/minor rules cover both,
+    region and kind rules only the applied set; primary_image must be applied; extract/merge keep alternatives."""
+    from cof_cli.model import preset_alternatives, preset_primary_image, resolved_all, preset_age
+    from cof_cli.ops import extract_presets, merge_dirs
+    src = ROOT / "spec/examples/10-clara-mercier"
+    m = json.loads((src / "manifest.json").read_text("utf-8"))
+    assert preset_alternatives(m, "fr") == {"appearance": ["c1", "c2", "c3", "c4"]}          # inherited from default
+    assert preset_alternatives(m, "fr-12") == {"appearance": ["c5", "c6", "c7", "c8"]}       # child replaces the list
+    assert preset_primary_image(m, "fr") == m["presets"]["default"]["primary_image"]
+    d = tmp_path / "c"; shutil.copytree(src, d)
+    V = m["elements"]["appearance"]["variants"]
+    # two overlapping tops offered: no warning (offered ≠ worn); applied: region warning
+    V["c13"] = {**V["c2"], "label": "second top"}
+    m["presets"]["en-12"]["alternatives"]["appearance"].append("c13")
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep, recompute=False); assert rep.ok, rep.errors
+    assert not any("presets.en-12" in w and "overlap" in w for w in rep.warnings), rep.warnings
+    m["presets"]["en-12"]["slots"]["appearance"] += ["c6", "c13"]
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep, recompute=False)
+    assert any("presets.en-12" in w and "overlap" in w for w in rep.warnings), rep.warnings
+    m["presets"]["en-12"]["slots"]["appearance"] = ["a2", "e4"]
+    # an intimate element OFFERED in a minor preset is refused like an applied one
+    V["i1"] = {"kind": "intimate", "label": "x", "age": {"value": 29, "unit": "years", "basis": "apparent"}}
+    m["tags"]["content"] = list(set(m["tags"].get("content") or []) | {"nudity"})
+    m["presets"]["en-12"]["alternatives"]["appearance"].append("i1")
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep, recompute=False)
+    assert any("presets.en-12" in e and "intimate variant" in e for e in rep.errors), rep.errors
+    # offered variants are part of the age computation (applied ∪ offered)
+    m["presets"]["en-12"]["alternatives"]["appearance"] = ["c5", "c6", "c7", "c8"]
+    assert preset_age(m, "en-12") == 12 and "a2" in [v["_id"] for v in resolved_all(m, "en-12")["appearance"]]
+    # primary_image must come from an applied variant; head-only framing without clothing warns
+    m["presets"]["en-12"]["primary_image"] = m["presets"]["en-65"]["primary_image"]
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep, recompute=False)
+    assert any("presets.en-12.primary_image" in e and "not an image of a variant applied" in e for e in rep.errors), rep.errors
+    m["presets"]["en-12"]["primary_image"] = m["presets"]["en-12"]["primary_image"] = V["a2"]["images"][0]
+    pa = next(a for a in m["assets"] if a["id"] == V["a2"]["images"][0]); pa["subject"], pa["framing"] = "head", "head"
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep, recompute=False)
+    assert any("presets.en-12" in w and "default outfit is undefined" in w for w in rep.warnings), rep.warnings
+    # vehicle as an accessory type → hint to use accessory_use
+    V["x3"]["accessory"] = "vehicle"
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep, recompute=False)
+    assert any("x3" in w and "ignored" in w for w in rep.warnings), rep.warnings
+    # extract one child preset: alternatives and primary image flattened from the dropped parent
+    out = tmp_path / "fr"; extract_presets(src, out, ["fr"])
+    e = json.loads((out / "manifest.json").read_text("utf-8"))
+    assert e["presets"]["fr"]["alternatives"] == {"appearance": ["c1", "c2", "c3", "c4"]}
+    assert e["presets"]["fr"]["primary_image"] == m["presets"]["default"]["primary_image"]
+    assert "c1" in e["elements"]["appearance"]["variants"]
+    rep = Report(); validate_dir(out, rep); assert rep.ok, rep.errors
+    # merge keeps them
+    mg = tmp_path / "mg"; merge_dirs([out, ROOT / "spec" / "examples" / "04-martien"], mg)
+    g = json.loads((mg / "manifest.json").read_text("utf-8"))
+    assert g["presets"]["fr"]["alternatives"] == {"appearance": ["c1", "c2", "c3", "c4"]}
+    rep = Report(); validate_dir(mg, rep); assert rep.ok, rep.errors

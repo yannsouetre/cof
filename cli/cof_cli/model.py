@@ -72,6 +72,50 @@ def resolve_preset_slots(manifest: dict, pid: str, _seen=None) -> dict[str, list
     return base
 
 
+def resolve_preset_alternatives(manifest: dict, pid: str, _seen=None) -> dict[str, list[str]]:
+    """Elements OFFERED (not applied) by a preset, as declared; same inheritance rule as slots (see preset_alternatives)."""
+    presets = manifest.get("presets", {}) or {}
+    p = presets.get(pid)
+    if p is None:
+        return {}
+    _seen = _seen or set()
+    if pid in _seen:
+        return {k: list(v) for k, v in (p.get("alternatives") or {}).items()}
+    _seen.add(pid)
+    base = resolve_preset_alternatives(manifest, p["extends"], _seen) if p.get("extends") else {}
+    for k, v in (p.get("alternatives") or {}).items():
+        base[k] = list(v)
+    return base
+
+
+def preset_alternatives(manifest: dict, pid: str) -> dict[str, list[str]]:
+    """Offered elements minus those already applied."""
+    slots = resolve_preset_slots(manifest, pid)
+    alt = resolve_preset_alternatives(manifest, pid)
+    return {k: [x for x in v if x not in slots.get(k, [])] for k, v in alt.items() if [x for x in v if x not in slots.get(k, [])]}
+
+
+def preset_primary_image(manifest: dict, pid: str | None) -> str | None:
+    """Asset id of the preset's primary image: explicit (inherited through extends) or the first image
+    of the first face / reference-set / character-sheet / body applied by the preset."""
+    presets = manifest.get("presets", {}) or {}
+    seen = set()
+    q = pid
+    while q and q in presets and q not in seen:
+        seen.add(q)
+        if presets[q].get("primary_image"):
+            return presets[q]["primary_image"]
+        q = presets[q].get("extends")
+    A = asset_index(manifest)
+    r = resolved(manifest, pid) if pid else implicit_resolved(manifest)
+    for k in ("face", "reference-set", "character-sheet", "body"):
+        for v in [x for x in r.get("appearance", []) if x.get("kind") == k]:
+            for i in v.get("images", []) or []:
+                if i in A and str(A[i].get("mediaType", "")).startswith("image/"):
+                    return i
+    return None
+
+
 def implicit_preset(manifest: dict) -> dict[str, list[str]]:
     slots = {}
     for cat, e in (manifest.get("elements", {}) or {}).items():
@@ -101,6 +145,20 @@ def resolved(manifest: dict, pid: str | None = None) -> dict[str, list[dict]]:
                 lst.append(v)
         if lst:
             out[cat] = lst
+    return out
+
+
+def resolved_all(manifest: dict, pid: str | None = None) -> dict[str, list[dict]]:
+    """Applied ∪ offered variants of a preset (age and minor rules apply to this union)."""
+    out = {k: list(v) for k, v in (resolved(manifest, pid) if pid else implicit_resolved(manifest)).items()}
+    if not pid:
+        return out
+    for cat, vids in preset_alternatives(manifest, pid).items():
+        have = {v["_id"] for v in out.get(cat, [])}
+        for vid in vids:
+            v = resolve_variant(manifest, cat, vid)
+            if v is not None and vid not in have:
+                out.setdefault(cat, []).append(v)
     return out
 
 
@@ -161,8 +219,8 @@ def lowest_age(manifest: dict) -> float | None:
 
 
 def preset_age(manifest: dict, pid: str | None) -> float | None:
-    """Age of a preset = min(ages of its resolved morphological variants, age_override). None = no age known (e.g. text only)."""
-    res = resolved(manifest, pid) if pid else implicit_resolved(manifest)
+    """Age of a preset = min(ages of its applied AND offered morphological variants, age_override). None = no age known (e.g. text only)."""
+    res = resolved_all(manifest, pid)
     va = [x for cat in AGE_CATEGORIES for v in res.get(cat, []) if v.get("kind") not in AGELESS_KINDS for x in [_age_value(v.get("age"))] if x is not None]
     p = (manifest.get("presets", {}) or {}).get(pid or "", {}) or {}
     x = _age_value(p.get("age_override"))
@@ -215,6 +273,8 @@ def region_conflicts(res: dict[str, list[dict]]) -> list[str]:
             occupied[key] = v["_id"]
     occ = {}
     for v in by_kind(res, "appearance", "accessory"):
+        if (v.get("accessory_use") or "worn") != "worn":
+            continue                                   # not worn, companion, other: no body region
         t = g["accessories"]["types"].get(v.get("accessory") or "other", {"region": "none", "stackable": True})
         if t.get("stackable") or t["region"] in ("none",):
             continue

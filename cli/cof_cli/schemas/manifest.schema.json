@@ -709,7 +709,16 @@
         },
         "accessory": {
           "type": "string",
-          "description": "accessory type (garments-1.0/accessories) for kind=accessory"
+          "description": "accessory type (garments-1.0/accessories/types) for kind=accessory — meaningful when accessory_use is 'worn'"
+        },
+        "accessory_use": {
+          "enum": [
+            "worn",
+            "not-worn",
+            "companion",
+            "other"
+          ],
+          "description": "nature of an accessory (kind=accessory): worn = worn or carried by the character (has a body region, see 'accessory'); not-worn = vehicle, mount, furniture…; companion = drone, robot, animal…; other. Default: worn."
         },
         "area": {
           "enum": [
@@ -855,7 +864,26 @@
               "$ref": "#/$defs/vid"
             },
             "uniqueItems": true
+          },
+          "description": "Elements APPLIED by default when the preset is selected (the default look). A child preset replaces a whole category list."
+        },
+        "alternatives": {
+          "type": "object",
+          "description": "Compatible elements OFFERED with this preset only (clothing, hairstyles, accessories, other voices…). Never applied by default; an advanced reader may swap them in, re-checking age, regions and style. Not allowed on the libraries (posture, motion, files). A child preset replaces a whole category list.",
+          "propertyNames": {
+            "pattern": "^(personality|appearance|identity_weights|volume3d|voice|x-[a-z0-9-]+)$"
+          },
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/vid"
+            },
+            "uniqueItems": true
           }
+        },
+        "primary_image": {
+          "$ref": "#/$defs/aid",
+          "description": "Image asset that shows the preset's default look (outfit and hair included). Must belong to a variant applied by the preset (slots). Default: the first image of the first face / reference-set / character-sheet / body applied. When the preset applies no clothing (or no hairstyle), the outfit (or hair) visible on this image IS the default. The default preset's primary image is the source of the file thumbnail unless thumbnail_source says otherwise."
         },
         "age_override": {
           "$ref": "#/$defs/age",

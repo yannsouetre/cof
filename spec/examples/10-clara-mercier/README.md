@@ -1,4 +1,4 @@
-# Example 10 — Clara Mercier (flagship, bilingual) — version 5
+# Example 10 — Clara Mercier (flagship, bilingual) — version 6
 
 One character, **twelve presets tagged by language and by age**, one file:
 
@@ -7,13 +7,13 @@ One character, **twelve presets tagged by language and by age**, one file:
 | **English** | young adult (**default**), manga, at 12, at 65, near-future combatant, AI agent |
 | **Français** | jeune adulte, manga, à 12 ans, à 65 ans, combattante du futur, agent IA |
 
-Ten personality variants (5 FR, 5 EN — free text and Character Card V3), five appearance variants, a **wardrobe** of twelve clothing items (a casual outfit each for Clara at 29, 12 and 65: top, layer, trousers, shoes), three **accessories** (a folk guitar for the manga look; a recon drone and an armoured bike for the combatant), five **environments** (chat / video-avatar backgrounds, each in a desktop 16:9 and a mobile 9:16 version) shared by both languages, ten voices (one per age group and language, all with transcripts), an OpenPose posture library and a **motion library of 19 BVH clips** (walking, explaining, answering, waving, bowing, dancing, running, fighting) chosen per look: feminine style for the young adult, childish at 12, elderly at 65, combat moves for the combatant, happy style for the manga version.
+Ten personality variants (5 FR, 5 EN — free text and Character Card V3), five appearance variants, twelve **offered** clothing items (a casual outfit each for Clara at 29, 12 and 65: top, layer, trousers, shoes), three **offered accessories** (a folk guitar for the manga look — worn; a recon drone — companion — and an armoured bike — not worn — for the combatant), five **environments** (chat / video-avatar backgrounds, each in a desktop 16:9 and a mobile 9:16 version) shared by both languages, ten voices (one per age group and language, all with transcripts), an OpenPose posture library and a **motion library of 19 BVH clips** (walking, explaining, answering, waving, bowing, dancing, running, fighting) chosen per look: feminine style for the young adult, childish at 12, elderly at 65, combat moves for the combatant, happy style for the manga version.
 
 What it demonstrates:
 - **Languages per variant** — the same images serve both languages; only personality and voice change.
 - **Presets with inheritance** — English presets `extend` the default; French presets extend `fr`, which itself extends the default and only swaps personality and voice.
 - **Preset tags** — container-level tags in four facets: *language* (`en`, `fr`), *age* (`age-12`, `age-29`, `age-65`), *style* (`photo-realistic`, `manga`) and *usage* (`agent`, on the two AI-agent presets). Export any slice: `cof extract clara.cof --tag fr -o clara-fr/`, or the intersection `--tag en --tag age-12`.
-- **Wardrobe and regions** — each outfit layers a T-shirt or shirt (`top`) under a sweater (`outerwear`), with trousers and shoes: four clothing items worn together without region conflict; the other presets' clothes stay available as wardrobe.
+- **Applied and offered** — each preset *applies* (`slots`) its look: the full-body reference image, which is its **primary image** (`primary_image`), so the outfit and hair visible on it are the default. The clothes and accessories are *offered* (`alternatives`) by the preset they suit only — Clara at 12 is never offered Clara at 65's cardigan. Each outfit layers a T-shirt or shirt (`top`) under a sweater (`outerwear`), with trousers and shoes, without region conflict if a reader applies it.
 - **Age on the representation** — each appearance variant declares its depicted age (12, 29, 65); the two 12-year-old presets are minor presets and the § 9.4 rules apply to them alone.
 - **Agent use** — the *AI agent* presets use a short Character Card V3 (FR and EN system prompts aligned, exportable to `SOUL.md`) plus a shared **skill** in the `files` category: `accessible-color-palette` — a multi-file Agent Skill (`SKILL.md`, exact colour maths, a worked palette with computed WCAG ratios) for building harmonious, accessible colour systems in OKLCH. Persona facts live in the card fields, expert know-how lives in the skill.
 - **Built by an AI** — version 4 (English variants, voices wiring, presets and tags) was assembled programmatically by Claude from the French version, then validated with `cof validate`.

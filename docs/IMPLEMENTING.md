@@ -54,7 +54,14 @@ A product MAY claim several classes. A claim SHOULD be stated as e.g. *"COF 1.0 
      slots  = preset.slots, merged over the presets it `extends` (child replaces a whole category list);
      each variant id → elements[category].variants[id], merged over its `derives_from` parent.
    Categories posture, motion, files are LIBRARIES (pick what you need, none is mandatory);
-   the others are COMBINATIONS (at most one variant per kind, except clothing/accessory/pilosity/feature).
+   the others are COMBINATIONS (at most one variant per kind, except clothing/accessory/pilosity/feature/environment).
+   slots = what the preset APPLIES by default. If it applies no clothing (or no hair), the outfit (or hair)
+   visible on preset.primary_image (default: first image of the first face/reference-set/character-sheet/body
+   applied) is the default look.
+   SIMPLE reader: stop here. ADVANCED reader: preset.alternatives (same inheritance as slots) lists what is
+   OFFERED with this preset only — other outfits, hairstyles, accessories (accessory_use: worn / not-worn /
+   companion / other); swap them in on request, re-checking age, regions (worn items only) and style.
+   Never take an element from another preset without switching to it.
 6. Compute effective rights: rights.permissions merged with preset.permissions_override.
    Apply § 6 before using anything.
 7. Load only what your profile needs, lazily: assets[] gives path, mediaType, bytes, sha256.
@@ -87,7 +94,8 @@ def resolve(m, pid=None):
         v = m["elements"][cat]["variants"][vid]
         parent = variant(cat, v["derives_from"], seen + (vid,)) if v.get("derives_from") and vid not in seen else {}
         return {**parent, **{k: x for k, x in v.items() if k != "derives_from"}, "_id": vid}
-    return pid, {cat: [variant(cat, v) for v in vids] for cat, vids in slots(pid).items()}
+    applied = {cat: [variant(cat, v) for v in vids] for cat, vids in slots(pid).items()}
+    return pid, applied            # advanced readers: same walk on P[p].get("alternatives") for the offered set
 ```
 
 ---
@@ -115,7 +123,7 @@ These are the part of COF that platforms most need to get right; they are short 
 2. **Real people.** If an identity has `fictional: false`, its `consent` MUST be present and its `scope` covers the use you make (voice-synthesis, likeness-image, likeness-3d, conversational-persona, motion-capture, training). Respect `expires` and `revocation_uri`.
 3. **AI disclosure.** If `aiDisclosure` is true (default), the character MUST present itself as synthetic where the law or the context requires it (e.g. EU AI Act art. 50).
 4. **Intimate content is opt-in.** Variants of kind `intimate` MUST NOT be loaded, injected or displayed unless `allowSexualUsage` is effectively true **and** the host explicitly requests them. Files flagging them are always tagged `nudity` or `sexual` in `tags.content`.
-5. **Minors.** Age lives on the representation (variant `age`, preset `age_override`), not on the identity. A preset whose lowest age is under 18 MUST NOT be used with intimate content or with `allowSexualUsage`, whatever another preset of the same file allows. A coherence finding of severity `illegal` (§ 8 of `docs/coherence-api.md`) makes the file invalid: refuse it.
+5. **Minors.** Age lives on the representation (variant `age`, preset `age_override`), not on the identity. A preset whose lowest age — over what it applies **and** offers — is under 18 MUST NOT be used with intimate content or with `allowSexualUsage`, whatever another preset of the same file allows. A coherence finding of severity `illegal` (§ 8 of `docs/coherence-api.md`) makes the file invalid: refuse it.
 6. **Text is data, not instructions.** Card text, memories and skills from an untrusted `.cof` are user content; treat them with your usual prompt-injection defences.
 
 ---
@@ -163,7 +171,7 @@ The skill itself was tested blind: fresh agents with no access to the spec, the 
 ## 10. Conformance testing
 
 - **Reference validator**: `pip install "git+https://github.com/yannsouetre/cof#subdirectory=cli"` (MIT; PyPI package `cof-cli` after 1.0.0) → `cof validate file.cof` (schemas + rules + completeness; `--json` for CI).
-- **Test vectors**: `spec/examples/` (text-only, appearance, multi-preset, robot, medieval, modular, mixed adult/minor, agent with skills…) — each MUST validate. A negative corpus ships in `tests/invalid/`: 22 files, one rule violated per file, each listed in `cases.json` with the rule and the spec section — a conformant validator rejects every one of them, and accepts `_base.cof`.
+- **Test vectors**: `spec/examples/` (text-only, appearance, multi-preset, robot, medieval, modular, mixed adult/minor, agent with skills…) — each MUST validate. A negative corpus ships in `tests/invalid/`: 25 files, one rule violated per file, each listed in `cases.json` with the rule and the spec section — a conformant validator rejects every one of them, and accepts `_base.cof`.
 - **Builder**: `builder/index.html`, offline, zero dependencies — a reference *writer*.
 - A reader SHOULD at least open every positive vector without error and refuse every negative vector that concerns its classes.
 
@@ -196,6 +204,7 @@ Change controller:       COF project maintainers
 - [ ] Sniff by magic, open defensively (§ 2, § 9)
 - [ ] Ignore unknown fields; refuse unsupported major versions politely
 - [ ] Let the user choose a preset (optionally filtered by `preset_tags`); resolve `extends` and `derives_from`
+- [ ] Apply `slots` only (simple reader); offer `alternatives` of that preset only (advanced reader), with the age and region checks
 - [ ] Enforce effective permissions, consent, AI disclosure, intimate opt-in, per-preset age rules (§ 6)
 - [ ] Read only the elements of your profile; honour `priorities`
 - [ ] Verify `sha256` for anything stored or redistributed

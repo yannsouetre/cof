@@ -54,7 +54,10 @@ def compute_preset(manifest: dict, pid: str | None, src: Path | None = None) -> 
     s += 5 * bool(first(r, "appearance", "hair"))
     b = first(r, "appearance", "body"); bi = imgs(b)
     s += 10 * bool(bi) + 5 * (len(bi) >= 2) + 5 * bool(b and b.get("params"))
-    s += 10 * bool(by_kind(r, "appearance", "clothing"))
+    from .model import preset_primary_image
+    pim = A.get(preset_primary_image(m, pid) or "") or {}
+    outfit_seen = pim.get("subject") == "body" or pim.get("framing") == "full"
+    s += 10 * bool(by_kind(r, "appearance", "clothing") or outfit_seen)   # outfit applied, or visible on the primary image
     cs = first(r, "appearance", "character-sheet") or first(r, "appearance", "reference-set")
     if not fi and cs and imgs(cs):
         s += 20                       # a sheet / reference set gives a usable look even without split views

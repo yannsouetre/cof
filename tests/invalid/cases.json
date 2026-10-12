@@ -32,6 +32,24 @@
       "expect": "intimate"
     },
     {
+      "file": "minor-preset-offers-intimate.cof",
+      "rule": "a preset under 18 never OFFERS intimate content either (age rules cover slots ∪ alternatives)",
+      "spec": "§ 2.3 / § 9.4",
+      "expect": "intimate"
+    },
+    {
+      "file": "primary-image-not-applied.cof",
+      "rule": "a preset's primary_image is an image of a variant the preset applies",
+      "spec": "§ 2.3",
+      "expect": "primary_image"
+    },
+    {
+      "file": "alternative-in-library.cof",
+      "rule": "alternatives are not allowed on the libraries (posture, motion, files)",
+      "spec": "§ 2.3",
+      "expect": "alternatives"
+    },
+    {
       "file": "intimate-without-content-tag.cof",
       "rule": "a file with intimate content flags it in tags.content",
       "spec": "§ 4.5",

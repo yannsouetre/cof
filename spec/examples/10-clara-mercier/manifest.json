@@ -353,25 +353,26 @@
           "images": [
             "a-ac-x1"
           ],
-          "accessory": "tool"
+          "accessory": "tool",
+          "accessory_use": "worn"
         },
         "x2": {
           "kind": "accessory",
           "label": "Drone de reconnaissance (4 vues) / Recon drone (4 views)",
+          "accessory_use": "companion",
           "style": "photo-realistic",
           "images": [
             "a-ac-x2"
-          ],
-          "accessory": "companion"
+          ]
         },
         "x3": {
           "kind": "accessory",
           "label": "Moto blindée X-09 (4 vues, cockpit) / Armoured bike X-09 (4 views, cockpit)",
+          "accessory_use": "not-worn",
           "style": "photo-realistic",
           "images": [
             "a-ac-x3"
-          ],
-          "accessory": "vehicle"
+          ]
         }
       }
     },
@@ -573,11 +574,7 @@
         ],
         "appearance": [
           "a1",
-          "e1",
-          "c1",
-          "c2",
-          "c3",
-          "c4"
+          "e1"
         ],
         "voice": [
           "v6"
@@ -589,6 +586,15 @@
           "m1"
         ]
       },
+      "alternatives": {
+        "appearance": [
+          "c1",
+          "c2",
+          "c3",
+          "c4"
+        ]
+      },
+      "primary_image": "a-appearance-a1-clara-mercier-0-face-unge",
       "completeness": {
         "score": 59,
         "level": "C",
@@ -609,8 +615,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc1",
-        "computed_at": "2026-10-12T15:57:00Z"
+        "computed_by": "cof-cli/1.0.0rc2",
+        "computed_at": "2026-10-12T19:27:57Z"
       }
     },
     "en-manga": {
@@ -626,8 +632,7 @@
       "slots": {
         "appearance": [
           "a5",
-          "e5",
-          "x1"
+          "e5"
         ],
         "voice": [
           "v10"
@@ -636,13 +641,19 @@
           "m5"
         ]
       },
+      "alternatives": {
+        "appearance": [
+          "x1"
+        ]
+      },
+      "primary_image": "a-appearance-a5-gemini-generated-image-fwe-y33e",
       "completeness": {
-        "score": 57,
+        "score": 59,
         "level": "C",
         "layers": {
           "identity": 100,
           "personality": 60,
-          "appearance": 20,
+          "appearance": 30,
           "physique": 100,
           "voice": 65,
           "volume": 0,
@@ -653,10 +664,11 @@
           "chat-text",
           "agent-persona",
           "chat-voice",
+          "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc1",
-        "computed_at": "2026-10-12T15:57:00Z"
+        "computed_by": "cof-cli/1.0.0rc2",
+        "computed_at": "2026-10-12T19:27:57Z"
       }
     },
     "en-12": {
@@ -675,11 +687,7 @@
         ],
         "appearance": [
           "a2",
-          "e4",
-          "c5",
-          "c6",
-          "c7",
-          "c8"
+          "e4"
         ],
         "voice": [
           "v9"
@@ -688,6 +696,15 @@
           "m2"
         ]
       },
+      "alternatives": {
+        "appearance": [
+          "c5",
+          "c6",
+          "c7",
+          "c8"
+        ]
+      },
+      "primary_image": "a-appearance-a2-gemini-generated-image-y46-2inr",
       "completeness": {
         "score": 57,
         "level": "C",
@@ -708,8 +725,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc1",
-        "computed_at": "2026-10-12T15:57:00Z"
+        "computed_by": "cof-cli/1.0.0rc2",
+        "computed_at": "2026-10-12T19:27:57Z"
       }
     },
     "en-65": {
@@ -728,11 +745,7 @@
         ],
         "appearance": [
           "a3",
-          "e3",
-          "c9",
-          "c10",
-          "c11",
-          "c12"
+          "e3"
         ],
         "voice": [
           "v7"
@@ -741,6 +754,15 @@
           "m3"
         ]
       },
+      "alternatives": {
+        "appearance": [
+          "c9",
+          "c10",
+          "c11",
+          "c12"
+        ]
+      },
+      "primary_image": "a-appearance-a3-face-2u2o",
       "completeness": {
         "score": 57,
         "level": "C",
@@ -761,8 +783,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc1",
-        "computed_at": "2026-10-12T15:57:00Z"
+        "computed_by": "cof-cli/1.0.0rc2",
+        "computed_at": "2026-10-12T19:27:57Z"
       }
     },
     "en-future": {
@@ -781,9 +803,7 @@
         ],
         "appearance": [
           "a4",
-          "e2",
-          "x2",
-          "x3"
+          "e2"
         ],
         "voice": [
           "v8"
@@ -792,13 +812,20 @@
           "m4"
         ]
       },
+      "alternatives": {
+        "appearance": [
+          "x2",
+          "x3"
+        ]
+      },
+      "primary_image": "a-appearance-a4-gemini-generated-image-fwe-ms1p",
       "completeness": {
-        "score": 55,
+        "score": 57,
         "level": "C",
         "layers": {
           "identity": 100,
           "personality": 50,
-          "appearance": 20,
+          "appearance": 30,
           "physique": 100,
           "voice": 65,
           "volume": 0,
@@ -809,10 +836,11 @@
           "chat-text",
           "agent-persona",
           "chat-voice",
+          "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc1",
-        "computed_at": "2026-10-12T15:57:00Z"
+        "computed_by": "cof-cli/1.0.0rc2",
+        "computed_at": "2026-10-12T19:27:57Z"
       }
     },
     "en-agent": {
@@ -854,8 +882,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc1",
-        "computed_at": "2026-10-12T15:57:00Z"
+        "computed_by": "cof-cli/1.0.0rc2",
+        "computed_at": "2026-10-12T19:27:57Z"
       }
     },
     "fr": {
@@ -896,8 +924,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc1",
-        "computed_at": "2026-10-12T15:57:00Z"
+        "computed_by": "cof-cli/1.0.0rc2",
+        "computed_at": "2026-10-12T19:27:57Z"
       }
     },
     "fr-manga": {
@@ -913,8 +941,7 @@
       "slots": {
         "appearance": [
           "a5",
-          "e5",
-          "x1"
+          "e5"
         ],
         "voice": [
           "v5"
@@ -923,111 +950,12 @@
           "m5"
         ]
       },
-      "completeness": {
-        "score": 57,
-        "level": "C",
-        "layers": {
-          "identity": 100,
-          "personality": 60,
-          "appearance": 20,
-          "physique": 100,
-          "voice": 65,
-          "volume": 0,
-          "motion": 75,
-          "rights": 85
-        },
-        "targets_ready": [
-          "chat-text",
-          "agent-persona",
-          "chat-voice",
-          "archive"
-        ],
-        "computed_by": "cof-cli/1.0.0rc1",
-        "computed_at": "2026-10-12T15:57:00Z"
-      }
-    },
-    "fr-12": {
-      "identity": "id1",
-      "style": "photo-realistic",
-      "age_override": {
-        "value": 12,
-        "unit": "years",
-        "basis": "canonical"
-      },
-      "label": "Clara à 12 ans (FR)",
-      "extends": "fr",
-      "slots": {
-        "personality": [
-          "p3"
-        ],
+      "alternatives": {
         "appearance": [
-          "a2",
-          "e4",
-          "c5",
-          "c6",
-          "c7",
-          "c8"
-        ],
-        "voice": [
-          "v4"
-        ],
-        "motion": [
-          "m2"
+          "x1"
         ]
       },
-      "completeness": {
-        "score": 57,
-        "level": "C",
-        "layers": {
-          "identity": 100,
-          "personality": 50,
-          "appearance": 30,
-          "physique": 100,
-          "voice": 65,
-          "volume": 0,
-          "motion": 75,
-          "rights": 85
-        },
-        "targets_ready": [
-          "chat-text",
-          "agent-persona",
-          "chat-voice",
-          "image-video-gen",
-          "archive"
-        ],
-        "computed_by": "cof-cli/1.0.0rc1",
-        "computed_at": "2026-10-12T15:57:00Z"
-      }
-    },
-    "fr-65": {
-      "identity": "id1",
-      "style": "photo-realistic",
-      "age_override": {
-        "value": 65,
-        "unit": "years",
-        "basis": "canonical"
-      },
-      "label": "Clara à 65 ans (FR)",
-      "extends": "fr",
-      "slots": {
-        "personality": [
-          "p4"
-        ],
-        "appearance": [
-          "a3",
-          "e3",
-          "c9",
-          "c10",
-          "c11",
-          "c12"
-        ],
-        "voice": [
-          "v2"
-        ],
-        "motion": [
-          "m3"
-        ]
-      },
+      "primary_image": "a-appearance-a5-gemini-generated-image-fwe-y33e",
       "completeness": {
         "score": 59,
         "level": "C",
@@ -1048,8 +976,124 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc1",
-        "computed_at": "2026-10-12T15:57:00Z"
+        "computed_by": "cof-cli/1.0.0rc2",
+        "computed_at": "2026-10-12T19:27:57Z"
+      }
+    },
+    "fr-12": {
+      "identity": "id1",
+      "style": "photo-realistic",
+      "age_override": {
+        "value": 12,
+        "unit": "years",
+        "basis": "canonical"
+      },
+      "label": "Clara à 12 ans (FR)",
+      "extends": "fr",
+      "slots": {
+        "personality": [
+          "p3"
+        ],
+        "appearance": [
+          "a2",
+          "e4"
+        ],
+        "voice": [
+          "v4"
+        ],
+        "motion": [
+          "m2"
+        ]
+      },
+      "alternatives": {
+        "appearance": [
+          "c5",
+          "c6",
+          "c7",
+          "c8"
+        ]
+      },
+      "primary_image": "a-appearance-a2-gemini-generated-image-y46-2inr",
+      "completeness": {
+        "score": 57,
+        "level": "C",
+        "layers": {
+          "identity": 100,
+          "personality": 50,
+          "appearance": 30,
+          "physique": 100,
+          "voice": 65,
+          "volume": 0,
+          "motion": 75,
+          "rights": 85
+        },
+        "targets_ready": [
+          "chat-text",
+          "agent-persona",
+          "chat-voice",
+          "image-video-gen",
+          "archive"
+        ],
+        "computed_by": "cof-cli/1.0.0rc2",
+        "computed_at": "2026-10-12T19:27:57Z"
+      }
+    },
+    "fr-65": {
+      "identity": "id1",
+      "style": "photo-realistic",
+      "age_override": {
+        "value": 65,
+        "unit": "years",
+        "basis": "canonical"
+      },
+      "label": "Clara à 65 ans (FR)",
+      "extends": "fr",
+      "slots": {
+        "personality": [
+          "p4"
+        ],
+        "appearance": [
+          "a3",
+          "e3"
+        ],
+        "voice": [
+          "v2"
+        ],
+        "motion": [
+          "m3"
+        ]
+      },
+      "alternatives": {
+        "appearance": [
+          "c9",
+          "c10",
+          "c11",
+          "c12"
+        ]
+      },
+      "primary_image": "a-appearance-a3-face-2u2o",
+      "completeness": {
+        "score": 59,
+        "level": "C",
+        "layers": {
+          "identity": 100,
+          "personality": 60,
+          "appearance": 30,
+          "physique": 100,
+          "voice": 65,
+          "volume": 0,
+          "motion": 75,
+          "rights": 85
+        },
+        "targets_ready": [
+          "chat-text",
+          "agent-persona",
+          "chat-voice",
+          "image-video-gen",
+          "archive"
+        ],
+        "computed_by": "cof-cli/1.0.0rc2",
+        "computed_at": "2026-10-12T19:27:57Z"
       }
     },
     "fr-futur": {
@@ -1068,9 +1112,7 @@
         ],
         "appearance": [
           "a4",
-          "e2",
-          "x2",
-          "x3"
+          "e2"
         ],
         "voice": [
           "v3"
@@ -1079,13 +1121,20 @@
           "m4"
         ]
       },
+      "alternatives": {
+        "appearance": [
+          "x2",
+          "x3"
+        ]
+      },
+      "primary_image": "a-appearance-a4-gemini-generated-image-fwe-ms1p",
       "completeness": {
-        "score": 55,
+        "score": 57,
         "level": "C",
         "layers": {
           "identity": 100,
           "personality": 50,
-          "appearance": 20,
+          "appearance": 30,
           "physique": 100,
           "voice": 65,
           "volume": 0,
@@ -1096,10 +1145,11 @@
           "chat-text",
           "agent-persona",
           "chat-voice",
+          "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc1",
-        "computed_at": "2026-10-12T15:57:00Z"
+        "computed_by": "cof-cli/1.0.0rc2",
+        "computed_at": "2026-10-12T19:27:57Z"
       }
     },
     "fr-agent": {
@@ -1141,8 +1191,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc1",
-        "computed_at": "2026-10-12T15:57:00Z"
+        "computed_by": "cof-cli/1.0.0rc2",
+        "computed_at": "2026-10-12T19:27:57Z"
       }
     }
   },
@@ -1187,15 +1237,15 @@
   "assets": [
     {
       "id": "a-appearance-a1-clara-mercier-0-face-unge",
-      "path": "elements/appearance/a1/head.front.jpg",
+      "path": "elements/appearance/a1/body.front.jpg",
       "role": "reference",
       "mediaType": "image/jpeg",
       "bytes": 54050,
       "sha256": "c84b31ea259c8f0574104f09360d63487544d0c1336d0fcbf7b173c318c288ab",
       "license": "CC-BY-4.0",
-      "subject": "head",
+      "subject": "body",
       "angle": "front",
-      "framing": "head",
+      "framing": "full",
       "width": 338,
       "height": 1024,
       "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
@@ -1282,15 +1332,15 @@
     },
     {
       "id": "a-appearance-a3-face-2u2o",
-      "path": "elements/appearance/a3/head.front.jpg",
+      "path": "elements/appearance/a3/body.front.jpg",
       "role": "reference",
       "mediaType": "image/jpeg",
       "bytes": 57146,
       "sha256": "9af4cc2b5e4f3679853d88fea46343918ab28441db23f8de124fe5b005d47779",
       "license": "CC-BY-4.0",
-      "subject": "head",
+      "subject": "body",
       "angle": "front",
-      "framing": "head",
+      "framing": "full",
       "width": 338,
       "height": 1024,
       "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
@@ -2352,8 +2402,8 @@
       "image-video-gen",
       "archive"
     ],
-    "computed_by": "cof-cli/1.0.0rc1",
-    "computed_at": "2026-10-12T15:57:00Z"
+    "computed_by": "cof-cli/1.0.0rc2",
+    "computed_at": "2026-10-12T19:27:57Z"
   },
   "preset_tags": [
     {

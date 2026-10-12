@@ -15,7 +15,7 @@ from jsonschema import Draft202012Validator
 from . import SPEC_VERSION, __version__
 from .completeness import compute as compute_completeness
 from .container import ContainerError, inspect, read_manifest, unpack, verify_hashes
-from .model import ADULT, implicit_resolved, AGELESS_KINDS, AGE_CATEGORIES, CATEGORIES, KINDS, MULTI_KINDS, _age_value, age_required, asset_index, default_preset_id, first, lowest_age, preset_age, preset_identity, preset_ids, region_conflicts, resolve_preset_slots, resolve_variant, resolved, single_kind_violations, by_kind
+from .model import garments, ADULT, implicit_resolved, AGELESS_KINDS, AGE_CATEGORIES, CATEGORIES, KINDS, MULTI_KINDS, _age_value, age_required, asset_index, default_preset_id, first, lowest_age, preset_age, preset_identity, preset_ids, region_conflicts, resolve_preset_slots, resolve_variant, resolved, single_kind_violations, by_kind, preset_alternatives, preset_primary_image, resolved_all
 from .tokens import count as count_tokens, tokenizer_name
 
 PROMPT_FIELDS = ("description", "personality", "scenario", "first_mes", "mes_example", "system_prompt", "post_history_instructions")
@@ -220,6 +220,15 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                 rep.errors.append(f"{where}: unknown kind '{rv.get('kind')}' for {etype} (expected: {', '.join(KINDS[etype])})")
             if etype == "appearance" and rv.get("kind") == "clothing" and not rv.get("garment"):
                 rep.warnings.append(f"{where}: clothing without a 'garment' type (layering rules cannot apply)")
+            if rv.get("accessory_use") and rv.get("kind") != "accessory":
+                rep.warnings.append(f"{where}: accessory_use only applies to kind 'accessory' (ignored)")
+            if rv.get("kind") == "accessory":
+                use = rv.get("accessory_use") or "worn"
+                acc_types = garments()["accessories"]["types"]
+                if use == "worn" and rv.get("accessory") and rv["accessory"] not in acc_types:
+                    rep.warnings.append(f"{where}: unknown accessory type '{rv['accessory']}' (garments-1.0: {', '.join(acc_types)}); for a vehicle or a companion set accessory_use to 'not-worn' or 'companion'")
+                if use != "worn" and rv.get("accessory"):
+                    rep.warnings.append(f"{where}: accessory type '{rv['accessory']}' ignored — accessory_use is '{use}' (only worn accessories have a body region)")
             if etype == "motion" and rv.get("kind") == "video":
                 for aid in rv.get("videos") or []:
                     a = A.get(aid)
@@ -271,13 +280,28 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                     pidn = p.get("identity") or manifest.get("default_identity")
                     if rv.get("identity") and pidn and rv["identity"] != pidn:
                         rep.errors.append(f"presets.{pid}: '{vid}' is reserved for identity {rv['identity']}")
+        own_slots = p.get("slots") or {}
+        for cat, vids in (p.get("alternatives") or {}).items():
+            for vid in vids:
+                if vid in (own_slots.get(cat) or []):
+                    rep.warnings.append(f"presets.{pid}: '{vid}' is both applied (slots) and offered (alternatives) — kept as applied")
+        for cat, vids in preset_alternatives(manifest, pid).items():
+            for vid in vids:
+                if cat not in elements or vid not in (elements[cat] or {}).get("variants", {}):
+                    rep.errors.append(f"presets.{pid}.alternatives.{cat}: unknown variant {vid}")
+                else:
+                    rv = resolve_variant(manifest, cat, vid) or {}
+                    pidn = p.get("identity") or manifest.get("default_identity")
+                    if rv.get("identity") and pidn and rv["identity"] != pidn:
+                        rep.errors.append(f"presets.{pid}: alternative '{vid}' is reserved for identity {rv['identity']}")
         rules = p.get("rules") or {}
         res = resolved(manifest, pid)
         if rules.get("single_per_kind", True):
             rep.errors += [f"presets.{pid}: {x}" for x in single_kind_violations(res)]
         if rules.get("exclusive_regions", True):
             rep.warnings += [f"presets.{pid}: {x}" for x in region_conflicts(res)]
-        _age_rules(manifest, pid, res, perms_all, rep)
+        _primary_image_rules(manifest, pid, res, A, rep)
+        _age_rules(manifest, pid, resolved_all(manifest, pid), perms_all, rep)   # applied ∪ offered
     if not pids:
         _age_rules(manifest, None, implicit_resolved(manifest), perms_all, rep)
     for etype, e in elements.items():
@@ -317,9 +341,10 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
         rep.errors.append(f"unknown default_preset: {dp}")
     used = set()
     for pid in pids:
-        for cat, vids in resolve_preset_slots(manifest, pid).items():
-            for vid in vids:
-                used.add((cat, vid))
+        for src_ in (resolve_preset_slots(manifest, pid), preset_alternatives(manifest, pid)):
+            for cat, vids in src_.items():
+                for vid in vids:
+                    used.add((cat, vid))
     if pids:
         for cat, e in elements.items():
             for vid in (e or {}).get("variants", {}):
@@ -514,13 +539,16 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
         manifest["coverage"] = comp["coverage"]
         for pid, c in comp["presets"].items():
             manifest["presets"][pid]["completeness"] = {**c, "computed_by": f"cof-cli/{__version__}", "computed_at": now}
-        # thumbnail = head.front of the default preset's face, else first image of face / character-sheet / reference-set / body
+        # thumbnail = thumbnail_source, else the default preset's primary_image, else head.front of its face, else first image of face / character-sheet / reference-set / body
         r = resolved(manifest, dp)
         cand = []
         for k in ("face", "character-sheet", "reference-set", "body"):
             for v in [x for x in r.get("appearance", []) if x.get("kind") == k]:
                 cand += [A[i] for i in v.get("images", []) or [] if i in A and A[i].get("path")]
         best = next((a for a in cand if a.get("subject") == "head" and a.get("angle") == "front"), cand[0] if cand else None)
+        pim = ((manifest.get("presets") or {}).get(dp or "") or {}).get("primary_image")
+        if pim and A.get(pim, {}).get("path"):
+            best = A[pim]                  # the default preset's primary image
         ts = A.get(manifest.get("thumbnail_source") or "")
         if ts and ts.get("path"):
             best = ts                      # the author's explicit choice wins
@@ -573,6 +601,33 @@ def validate_cof(cof: Path) -> Report:
     if manifest.get("cof") != SPEC_VERSION:
         rep.warnings.append(f"format version {manifest.get('cof')} (tool: {SPEC_VERSION})")
     return rep
+
+
+HEAD_ONLY = {"closeup", "head", "bust"}      # asset framings that cannot show an outfit
+
+
+def _primary_image_rules(manifest: dict, pid: str, res: dict, A: dict, rep: "Report") -> None:
+    """primary_image must be an image of a variant the preset APPLIES; warn when it cannot show an outfit."""
+    p = manifest["presets"][pid]
+    pim = p.get("primary_image")
+    if pim:
+        if pim not in A:
+            rep.errors.append(f"presets.{pid}.primary_image: unknown asset {pim}")
+            return
+        if not str(A[pim].get("mediaType", "")).startswith("image/"):
+            rep.errors.append(f"presets.{pid}.primary_image: {pim} is not an image")
+            return
+        applied = {i for lst in res.values() for v in lst for i in (v.get("images") or [])}
+        if pim not in applied:
+            rep.errors.append(f"presets.{pid}.primary_image: {pim} is not an image of a variant applied by this preset (slots)")
+            return
+    aid = preset_primary_image(manifest, pid)
+    if not aid or aid not in A:
+        return
+    a = A[aid]
+    head_only = a.get("framing") in HEAD_ONLY or (a.get("subject") == "head" and a.get("framing") != "full")
+    if head_only and not by_kind(res, "appearance", "clothing"):
+        rep.warnings.append(f"presets.{pid}: the primary image ({aid}) shows only the head and the preset applies no clothing — the default outfit is undefined (set primary_image to a body image or apply clothing)")
 
 
 def _age_rules(manifest: dict, pid: str | None, res: dict, perms_all: dict, rep: "Report") -> None:

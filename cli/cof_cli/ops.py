@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .convert import ulid_like
-from .model import resolve_preset_slots
+from .model import preset_alternatives, resolve_preset_slots
 
 NOW = lambda: datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -116,6 +116,10 @@ def merge_dirs(sources: list[Path], dst: Path) -> dict:
             new_pid = pid if pid not in out["presets"] else f"{prefix}-{pid}"
             pid_map[pid] = new_pid
             np_["slots"] = {cat: [vid_map.get((cat, x), x) for x in vids] for cat, vids in (p.get("slots") or {}).items()}
+            if p.get("alternatives"):
+                np_["alternatives"] = {cat: [vid_map.get((cat, x), x) for x in vids] for cat, vids in p["alternatives"].items()}
+            if p.get("primary_image"):
+                np_["primary_image"] = aid_map.get(p["primary_image"], p["primary_image"])
             np_["identity"] = id_map.get(p.get("identity") or m.get("default_identity") or next(iter(src_ids)))
             if np_.get("extends") and np_["extends"] in (m.get("presets") or {}) and np_["extends"] != pid:
                 np_["extends"] = np_["extends"] if np_["extends"] in out["presets"] else f"{prefix}-{np_['extends']}"
@@ -175,13 +179,23 @@ def extract_presets(src: Path, dst: Path, pids: list[str], tags: list[str] | Non
     for pid in pids:
         p = json.loads(json.dumps(m["presets"][pid]))
         slots = resolve_preset_slots(m, pid)
+        alts = preset_alternatives(m, pid)
         if p.get("extends") in sel:          # parent kept: keep inheritance as is
             own = p.get("slots") or {}
-        else:                                 # parent dropped: flatten
+        else:                                 # parent dropped: flatten (slots, alternatives, primary image)
             own = slots; p.pop("extends", None)
+            if alts:
+                p["alternatives"] = alts
+            q, seen = pid, set()               # an explicit primary image inherited from a dropped parent is copied
+            while q in (m.get("presets") or {}) and q not in seen and not p.get("primary_image"):
+                seen.add(q)
+                p["primary_image"] = m["presets"][q].get("primary_image")
+                q = m["presets"][q].get("extends")
+            if not p.get("primary_image"):
+                p.pop("primary_image", None)
         p["slots"] = own
         out_presets[pid] = p
-        for cat, vids in slots.items():
+        for cat, vids in [*slots.items(), *alts.items()]:
             for vid in vids:
                 cur = vid
                 while cur and (cat, cur) not in keep_v:

@@ -22,15 +22,19 @@
     "other":       { "fr": "autre", "regions": [], "layer": "outer", "stackable": true }
   },
   "accessories": {
-    "note": "Deux accessoires d'un même preset sont en conflit s'ils partagent une région, sauf si stackable.",
+    "note": "Deux accessoires PORTÉS (accessory_use = worn) appliqués par un même preset (slots) sont en conflit s'ils partagent une région, sauf si stackable. Les accessoires proposés (alternatives) et les natures not-worn / companion / other n'ont pas de région.",
+    "uses": {
+      "worn":      { "fr": "porté ou portable", "en": "worn or carried", "typed": true },
+      "not-worn":  { "fr": "non porté", "en": "not worn" },
+      "companion": { "fr": "compagnon", "en": "companion" },
+      "other":     { "fr": "autre", "en": "other" }
+    },
     "types": {
       "glasses": { "fr": "lunettes", "region": "face" }, "mask": { "fr": "masque", "region": "face" },
       "earrings": { "fr": "boucles d'oreilles", "region": "ears" }, "necklace": { "fr": "collier", "region": "neck", "stackable": true },
       "bracelet": { "fr": "bracelet, montre", "region": "wrists", "stackable": true }, "ring": { "fr": "bague", "region": "fingers", "stackable": true },
       "bag": { "fr": "sac, cartable", "region": "back-or-hand", "stackable": true }, "weapon": { "fr": "arme", "region": "held" },
       "tool": { "fr": "outil, instrument", "region": "held" }, "headpiece": { "fr": "diadème, bandeau, couronne", "region": "head" },
-      "companion": { "fr": "compagnon (drone, robot, animal)", "region": "none", "stackable": true },
-      "vehicle": { "fr": "véhicule (moto, voiture, monture)", "region": "none", "stackable": true },
       "other": { "fr": "autre", "region": "none", "stackable": true }
     }
   }
