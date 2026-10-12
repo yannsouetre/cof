@@ -1,5 +1,5 @@
 # COF — Character Open File
-## Spécification v0.5 (brouillon de travail, 10 octobre 2026)
+## Spécification 1.0 (version candidate, 12 octobre 2026 — structure gelée le 14 octobre, publication le 17 octobre)
 
 > Traduction française. Le texte normatif est la version anglaise : [SPEC.md](SPEC.md).
 
@@ -7,6 +7,8 @@
 > **Licence** : spécification CC-BY-4.0 ; implémentation de référence MIT ; vocabulaires et schémas CC0.
 > **Auteur** : Yann Souetre.
 > **Nom** : *COF — Character Open File*, extension `.cof`, type MIME `application/vnd.cof.character+zip`.
+> **1.0** : première version stable. La structure est gelée ; les versions 1.x n'ajoutent que des champs facultatifs, et tout lecteur 1.0 continue de fonctionner avec eux. Les JSON Schemas sont publiés à `https://yannsouetre.github.io/cof/schemas/1.0/` ; un corpus de non-conformité est fourni dans `tests/invalid/`.
+>
 > **v0.5** : **l'âge quitte l'identité** et devient une propriété de la **représentation** (déclinaisons morphologiques, plancher par preset) ; règles de protection **par preset** : aucun `intimate` (lui-même ≥ 18 obligatoire) combinable avec un élément de moins de 18 ans — un même fichier peut donc contenir un preset adulte avec intime et un preset mineur sans ; contrôle IA « age-legality ».
 > **v0.4** : éléments organisés en **7 catégories par nature de média**, chaque déclinaison déclarant son **type** (`kind`) ; presets à **emplacements multiples** avec règles de cumul par **région du corps** (vêtements, accessoires, pilosité, particularités, LoRA) ; **identités multiples** dans un fichier avec presets rattachés ; langues portées par les déclinaisons ; fusion et extraction de presets ; vidéos de mouvement plafonnées.
 > v0.3 : architecture modulaire, poids d'identité, maillages, styles, dérivés optionnels, cohérence, priorités.
@@ -91,7 +93,7 @@ Aucune contrainte sur la nature du personnage. `morphology.class` ∈ `humanoid 
 - Binaires haute entropie stockés sans compression (`store`), JSON/texte en `deflate`.
 - Alignement 64 octets optionnel (`container.aligned`), chiffrement interdit.
 
-### 1.2 Arborescence normative (v0.5)
+### 1.2 Arborescence normative (1.0)
 
 ```
 mimetype
@@ -127,7 +129,7 @@ Champs **obligatoires** de l'identité : `name`, `fictional`, `morphology` (`cla
 **Plusieurs identités** **[NOUVEAU]** : un fichier peut décrire un casting. `identities: { "<id>": { name, nickname, summary, fictional, morphology, consent } }` + `default_identity`. Chaque preset se rattache à une identité (`presets.<p>.identity`, défaut = `default_identity`) ; une déclinaison peut se réserver à une identité (`identity`), sinon elle est partageable. Le **consentement est par identité** (une personne réelle = une identité). Pour que les lecteurs simples restent simples, la **racine porte une copie** des champs de l'identité par défaut (`name`, `fictional`, `morphology`, …) — le validateur vérifie l'égalité. La fusion de fichiers (§ 11.3) considère que deux identités sont la même si `name` et `nickname` sont identiques.
 
 ```jsonc
-{ "cof": "0.5", "id": "01J9…", "name": "Léa Marchand", "nickname": "Léa", "fictional": true,   // pas d'âge ici : l'âge est porté par les déclinaisons
+{ "cof": "1.0", "id": "01J9…", "name": "Léa Marchand", "nickname": "Léa", "fictional": true,   // pas d'âge ici : l'âge est porté par les déclinaisons
   "morphology": { "class": "human", "species": "human" }, "summary": "…", "languages": ["fr", "en"],   // calculé
   "identities": { "lea": { "name": "Léa Marchand", "nickname": "Léa", "fictional": true, "morphology": {…} },
                   "marc": { "name": "Marc", "fictional": true, "morphology": {…} } },
@@ -419,8 +421,8 @@ Semver ; RFC publiques (14 jours) ; vocabulaires versionnés séparément (CC0) 
 
 ---
 
-## Annexe A — Migration v0.2 / v0.3 / v0.4 → v0.5
-`cof migrate` enchaîne v0.2 → v0.3 → v0.4 → v0.5. **v0.4 → v0.5** : l'âge d'identité est recopié sur les déclinaisons morphologiques qui n'en ont pas (déclinaison réservée → âge de son identité, sinon identité par défaut) et en `age_override` des presets qui n'en ont pas ; une `intimate` < 18 n'est pas corrigée (le fichier devient invalide, à dessein). v0.3 → v0.4 : types v0.3 (`face`, `hair`, `outfit`, `avatar`, `attitude`…) → catégories + `kind` (`appearance/face`, `appearance/hair`, `appearance/clothing` (`garment: full-outfit`), `volume3d/mesh`, `posture/attitude`…), emplacements de presets → listes, `humanoid` + espèce humaine → `human`.
+## Annexe A — Migration v0.2 … v0.5 → 1.0
+`cof migrate` enchaîne v0.2 → v0.3 → v0.4 → v0.5 → 1.0. **v0.5 → 1.0** : seul le numéro change (`cof: "1.0"`) ; les `preset_groups` (builder 0.8.0) deviennent des `preset_tags`. Un lecteur 1.0 accepte tout fichier `1.x` : les versions mineures suivantes n'ajoutent que des champs facultatifs, qui sont conservés. **v0.4 → v0.5** : l'âge d'identité est recopié sur les déclinaisons morphologiques qui n'en ont pas (déclinaison réservée → âge de son identité, sinon identité par défaut) et en `age_override` des presets qui n'en ont pas ; une `intimate` < 18 n'est pas corrigée (le fichier devient invalide, à dessein). v0.3 → v0.4 : types v0.3 (`face`, `hair`, `outfit`, `avatar`, `attitude`…) → catégories + `kind` (`appearance/face`, `appearance/hair`, `appearance/clothing` (`garment: full-outfit`), `volume3d/mesh`, `posture/attitude`…), emplacements de presets → listes, `humanoid` + espèce humaine → `human`.
 
 ## Annexe B — Exemple minimal valide (COF-Core)
 ```

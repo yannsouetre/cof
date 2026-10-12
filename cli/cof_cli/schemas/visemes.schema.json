@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://cof.dev/schemas/0.5/visemes.schema.json",
+  "$id": "https://yannsouetre.github.io/cof/schemas/1.0/visemes.schema.json",
   "title": "elements/motion/<v>/visemes.json — viseme vocabulary of the clips",
   "type": "object",
   "additionalProperties": true,

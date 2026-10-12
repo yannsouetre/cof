@@ -57,7 +57,7 @@ def test_minor_with_sexual_permission_is_rejected(workdir):
     (workdir / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report()
     validate_dir(workdir, rep)
-    assert not rep.ok and any("allowSexualUsage effectif" in e for e in rep.errors), rep.errors
+    assert not rep.ok and any("effective allowSexualUsage" in e for e in rep.errors), rep.errors
 
 
 def test_real_person_needs_consent(workdir):
@@ -74,7 +74,7 @@ def test_undeclared_script_is_rejected(workdir):
     (workdir / "extensions" / "evil.js").write_text("alert(1)")
     rep = Report()
     validate_dir(workdir, rep)
-    assert any("exécutable" in e for e in rep.errors)
+    assert any("executable" in e for e in rep.errors)
 
 
 def test_zip_slip_rejected(tmp_path):
@@ -130,7 +130,7 @@ def test_preset_level_age_rules(tmp_path):
     m["presets"]["young"]["slots"]["appearance"] = ["i1"]
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep)
-    assert any("presets.young" in e and "intime" in e for e in rep.errors), rep.errors
+    assert any("presets.young" in e and "intimate variant" in e for e in rep.errors), rep.errors
     # file-level allowSexualUsage true while a minor preset exists → refused for that preset
     m["presets"]["young"]["slots"]["appearance"] = []
     m["rights"]["permissions"]["allowSexualUsage"] = True
@@ -142,11 +142,11 @@ def test_preset_level_age_rules(tmp_path):
     V["i1"]["age"] = {"value": 17}
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep)
-    assert any("(intimate) : âge 17" in e for e in rep.errors), rep.errors
+    assert any("(intimate): age 17" in e for e in rep.errors), rep.errors
     del V["i1"]["age"]
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep)
-    assert any("(intimate) : âge obligatoire" in e for e in rep.errors), rep.errors
+    assert any("(intimate): age required" in e for e in rep.errors), rep.errors
 
 
 def test_unknown_slot_variant_is_error(tmp_path):
@@ -155,7 +155,7 @@ def test_unknown_slot_variant_is_error(tmp_path):
     m["presets"]["default"]["slots"]["appearance"] = ["f9"]
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep)
-    assert any("déclinaison inconnue" in e for e in rep.errors)
+    assert any("unknown variant" in e for e in rep.errors)
 
 
 def test_weights_need_base_model(tmp_path):
@@ -174,7 +174,7 @@ def test_derived_cannot_be_listed_as_image(tmp_path):
     m["elements"]["appearance"]["variants"]["f1"]["images"].append(der)
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep)
-    assert any("dérivé" in e for e in rep.errors)
+    assert any("is a derived asset" in e for e in rep.errors)
 
 
 def test_region_rules_and_single_kind(tmp_path):
@@ -188,9 +188,9 @@ def test_region_rules_and_single_kind(tmp_path):
     m["presets"]["default"]["slots"]["appearance"] = ["f1", "f2", "b1", "o1", "o2", "o3"]
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep)
-    assert any("deux déclinaisons de type 'face'" in e for e in rep.errors)
-    assert any("se recouvrent" in w for w in rep.warnings)
-    assert not any("'o3'" in w and "se recouvrent" in w for w in rep.warnings)
+    assert any("two variants of kind 'face'" in e for e in rep.errors)
+    assert any("overlap" in w for w in rep.warnings)
+    assert not any("'o3'" in w and "overlap" in w for w in rep.warnings)
 
 
 def test_merge_and_extract(tmp_path):
@@ -223,7 +223,7 @@ def test_libraries_and_attitude_in_motion(tmp_path):
     m["presets"]["default"]["defaults"] = {"motion": "mo1"}
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep)
-    assert not any("deux déclinaisons" in e for e in rep.errors), rep.errors
+    assert not any("two variants" in e for e in rep.errors), rep.errors
     assert rep.ok, rep.errors
     assert rep.info["completeness"]["layers"]["motion"] >= 30
 
@@ -246,14 +246,14 @@ def test_age_on_representation(tmp_path):
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep)
     assert lowest_age(m) == 14 and preset_age(m, "default") == 14
-    assert any("f-noage (face) doit déclarer un âge" in e for e in rep.errors), rep.errors
+    assert any("f-noage (face) must declare an age" in e for e in rep.errors), rep.errors
     # a mechanical morphology does not need ages on faces
     m["morphology"] = {"class": "mechanical", "species": "robot"}
     for i in m.get("identities", {}).values():
         i["morphology"] = m["morphology"]
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep)
-    assert not any("doit déclarer un âge" in e for e in rep.errors), rep.errors
+    assert not any("must declare an age" in e for e in rep.errors), rep.errors
 
 
 def test_subfile_schemas(tmp_path):
@@ -301,7 +301,7 @@ def test_example_mixed_refuses_intimate_in_minor_preset(tmp_path):
     m["presets"]["young"]["slots"]["appearance"].append("i1")
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep)
-    assert any("presets.young" in e and "intime" in e for e in rep.errors), rep.errors
+    assert any("presets.young" in e and "intimate variant" in e for e in rep.errors), rep.errors
 
 
 def test_preset_tags_and_extract_tag(tmp_path):
@@ -326,7 +326,7 @@ def test_preset_tags_and_extract_tag(tmp_path):
     mm["preset_tags"][0]["presets"].append("nope")
     (d / "manifest.json").write_text(json.dumps(mm), "utf-8")
     rep = Report(); validate_dir(d, rep)
-    assert any("preset inconnu 'nope'" in e for e in rep.errors), rep.errors
+    assert any("unknown preset 'nope'" in e for e in rep.errors), rep.errors
 
 
 def test_legacy_preset_groups_migrate_to_tags(tmp_path):
@@ -350,7 +350,7 @@ def test_enum_errors_list_every_value(tmp_path):
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep, recompute=False)
     msg = next(e for e in rep.errors if "'description'" in e)
-    assert "skill-file" in msg and "voice-sample" in msg and "file" in msg.split("valeurs :")[1]
+    assert "skill-file" in msg and "voice-sample" in msg and "file" in msg.split("allowed values:")[1]
 
 
 def test_pack_recomputes_after_new_assets(tmp_path):
@@ -396,7 +396,7 @@ def test_environment_variants_and_self_contained_3d(tmp_path):
         mm["elements"]["volume3d"] = {"variants": {"m1": {"kind": "environment", "path": f"elements/volume3d/m1/{name}"}}}
         refresh_asset_index(d, mm); (d / "manifest.json").write_text(json.dumps(mm), "utf-8")
         rep = Report(); validate_dir(d, rep, recompute=False)
-        assert any("autonome" in e or "externes" in e for e in rep.errors) != ok, (name, rep.errors)
+        assert any("not self-contained" in e or "external resources" in e for e in rep.errors) != ok, (name, rep.errors)
         (d / "elements/volume3d/m1" / name).unlink()
 
 
@@ -420,7 +420,7 @@ def test_escape_hatches_and_thumbnail_source(tmp_path):
     r = subprocess.run([sys.executable, "-c", "import sys; from cof_cli.cli import main; sys.exit(main())", "pack", str(d), "-o", str(out)], capture_output=True, text=True)
     assert r.returncode == 0, r.stdout + r.stderr
     rep = validate_cof(out); assert rep.ok, rep.errors
-    assert any("non autonome" in w for w in rep.warnings) and any("sans sha256" in w for w in rep.warnings)
+    assert any("not self-contained" in w for w in rep.warnings) and any("without sha256" in w for w in rep.warnings)
     pm = json.loads(zipfile.ZipFile(out).read("manifest.json"))
     assert next(a for a in pm["assets"] if a["id"] == "thumbnail")["source"] == sheet["id"]
 
@@ -447,11 +447,11 @@ def test_voice_engines_daz_and_pickles(tmp_path):
     m["presets"]["default"]["slots"]["volume3d"] = ["z1"]
     refresh_asset_index(d, m); (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep, recompute=False)
-    assert any("z1" in e and "âge" in e for e in rep.errors), rep.errors
+    assert any("z1" in e and "must declare an age" in e for e in rep.errors), rep.errors
     m["elements"]["volume3d"]["variants"]["z1"]["age"] = {"value": 29, "unit": "years", "basis": "canonical"}
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep, recompute=False); assert rep.ok, rep.errors
-    assert any("licence Daz" in w for w in rep.warnings)
+    assert any("Daz licence" in w for w in rep.warnings)
     # pickles: refused even with executable content declared; a raw .bin is fine; object .npy refused
     m["container"]["executableContent"] = "scripts"; (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     (d / "elements/voice/v6/engines/se.pth").write_bytes(b"\x80\x02}q\x00.")
@@ -479,3 +479,37 @@ def test_daz_archive_and_voice_embedding_kind(tmp_path):
     refresh_asset_index(d, m); (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep, recompute=False); assert rep.ok, rep.errors
     assert any("fix.dsa" in w for w in rep.warnings)
+
+
+def test_version_gate_1_0(tmp_path):
+    """1.0 is the format; 0.5 must be migrated; a newer 1.x minor is read with a warning."""
+    from cof_cli.migrate import migrate_any
+    d = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/01-lea-text-only", d)
+    m = json.loads((d / "manifest.json").read_text("utf-8")); assert m["cof"] == "1.0"
+    m["cof"] = "0.5"; (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep, recompute=False); assert not rep.ok and any("cof migrate" in e for e in rep.errors)
+    assert migrate_any(d)["cof"] == "1.0"
+    rep = Report(); validate_dir(d, rep, recompute=False); assert rep.ok, rep.errors
+    m = json.loads((d / "manifest.json").read_text("utf-8")); m["cof"] = "1.7"; (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep, recompute=False); assert rep.ok and any("newer" in w for w in rep.warnings)
+
+
+def test_published_schemas_match_spec():
+    """schemas/1.0 (served by GitHub Pages at the $id URLs) and the CLI copies equal spec/schemas."""
+    for f in (ROOT / "spec/schemas").glob("*.json"):
+        assert (ROOT / "schemas/1.0" / f.name).read_bytes() == f.read_bytes(), f.name
+        assert (ROOT / "cli/cof_cli/schemas" / f.name).read_bytes() == f.read_bytes(), f.name
+        sid = json.loads(f.read_text("utf-8")).get("$id")
+        assert sid is None or sid == f"https://yannsouetre.github.io/cof/schemas/1.0/{f.name}"
+
+
+def test_negative_corpus():
+    """tests/invalid: the base is valid, every case is rejected with the expected error."""
+    corpus = ROOT / "tests/invalid"
+    assert validate_cof(corpus / "_base.cof").ok
+    cases = json.loads((corpus / "cases.json").read_text("utf-8"))["cases"]
+    assert len(cases) >= 20
+    for c in cases:
+        rep = validate_cof(corpus / c["file"])
+        assert not rep.ok, c["file"]
+        assert any(c["expect"].lower() in e.lower() for e in rep.errors), (c["file"], rep.errors)

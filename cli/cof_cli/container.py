@@ -71,9 +71,9 @@ def sha256_file(path: Path) -> str:
 
 def check_path(rel: str) -> None:
     if not SAFE_PATH.match(rel):
-        raise ContainerError(f"chemin non conforme (ASCII, sans '..', sans '/' initial) : {rel!r}")
+        raise ContainerError(f"non-conformant path (ASCII, no '..', no leading '/'): {rel!r}")
     if rel in ("mimetype",):
-        raise ContainerError("'mimetype' est réservé au packer")
+        raise ContainerError("'mimetype' is reserved for the packer")
 
 
 def iter_source_files(src: Path):
@@ -82,7 +82,7 @@ def iter_source_files(src: Path):
         for name in sorted(files):
             p = Path(root) / name
             if p.is_symlink():
-                raise ContainerError(f"lien symbolique interdit : {p}")
+                raise ContainerError(f"symbolic link forbidden: {p}")
             rel = p.relative_to(src).as_posix()
             if rel == "mimetype":
                 continue
@@ -99,9 +99,9 @@ def refresh_asset_index(src: Path, manifest: dict, strict: bool = True) -> list[
         p = src / rel
         if not p.is_file():
             if a.get("uri"):
-                notes.append(f"asset externe sans copie locale : {rel}")
+                notes.append(f"external asset without local copy: {rel}")
                 continue
-            msg = f"asset déclaré mais absent : {rel}"
+            msg = f"asset declared but missing: {rel}"
             if strict:
                 raise ContainerError(msg)
             notes.append(msg)
@@ -115,7 +115,7 @@ def pack(src: str | os.PathLike, dest: str | os.PathLike, *, refresh: bool = Tru
     src, dest = Path(src), Path(dest)
     mpath = src / "manifest.json"
     if not mpath.is_file():
-        raise ContainerError("manifest.json introuvable à la racine du dossier")
+        raise ContainerError("manifest.json not found at the root of the folder")
     manifest = json.loads(mpath.read_text("utf-8"))
     if refresh:
         refresh_asset_index(src, manifest)
@@ -146,14 +146,14 @@ def read_manifest(cof: str | os.PathLike) -> dict:
     with zipfile.ZipFile(cof) as z:
         names = z.namelist()
         if not names or names[0] != "mimetype":
-            raise ContainerError("la première entrée doit être 'mimetype'")
+            raise ContainerError("the first entry must be 'mimetype'")
         info = z.getinfo("mimetype")
         if info.compress_type != zipfile.ZIP_STORED:
-            raise ContainerError("'mimetype' doit être stocké sans compression")
+            raise ContainerError("'mimetype' must be stored uncompressed")
         if z.read("mimetype").decode("ascii", "replace").strip() != MIMETYPE:
-            raise ContainerError("contenu de 'mimetype' inattendu")
+            raise ContainerError("unexpected 'mimetype' content")
         if "manifest.json" not in names:
-            raise ContainerError("manifest.json absent")
+            raise ContainerError("manifest.json missing")
         return json.loads(z.read("manifest.json").decode("utf-8"))
 
 
@@ -164,29 +164,29 @@ def inspect(cof: str | os.PathLike) -> dict:
         infos = z.infolist()
         names = [i.filename for i in infos]
         if not names or names[0] != "mimetype":
-            errors.append("première entrée ≠ 'mimetype'")
+            errors.append("first entry ≠ 'mimetype'")
         elif infos[0].compress_type != zipfile.ZIP_STORED:
-            errors.append("'mimetype' compressé")
+            errors.append("'mimetype' compressed")
         if len(names) > 1 and names[1] != "manifest.json":
-            warnings.append("manifest.json n'est pas la deuxième entrée (lecture partielle plus lente)")
+            warnings.append("manifest.json is not the second entry (slower partial reads)")
         total_u = total_c = 0
         for i in infos:
             n = i.filename
             if n != "mimetype" and not SAFE_PATH.match(n):
-                errors.append(f"chemin non conforme : {n}")
+                errors.append(f"non-conformant path: {n}")
             if n.endswith("/"):
-                warnings.append(f"entrée de répertoire inutile : {n}")
+                warnings.append(f"unnecessary directory entry: {n}")
             if i.flag_bits & 0x1:
-                errors.append(f"entrée chiffrée interdite : {n}")
+                errors.append(f"encrypted entry forbidden: {n}")
             if i.compress_size and i.file_size / max(i.compress_size, 1) > MAX_RATIO:
-                errors.append(f"taux de compression suspect (> {MAX_RATIO}:1) : {n}")
+                errors.append(f"suspicious compression ratio (> {MAX_RATIO}:1): {n}")
             total_u += i.file_size
             total_c += i.compress_size
             ext = Path(n).suffix.lower()
             if ext in STORED_EXT and i.compress_type != zipfile.ZIP_STORED:
-                warnings.append(f"binaire haute entropie compressé (devrait être stocké) : {n}")
+                warnings.append(f"high-entropy binary compressed (should be stored): {n}")
         if total_u > MAX_UNCOMPRESSED:
-            errors.append("taille décompressée > 4 GiB")
+            errors.append("uncompressed size > 4 GiB")
     return {"errors": errors, "warnings": warnings, "entries": len(names), "uncompressed": total_u, "compressed": total_c}
 
 
@@ -199,10 +199,10 @@ def unpack(cof: str | os.PathLike, dest: str | os.PathLike) -> Path:
             if n == "mimetype":
                 continue
             if not SAFE_PATH.match(n):
-                raise ContainerError(f"chemin non conforme : {n}")
+                raise ContainerError(f"non-conformant path: {n}")
             target = (dest / n).resolve()
             if not str(target).startswith(str(dest.resolve())):
-                raise ContainerError(f"zip-slip détecté : {n}")
+                raise ContainerError(f"zip-slip detected: {n}")
             target.parent.mkdir(parents=True, exist_ok=True)
             with z.open(info) as s, open(target, "wb") as d:
                 d.write(s.read())
@@ -220,11 +220,11 @@ def verify_hashes(cof: str | os.PathLike, manifest: dict) -> list[str]:
                 continue
             if rel not in names:
                 if not a.get("uri"):
-                    errs.append(f"asset déclaré absent de l'archive : {rel}")
+                    errs.append(f"declared asset missing from archive: {rel}")
                 continue
             data = z.read(rel)
             if a.get("bytes") is not None and a["bytes"] != len(data):
-                errs.append(f"taille différente : {rel} ({a['bytes']} déclaré, {len(data)} réel)")
+                errs.append(f"size mismatch: {rel} ({a['bytes']} declared, {len(data)} actual)")
             if a.get("sha256") and a["sha256"] != hashlib.sha256(data).hexdigest():
-                errs.append(f"sha256 différent : {rel}")
+                errs.append(f"sha256 mismatch: {rel}")
     return errs

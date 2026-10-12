@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://cof.dev/schemas/0.5/skeleton.schema.json",
+  "$id": "https://yannsouetre.github.io/cof/schemas/1.0/skeleton.schema.json",
   "title": "Skeleton definition (entry of vocabularies/skeletons-1.0.json) and mapping table to the COF canonical skeleton",
   "type": "object",
   "additionalProperties": true,

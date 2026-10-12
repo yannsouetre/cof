@@ -59,7 +59,13 @@ The builder runs coherence heuristics; you do not have it, so check by looking (
 - **Provenance**: AI media carry `digitalSourceType: trainedAlgorithmicMedia`. **Secrets**: no keys or personal data in skills, memories, documents.
 - **Escape hatches are explicit**: a 3D file without textures needs `self_contained: false`; weights by link are an asset with `uri` (add `sha256` to pin a version) — embedding is the default.
 
-## 5. Before you hand the file back
+## 5. Security sweep — before packing anything you did not write yourself
+- List every file you are about to pack and look **inside nested archives** (`unzip -l`): no scripts or executables (`.py .sh .js .bat .ps1 .exe .dll .dsa .dse` …) unless the user asked for them and `container.executableContent` declares them; no pickles (`.pt .pth .ckpt .pkl`, pickled `.bin`) ever.
+- Prefer `.zip` to `.rar` (a RAR cannot be inspected by the validator).
+- If a malware scanner is available (e.g. ClamAV: `clamscan -r work/`), run it and report the result; if none is, say so — never claim a file is clean without having scanned it.
+- No secrets: API keys, tokens, passwords or personal data have no place in skills, memories or documents.
+
+## 6. Before you hand the file back
 1. `cof validate` on the packed `.cof` says **OK** (warnings explained to the user, not hidden).
 2. Re-open the manifest: every preset's resolved ages, voices and languages are what the user asked for.
 3. Report what changed, the completeness per preset, and anything you could not do.

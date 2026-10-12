@@ -1,0 +1,254 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yannsouetre.github.io/cof/schemas/1.0/voice-profile.schema.json",
+  "title": "elements/voice/<v>/profile.json — canonical voice profile, samples, engine artifacts",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "canonical": {
+      "type": "object",
+      "properties": {
+        "gender_presentation": {
+          "enum": [
+            "",
+            "feminine",
+            "masculine",
+            "androgynous",
+            "neutral",
+            "nonhuman"
+          ]
+        },
+        "age_perceived": {
+          "type": "string",
+          "description": "'30s', 'child', 'elderly'… — perception, not identity"
+        },
+        "accent": {
+          "type": "string"
+        },
+        "pitch": {
+          "type": "object",
+          "properties": {
+            "range": {
+              "enum": [
+                "",
+                "very-low",
+                "low",
+                "medium",
+                "high",
+                "very-high"
+              ]
+            },
+            "f0_median_hz": {
+              "type": "number",
+              "minimum": 40,
+              "maximum": 1200
+            }
+          }
+        },
+        "rate": {
+          "enum": [
+            "",
+            "slow",
+            "slow-medium",
+            "medium",
+            "medium-fast",
+            "fast"
+          ]
+        },
+        "loudness": {
+          "enum": [
+            "",
+            "soft",
+            "medium",
+            "loud"
+          ]
+        },
+        "timbre": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "expressivity": {
+          "enum": [
+            "",
+            "flat",
+            "moderate",
+            "expressive",
+            "theatrical"
+          ]
+        },
+        "vpa": {
+          "type": "object",
+          "description": "Vocal Profile Analysis (Laver) — ordinal values 0–6 per parameter",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 6
+          }
+        }
+      }
+    },
+    "speech_style": {
+      "type": "object",
+      "properties": {
+        "register": {
+          "type": "string"
+        },
+        "fillers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "laugh": {
+          "type": "string"
+        },
+        "pauses": {
+          "type": "string"
+        }
+      }
+    },
+    "emotion_range": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "EmotionML categories covered by the samples"
+    },
+    "samples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "path"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9.-]{0,63}$"
+          },
+          "path": {
+            "type": "string",
+            "pattern": "^(?!/)(?!.*\\.\\.)[A-Za-z0-9._/-]+$"
+          },
+          "duration_s": {
+            "type": "number",
+            "minimum": 0
+          },
+          "transcript": {
+            "type": "string",
+            "pattern": "^(?!/)(?!.*\\.\\.)[A-Za-z0-9._/-]+$"
+          },
+          "emotion": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
+          },
+          "canonical_slot": {
+            "enum": [
+              "8s",
+              "30s",
+              "2min",
+              "other"
+            ]
+          }
+        }
+      }
+    },
+    "engines": {
+      "type": "array",
+      "description": "engine artifacts: speaker embeddings, fine-tuned voice weights, indexes or cloud voice ids, each tied to the exact engine and model that can read it",
+      "items": {
+        "type": "object",
+        "required": [
+          "engine",
+          "version"
+        ],
+        "properties": {
+          "engine": {
+            "type": "string",
+            "description": "engine family: xtts, openvoice, cosyvoice, f5-tts, fish-speech, chatterbox, kokoro, gpt-sovits, rvc, so-vits-svc, piper, elevenlabs, typecast, other…"
+          },
+          "version": {
+            "type": "string",
+            "description": "engine / model version that produced the artifact (e.g. 2.0.3, v2)"
+          },
+          "artifact": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9.-]{0,63}$"
+          },
+          "voice_id": {
+            "type": "string"
+          },
+          "expires": {
+            "type": "string",
+            "format": "date"
+          },
+          "model": {
+            "type": "string",
+            "description": "exact model or checkpoint: Hugging Face repo id, file name or vendor model id (e.g. coqui/XTTS-v2, eleven_v3)"
+          },
+          "model_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "kind": {
+            "enum": [
+              "speaker-embedding",
+              "fine-tuned-weights",
+              "index",
+              "cloud-voice-id",
+              "other"
+            ]
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "asset ids (role engine-artifact): .safetensors, .npz/.npy (numeric), .json, .onnx, .index — never pickles (.pt/.pth/.ckpt/.pkl)"
+          },
+          "sample_rate": {
+            "type": "integer"
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "prompt_renderings": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "per-engine text renderings: parler-tts, elevenlabs-description, generic"
+    },
+    "ssml_template": {
+      "type": "string"
+    },
+    "fingerprint": {
+      "type": "object",
+      "properties": {
+        "model": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!/)(?!.*\\.\\.)[A-Za-z0-9._/-]+$"
+        },
+        "usage": {
+          "const": "verification-only"
+        }
+      }
+    },
+    "consent_asset": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9.-]{0,63}$"
+    }
+  }
+}

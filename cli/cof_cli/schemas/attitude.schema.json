@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://cof.dev/schemas/0.5/attitude.schema.json",
+  "$id": "https://yannsouetre.github.io/cof/schemas/1.0/attitude.schema.json",
   "title": "elements/{posture|motion}/<v>/attitude.json — motion signature (LMA Effort), tempo, postures, gestures",
   "type": "object",
   "additionalProperties": true,

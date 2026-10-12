@@ -43,7 +43,7 @@ def compute_preset(manifest: dict, pid: str | None, src: Path | None = None) -> 
         s += 10 * bool(p.get("story") or p.get("lorebook") or d.get("character_book"))
     elif p and p.get("kind") == "description":
         n = len(p.get("text") or "")
-        s += 35 + 15 * (n >= 400) + 10 * (n >= 1500)        # une fiche libre riche est utilisable en chat (≥ 50)
+        s += 35 + 15 * (n >= 400) + 10 * (n >= 1500)        # a rich free-text sheet is usable for chat (≥ 50)
     s += 15 * bool(p and p.get("psyche"))
     L["personality"] = min(100, s)
 
@@ -68,7 +68,7 @@ def compute_preset(manifest: dict, pid: str | None, src: Path | None = None) -> 
     v = first(r, "voice"); samples = [A[i] for i in (v or {}).get("samples", []) if i in A]
     s = 0
     if samples:
-        s += 30 + 10 * all(a.get("transcript") for a in samples)   # transcription facultative : bonus
+        s += 30 + 10 * all(a.get("transcript") for a in samples)   # transcript optional: bonus
         d = sorted(a.get("duration_s", 0) for a in samples)
         s += 10 * (d[0] <= 12 and d[-1] >= 25)
     s += 25 * bool(v and (v.get("profile") or v.get("kind") == "described")) + 20 * bool(v and v.get("vec")) + 5 * bool(v and v.get("engines"))
@@ -82,7 +82,7 @@ def compute_preset(manifest: dict, pid: str | None, src: Path | None = None) -> 
     clips = [A[i] for v in mo for i in (v.get("clips") or []) if i in A]
     vids = [A[i] for v in mo for i in (v.get("videos") or []) if i in A]
     s = 60 * bool(clips or vids) + 25 * any(v.get("visemes") for v in mo) + 15 * (bool(clips) and all(a.get("rig") for a in clips))
-    s += 30 * any(v.get("kind") == "attitude" for v in mo)   # signature de mouvement (attitude.json) admise ici
+    s += 30 * any(v.get("kind") == "attitude" for v in mo)   # movement signature (attitude.json) allowed here
     L["motion"] = min(100, s)
 
     rg = m.get("rights", {}) or {}
@@ -100,7 +100,7 @@ def compute_preset(manifest: dict, pid: str | None, src: Path | None = None) -> 
     if L["personality"] >= 50:
         t += ["chat-text", "agent-persona"]
     if any(v.get("kind") in ("skill", "memory") for v in r.get("files", [])):
-        t.append("agent-runtime")       # skills / mémoires embarqués : prêt pour un agent (SOUL.md + skills/ + MEMORY.md)
+        t.append("agent-runtime")       # embedded skills / memories: ready for an agent (SOUL.md + skills/ + MEMORY.md)
     if L["personality"] >= 50 and L["voice"] >= 40:
         t.append("chat-voice")
     if L["appearance"] >= 25:

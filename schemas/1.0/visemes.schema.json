@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yannsouetre.github.io/cof/schemas/1.0/visemes.schema.json",
+  "title": "elements/motion/<v>/visemes.json — viseme vocabulary of the clips",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "vocabulary": {
+      "enum": [
+        "ARKit-52",
+        "Oculus-15",
+        "PrestonBlair-AX",
+        "UnifiedExpressions-1.0",
+        "custom"
+      ]
+    },
+    "mapping": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "if custom: local name → ARKit name"
+    }
+  },
+  "required": [
+    "vocabulary"
+  ]
+}

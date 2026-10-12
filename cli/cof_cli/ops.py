@@ -156,10 +156,10 @@ def extract_tag(src: Path, dst: Path, tids: list[str]) -> dict:
     T = {t.get("id"): t for t in m.get("preset_tags") or []}
     for tid in tids:
         if tid not in T:
-            raise ValueError(f"tag inconnu : {tid}")
+            raise ValueError(f"unknown tag: {tid}")
     pids = [p for p in (m.get("presets") or {}) if all(p in (T[t].get("presets") or []) for t in tids)]
     if not pids:
-        raise ValueError("aucun preset ne porte " + " + ".join(tids))
+        raise ValueError("no preset carries " + " + ".join(tids))
     return extract_presets(src, dst, pids, tags=tids)
 
 
@@ -167,7 +167,7 @@ def extract_presets(src: Path, dst: Path, pids: list[str], tags: list[str] | Non
     m = json.loads((src / "manifest.json").read_text("utf-8"))
     for pid in pids:
         if pid not in (m.get("presets") or {}):
-            raise ValueError(f"preset inconnu : {pid}")
+            raise ValueError(f"unknown preset: {pid}")
     dst.mkdir(parents=True, exist_ok=True)
     sel = set(pids)
     keep_v: set[tuple[str, str]] = set()

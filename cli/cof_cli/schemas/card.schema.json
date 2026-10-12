@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://cof.dev/schemas/0.5/card.schema.json",
+  "$id": "https://yannsouetre.github.io/cof/schemas/1.0/card.schema.json",
   "title": "elements/personality/<v>/card.json — Character Card V3 (checked subset; the rest follows the CCv3 spec)",
   "type": "object",
   "additionalProperties": true,

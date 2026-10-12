@@ -1,5 +1,5 @@
 # COF — Character Open File
-## Specification v0.5 (working draft, October 10, 2026)
+## Specification 1.0 (release candidate, October 12, 2026 — structure frozen October 14, release October 17)
 
 > Normative text. A French translation is available in [SPEC.fr.md](SPEC.fr.md).
 
@@ -7,6 +7,8 @@
 > **License**: specification CC-BY-4.0; reference implementation MIT; vocabularies and schemas CC0.
 > **Author**: Yann Souetre.
 > **Name**: *COF — Character Open File*, extension `.cof`, MIME type `application/vnd.cof.character+zip`.
+> **1.0**: first stable version. The structure is frozen; 1.x versions only add optional fields, and every 1.0 reader keeps working with them. JSON Schemas are published at `https://yannsouetre.github.io/cof/schemas/1.0/`; a negative conformance corpus ships in `tests/invalid/`.
+>
 > **v0.5**: **age leaves the identity** and becomes a property of the **representation** (morphological variants, per-preset floor); protection rules **per preset**: no `intimate` (itself required to be ≥ 18) may be combined with an element under 18 — a single file may therefore contain an adult preset with intimate content and a minor preset without; AI "age-legality" check.
 > **v0.4**: elements organized into **7 categories by media type**, each variant declaring its **type** (`kind`); presets with **multiple slots** and stacking rules by **body region** (clothing, accessories, body/facial hair, special features, LoRA); **multiple identities** in one file with attached presets; languages carried by variants; merging and extraction of presets; capped motion videos.
 > v0.3: modular architecture, identity weights, meshes, styles, optional derived files, coherence, priorities.
@@ -91,7 +93,7 @@ No constraint on the nature of the character. `morphology.class` ∈ `humanoid |
 - High-entropy binaries stored uncompressed (`store`), JSON/text as `deflate`.
 - Optional 64-byte alignment (`container.aligned`); encryption forbidden.
 
-### 1.2 Normative tree (v0.5)
+### 1.2 Normative tree (1.0)
 
 ```
 mimetype
@@ -127,7 +129,7 @@ PNG `chara`+`ccv3` (text + thumbnail), `.charx`, `SOUL.md`/`IDENTITY.md`, `.vrm`
 **Multiple identities** **[NEW]**: a file can describe a cast. `identities: { "<id>": { name, nickname, summary, fictional, morphology, consent } }` + `default_identity`. Each preset is attached to an identity (`presets.<p>.identity`, default = `default_identity`); a variant can be reserved for one identity (`identity`), otherwise it is shareable. **Consent is per identity** (one real person = one identity). To keep simple readers simple, the **root carries a copy** of the default identity's fields (`name`, `fictional`, `morphology`, …) — the validator checks that they are equal. File merging (§ 11.3) treats two identities as the same if `name` and `nickname` are identical.
 
 ```jsonc
-{ "cof": "0.5", "id": "01J9…", "name": "Léa Marchand", "nickname": "Léa", "fictional": true,   // no age here: age is carried by the variants
+{ "cof": "1.0", "id": "01J9…", "name": "Léa Marchand", "nickname": "Léa", "fictional": true,   // no age here: age is carried by the variants
   "morphology": { "class": "human", "species": "human" }, "summary": "…", "languages": ["fr", "en"],   // computed
   "identities": { "lea": { "name": "Léa Marchand", "nickname": "Léa", "fictional": true, "morphology": {…} },
                   "marc": { "name": "Marc", "fictional": true, "morphology": {…} } },
@@ -419,8 +421,8 @@ Semver; public RFCs (14 days); vocabularies versioned separately (CC0); a `1.x` 
 
 ---
 
-## Annex A — Migration v0.2 / v0.3 / v0.4 → v0.5
-`cof migrate` chains v0.2 → v0.3 → v0.4 → v0.5. **v0.4 → v0.5**: the identity age is copied onto the morphological variants that lack one (reserved variant → age of its identity, otherwise of the default identity) and as `age_override` onto the presets that lack one; an `intimate` < 18 is not corrected (the file becomes invalid, by design). v0.3 → v0.4: v0.3 types (`face`, `hair`, `outfit`, `avatar`, `attitude`…) → categories + `kind` (`appearance/face`, `appearance/hair`, `appearance/clothing` (`garment: full-outfit`), `volume3d/mesh`, `posture/attitude`…), preset slots → lists, `humanoid` + human species → `human`.
+## Annex A — Migration v0.2 … v0.5 → 1.0
+`cof migrate` chains v0.2 → v0.3 → v0.4 → v0.5 → 1.0. **v0.5 → 1.0**: the version number only (`cof: "1.0"`); `preset_groups` (builder 0.8.0) become `preset_tags`. Readers of 1.0 accept any `1.x` file: later minor versions only add optional fields, which are preserved. **v0.4 → v0.5**: the identity age is copied onto the morphological variants that lack one (reserved variant → age of its identity, otherwise of the default identity) and as `age_override` onto the presets that lack one; an `intimate` < 18 is not corrected (the file becomes invalid, by design). v0.3 → v0.4: v0.3 types (`face`, `hair`, `outfit`, `avatar`, `attitude`…) → categories + `kind` (`appearance/face`, `appearance/hair`, `appearance/clothing` (`garment: full-outfit`), `volume3d/mesh`, `posture/attitude`…), preset slots → lists, `humanoid` + human species → `human`.
 
 ## Annex B — Minimal valid example (COF-Core)
 ```

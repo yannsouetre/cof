@@ -14,7 +14,7 @@ def _aid(path: str) -> str:
 def migrate_dir(src: Path) -> dict:
     m = json.loads((src / "manifest.json").read_text("utf-8"))
     if not str(m.get("cof", "")).startswith("0.2"):
-        raise ValueError("ce manifeste n'est pas en v0.2")
+        raise ValueError("this manifest is not v0.2")
     sec = m.pop("sections", {}) or {}
     comp = m.pop("completeness", None)
     assets = m.get("assets", [])
@@ -66,19 +66,19 @@ def migrate_dir(src: Path) -> dict:
     for a in body:
         a["path"] = move(a["path"], "elements/body/b1/" + a["path"].rsplit("/", 1)[-1])
     if head or app.get("face"):
-        f = {"label": "Visage", "images": [a["id"] for a in head]}
+        f = {"label": "Face", "images": [a["id"] for a in head]}
         if app.get("face"):
             f["params"] = move(app["face"], "elements/face/f1/face.json")
         elements["face"] = {"variants": {"f1": f}}; slots["face"] = "f1"
     if body or app.get("body"):
-        b = {"label": "Corps", "images": [a["id"] for a in body]}
+        b = {"label": "Body", "images": [a["id"] for a in body]}
         if app.get("body"):
             b["params"] = move(app["body"], "elements/body/b1/body.json")
         elements["body"] = {"variants": {"b1": b}}; slots["body"] = "b1"
     if app.get("hair"):
-        elements["hair"] = {"variants": {"h1": {"label": "Cheveux", "code": move(app["hair"], "elements/hair/h1/hair.json")}}}; slots["hair"] = "h1"
+        elements["hair"] = {"variants": {"h1": {"label": "Hair", "code": move(app["hair"], "elements/hair/h1/hair.json")}}}; slots["hair"] = "h1"
     for i, o in enumerate(app.get("outfits", []) or [], 1):
-        elements.setdefault("outfit", {"variants": {}})["variants"][f"o{i}"] = {"label": f"Tenue {i}", "spec": move(o, f"elements/outfit/o{i}/outfit.json")}
+        elements.setdefault("outfit", {"variants": {}})["variants"][f"o{i}"] = {"label": f"Outfit {i}", "spec": move(o, f"elements/outfit/o{i}/outfit.json")}
         slots.setdefault("outfit", f"o{i}")
 
     # derived_from: path → asset id
@@ -108,7 +108,7 @@ def migrate_dir(src: Path) -> dict:
 
     # voice / attitude / avatar / motion
     if sec.get("voice"):
-        v = {"label": "Voix", "profile": move(sec["voice"], "elements/voice/v1/profile.json"),
+        v = {"label": "Voice", "profile": move(sec["voice"], "elements/voice/v1/profile.json"),
              "samples": [a["id"] for a in assets if a.get("role") == "voice-sample"]}
         if sec.get("voice_vec"):
             v["vec"] = move(sec["voice_vec"], "elements/voice/v1/voice.vec.json")
@@ -141,7 +141,7 @@ def migrate_dir(src: Path) -> dict:
 
     m["cof"] = "0.3"
     m["elements"] = elements
-    m["presets"] = {"default": {"label": "Défaut", "slots": slots}}
+    m["presets"] = {"default": {"label": "Default", "slots": slots}}
     m["default_preset"] = "default"
     m.setdefault("priorities", {"visual": ["identity_weights", "images", "avatar", "descriptive"], "voice": ["samples", "described"]})
     m.pop("injection_order", None)
@@ -169,7 +169,7 @@ V3_TO_V4 = {  # old element type → (category, kind, extra)
 def migrate_v3_to_v4(src: Path) -> dict:
     m = json.loads((src / "manifest.json").read_text("utf-8"))
     if str(m.get("cof", "")) != "0.3":
-        raise ValueError("ce manifeste n'est pas en v0.3")
+        raise ValueError("this manifest is not v0.3")
     old = m.get("elements", {}) or {}
     new: dict = {}
     remap: dict[tuple[str, str], tuple[str, str]] = {}
@@ -238,7 +238,7 @@ def migrate_v4_to_v5(src: Path) -> dict:
     presets without one (floor for text-only presets). Intimate variants under 18 are NOT fixed: validation will fail."""
     m = json.loads((src / "manifest.json").read_text("utf-8"))
     if str(m.get("cof", "")) != "0.4":
-        raise ValueError("ce manifeste n'est pas en v0.4")
+        raise ValueError("this manifest is not v0.4")
     ids = m.get("identities") or {}
     root_age = m.pop("age", None)
     id_ages = {iid: i.pop("age", None) for iid, i in ids.items()}
@@ -269,7 +269,10 @@ def migrate_any(src: Path) -> dict:
     if v == "0.3":
         m = migrate_v3_to_v4(src); v = "0.4"
     if v == "0.4":
-        m = migrate_v4_to_v5(src)
+        m = migrate_v4_to_v5(src); v = "0.5"
+    changed = False
+    if v == "0.5":                                   # 0.5 → 1.0: version number only (structure frozen as is)
+        m["cof"] = "1.0"; changed = True
     if m.get("preset_groups") is not None:          # builder 0.8.0 (short-lived) → preset_tags
         tags = m.setdefault("preset_tags", [])
         known = {t.get("id") for t in tags}
@@ -278,5 +281,7 @@ def migrate_any(src: Path) -> dict:
                 tags.append({"id": g.get("id"), "label": g.get("label") or g.get("id"), "presets": list(g.get("presets") or [])})
         if not tags:
             m.pop("preset_tags")
+        changed = True
+    if changed:
         (src / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
     return m

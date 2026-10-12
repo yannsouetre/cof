@@ -22,22 +22,22 @@ def _print_report(rep: Report, as_json: bool) -> int:
         print(json.dumps(rep.to_dict(), ensure_ascii=False, indent=2))
     else:
         for e in rep.errors:
-            print(f"ERREUR  {e}")
+            print(f"ERROR  {e}")
         for w in rep.warnings:
-            print(f"AVERT.  {w}")
+            print(f"WARN   {w}")
         c = rep.info.get("completeness")
         if c:
-            print(f"complétude : {c['score']}/100 (niveau {c['level']}) — " + ", ".join(f"{k} {v}" for k, v in c["layers"].items()))
-            print("prêt pour  : " + (", ".join(c["targets_ready"]) or "—"))
+            print(f"completeness: {c['score']}/100 (level {c['level']}) — " + ", ".join(f"{k} {v}" for k, v in c["layers"].items()))
+            print("ready for:    " + (", ".join(c["targets_ready"]) or "—"))
         cov = rep.info.get("coverage")
         if cov:
-            print(f"couverture : {', '.join(cov['elements']) or '—'} ({cov['variants']} déclinaison(s), {cov['presets']} preset(s))")
+            print(f"coverage:     {', '.join(cov['elements']) or '—'} ({cov['variants']} variant(s), {cov['presets']} preset(s))")
         if rep.info.get("presets") and len(rep.info["presets"]) > 1:
-            print("presets    : " + ", ".join(f"{k} {v}" for k, v in rep.info["presets"].items()))
+            print("presets:      " + ", ".join(f"{k} {v}" for k, v in rep.info["presets"].items()))
         t = rep.info.get("tokens")
         if t and "permanent" in t:
-            print(f"tokens     : permanent {t['permanent']}" + (f", lore {t['lore']}" if "lore" in t else "") + f" ({t['tokenizer']})")
-        print("OK" if rep.ok else f"NON CONFORME ({len(rep.errors)} erreur(s))")
+            print(f"tokens:       permanent {t['permanent']}" + (f", lore {t['lore']}" if "lore" in t else "") + f" ({t['tokenizer']})")
+        print("OK" if rep.ok else f"NOT CONFORMANT ({len(rep.errors)} error(s))")
     return 0 if rep.ok else 1
 
 
@@ -66,7 +66,7 @@ def cmd_pack(a):
     manifest = validate_dir(src, rep, recompute=True)
     if rep.errors and not a.force:
         _print_report(rep, a.json)
-        print("Dossier non conforme : corrigez ou utilisez --force.", file=sys.stderr)
+        print("Folder not conformant: fix it or use --force.", file=sys.stderr)
         return 1
     if manifest:
         make_thumbnail(src, manifest)
@@ -75,16 +75,16 @@ def cmd_pack(a):
     try:
         pack(src, out)
     except ContainerError as e:
-        print(f"ERREUR  {e}", file=sys.stderr)
+        print(f"ERROR  {e}", file=sys.stderr)
         return 1
-    print(f"écrit : {out} ({out.stat().st_size/1e6:.2f} Mo)")
+    print(f"written: {out} ({out.stat().st_size/1e6:.2f} MB)")
     return 0
 
 
 def cmd_unpack(a):
     out = Path(a.out) if a.out else Path(a.cof).with_suffix("")
     unpack(a.cof, out)
-    print(f"extrait dans : {out}")
+    print(f"extracted to: {out}")
     return 0
 
 
@@ -116,15 +116,15 @@ def cmd_embed_text(a):
     from .convert import write_text_to_png
     png = Path(a.png).read_bytes(); text = Path(a.text).read_text("utf-8")
     out = Path(a.out) if a.out else Path(a.png).with_name(Path(a.png).stem + ".cof.png")
-    out.write_bytes(write_text_to_png(png, text)); print(f"{out} — {len(text)} caractères en iTXt Description")
+    out.write_bytes(write_text_to_png(png, text)); print(f"{out} — {len(text)} characters in iTXt Description")
 
 
 def cmd_read_text(a):
     from .convert import read_text_from_image
     r = read_text_from_image(Path(a.image).read_bytes())
     if not r:
-        print("aucun texte descriptif embarqué"); return 1
-    print(f"[{r['source']}] {len(r['text'])} caractères\n"); print(r["text"])
+        print("no embedded descriptive text"); return 1
+    print(f"[{r['source']}] {len(r['text'])} characters\n"); print(r["text"])
 
 
 def cmd_import(a):
@@ -138,13 +138,13 @@ def cmd_import(a):
         if "spec" not in card:
             card = {"spec": "chara_card_v2", "spec_version": "2.0", "data": card}
     else:
-        print("source attendue : .png (carte) ou .json (carte)", file=sys.stderr)
+        print("expected source: .png (card) or .json (card)", file=sys.stderr)
         return 1
     dest = Path(a.out) if a.out else Path(src.stem)
     card_to_cof_dir(card, dest, png=png if a.keep_png else None, age=a.age, fictional=not a.real, language=a.lang)
     rep = Report()
     validate_dir(dest, rep, recompute=True)
-    print(f"dossier COF créé : {dest}")
+    print(f"COF folder created: {dest}")
     return _print_report(rep, a.json)
 
 
@@ -160,7 +160,7 @@ def cmd_export(a):
         A = asset_index(manifest)
         card_path = (first(r, "personality") or {}).get("card")
         if fmt in ("png", "card") and not card_path:
-            print("ce preset n'a pas de déclinaison de personnalité (card.json)", file=sys.stderr)
+            print("this preset has no personality variant (card.json)", file=sys.stderr)
             return 1
         if fmt == "png":
             card = json.loads((d / card_path).read_text("utf-8"))
@@ -182,9 +182,9 @@ def cmd_export(a):
             out = out or Path(f"{manifest['name']}.card.json")
             out.write_text(json.dumps(card, ensure_ascii=False, indent=2), "utf-8")
         else:
-            print(f"format non géré : {fmt}", file=sys.stderr)
+            print(f"unsupported format: {fmt}", file=sys.stderr)
             return 1
-    print(f"exporté : {out}")
+    print(f"exported: {out}")
     return 0
 
 
@@ -199,7 +199,7 @@ def cmd_merge(a):
     merge_dirs(dirs, Path(a.out))
     rep = Report(); validate_dir(Path(a.out), rep, recompute=True)
     Path(a.out, "manifest.json").write_text(json.dumps(json.loads(Path(a.out, "manifest.json").read_text("utf-8")) | {}, ensure_ascii=False, indent=2) + "\n", "utf-8")
-    print(f"fusionné dans : {a.out}")
+    print(f"merged into: {a.out}")
     return _print_report(rep, a.json)
 
 
@@ -212,7 +212,7 @@ def cmd_extract(a):
         else:
             extract_preset(d, Path(a.out), a.preset)
     rep = Report(); validate_dir(Path(a.out), rep, recompute=True)
-    print(f"{'tags ' + '+'.join(a.tag) if a.tag else 'preset ' + a.preset} extrait dans : {a.out}")
+    print(f"{'tags ' + '+'.join(a.tag) if a.tag else 'preset ' + a.preset} extracted to: {a.out}")
     return _print_report(rep, a.json)
 
 
@@ -221,7 +221,7 @@ def cmd_migrate(a):
     rep = Report()
     validate_dir(Path(a.dir), rep, recompute=True)
     Path(a.dir, "manifest.json").write_text(json.dumps(m | {k: v for k, v in json.loads(Path(a.dir, "manifest.json").read_text("utf-8")).items()}, ensure_ascii=False, indent=2) + "\n", "utf-8")
-    print(f"migré en v{m.get('cof')} : {a.dir}")
+    print(f"migrated to v{m.get('cof')}: {a.dir}")
     return _print_report(rep, a.json)
 
 
@@ -252,24 +252,24 @@ def main(argv=None) -> int:
     ap.add_argument("--version", action="version", version=f"cof-cli {__version__}")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
-    s = sub.add_parser("validate", help="valide un .cof ou un dossier de personnage"); s.add_argument("path"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_validate)
-    s = sub.add_parser("pack", help="dossier → .cof (recalcule hashes et complétude)"); s.add_argument("dir"); s.add_argument("-o", "--out"); s.add_argument("--force", action="store_true"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_pack)
-    s = sub.add_parser("unpack", help=".cof → dossier"); s.add_argument("cof"); s.add_argument("-o", "--out"); s.set_defaults(fn=cmd_unpack)
-    s = sub.add_parser("info", help="résumé d'un .cof"); s.add_argument("cof"); s.set_defaults(fn=cmd_info)
-    s = sub.add_parser("tokens", help="estimation des tokens par bloc"); s.add_argument("path"); s.set_defaults(fn=cmd_tokens)
-    s = sub.add_parser("embed-text", help="écrit un texte (.md/.txt) dans un PNG en iTXt 'Description' — lisible par le builder (personnalité + apparence)"); s.add_argument("png"); s.add_argument("text"); s.add_argument("-o", "--out"); s.set_defaults(fn=cmd_embed_text)
-    s = sub.add_parser("read-text", help="affiche le texte descriptif embarqué dans une image (PNG/JPEG : iTXt, XMP, EXIF)"); s.add_argument("image"); s.set_defaults(fn=cmd_read_text)
-    s = sub.add_parser("import", help="carte PNG/JSON (CCv2/V3) → dossier COF"); s.add_argument("src"); s.add_argument("-o", "--out"); s.add_argument("--age", type=int); s.add_argument("--real", action="store_true", help="personnage basé sur une personne réelle (consentement requis)"); s.add_argument("--lang", default="en"); s.add_argument("--keep-png", action="store_true", help="garde le PNG comme vue head.front"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_import)
-    s = sub.add_parser("export", help="dossier/.cof → png | soul | card (depuis le preset par défaut ou --preset)"); s.add_argument("src"); s.add_argument("--format", choices=["png", "soul", "card"], required=True); s.add_argument("-o", "--out"); s.add_argument("--preset"); s.set_defaults(fn=cmd_export)
-    s = sub.add_parser("migrate", help="dossier v0.2/v0.3/v0.4 → v0.5"); s.add_argument("dir"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_migrate)
-    s = sub.add_parser("merge", help="fusionne plusieurs .cof/dossiers (mêmes nom+surnom ⇒ même identité, sinon identités multiples)"); s.add_argument("sources", nargs="+"); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_merge)
-    s = sub.add_parser("extract", help="extrait un preset, ou les presets portant un ou plusieurs tags (intersection), en dossier COF allégé"); s.add_argument("src"); g = s.add_mutually_exclusive_group(required=True); g.add_argument("--preset"); g.add_argument("--tag", action="append", help="répétable : --tag english --tag age-12"); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_extract)
+    s = sub.add_parser("validate", help="validate a .cof or a character folder"); s.add_argument("path"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_validate)
+    s = sub.add_parser("pack", help="folder → .cof (recomputes hashes and completeness)"); s.add_argument("dir"); s.add_argument("-o", "--out"); s.add_argument("--force", action="store_true"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_pack)
+    s = sub.add_parser("unpack", help=".cof → folder"); s.add_argument("cof"); s.add_argument("-o", "--out"); s.set_defaults(fn=cmd_unpack)
+    s = sub.add_parser("info", help="summary of a .cof"); s.add_argument("cof"); s.set_defaults(fn=cmd_info)
+    s = sub.add_parser("tokens", help="token estimate per block"); s.add_argument("path"); s.set_defaults(fn=cmd_tokens)
+    s = sub.add_parser("embed-text", help="write a text (.md/.txt) into a PNG as iTXt 'Description' — readable by the builder (personality + appearance)"); s.add_argument("png"); s.add_argument("text"); s.add_argument("-o", "--out"); s.set_defaults(fn=cmd_embed_text)
+    s = sub.add_parser("read-text", help="show the descriptive text embedded in an image (PNG/JPEG: iTXt, XMP, EXIF)"); s.add_argument("image"); s.set_defaults(fn=cmd_read_text)
+    s = sub.add_parser("import", help="PNG/JSON card (CCv2/V3) → COF folder"); s.add_argument("src"); s.add_argument("-o", "--out"); s.add_argument("--age", type=int); s.add_argument("--real", action="store_true", help="character based on a real person (consent required)"); s.add_argument("--lang", default="en"); s.add_argument("--keep-png", action="store_true", help="keep the PNG as the head.front view"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_import)
+    s = sub.add_parser("export", help="folder/.cof → png | soul | card (from the default preset or --preset)"); s.add_argument("src"); s.add_argument("--format", choices=["png", "soul", "card"], required=True); s.add_argument("-o", "--out"); s.add_argument("--preset"); s.set_defaults(fn=cmd_export)
+    s = sub.add_parser("migrate", help="folder v0.2 … v0.5 → v1.0"); s.add_argument("dir"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_migrate)
+    s = sub.add_parser("merge", help="merge several .cof files/folders (same name+nickname ⇒ same identity, otherwise multiple identities)"); s.add_argument("sources", nargs="+"); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_merge)
+    s = sub.add_parser("extract", help="extract a preset, or the presets carrying one or more tags (intersection), into a lighter COF folder"); s.add_argument("src"); g = s.add_mutually_exclusive_group(required=True); g.add_argument("--preset"); g.add_argument("--tag", action="append", help="repeatable: --tag english --tag age-12"); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_extract)
 
     a = ap.parse_args(argv)
     try:
         return a.fn(a)
     except (ContainerError, ValueError) as e:
-        print(f"ERREUR  {e}", file=sys.stderr)
+        print(f"ERROR  {e}", file=sys.stderr)
         return 1
 
 

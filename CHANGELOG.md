@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.0rc1 — 2026-10-12 — format 1.0 release candidate
+- **Format 1.0**: `cof: "1.0"`; readers accept any `1.x` (later minors only add optional fields, preserved). `cof migrate` takes v0.2 … v0.5 to 1.0 (0.5 → 1.0 is the number only, plus `preset_groups` → `preset_tags`); the validator refuses 0.x with a pointer to `cof migrate` and warns on a newer minor. All examples migrated. Builder writes 1.0 and reads 0.4 / 0.5 / 1.x.
+- **Schemas published** at `https://yannsouetre.github.io/cof/schemas/1.0/` (the `$id`s, formerly on the unowned `cof.dev`); `schemas/1.0/` mirrors `spec/schemas/` (tested).
+- **Negative conformance corpus** `tests/invalid/`: 22 files, one rule broken each (version, required fields, references, ages, intimate / minor rules, consent, base model, pickles, scripts, self-contained 3D, tags, `illegal` coherence finding, mimetype position / compression / value, path traversal, hash mismatch, missing asset), `cases.json` with rule and spec section, generator `build.py`; checked in CI tests.
+- Found by the corpus: the `illegal` coherence severity was in the spec but not in the schema nor enforced — now both; `validate_cof` reported a path-traversal archive as a crash instead of an error — fixed.
+- **CLI messages in English** (≈ 165 messages, report labels `ERROR` / `WARN`).
+- Daz: `.zip` by default; a `.rar` asks first (not inspectable, may hide scripts). `cof-author` skill: security sweep (scripts, executables, pickles inside archives, optional malware scan, no secrets).
+
 ## 0.8.7 — 2026-10-12 — foldable blocks, safe deletes, voice embedding kind, Daz archives
 - Builder 0.8.7: identities, variants and presets are **foldable** (± button before the title; folded = first line only: title, type, delete); folded by default from two items, unfolded when alone, new items open; *Collapse all / Expand all*.
 - **Delete and remove ask for confirmation**, and say the original `.cof` is unchanged until the next build; removing the last file of a variant warns that it will be empty.

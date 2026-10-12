@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 import tempfile
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -98,33 +99,33 @@ def sub_validator(name: str) -> Draft202012Validator:
 def validate_subfile(obj: dict, schema: str, rep: "Report", where: str) -> None:
     """Validate a sub-file (or inline object) against spec/schemas/<schema>.schema.json. Errors are errors: these files are ours."""
     for e in sorted(sub_validator(schema).iter_errors(obj), key=lambda e: list(e.path)):
-        loc = "/".join(str(p) for p in e.path) or "(racine)"
-        rep.errors.append(f"{where} [{schema}.schema {loc}] : {_schema_msg(e)}")
+        loc = "/".join(str(p) for p in e.path) or "(root)"
+        rep.errors.append(f"{where} [{schema}.schema {loc}]: {_schema_msg(e)}")
 
 
 def _schema_msg(e) -> str:
     """Readable jsonschema message; enum errors always list every allowed value (agents rely on it)."""
     if e.validator == "enum":
-        return f"{e.instance!r} n'est pas une valeur permise — valeurs : {', '.join(map(str, e.validator_value))}"
+        return f"{e.instance!r} is not an allowed value — allowed values: {', '.join(map(str, e.validator_value))}"
     return e.message if len(e.message) <= 300 else e.message[:300] + "…"
 
 
 def validate_manifest(manifest: dict, rep: Report) -> None:
     for e in sorted(manifest_validator().iter_errors(manifest), key=lambda e: list(e.path)):
-        loc = "/".join(str(p) for p in e.path) or "(racine)"
-        rep.errors.append(f"manifest.json [{loc}] : {_schema_msg(e)}")
+        loc = "/".join(str(p) for p in e.path) or "(root)"
+        rep.errors.append(f"manifest.json [{loc}]: {_schema_msg(e)}")
 
 
 def validate_card(card: dict, rep: Report, lang: str, where: str) -> dict:
     tokens = {}
     if card.get("spec") not in ("chara_card_v3", "chara_card_v2"):
-        rep.errors.append(f"{where} : 'spec' doit être 'chara_card_v3' (ou 'chara_card_v2')")
+        rep.errors.append(f"{where}: 'spec' must be 'chara_card_v3' (or 'chara_card_v2')")
     data = card.get("data")
     if not isinstance(data, dict):
-        rep.errors.append(f"{where} : 'data' manquant")
+        rep.errors.append(f"{where}: 'data' missing")
         return tokens
     if not data.get("name"):
-        rep.errors.append(f"{where} : data.name manquant")
+        rep.errors.append(f"{where}: data.name missing")
     for f in PROMPT_FIELDS:
         v = data.get(f)
         if isinstance(v, str) and v:
@@ -132,16 +133,16 @@ def validate_card(card: dict, rep: Report, lang: str, where: str) -> dict:
     permanent = sum(tokens.get(k, 0) for k in ("description", "personality", "scenario"))
     tokens["permanent"] = permanent
     if permanent > 2500:
-        rep.warnings.append(f"{where} : bloc permanent = {permanent} tokens (> 2 500)")
+        rep.warnings.append(f"{where}: permanent block = {permanent} tokens (> 2,500)")
     book = data.get("character_book")
     if isinstance(book, dict):
         entries = book.get("entries", [])
         tokens["lore"] = sum(count_tokens(e.get("content", ""), lang) for e in entries if isinstance(e, dict))
         const = [e for e in entries if isinstance(e, dict) and e.get("constant")]
         if const:
-            rep.warnings.append(f"{where} : {len(const)} entrée(s) 'constant' — à afficher à l'import")
+            rep.warnings.append(f"{where}: {len(const)} 'constant' entry(ies) — show them on import")
     if data.get("post_history_instructions"):
-        rep.warnings.append(f"{where} : post_history_instructions présent — à afficher à l'import (texte 'untrusted')")
+        rep.warnings.append(f"{where}: post_history_instructions present — show it on import ('untrusted' text)")
     return tokens
 
 
@@ -156,16 +157,19 @@ def _dup_ratio(a: str, b: str) -> float:
 def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
     mpath = src / "manifest.json"
     if not mpath.is_file():
-        rep.errors.append("manifest.json introuvable")
+        rep.errors.append("manifest.json not found")
         return {}
     try:
         manifest = json.loads(mpath.read_text("utf-8"))
     except Exception as e:
-        rep.errors.append(f"manifest.json illisible : {e}")
+        rep.errors.append(f"manifest.json unreadable: {e}")
         return {}
-    if str(manifest.get("cof", "")) in ("0.2", "0.3", "0.4"):
-        rep.errors.append(f"manifest v{manifest.get('cof')} : lancer `cof migrate` (structure v0.5 attendue)")
+    ver = str(manifest.get("cof", ""))
+    if ver in ("0.2", "0.3", "0.4", "0.5"):
+        rep.errors.append(f"manifest v{ver}: run `cof migrate` (format 1.x expected)")
         return manifest
+    if re.fullmatch(r"1\.\d+", ver) and int(ver.split(".")[1]) > int(SPEC_VERSION.split(".")[1]):
+        rep.warnings.append(f"manifest v{ver} is newer than this validator ({SPEC_VERSION}): unknown optional fields are preserved, not checked")
     validate_manifest(manifest, rep)
     if rep.errors:
         return manifest
@@ -179,75 +183,75 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
     if ids:
         di = manifest.get("default_identity")
         if di not in ids:
-            rep.errors.append(f"default_identity inconnu : {di}")
+            rep.errors.append(f"unknown default_identity: {di}")
         else:
             for k in ("name", "fictional", "morphology"):
                 if json.dumps(ids[di].get(k), sort_keys=True) != json.dumps(manifest.get(k), sort_keys=True):
-                    rep.errors.append(f"la racine doit refléter l'identité par défaut ({k} diffère)")
+                    rep.errors.append(f"the root must mirror the default identity ({k} differs)")
             for iid, ident in ids.items():
                 if ident.get("fictional") is False and not ident.get("consent"):
-                    rep.errors.append(f"identities.{iid} : personne réelle sans consentement")
+                    rep.errors.append(f"identities.{iid}: real person without consent")
 
     # asset ids unique, files present
     seen = set()
     for a in manifest.get("assets", []):
         if a["id"] in seen:
-            rep.errors.append(f"asset id dupliqué : {a['id']}")
+            rep.errors.append(f"duplicate asset id: {a['id']}")
         seen.add(a["id"])
         if a.get("path") and not (src / a["path"]).is_file() and not a.get("uri"):
-            rep.errors.append(f"asset absent : {a['path']}")
+            rep.errors.append(f"missing asset: {a['path']}")
         if a.get("role") == "derived" and a.get("source") not in A:
-            rep.errors.append(f"dérivé {a['id']} : source inconnue {a.get('source')}")
+            rep.errors.append(f"derived asset {a['id']}: unknown source {a.get('source')}")
         if a.get("role") == "voice-sample":
             t = a.get("transcript")
             if t and not (src / t).is_file():
-                rep.errors.append(f"échantillon de voix : transcription déclarée mais absente : {t}")
+                rep.errors.append(f"voice sample: transcript declared but missing: {t}")
             elif not t:
-                rep.warnings.append(f"échantillon de voix sans transcription (facultative ; utile aux moteurs à alignement texte) : {a.get('path')}")
+                rep.warnings.append(f"voice sample without transcript (optional; useful to text-aligned engines): {a.get('path')}")
 
     # variants: kind valid, referenced files and assets exist; derives_from resolvable
     for etype, e in elements.items():
         for vid, v in ((e or {}).get("variants", {}) or {}).items():
             where = f"elements.{etype}.{vid}"
             if v.get("derives_from") and v["derives_from"] not in e["variants"]:
-                rep.errors.append(f"{where} : derives_from inconnu {v['derives_from']}")
+                rep.errors.append(f"{where}: unknown derives_from {v['derives_from']}")
             rv = resolve_variant(manifest, etype, vid) or {}
             if etype in KINDS and rv.get("kind") not in KINDS[etype]:
-                rep.errors.append(f"{where} : kind '{rv.get('kind')}' inconnu pour {etype} (attendu : {', '.join(KINDS[etype])})")
+                rep.errors.append(f"{where}: unknown kind '{rv.get('kind')}' for {etype} (expected: {', '.join(KINDS[etype])})")
             if etype == "appearance" and rv.get("kind") == "clothing" and not rv.get("garment"):
-                rep.warnings.append(f"{where} : vêtement sans type 'garment' (règles de cumul inapplicables)")
+                rep.warnings.append(f"{where}: clothing without a 'garment' type (layering rules cannot apply)")
             if etype == "motion" and rv.get("kind") == "video":
                 for aid in rv.get("videos") or []:
                     a = A.get(aid)
                     if a and a.get("bytes", 0) > 20_000_000 and not rv.get("max_bytes_ack"):
-                        rep.warnings.append(f"{where} : vidéo {aid} > 20 Mo sans accusé (transportabilité)")
+                        rep.warnings.append(f"{where}: video {aid} > 20 MB without `max_bytes_ack` (portability)")
             if "identity" in rv and ids and rv["identity"] not in ids:
-                rep.errors.append(f"{where} : identité inconnue {rv['identity']}")
+                rep.errors.append(f"{where}: unknown identity {rv['identity']}")
             for fld in PATH_FIELDS:
                 rel = rv.get(fld)
                 if isinstance(rel, str) and not (src / rel).is_file():
-                    rep.errors.append(f"{where}.{fld} : fichier absent {rel}")
+                    rep.errors.append(f"{where}.{fld}: missing file {rel}")
                 elif isinstance(rel, str) and rel.endswith(".json"):
                     schema = SUBFILE_SCHEMAS.get((etype, rv.get("kind"), fld)) or SUBFILE_SCHEMAS.get((etype, None, fld))
                     if schema:
                         try:
                             validate_subfile(json.loads((src / rel).read_text("utf-8")), schema, rep, f"{where}.{fld} ({rel})")
                         except Exception as ex:
-                            rep.errors.append(f"{where}.{fld} : JSON illisible ({ex})")
+                            rep.errors.append(f"{where}.{fld}: unreadable JSON ({ex})")
             if isinstance(rv.get("mesh"), dict) and not (src / rv["mesh"]["path"]).is_file():
-                rep.errors.append(f"{where}.mesh : fichier absent {rv['mesh']['path']}")
+                rep.errors.append(f"{where}.mesh: missing file {rv['mesh']['path']}")
             for lst in ("images", "derived", "samples", "clips", "videos", "files"):
                 for aid in rv.get(lst, []) or []:
                     if aid not in A:
-                        rep.errors.append(f"{where}.{lst} : asset inconnu {aid}")
+                        rep.errors.append(f"{where}.{lst}: unknown asset {aid}")
                     elif lst == "images" and A[aid].get("role") == "derived":
-                        rep.errors.append(f"{where}.images : {aid} est un dérivé — il doit être listé dans 'derived', pas dans 'images'")
+                        rep.errors.append(f"{where}.images: {aid} is a derived asset — list it in 'derived', not in 'images'")
             if etype == "identity_weights" and rv.get("spec"):
                 w = json.loads((src / rv["spec"]).read_text("utf-8")) if (src / rv["spec"]).is_file() else {}
                 if not (w.get("base_model") or {}).get("name"):
-                    rep.errors.append(f"{where} : weights.json sans base_model.name (un LoRA sans modèle de base est inutilisable)")
+                    rep.errors.append(f"{where}: weights.json without base_model.name (a LoRA without its base model is unusable)")
                 if w.get("file") and w["file"] not in A:
-                    rep.errors.append(f"{where} : asset de poids inconnu {w['file']}")
+                    rep.errors.append(f"{where}: unknown weights asset {w['file']}")
 
     # presets: slots resolvable, extends known, identity known, kind/region rules
     pids = preset_ids(manifest)
@@ -255,24 +259,24 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
     for pid in pids:
         p = manifest["presets"][pid]
         if p.get("extends") and p["extends"] not in manifest["presets"]:
-            rep.errors.append(f"presets.{pid} : extends inconnu {p['extends']}")
+            rep.errors.append(f"presets.{pid}: unknown extends {p['extends']}")
         if p.get("identity") and ids and p["identity"] not in ids:
-            rep.errors.append(f"presets.{pid} : identité inconnue {p['identity']}")
+            rep.errors.append(f"presets.{pid}: unknown identity {p['identity']}")
         for cat, vids in resolve_preset_slots(manifest, pid).items():
             for vid in vids:
                 if cat not in elements or vid not in (elements[cat] or {}).get("variants", {}):
-                    rep.errors.append(f"presets.{pid}.slots.{cat} : déclinaison inconnue {vid}")
+                    rep.errors.append(f"presets.{pid}.slots.{cat}: unknown variant {vid}")
                 else:
                     rv = resolve_variant(manifest, cat, vid) or {}
                     pidn = p.get("identity") or manifest.get("default_identity")
                     if rv.get("identity") and pidn and rv["identity"] != pidn:
-                        rep.errors.append(f"presets.{pid} : '{vid}' est réservée à l'identité {rv['identity']}")
+                        rep.errors.append(f"presets.{pid}: '{vid}' is reserved for identity {rv['identity']}")
         rules = p.get("rules") or {}
         res = resolved(manifest, pid)
         if rules.get("single_per_kind", True):
-            rep.errors += [f"presets.{pid} : {x}" for x in single_kind_violations(res)]
+            rep.errors += [f"presets.{pid}: {x}" for x in single_kind_violations(res)]
         if rules.get("exclusive_regions", True):
-            rep.warnings += [f"presets.{pid} : {x}" for x in region_conflicts(res)]
+            rep.warnings += [f"presets.{pid}: {x}" for x in region_conflicts(res)]
         _age_rules(manifest, pid, res, perms_all, rep)
     if not pids:
         _age_rules(manifest, None, implicit_resolved(manifest), perms_all, rep)
@@ -281,7 +285,7 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
         for vid, v in V.items():
             par = V.get(v.get("derives_from") or "")
             if par and par.get("kind") != v.get("kind"):
-                rep.warnings.append(f"elements.{etype}.{vid} ({v.get('kind')}) dérive de {v['derives_from']} ({par.get('kind')}) : types différents, l'héritage mélange des champs sans rapport")
+                rep.warnings.append(f"elements.{etype}.{vid} ({v.get('kind')}) derives from {v['derives_from']} ({par.get('kind')}): different kinds, inheritance mixes unrelated fields")
     ages_by_voice: dict[str, list] = {}
     for pid in pids:
         pa = preset_age(manifest, pid)
@@ -291,26 +295,26 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
     for vid, lst in ages_by_voice.items():
         lo, hi = min(lst), max(lst)
         if hi[0] - lo[0] > 15:
-            rep.warnings.append(f"voice.{vid} partagée par des presets d'âges très éloignés ({lo[1]} : {lo[0]:g} ans, {hi[1]} : {hi[0]:g} ans) — prévoir une voix par tranche d'âge")
+            rep.warnings.append(f"voice.{vid} shared by presets of very different ages ({lo[1]}: {lo[0]:g} years, {hi[1]}: {hi[0]:g} years) — provide one voice per age range")
     # intimate ⇒ tags.content must flag it (opt-in element, never hidden)
     has_intimate = any((v or {}).get("kind") == "intimate" for v in ((elements.get("appearance") or {}).get("variants", {}) or {}).values())
     content = set(((manifest.get("tags") or {}).get("content") or []))
     if has_intimate and not (content & {"nudity", "sexual"}):
-        rep.errors.append("déclinaison intime présente : tags.content doit contenir 'nudity' ou 'sexual'")
+        rep.errors.append("intimate variant present: tags.content must include 'nudity' or 'sexual'")
     if manifest.get("preset_groups") is not None:
-        rep.warnings.append("preset_groups est obsolète (builder 0.8.0) : utilisez preset_tags — `cof migrate` convertit")
+        rep.warnings.append("preset_groups is deprecated (builder 0.8.0): use preset_tags — `cof migrate` converts it")
     seen_t = set()
     for tg in manifest.get("preset_tags") or []:
         tid = tg.get("id")
         if tid in seen_t:
-            rep.errors.append(f"preset_tags : identifiant de tag en double '{tid}'")
+            rep.errors.append(f"preset_tags: duplicate tag id '{tid}'")
         seen_t.add(tid)
         for pid in tg.get("presets") or []:
             if pid not in (manifest.get("presets") or {}):
-                rep.errors.append(f"preset_tags.{tid} : preset inconnu '{pid}'")
+                rep.errors.append(f"preset_tags.{tid}: unknown preset '{pid}'")
     dp = default_preset_id(manifest)
     if pids and dp not in manifest["presets"]:
-        rep.errors.append(f"default_preset inconnu : {dp}")
+        rep.errors.append(f"unknown default_preset: {dp}")
     used = set()
     for pid in pids:
         for cat, vids in resolve_preset_slots(manifest, pid).items():
@@ -320,7 +324,7 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
         for cat, e in elements.items():
             for vid in (e or {}).get("variants", {}):
                 if (cat, vid) not in used:
-                    rep.warnings.append(f"elements.{cat}.{vid} n'est référencée par aucun preset")
+                    rep.warnings.append(f"elements.{cat}.{vid} is not referenced by any preset")
 
     # intimate variants: age mandatory and ≥ 18, wherever they are (even outside any preset)
     for vid, v in ((elements.get("appearance") or {}).get("variants", {}) or {}).items():
@@ -328,20 +332,20 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
         if rv.get("kind") == "intimate":
             x = _age_value(rv.get("age"))
             if x is None:
-                rep.errors.append(f"appearance.{vid} (intimate) : âge obligatoire (≥ {ADULT})")
+                rep.errors.append(f"appearance.{vid} (intimate): age required (≥ {ADULT})")
             elif x < ADULT:
-                rep.errors.append(f"appearance.{vid} (intimate) : âge {x} < {ADULT} — interdit")
+                rep.errors.append(f"appearance.{vid} (intimate): age {x} < {ADULT} — forbidden")
     for cwhere, cobj in [("rights.consent", (manifest.get("rights", {}) or {}).get("consent")), *[(f"identities.{i}.consent", (x or {}).get("consent")) for i, x in ids.items()]]:
         if isinstance(cobj, dict):
             validate_subfile(cobj, "consent", rep, cwhere)
     if manifest.get("fictional") is False and not (manifest.get("rights", {}) or {}).get("consent"):
-        rep.errors.append("personnage non fictif sans rights.consent")
+        rep.errors.append("non-fictional character without rights.consent")
 
     for vid, v in ((elements.get("personality") or {}).get("variants") or {}).items():
         if v.get("kind") == "description" and not (v.get("text") or "").strip():
-            rep.warnings.append(f"personality.{vid} (description) : champ `text` vide — le texte libre se met en ligne dans `text`")
+            rep.warnings.append(f"personality.{vid} (description): empty `text` field — free text goes inline in `text`")
         if v.get("kind") == "card" and not v.get("card"):
-            rep.errors.append(f"personality.{vid} (card) : chemin `card` (card.json) manquant")
+            rep.errors.append(f"personality.{vid} (card): `card` path (card.json) missing")
 
     # voice engine artifacts: tied to an exact engine/model, safe formats only
     perms0 = (manifest.get("rights") or {}).get("permissions") or {}
@@ -355,26 +359,26 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
             w = f"voice.{vid}.engines[{i}] ({en.get('engine')})"
             ids = list(en.get("files") or []) + ([en["artifact"]] if en.get("artifact") else [])
             if not ids and not en.get("voice_id"):
-                rep.warnings.append(f"{w} : ni fichier ni voice_id — entrée sans effet")
+                rep.warnings.append(f"{w}: neither files nor voice_id — entry has no effect")
             if ids and not en.get("model"):
-                rep.warnings.append(f"{w} : précisez `model` (modèle exact, ex. coqui/XTTS-v2) — une empreinte n'est lisible que par le modèle qui l'a produite")
+                rep.warnings.append(f"{w}: specify `model` (exact model, e.g. coqui/XTTS-v2) — a voice embedding is only readable by the model that produced it")
             for aid in ids:
                 a = A.get(aid)
                 if not a:
-                    rep.errors.append(f"{w} : asset inconnu '{aid}'")
+                    rep.errors.append(f"{w}: unknown asset '{aid}'")
                 elif a.get("path") and Path(a["path"]).suffix.lower() not in ENGINE_EXT:
-                    rep.warnings.append(f"{w} : format inattendu {Path(a['path']).suffix} — attendus : {', '.join(sorted(ENGINE_EXT))}")
+                    rep.warnings.append(f"{w}: unexpected format {Path(a['path']).suffix} — expected: {', '.join(sorted(ENGINE_EXT))}")
             if ids and perms0.get("allowVoiceCloning") is False:
-                rep.warnings.append(f"{w} : empreinte de voix incluse alors que allowVoiceCloning = false — les lecteurs ne peuvent l'utiliser que pour faire parler CE personnage")
+                rep.warnings.append(f"{w}: voice embedding included while allowVoiceCloning = false — readers may only use it to voice THIS character")
     # Daz Studio content: references a content library by design; licence of store products
     for vid, v in ((elements.get("volume3d") or {}).get("variants") or {}).items():
         if v.get("kind") != "daz":
             continue
         w = f"volume3d.{vid} (daz)"
         if not v.get("daz_category"):
-            rep.warnings.append(f"{w} : précisez daz_category (characters, wearables, hair, environments, props, poses-animations)")
+            rep.warnings.append(f"{w}: specify daz_category (characters, wearables, hair, environments, props, poses-animations)")
         if not v.get("requires"):
-            rep.warnings.append(f"{w} : listez dans `requires` les produits Daz dont dépendent les fichiers .duf (figure de base, morphs, textures)")
+            rep.warnings.append(f"{w}: list in `requires` the Daz products the .duf files depend on (base figure, morphs, textures)")
         for aid in v.get("files") or []:
             a = A.get(aid) or {}
             ap = src / a.get("path", "") if a.get("path") else None
@@ -386,21 +390,21 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                     names = _z.ZipFile(ap).namelist()
                     risky = [x for x in names if x.lower().endswith((".dsa", ".dse", ".exe", ".dll", ".bat", ".ps1", ".sh", ".py", ".js"))]
                     if risky:
-                        rep.warnings.append(f"{w} : l'archive {ap.name} contient {len(risky)} script(s) ou exécutable(s) (ex. {risky[0]}) — les scripts Daz (.dsa/.dse) s'exécutent dans Daz Studio : n'ouvrez que des archives de confiance")
+                        rep.warnings.append(f"{w}: archive {ap.name} contains {len(risky)} script(s) or executable(s) (e.g. {risky[0]}) — Daz scripts (.dsa/.dse) run inside Daz Studio: only open trusted archives")
                 except Exception:
-                    rep.errors.append(f"{w} : archive illisible {ap.name}")
+                    rep.errors.append(f"{w}: unreadable archive {ap.name}")
             elif ap.suffix.lower() == ".rar":
-                rep.warnings.append(f"{w} : archive RAR {ap.name} non inspectée par le validateur — préférez .zip, ou n'ouvrez que des archives de confiance")
+                rep.warnings.append(f"{w}: RAR archive {ap.name} not inspected by the validator — prefer .zip, or only open trusted archives")
             if str(a.get("license", "")).startswith("LicenseRef-Daz") and perms0.get("allowRedistribution"):
-                rep.warnings.append(f"{w} : {ap.name} est sous licence Daz (produit du Store) alors que allowRedistribution = true — un tel .cof ne doit pas être partagé")
-        rep.warnings.append(f"{w} : licence Daz — la licence standard couvre les rendus, pas la redistribution des fichiers 3D du Store (une Interactive License est requise) ; n'intégrez que vos propres fichiers (.duf de preset ou de pose, morphs faits par vous)")
+                rep.warnings.append(f"{w}: {ap.name} is under a Daz licence (Store product) while allowRedistribution = true — such a .cof must not be shared")
+        rep.warnings.append(f"{w}: Daz licence — the standard licence covers renders, not redistribution of Store 3D files (an Interactive License is required); only embed your own files (preset or pose .duf, morphs you made)")
     # assets by link (e.g. LoRA weights): allowed, flagged
     for a in manifest.get("assets", []) or []:
         if a.get("uri") and not a.get("path"):
             if a.get("sha256"):
-                rep.warnings.append(f"asset {a.get('id')} par lien ({a.get('uri')}) : version figée par sha256, mais le lien peut disparaître ou changer — l'intégrer au .cof garantit la reproductibilité")
+                rep.warnings.append(f"asset {a.get('id')} by link ({a.get('uri')}): version pinned by sha256, but the link may disappear or change — embedding it in the .cof guarantees reproducibility")
             else:
-                rep.warnings.append(f"asset {a.get('id')} par lien sans sha256 : suit la dernière version (non reproductible) et le lien peut disparaître")
+                rep.warnings.append(f"asset {a.get('id')} by link without sha256: follows the latest version (not reproducible) and the link may disappear")
     # 3D must be self-contained: one file carrying meshes AND textures (GLB/VRM/USDZ/3MF/splats)
     for vid, v in ((elements.get("volume3d") or {}).get("variants") or {}).items():
         for rel in [v.get("path"), (v.get("mesh") or {}).get("path")]:
@@ -409,10 +413,10 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
             ext = rel.rsplit(".", 1)[-1].lower()
             where3 = f"volume3d.{vid} ({v.get('kind')})"
             if ext in ("obj", "gltf") and v.get("self_contained") is False:
-                rep.warnings.append(f"{where3} : déclaré non autonome (`self_contained: false`) — matériaux / textures / données externes absents, accepté par choix de l'auteur")
+                rep.warnings.append(f"{where3}: declared not self-contained (`self_contained: false`) — external materials / textures / data missing, accepted by the author's choice")
                 continue
             if ext == "obj":
-                rep.errors.append(f"{where3} : OBJ n'est pas autonome (MTL et textures séparés) — convertir en GLB (Blender, obj2gltf), ou déclarer `self_contained: false` si un maillage sans texture suffit (ex. poses)")
+                rep.errors.append(f"{where3}: OBJ is not self-contained (separate MTL and textures) — convert to GLB (Blender, obj2gltf), or declare `self_contained: false` if an untextured mesh is enough (e.g. poses)")
             elif ext == "gltf":
                 try:
                     g = json.loads((src / rel).read_text("utf-8"))
@@ -420,24 +424,30 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                 except Exception:
                     ext_uris = ["?"]
                 if ext_uris:
-                    rep.errors.append(f"{where3} : glTF avec ressources externes ({len(ext_uris)}) — convertir en GLB (gltf-transform copy in.gltf out.glb), ou déclarer `self_contained: false`")
+                    rep.errors.append(f"{where3}: glTF with external resources ({len(ext_uris)}) — convert to GLB (gltf-transform copy in.gltf out.glb), or declare `self_contained: false`")
             elif ext == "fbx":
-                rep.warnings.append(f"{where3} : FBX peut référencer des textures externes et reste propriétaire — préférer GLB/VRM")
+                rep.warnings.append(f"{where3}: FBX may reference external textures and is proprietary — prefer GLB/VRM")
             elif v.get("kind") == "environment" and ext not in ("glb", "usdz", "spz", "ply", "splat", "gltf"):
-                rep.warnings.append(f"{where3} : format inattendu pour un environnement 3D (.{ext}) — attendus : GLB, USDZ, splats (SPZ/PLY/SPLAT)")
+                rep.warnings.append(f"{where3}: unexpected format for a 3D environment (.{ext}) — expected: GLB, USDZ, splats (SPZ/PLY/SPLAT)")
+
+    # a coherence finding of severity `illegal` (e.g. sexualised content in a minor preset) invalidates the file
+    for pid_, p_ in (manifest.get("presets") or {}).items():
+        for iss in ((p_.get("coherence") or {}).get("issues") or []):
+            if iss.get("severity") == "illegal":
+                rep.errors.append(f"preset {pid_}: coherence finding of severity `illegal` — {iss.get('message', '')} (the file must not be published)")
 
     # per-preset checks: cards, psyche refs, duplicates, style coherence
     tokens_by_preset = {}
     for pid in (pids or [None]):
         r = resolved(manifest, pid)
-        label = pid or "(implicite)"
+        label = pid or "(implicit)"
         p = first(r, "personality")
         if p and p.get("card") and (src / p["card"]).is_file():
             try:
                 card = json.loads((src / p["card"]).read_text("utf-8"))
                 tokens_by_preset[label] = validate_card(card, rep, lang, f"{p['card']}")
             except Exception as e:
-                rep.errors.append(f"{p['card']} illisible : {e}")
+                rep.errors.append(f"{p['card']} unreadable: {e}")
         ids_ = set()
         if p and p.get("psyche") and (src / p["psyche"]).is_file():
             try:
@@ -447,7 +457,7 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                     ids_ |= {it.get("id") for it in ps.get(k, []) or []}
                 ids_ |= {f"trait:big5.{d}" for d in (ps.get("traits", {}).get("big5") or {})}
             except Exception as e:
-                rep.errors.append(f"{p['psyche']} illisible : {e}")
+                rep.errors.append(f"{p['psyche']} unreadable: {e}")
         for v in r.get("posture", []) + r.get("voice", []):
             rel = v.get("spec") or v.get("profile")
             if rel and (src / rel).is_file():
@@ -459,9 +469,9 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                     refs |= set((obj.get("speech_style") or {}).get("expresses", []) or [])
                     missing = [x for x in refs if x not in ids_]
                     if missing and ids_:
-                        rep.warnings.append(f"{rel} : renvois non résolus vers psyche : {', '.join(missing)}")
+                        rep.warnings.append(f"{rel}: unresolved references to psyche: {', '.join(missing)}")
                 except Exception as e:
-                    rep.errors.append(f"{rel} illisible : {e}")
+                    rep.errors.append(f"{rel} unreadable: {e}")
         pstyle = (manifest.get("presets", {}).get(pid, {}) if pid else {}).get("style")
         styles = set()
         for v in r.get("appearance", []):
@@ -471,9 +481,9 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                 if aid in A and A[aid].get("style"):
                     styles.add(A[aid]["style"])
         if pstyle and styles - {pstyle}:
-            rep.warnings.append(f"preset {label} : style déclaré '{pstyle}' mais déclinaisons/images en {sorted(styles - {pstyle})}")
+            rep.warnings.append(f"preset {label}: declared style '{pstyle}' but variants/images in {sorted(styles - {pstyle})}")
         elif not pstyle and len(styles) > 1:
-            rep.warnings.append(f"preset {label} : styles visuels mélangés {sorted(styles)} sans style déclaré")
+            rep.warnings.append(f"preset {label}: mixed visual styles {sorted(styles)} with no declared style")
 
     # executable / unsafe serialized content
     declared = (manifest.get("container") or {}).get("executableContent", "none")
@@ -482,19 +492,19 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
             continue
         rel = pth.relative_to(src).as_posix()
         if _is_pickle(pth):
-            rep.errors.append(f"fichier pickle refusé : {rel} — son chargement exécute du code ; convertir en .safetensors (ou .npz numérique)")
+            rep.errors.append(f"pickle file refused: {rel} — loading it runs code; convert to .safetensors (or numeric .npz)")
         elif pth.suffix.lower() in EXEC_EXT and declared == "none":
-            rep.errors.append(f"contenu exécutable non déclaré : {rel} — déclarer container.executableContent: \"scripts\" ou retirer le fichier")
+            rep.errors.append(f"undeclared executable content: {rel} — declare container.executableContent: \"scripts\" or remove the file")
         elif pth.suffix.lower() == ".npy" and _npy_has_objects(pth.read_bytes()[:4096]):
-            rep.errors.append(f"tableau NumPy à objets (exige pickle) : {rel} — enregistrer un tableau numérique")
+            rep.errors.append(f"NumPy object array (requires pickle): {rel} — save a numeric array")
         elif pth.suffix.lower() == ".npz":
             import zipfile as _z
             try:
                 with _z.ZipFile(pth) as z:
                     if any(_npy_has_objects(z.open(nm).read(4096)) for nm in z.namelist() if nm.endswith(".npy")):
-                        rep.errors.append(f"archive NumPy à objets (exige pickle) : {rel} — enregistrer des tableaux numériques")
+                        rep.errors.append(f"NumPy archive with object arrays (requires pickle): {rel} — save numeric arrays")
             except Exception:
-                rep.errors.append(f"archive NumPy illisible : {rel}")
+                rep.errors.append(f"unreadable NumPy archive: {rel}")
 
     # KPIs
     comp = compute_completeness(manifest, src)
@@ -538,7 +548,7 @@ def validate_cof(cof: Path) -> Report:
     try:
         st = inspect(cof)
     except Exception as e:
-        rep.errors.append(f"archive illisible : {e}")
+        rep.errors.append(f"unreadable archive: {e}")
         return rep
     rep.errors += st["errors"]
     rep.warnings += st["warnings"]
@@ -551,19 +561,24 @@ def validate_cof(cof: Path) -> Report:
         return rep
     rep.errors += verify_hashes(cof, manifest)
     with tempfile.TemporaryDirectory() as td:
-        validate_dir(unpack(cof, td), rep, recompute=False)
+        try:
+            folder = unpack(cof, td)
+        except ContainerError as e:
+            rep.errors.append(str(e))
+            return rep
+        validate_dir(folder, rep, recompute=False)
     limit = {"lite": 20_000_000, "standard": 100_000_000}.get(manifest.get("size_class"))
     if limit and st["compressed"] > limit:
-        rep.warnings.append(f"size_class '{manifest.get('size_class')}' dépassée : {st['compressed']/1e6:.1f} Mo")
+        rep.warnings.append(f"size_class '{manifest.get('size_class')}' exceeded: {st['compressed']/1e6:.1f} MB")
     if manifest.get("cof") != SPEC_VERSION:
-        rep.warnings.append(f"version de format {manifest.get('cof')} (outil : {SPEC_VERSION})")
+        rep.warnings.append(f"format version {manifest.get('cof')} (tool: {SPEC_VERSION})")
     return rep
 
 
 def _age_rules(manifest: dict, pid: str | None, res: dict, perms_all: dict, rep: "Report") -> None:
     """v0.5: age lives on the representation. Required on face/body/sheet/reference (human form) and intimate;
     a preset with any element < 18 admits no intimate, no estimated body, no effective allowSexualUsage."""
-    label = f"presets.{pid}" if pid else "preset implicite"
+    label = f"presets.{pid}" if pid else "implicit preset"
     p = (manifest.get("presets", {}) or {}).get(pid or "", {}) or {}
     pa = preset_age(manifest, pid)
     for cat in AGE_CATEGORIES:
@@ -571,13 +586,13 @@ def _age_rules(manifest: dict, pid: str | None, res: dict, perms_all: dict, rep:
             if v.get("kind") in AGELESS_KINDS:
                 continue
             if age_required(manifest, pid, v) and _age_value(v.get("age")) is None:
-                rep.errors.append(f"{label} : {cat}.{v['_id']} ({v['kind']}) doit déclarer un âge (basis 'apparent' si l'âge canonique est inconnu)")
+                rep.errors.append(f"{label}: {cat}.{v['_id']} ({v['kind']}) must declare an age (basis 'apparent' if the canonical age is unknown)")
     eff_perms = {**perms_all, **(p.get("permissions_override") or {})}
     if pa is not None and pa < ADULT:
         if by_kind(res, "appearance", "intimate"):
-            rep.errors.append(f"{label} : déclinaison intime combinée avec un élément de moins de {ADULT} ans (âge du preset {pa}) — interdit")
+            rep.errors.append(f"{label}: intimate variant combined with an element under {ADULT} (preset age {pa}) — forbidden")
         for b in by_kind(res, "appearance", "body"):
             if b.get("estimated"):
-                rep.errors.append(f"{label} : morphologie estimée interdite (âge {pa})")
+                rep.errors.append(f"{label}: estimated morphology forbidden (age {pa})")
         if eff_perms.get("allowSexualUsage"):
-            rep.errors.append(f"{label} : allowSexualUsage effectif interdit (âge du preset {pa}) — mettez-le à false au niveau du fichier ou dans permissions_override")
+            rep.errors.append(f"{label}: effective allowSexualUsage forbidden (preset age {pa}) — set it to false at file level or in permissions_override")

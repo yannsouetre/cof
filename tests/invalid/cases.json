@@ -1,0 +1,137 @@
+{
+  "base": "_base.cof (valid)",
+  "cases": [
+    {
+      "file": "version-0.5.cof",
+      "rule": "the format version must be 1.x (older files are migrated)",
+      "spec": "§ 12",
+      "expect": "cof migrate"
+    },
+    {
+      "file": "missing-id.cof",
+      "rule": "`id` is required",
+      "spec": "§ 2",
+      "expect": "'id' is a required property"
+    },
+    {
+      "file": "unknown-variant-in-preset.cof",
+      "rule": "a preset slot must reference an existing variant",
+      "spec": "§ 2.3",
+      "expect": "z9"
+    },
+    {
+      "file": "face-without-age.cof",
+      "rule": "a face of a human-form character must carry an age",
+      "spec": "§ 2.2 / § 9.4",
+      "expect": "must declare an age"
+    },
+    {
+      "file": "intimate-under-18.cof",
+      "rule": "intimate content requires an age ≥ 18",
+      "spec": "§ 4.5 / § 9.4",
+      "expect": "intimate"
+    },
+    {
+      "file": "intimate-without-content-tag.cof",
+      "rule": "a file with intimate content flags it in tags.content",
+      "spec": "§ 4.5",
+      "expect": "nudity"
+    },
+    {
+      "file": "minor-preset-with-intimate.cof",
+      "rule": "a preset under 18 never contains intimate content",
+      "spec": "§ 9.4",
+      "expect": "intimate"
+    },
+    {
+      "file": "minor-preset-sexual-usage.cof",
+      "rule": "a preset under 18 never has an effective allowSexualUsage",
+      "spec": "§ 9.4",
+      "expect": "allowSexualUsage"
+    },
+    {
+      "file": "two-faces-in-preset.cof",
+      "rule": "one variant per kind in a preset (except stackable kinds)",
+      "spec": "§ 2.3",
+      "expect": "face"
+    },
+    {
+      "file": "real-person-without-consent.cof",
+      "rule": "a non-fictional character requires consent",
+      "spec": "§ 9.2",
+      "expect": "consent"
+    },
+    {
+      "file": "weights-without-base-model.cof",
+      "rule": "identity weights declare their base model",
+      "spec": "§ 4.6",
+      "expect": "base_model"
+    },
+    {
+      "file": "pickle-file.cof",
+      "rule": "pickles (.pt/.pth/.ckpt/.pkl) are always refused",
+      "spec": "§ 9.3",
+      "expect": "pickle"
+    },
+    {
+      "file": "undeclared-script.cof",
+      "rule": "scripts require container.executableContent",
+      "spec": "§ 9.3",
+      "expect": "undeclared executable content"
+    },
+    {
+      "file": "obj-not-self-contained.cof",
+      "rule": "3D variants are single self-contained files (unless self_contained: false)",
+      "spec": "§ 2.2",
+      "expect": "not self-contained"
+    },
+    {
+      "file": "tag-unknown-preset.cof",
+      "rule": "every preset listed by a tag exists",
+      "spec": "§ 2.3",
+      "expect": "unknown preset"
+    },
+    {
+      "file": "illegal-coherence-finding.cof",
+      "rule": "a coherence finding of severity `illegal` makes the file invalid",
+      "spec": "§ 11.2 / § 9.4",
+      "expect": "illegal"
+    },
+    {
+      "file": "mimetype-not-first.cof",
+      "rule": "`mimetype` is the first entry",
+      "spec": "§ 1.1",
+      "expect": "mimetype"
+    },
+    {
+      "file": "mimetype-compressed.cof",
+      "rule": "`mimetype` is stored without compression",
+      "spec": "§ 1.1",
+      "expect": "mimetype"
+    },
+    {
+      "file": "wrong-mimetype.cof",
+      "rule": "`mimetype` contains application/vnd.cof.character+zip",
+      "spec": "§ 1.1",
+      "expect": "mimetype"
+    },
+    {
+      "file": "path-traversal.cof",
+      "rule": "no `..` or absolute paths",
+      "spec": "§ 1.1",
+      "expect": ".."
+    },
+    {
+      "file": "hash-mismatch.cof",
+      "rule": "every asset matches its declared sha256",
+      "spec": "§ 2.6",
+      "expect": "sha256"
+    },
+    {
+      "file": "asset-missing.cof",
+      "rule": "every declared asset is present",
+      "spec": "§ 2.6",
+      "expect": "missing"
+    }
+  ]
+}

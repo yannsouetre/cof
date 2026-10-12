@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://cof.dev/schemas/0.5/manifest.schema.json",
+  "$id": "https://yannsouetre.github.io/cof/schemas/1.0/manifest.schema.json",
   "title": "COF manifest.json (v0.5)",
   "type": "object",
   "required": [
@@ -19,7 +19,8 @@
   "properties": {
     "cof": {
       "type": "string",
-      "pattern": "^0\\.5$"
+      "pattern": "^1\\.[0-9]+$",
+      "description": "format version: 1.0; readers accept any 1.x (later minors only add optional fields)"
     },
     "id": {
       "type": "string",
@@ -1072,7 +1073,8 @@
                 "enum": [
                   "info",
                   "minor",
-                  "major"
+                  "major",
+                  "illegal"
                 ]
               },
               "elements": {

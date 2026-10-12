@@ -12,8 +12,8 @@ KINDS = {
     "volume3d": ["mesh", "face-mesh", "point-cloud", "print", "other", "environment", "daz"],
     "voice": ["samples", "described", "embedding"],
     "posture": ["photo", "photos", "openpose", "silhouette", "attitude", "description"],
-    "motion": ["clips", "video", "attitude", "description"],   # 'attitude' (signature de mouvement) est admis ici ET dans posture
-    "files": ["skill", "memory", "document", "other"],          # fichiers libres : skills d'agent, mémoires, documents — bibliothèque
+    "motion": ["clips", "video", "attitude", "description"],   # 'attitude' (movement signature) is allowed here AND in posture
+    "files": ["skill", "memory", "document", "other"],          # free files: agent skills, memories, documents — library
 }
 # categories that are LIBRARIES in a preset: several variants of any kind, none mandatory at inference
 LIBRARY_CATEGORIES = {"posture", "motion", "files"}
@@ -202,7 +202,7 @@ def region_conflicts(res: dict[str, list[dict]]) -> list[str]:
     cloth = by_kind(res, "appearance", "clothing")
     full = [v for v in cloth if (v.get("garment") or "other") == "full-outfit"]
     if full and len(cloth) > 1:
-        issues.append(f"tenue complète '{full[0]['_id']}' combinée avec d'autres vêtements")
+        issues.append(f"full outfit '{full[0]['_id']}' combined with other clothing")
     occupied: dict[tuple[str, str], str] = {}
     for v in cloth:
         t = g["types"].get(v.get("garment") or "other", {"regions": [], "layer": "outer", "stackable": True})
@@ -211,7 +211,7 @@ def region_conflicts(res: dict[str, list[dict]]) -> list[str]:
         for r in t["regions"]:
             key = (r, t["layer"])
             if key in occupied:
-                issues.append(f"vêtements '{occupied[key]}' et '{v['_id']}' se recouvrent ({r}, couche {t['layer']})")
+                issues.append(f"clothing '{occupied[key]}' and '{v['_id']}' overlap ({r}, layer {t['layer']})")
             occupied[key] = v["_id"]
     occ = {}
     for v in by_kind(res, "appearance", "accessory"):
@@ -219,19 +219,19 @@ def region_conflicts(res: dict[str, list[dict]]) -> list[str]:
         if t.get("stackable") or t["region"] in ("none",):
             continue
         if t["region"] in occ:
-            issues.append(f"accessoires '{occ[t['region']]}' et '{v['_id']}' sur la même région ({t['region']})")
+            issues.append(f"accessories '{occ[t['region']]}' and '{v['_id']}' on the same region ({t['region']})")
         occ[t["region"]] = v["_id"]
     areas = {}
     for v in by_kind(res, "appearance", "pilosity"):
         a = v.get("area") or "face"
         if a in areas:
-            issues.append(f"deux pilosités pour la zone '{a}' ('{areas[a]}', '{v['_id']}')")
+            issues.append(f"two pilosity variants for area '{a}' ('{areas[a]}', '{v['_id']}')")
         areas[a] = v["_id"]
     covered: dict[str, str] = {}
     for v in res.get("identity_weights", []):
         for c in v.get("covers") or []:
             if c in covered:
-                issues.append(f"poids d'identité '{covered[c]}' et '{v['_id']}' couvrent tous deux '{c}'")
+                issues.append(f"identity weights '{covered[c]}' and '{v['_id']}' both cover '{c}'")
             covered[c] = v["_id"]
     return issues
 
@@ -247,6 +247,6 @@ def single_kind_violations(res: dict[str, list[dict]]) -> list[str]:
             if k in MULTI_KINDS:
                 continue
             if k in seen:
-                out.append(f"{cat} : deux déclinaisons de type '{k}' ('{seen[k]}', '{v['_id']}')")
+                out.append(f"{cat}: two variants of kind '{k}' ('{seen[k]}', '{v['_id']}')")
             seen[k] = v["_id"]
     return out

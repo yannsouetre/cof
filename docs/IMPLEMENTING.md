@@ -1,6 +1,6 @@
 # Implementing COF — Character Open File
 
-**Implementer's guide · format v1.0 (draft, frozen from spec v0.5) · October 2026**
+**Implementer's guide · format 1.0 (release candidate) · October 2026**
 Audience: developers of companion and chat apps, image/video generators, TTS and voice-cloning services, game engines and VTubing tools, real-time avatar platforms, and agent runtimes. The normative text is `spec/SPEC.md` (French; English translation planned); this guide is the practical, English entry point.
 
 The key words MUST, MUST NOT, SHOULD, SHOULD NOT and MAY are to be read as in RFC 2119 / RFC 8174.
@@ -162,8 +162,8 @@ The skill itself was tested blind: fresh agents with no access to the spec, the 
 
 ## 10. Conformance testing
 
-- **Reference validator**: `pip install cof-cli` (MIT) → `cof validate file.cof` (schemas + rules + completeness; `--json` for CI).
-- **Test vectors**: `spec/examples/` (text-only, appearance, multi-preset, robot, medieval, modular, mixed adult/minor, agent with skills…) — each MUST validate. A negative corpus (`tests/invalid/`, one rule violated per file, with the expected error) ships with 1.0.
+- **Reference validator**: `pip install "git+https://github.com/yannsouetre/cof#subdirectory=cli"` (MIT; PyPI package `cof-cli` after 1.0.0) → `cof validate file.cof` (schemas + rules + completeness; `--json` for CI).
+- **Test vectors**: `spec/examples/` (text-only, appearance, multi-preset, robot, medieval, modular, mixed adult/minor, agent with skills…) — each MUST validate. A negative corpus ships in `tests/invalid/`: 22 files, one rule violated per file, each listed in `cases.json` with the rule and the spec section — a conformant validator rejects every one of them, and accepts `_base.cof`.
 - **Builder**: `builder/index.html`, offline, zero dependencies — a reference *writer*.
 - A reader SHOULD at least open every positive vector without error and refuse every negative vector that concerns its classes.
 

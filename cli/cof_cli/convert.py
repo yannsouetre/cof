@@ -16,7 +16,7 @@ PNG_SIG = b"\x89PNG\r\n\x1a\n"
 
 def png_chunks(data: bytes):
     if not data.startswith(PNG_SIG):
-        raise ValueError("pas un PNG")
+        raise ValueError("not a PNG")
     pos = 8
     while pos + 8 <= len(data):
         length = struct.unpack(">I", data[pos:pos + 4])[0]
@@ -54,7 +54,7 @@ def read_card_from_png(data: bytes) -> dict:
         if "spec" not in card:  # V1 flat → wrap as V2
             card = {"spec": "chara_card_v2", "spec_version": "2.0", "data": card}
         return card
-    raise ValueError("aucune carte de personnage (chunks 'chara'/'ccv3') dans ce PNG")
+    raise ValueError("no character card ('chara'/'ccv3' chunks) in this PNG")
 
 
 def write_card_to_png(png: bytes, card: dict) -> bytes:
@@ -227,7 +227,7 @@ def card_to_cof_dir(card: dict, dest: Path, *, png: bytes | None = None, age: in
     v3.setdefault("data", {}).setdefault("extensions", {})
     (pdir / "card.json").write_text(json.dumps(v3, ensure_ascii=False, indent=2) + "\n", "utf-8")
 
-    elements = {"personality": {"variants": {"p1": {"kind": "card", "label": data.get("name") or "Personnalité", "language": language, "card": "elements/personality/p1/card.json"}}}}
+    elements = {"personality": {"variants": {"p1": {"kind": "card", "label": data.get("name") or "Personality", "language": language, "card": "elements/personality/p1/card.json"}}}}
     slots = {"personality": ["p1"]}
     assets = []
     if png:
@@ -236,22 +236,22 @@ def card_to_cof_dir(card: dict, dest: Path, *, png: bytes | None = None, age: in
         (fdir / "head.front.png").write_bytes(png)
         assets.append({"id": "a-face-f1-front", "path": "elements/appearance/f1/head.front.png", "role": "view", "subject": "head", "angle": "front",
                        "framing": "head", "mediaType": "image/png", "bytes": 0, "sha256": "0" * 64, "license": "LicenseRef-Unknown"})
-        fv = {"kind": "face", "label": "Visage (vignette de la carte)", "images": ["a-face-f1-front"]}
+        fv = {"kind": "face", "label": "Face (card thumbnail)", "images": ["a-face-f1-front"]}
         if age is not None:
-            fv["age"] = {"value": age, "unit": "years", "basis": "declared"}      # v0.5 : l'âge est porté par la représentation
+            fv["age"] = {"value": age, "unit": "years", "basis": "declared"}      # v0.5: age is carried by the representation
         elements["appearance"] = {"variants": {"f1": fv}}
         slots["appearance"] = ["f1"]
 
     manual = [re.sub(r"[^a-z0-9-]", "-", t.lower()).strip("-") for t in (data.get("tags") or []) if isinstance(t, str)]
     manifest = {
-        "cof": "0.5", "id": ulid_like(),
+        "cof": "1.0", "id": ulid_like(),
         "name": data.get("name") or "Unnamed", "nickname": data.get("nickname") or "",
         "languages": [language], "summary": (data.get("description") or "")[:300], "fictional": fictional,
         "morphology": {"class": "human", "species": "human"},
         "tags": {"auto": ["humanoid", "imported-ccv3"], "manual": [t for t in manual if t][:30], "content": ["none"],
                  "ip": {"original": True, "franchise": None, "based_on": None}},
         "elements": elements,
-        "presets": {"default": {"label": "Défaut", "slots": slots, **({"age_override": {"value": age, "unit": "years", "basis": "declared"}} if age is not None else {})}},
+        "presets": {"default": {"label": "Default", "slots": slots, **({"age_override": {"value": age, "unit": "years", "basis": "declared"}} if age is not None else {})}},
         "default_preset": "default",
         "priorities": {"visual": ["identity_weights", "images", "avatar", "descriptive"], "voice": ["samples", "described"]},
         "mapping_vocabularies": {}, "assets": assets,

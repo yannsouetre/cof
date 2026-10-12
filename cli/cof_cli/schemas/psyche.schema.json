@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://cof.dev/schemas/0.5/psyche.schema.json",
+  "$id": "https://yannsouetre.github.io/cof/schemas/1.0/psyche.schema.json",
   "title": "elements/personality/<v>/psyche.json — typed traits, goals, fears, values, baseline emotion",
   "description": "Typed projection of the personality: the narrative truth stays in card.json; psyche.json is a structured derivative for engines, filters and coherence checks.",
   "type": "object",
