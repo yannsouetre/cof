@@ -616,7 +616,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-12T19:27:57Z"
+        "computed_at": "2026-10-12T20:34:20Z"
       }
     },
     "en-manga": {
@@ -668,7 +668,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-12T19:27:57Z"
+        "computed_at": "2026-10-12T20:34:20Z"
       }
     },
     "en-12": {
@@ -726,7 +726,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-12T19:27:57Z"
+        "computed_at": "2026-10-12T20:34:20Z"
       }
     },
     "en-65": {
@@ -784,7 +784,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-12T19:27:57Z"
+        "computed_at": "2026-10-12T20:34:20Z"
       }
     },
     "en-future": {
@@ -840,7 +840,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-12T19:27:57Z"
+        "computed_at": "2026-10-12T20:34:20Z"
       }
     },
     "en-agent": {
@@ -883,7 +883,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-12T19:27:57Z"
+        "computed_at": "2026-10-12T20:34:20Z"
       }
     },
     "fr": {
@@ -925,7 +925,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-12T19:27:57Z"
+        "computed_at": "2026-10-12T20:34:20Z"
       }
     },
     "fr-manga": {
@@ -977,7 +977,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-12T19:27:57Z"
+        "computed_at": "2026-10-12T20:34:20Z"
       }
     },
     "fr-12": {
@@ -1035,7 +1035,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-12T19:27:57Z"
+        "computed_at": "2026-10-12T20:34:20Z"
       }
     },
     "fr-65": {
@@ -1093,7 +1093,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-12T19:27:57Z"
+        "computed_at": "2026-10-12T20:34:20Z"
       }
     },
     "fr-futur": {
@@ -1149,7 +1149,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-12T19:27:57Z"
+        "computed_at": "2026-10-12T20:34:20Z"
       }
     },
     "fr-agent": {
@@ -1192,7 +1192,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-12T19:27:57Z"
+        "computed_at": "2026-10-12T20:34:20Z"
       }
     }
   },
@@ -2403,7 +2403,7 @@
       "archive"
     ],
     "computed_by": "cof-cli/1.0.0rc2",
-    "computed_at": "2026-10-12T19:27:57Z"
+    "computed_at": "2026-10-12T20:34:20Z"
   },
   "preset_tags": [
     {
@@ -2498,6 +2498,15 @@
       "presets": [
         "en-manga",
         "fr-manga"
+      ]
+    },
+    {
+      "id": "combatant",
+      "label": "Combattante / Combatant",
+      "facet": "look",
+      "presets": [
+        "en-future",
+        "fr-futur"
       ]
     }
   ]

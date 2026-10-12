@@ -116,6 +116,40 @@ def preset_primary_image(manifest: dict, pid: str | None) -> str | None:
     return None
 
 
+def backstage(manifest: dict) -> list[tuple[str, str]]:
+    """Variants referenced by no preset — neither applied, offered, nor parent (derives_from) of one that is.
+    They are kept, never applied nor offered; an explorer MAY show them. Empty when the file has no preset."""
+    P = manifest.get("presets") or {}
+    if not P:
+        return []
+    used: set[tuple[str, str]] = set()
+    for pid in P:
+        for src in (resolve_preset_slots(manifest, pid), resolve_preset_alternatives(manifest, pid)):
+            for cat, vids in src.items():
+                for vid in vids:
+                    cur, seen = vid, set()
+                    while cur and cur not in seen:
+                        seen.add(cur)
+                        used.add((cat, cur))
+                        cur = (variants_of(manifest, cat).get(cur) or {}).get("derives_from")
+    return [(cat, vid) for cat, e in (manifest.get("elements") or {}).items()
+            for vid in ((e or {}).get("variants") or {}) if (cat, vid) not in used]
+
+
+def facet_switch(manifest: dict, pid: str, tag_id: str) -> list[str]:
+    """Facet navigation: the presets carrying `tag_id` whose tags in every OTHER facet equal those of `pid`
+    (e.g. from en-12, tag 'fr' → fr-12). Tags without a facet count as their own facet."""
+    T = {t.get("id"): t for t in manifest.get("preset_tags") or []}
+    if tag_id not in T:
+        return []
+    fac = lambda tid: T[tid].get("facet") or f"__{tid}"
+    target_facet = fac(tag_id)
+    tags_of = lambda p: {tid for tid, t in T.items() if p in (t.get("presets") or [])}
+    others = lambda p: {x for x in tags_of(p) if fac(x) != target_facet}
+    ref = others(pid)
+    return [q for q in (manifest.get("presets") or {}) if q in (T[tag_id].get("presets") or []) and others(q) == ref]
+
+
 def implicit_preset(manifest: dict) -> dict[str, list[str]]:
     slots = {}
     for cat, e in (manifest.get("elements", {}) or {}).items():

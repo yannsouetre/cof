@@ -315,7 +315,7 @@ def test_preset_tags_and_extract_tag(tmp_path):
     assert set(m["presets"]) == {"fr", "fr-manga", "fr-12", "fr-65", "fr-futur", "fr-agent"} and m["default_preset"] == "fr"
     assert "extends" not in m["presets"]["fr"]                       # parent (default) outside the selection → flattened
     assert {v["language"] for v in m["elements"]["voice"]["variants"].values()} == {"fr"}
-    assert {t["id"] for t in m["preset_tags"]} == {"fr", "age-12", "age-29", "age-65", "agent", "photo-realistic", "manga"}   # tags kept, restricted
+    assert {t["id"] for t in m["preset_tags"]} == {"fr", "age-12", "age-29", "age-65", "agent", "photo-realistic", "manga", "combatant"}   # tags kept, restricted
     out2 = tmp_path / "en12"; extract_tag(src, out2, ["en", "age-12"])
     m2 = json.loads((out2 / "manifest.json").read_text("utf-8"))
     assert list(m2["presets"]) == ["en-12"]
@@ -575,3 +575,28 @@ def test_slots_alternatives_and_primary_image(tmp_path):
     g = json.loads((mg / "manifest.json").read_text("utf-8"))
     assert g["presets"]["fr"]["alternatives"] == {"appearance": ["c1", "c2", "c3", "c4"]}
     rep = Report(); validate_dir(mg, rep); assert rep.ok, rep.errors
+
+
+def test_backstage_and_facet_navigation(tmp_path):
+    """Variants referenced by no preset are 'backstage' (warned, kept); derives_from parents count as referenced.
+    Facet navigation: switching the language tag lands on the preset with the same tags in the other facets."""
+    from cof_cli.model import backstage, facet_switch
+    src = ROOT / "spec/examples/10-clara-mercier"
+    m = json.loads((src / "manifest.json").read_text("utf-8"))
+    assert backstage(m) == []
+    T = {t["id"]: t for t in m["preset_tags"]}
+    for pid in m["presets"]:                       # the Clara grid: each preset has exactly one sibling per language
+        for lang in ("en", "fr"):
+            assert len(facet_switch(m, pid, lang)) == 1, (pid, lang, facet_switch(m, pid, lang))
+    assert facet_switch(m, "en-12", "fr") == ["fr-12"] and facet_switch(m, "fr-agent", "en") == ["en-agent"]
+    assert facet_switch(m, "en-12", "age-65") == ["en-65"]
+    d = tmp_path / "c"; shutil.copytree(src, d)
+    V = m["elements"]["appearance"]["variants"]
+    V["c13"] = {**V["c2"], "label": "orphan top"}                       # orphan → backstage warning
+    V["c14"] = {"derives_from": "c3", "kind": "clothing", "label": "child of c3", "garment": "bottom"}
+    m["presets"]["en-12"]["alternatives"]["appearance"].append("c14")
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep, recompute=False); assert rep.ok, rep.errors
+    assert any("appearance.c13 is backstage" in w for w in rep.warnings), rep.warnings
+    assert not any("appearance.c3 is backstage" in w for w in rep.warnings)   # parent of an offered variant
+    assert backstage(m) == [("appearance", "c13")]

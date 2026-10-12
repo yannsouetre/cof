@@ -15,7 +15,7 @@ from jsonschema import Draft202012Validator
 from . import SPEC_VERSION, __version__
 from .completeness import compute as compute_completeness
 from .container import ContainerError, inspect, read_manifest, unpack, verify_hashes
-from .model import garments, ADULT, implicit_resolved, AGELESS_KINDS, AGE_CATEGORIES, CATEGORIES, KINDS, MULTI_KINDS, _age_value, age_required, asset_index, default_preset_id, first, lowest_age, preset_age, preset_identity, preset_ids, region_conflicts, resolve_preset_slots, resolve_variant, resolved, single_kind_violations, by_kind, preset_alternatives, preset_primary_image, resolved_all
+from .model import garments, ADULT, implicit_resolved, AGELESS_KINDS, AGE_CATEGORIES, CATEGORIES, KINDS, MULTI_KINDS, _age_value, age_required, asset_index, default_preset_id, first, lowest_age, preset_age, preset_identity, preset_ids, region_conflicts, resolve_preset_slots, resolve_variant, resolved, single_kind_violations, by_kind, preset_alternatives, preset_primary_image, resolved_all, backstage
 from .tokens import count as count_tokens, tokenizer_name
 
 PROMPT_FIELDS = ("description", "personality", "scenario", "first_mes", "mes_example", "system_prompt", "post_history_instructions")
@@ -336,20 +336,19 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
         for pid in tg.get("presets") or []:
             if pid not in (manifest.get("presets") or {}):
                 rep.errors.append(f"preset_tags.{tid}: unknown preset '{pid}'")
+    by_tags: dict[frozenset, list[str]] = {}
+    for pid in pids:
+        ts = frozenset(tg.get("id") for tg in manifest.get("preset_tags") or [] if pid in (tg.get("presets") or []))
+        if ts:
+            by_tags.setdefault(ts, []).append(pid)
+    for ts, same in by_tags.items():
+        if len(same) > 1:
+            rep.warnings.append(f"presets {', '.join(same)} carry the same tags ({', '.join(sorted(ts))}) — facet navigation cannot tell them apart; add a tag (e.g. facet 'look')")
     dp = default_preset_id(manifest)
     if pids and dp not in manifest["presets"]:
         rep.errors.append(f"unknown default_preset: {dp}")
-    used = set()
-    for pid in pids:
-        for src_ in (resolve_preset_slots(manifest, pid), preset_alternatives(manifest, pid)):
-            for cat, vids in src_.items():
-                for vid in vids:
-                    used.add((cat, vid))
-    if pids:
-        for cat, e in elements.items():
-            for vid in (e or {}).get("variants", {}):
-                if (cat, vid) not in used:
-                    rep.warnings.append(f"elements.{cat}.{vid} is not referenced by any preset")
+    for cat, vid in backstage(manifest):
+        rep.warnings.append(f"elements.{cat}.{vid} is backstage: referenced by no preset (kept, never applied nor offered) — offer it in a preset, or delete it if it is a leftover")
 
     # intimate variants: age mandatory and ≥ 18, wherever they are (even outside any preset)
     for vid, v in ((elements.get("appearance") or {}).get("variants", {}) or {}).items():

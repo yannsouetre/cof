@@ -49,7 +49,10 @@ A product MAY claim several classes. A claim SHOULD be stated as e.g. *"COF 1.0 
 2. Check entry 0 == "mimetype" with the exact media type. Otherwise: not a COF file.
 3. Parse manifest.json. If manifest.cof major > supported major: refuse politely. Unknown fields: IGNORE (never fail).
 4. Choose a preset: the one the user picks, else manifest.default_preset, else the first one.
-   (Optional `preset_tags` at container level let a picker filter presets: same-facet tags are alternatives, different facets intersect. Pure organisation — ignore them if you show no picker.)
+   (Optional `preset_tags` at container level let a picker filter presets: same-facet tags are alternatives, different facets intersect. Pure organisation — ignore them if you show no picker.
+    Facet navigation: to switch language (or age, look…), go to the preset carrying the same tags in every
+    other facet — en-12 → fr-12 — so text and voice change together; list the candidates if 0 or several.
+    model.facet_switch() is the reference.)
 5. Resolve it:
      slots  = preset.slots, merged over the presets it `extends` (child replaces a whole category list);
      each variant id → elements[category].variants[id], merged over its `derives_from` parent.
@@ -62,6 +65,8 @@ A product MAY claim several classes. A claim SHOULD be stated as e.g. *"COF 1.0 
    OFFERED with this preset only — other outfits, hairstyles, accessories (accessory_use: worn / not-worn /
    companion / other); swap them in on request, re-checking age, regions (worn items only) and style.
    Never take an element from another preset without switching to it.
+   Variants referenced by no preset are BACKSTAGE (model.backstage()): keep them, never apply or offer them;
+   an explorer may list them apart.
 6. Compute effective rights: rights.permissions merged with preset.permissions_override.
    Apply § 6 before using anything.
 7. Load only what your profile needs, lazily: assets[] gives path, mediaType, bytes, sha256.
