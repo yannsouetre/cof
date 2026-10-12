@@ -6,6 +6,8 @@
 - **Negative conformance corpus** `tests/invalid/`: 22 files, one rule broken each (version, required fields, references, ages, intimate / minor rules, consent, base model, pickles, scripts, self-contained 3D, tags, `illegal` coherence finding, mimetype position / compression / value, path traversal, hash mismatch, missing asset), `cases.json` with rule and spec section, generator `build.py`; checked in CI tests.
 - Found by the corpus: the `illegal` coherence severity was in the spec but not in the schema nor enforced — now both; `validate_cof` reported a path-traversal archive as a crash instead of an error — fixed.
 - **CLI messages in English** (≈ 165 messages, report labels `ERROR` / `WARN`).
+- **Example 10 — motion library**: 19 BVH clips from the Bandai Namco Research Motion Dataset 1 (CC BY-NC 4.0, credited per asset with `attribution` and `source_url`, in `provenance.source`, `metadata.credits` and the README): feminine-style walk / explain / respond / wave / bow / dance for the young adult, childish walk / run / wave at 12, elderly walk / explain / bow at 65, dash and fight moves for the combatant, happy style for the manga look. File 8.9 MB.
+- Builder: unknown `metadata` keys and `extensions` are now preserved on rebuild (were dropped).
 - **Builder 0.9.0 fully localised**: ~250 more interface strings made translatable (intros, hints, option lists, check and build messages) and translated in the six languages; missing translations fall back to English instead of French.
 - Daz: `.zip` by default; a `.rar` asks first (not inspectable, may hide scripts). `cof-author` skill: security sweep (scripts, executables, pickles inside archives, optional malware scan, no secrets).
 

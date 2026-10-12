@@ -362,6 +362,64 @@
           "language": "en"
         }
       }
+    },
+    "motion": {
+      "variants": {
+        "m1": {
+          "kind": "clips",
+          "label": "Démarche et gestes, jeune adulte (style féminin) / Young adult walk and gestures (feminine style)",
+          "clips": [
+            "a-mo-m1-walk",
+            "a-mo-m1-guide",
+            "a-mo-m1-respond",
+            "a-mo-m1-bye",
+            "a-mo-m1-bow",
+            "a-mo-m1-dance"
+          ],
+          "rig": "custom"
+        },
+        "m2": {
+          "kind": "clips",
+          "label": "Clara à 12 ans, style enfantin / Clara at 12, childish style",
+          "clips": [
+            "a-mo-m2-walk",
+            "a-mo-m2-run",
+            "a-mo-m2-byebye"
+          ],
+          "rig": "custom"
+        },
+        "m3": {
+          "kind": "clips",
+          "label": "Clara à 65 ans, style âgé / Clara at 65, elderly style",
+          "clips": [
+            "a-mo-m3-walk",
+            "a-mo-m3-guide",
+            "a-mo-m3-bow"
+          ],
+          "rig": "custom"
+        },
+        "m4": {
+          "kind": "clips",
+          "label": "Combattante : élan et combat / Combatant: dash and fight",
+          "clips": [
+            "a-mo-m4-dash",
+            "a-mo-m4-kick",
+            "a-mo-m4-punch",
+            "a-mo-m4-slash"
+          ],
+          "rig": "custom"
+        },
+        "m5": {
+          "kind": "clips",
+          "label": "Clara manga, style joyeux / Manga Clara, happy style",
+          "clips": [
+            "a-mo-m5-walk",
+            "a-mo-m5-byebye",
+            "a-mo-m5-guide"
+          ],
+          "rig": "custom"
+        }
+      }
     }
   },
   "presets": {
@@ -387,10 +445,13 @@
         ],
         "posture": [
           "ps1"
+        ],
+        "motion": [
+          "m1"
         ]
       },
       "completeness": {
-        "score": 54,
+        "score": 57,
         "level": "C",
         "layers": {
           "identity": 100,
@@ -399,7 +460,7 @@
           "physique": 100,
           "voice": 65,
           "volume": 0,
-          "motion": 0,
+          "motion": 75,
           "rights": 85
         },
         "targets_ready": [
@@ -408,8 +469,8 @@
           "chat-voice",
           "archive"
         ],
-        "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-12T12:00:39Z"
+        "computed_by": "cof-cli/1.0.0rc1",
+        "computed_at": "2026-10-12T14:44:47Z"
       }
     },
     "en-manga": {
@@ -429,10 +490,13 @@
         ],
         "voice": [
           "v10"
+        ],
+        "motion": [
+          "m5"
         ]
       },
       "completeness": {
-        "score": 54,
+        "score": 57,
         "level": "C",
         "layers": {
           "identity": 100,
@@ -441,7 +505,7 @@
           "physique": 100,
           "voice": 65,
           "volume": 0,
-          "motion": 0,
+          "motion": 75,
           "rights": 85
         },
         "targets_ready": [
@@ -450,8 +514,8 @@
           "chat-voice",
           "archive"
         ],
-        "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-12T12:00:39Z"
+        "computed_by": "cof-cli/1.0.0rc1",
+        "computed_at": "2026-10-12T14:44:47Z"
       }
     },
     "en-12": {
@@ -474,10 +538,13 @@
         ],
         "voice": [
           "v9"
+        ],
+        "motion": [
+          "m2"
         ]
       },
       "completeness": {
-        "score": 52,
+        "score": 55,
         "level": "C",
         "layers": {
           "identity": 100,
@@ -486,7 +553,7 @@
           "physique": 100,
           "voice": 65,
           "volume": 0,
-          "motion": 0,
+          "motion": 75,
           "rights": 85
         },
         "targets_ready": [
@@ -495,8 +562,8 @@
           "chat-voice",
           "archive"
         ],
-        "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-12T12:00:39Z"
+        "computed_by": "cof-cli/1.0.0rc1",
+        "computed_at": "2026-10-12T14:44:47Z"
       }
     },
     "en-65": {
@@ -519,10 +586,13 @@
         ],
         "voice": [
           "v7"
+        ],
+        "motion": [
+          "m3"
         ]
       },
       "completeness": {
-        "score": 52,
+        "score": 55,
         "level": "C",
         "layers": {
           "identity": 100,
@@ -531,7 +601,7 @@
           "physique": 100,
           "voice": 65,
           "volume": 0,
-          "motion": 0,
+          "motion": 75,
           "rights": 85
         },
         "targets_ready": [
@@ -540,8 +610,8 @@
           "chat-voice",
           "archive"
         ],
-        "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-12T12:00:39Z"
+        "computed_by": "cof-cli/1.0.0rc1",
+        "computed_at": "2026-10-12T14:44:47Z"
       }
     },
     "en-future": {
@@ -564,10 +634,13 @@
         ],
         "voice": [
           "v8"
+        ],
+        "motion": [
+          "m4"
         ]
       },
       "completeness": {
-        "score": 52,
+        "score": 55,
         "level": "C",
         "layers": {
           "identity": 100,
@@ -576,7 +649,7 @@
           "physique": 100,
           "voice": 65,
           "volume": 0,
-          "motion": 0,
+          "motion": 75,
           "rights": 85
         },
         "targets_ready": [
@@ -585,8 +658,8 @@
           "chat-voice",
           "archive"
         ],
-        "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-12T12:00:39Z"
+        "computed_by": "cof-cli/1.0.0rc1",
+        "computed_at": "2026-10-12T14:44:47Z"
       }
     },
     "en-agent": {
@@ -608,7 +681,7 @@
         ]
       },
       "completeness": {
-        "score": 60,
+        "score": 63,
         "level": "B",
         "layers": {
           "identity": 100,
@@ -617,7 +690,7 @@
           "physique": 100,
           "voice": 65,
           "volume": 0,
-          "motion": 0,
+          "motion": 75,
           "rights": 85
         },
         "targets_ready": [
@@ -627,8 +700,8 @@
           "chat-voice",
           "archive"
         ],
-        "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-12T12:00:39Z"
+        "computed_by": "cof-cli/1.0.0rc1",
+        "computed_at": "2026-10-12T14:44:47Z"
       }
     },
     "fr": {
@@ -650,7 +723,7 @@
         ]
       },
       "completeness": {
-        "score": 54,
+        "score": 57,
         "level": "C",
         "layers": {
           "identity": 100,
@@ -659,7 +732,7 @@
           "physique": 100,
           "voice": 65,
           "volume": 0,
-          "motion": 0,
+          "motion": 75,
           "rights": 85
         },
         "targets_ready": [
@@ -668,8 +741,8 @@
           "chat-voice",
           "archive"
         ],
-        "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-12T12:00:39Z"
+        "computed_by": "cof-cli/1.0.0rc1",
+        "computed_at": "2026-10-12T14:44:47Z"
       }
     },
     "fr-manga": {
@@ -689,10 +762,13 @@
         ],
         "voice": [
           "v5"
+        ],
+        "motion": [
+          "m5"
         ]
       },
       "completeness": {
-        "score": 54,
+        "score": 57,
         "level": "C",
         "layers": {
           "identity": 100,
@@ -701,7 +777,7 @@
           "physique": 100,
           "voice": 65,
           "volume": 0,
-          "motion": 0,
+          "motion": 75,
           "rights": 85
         },
         "targets_ready": [
@@ -710,8 +786,8 @@
           "chat-voice",
           "archive"
         ],
-        "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-12T12:00:39Z"
+        "computed_by": "cof-cli/1.0.0rc1",
+        "computed_at": "2026-10-12T14:44:47Z"
       }
     },
     "fr-12": {
@@ -734,10 +810,13 @@
         ],
         "voice": [
           "v4"
+        ],
+        "motion": [
+          "m2"
         ]
       },
       "completeness": {
-        "score": 52,
+        "score": 55,
         "level": "C",
         "layers": {
           "identity": 100,
@@ -746,7 +825,7 @@
           "physique": 100,
           "voice": 65,
           "volume": 0,
-          "motion": 0,
+          "motion": 75,
           "rights": 85
         },
         "targets_ready": [
@@ -755,8 +834,8 @@
           "chat-voice",
           "archive"
         ],
-        "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-12T12:00:39Z"
+        "computed_by": "cof-cli/1.0.0rc1",
+        "computed_at": "2026-10-12T14:44:47Z"
       }
     },
     "fr-65": {
@@ -779,10 +858,13 @@
         ],
         "voice": [
           "v2"
+        ],
+        "motion": [
+          "m3"
         ]
       },
       "completeness": {
-        "score": 54,
+        "score": 57,
         "level": "C",
         "layers": {
           "identity": 100,
@@ -791,7 +873,7 @@
           "physique": 100,
           "voice": 65,
           "volume": 0,
-          "motion": 0,
+          "motion": 75,
           "rights": 85
         },
         "targets_ready": [
@@ -800,8 +882,8 @@
           "chat-voice",
           "archive"
         ],
-        "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-12T12:00:39Z"
+        "computed_by": "cof-cli/1.0.0rc1",
+        "computed_at": "2026-10-12T14:44:47Z"
       }
     },
     "fr-futur": {
@@ -824,10 +906,13 @@
         ],
         "voice": [
           "v3"
+        ],
+        "motion": [
+          "m4"
         ]
       },
       "completeness": {
-        "score": 52,
+        "score": 55,
         "level": "C",
         "layers": {
           "identity": 100,
@@ -836,7 +921,7 @@
           "physique": 100,
           "voice": 65,
           "volume": 0,
-          "motion": 0,
+          "motion": 75,
           "rights": 85
         },
         "targets_ready": [
@@ -845,8 +930,8 @@
           "chat-voice",
           "archive"
         ],
-        "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-12T12:00:39Z"
+        "computed_by": "cof-cli/1.0.0rc1",
+        "computed_at": "2026-10-12T14:44:47Z"
       }
     },
     "fr-agent": {
@@ -868,7 +953,7 @@
         ]
       },
       "completeness": {
-        "score": 60,
+        "score": 63,
         "level": "B",
         "layers": {
           "identity": 100,
@@ -877,7 +962,7 @@
           "physique": 100,
           "voice": 65,
           "volume": 0,
-          "motion": 0,
+          "motion": 75,
           "rights": 85
         },
         "targets_ready": [
@@ -887,8 +972,8 @@
           "chat-voice",
           "archive"
         ],
-        "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-12T12:00:39Z"
+        "computed_by": "cof-cli/1.0.0rc1",
+        "computed_at": "2026-10-12T14:44:47Z"
       }
     }
   },
@@ -1364,6 +1449,408 @@
       "generator": "Google Gemini (Nano Banana 2)"
     },
     {
+      "id": "a-mo-m1-walk",
+      "path": "elements/motion/m1/clips/walk-feminine.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 343168,
+      "sha256": "6bec50f7b5f541cd54e9691e571d5505133a50623abfef9ba3ba3ee788a33eb3",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 9.2,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "walk",
+        "feminine"
+      ],
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_walk_feminine_001.bvh",
+      "description": "marche / walk"
+    },
+    {
+      "id": "a-mo-m1-guide",
+      "path": "elements/motion/m1/clips/guide-feminine.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 371659,
+      "sha256": "e6117a3a8f9db004483f3c5595db79624ef78705c0940e6d68bc35416046b7e4",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 10.0,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "guide",
+        "feminine"
+      ],
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_guide_feminine_001.bvh",
+      "description": "explique en montrant / explains, pointing"
+    },
+    {
+      "id": "a-mo-m1-respond",
+      "path": "elements/motion/m1/clips/respond-normal.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 137321,
+      "sha256": "18b718f955b0abee378ce0f7229f4dbf5ad144d9fce541c4a9e4de13b0c21221",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 3.5,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "respond",
+        "normal"
+      ],
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_respond_normal_001.bvh",
+      "description": "répond / responds"
+    },
+    {
+      "id": "a-mo-m1-bye",
+      "path": "elements/motion/m1/clips/bye-feminine.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 405276,
+      "sha256": "893483a1a0911d12db91e2820c53d27957360de60d76fc1993903263e7952012",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 10.9,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "bye",
+        "feminine"
+      ],
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_bye_feminine_001.bvh",
+      "description": "salue / waves"
+    },
+    {
+      "id": "a-mo-m1-bow",
+      "path": "elements/motion/m1/clips/bow-feminine.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 270811,
+      "sha256": "0f701a2df34d251d03a5f1310d90a8c5394745021ecc708d4f90cb3cc76f957f",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 7.3,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "bow",
+        "feminine"
+      ],
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_bow_feminine_001.bvh",
+      "description": "s'incline / bows"
+    },
+    {
+      "id": "a-mo-m1-dance",
+      "path": "elements/motion/m1/clips/dance-normal.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 2381120,
+      "sha256": "a9bef1cd697e4274bc1e773c2eb30f9b2c525f1fd57deaf788a6f63ce87fa63f",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 63.4,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "dance",
+        "normal"
+      ],
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_dance-short_normal_001.bvh",
+      "description": "danse / dances"
+    },
+    {
+      "id": "a-mo-m2-walk",
+      "path": "elements/motion/m2/clips/walk-childish.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 294082,
+      "sha256": "4b4fd02da8fb0eca5c1ef0ae4d9bc4abc15016f579ebb8636611c40393c79af5",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 7.8,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "walk",
+        "childish"
+      ],
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_walk_childish_001.bvh",
+      "description": "marche / walk"
+    },
+    {
+      "id": "a-mo-m2-run",
+      "path": "elements/motion/m2/clips/run-childish.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 140323,
+      "sha256": "8ae5d5ebcb18422e9115b8c57f419d17fbea48ec25793b44f3a4deaa4b4ead9f",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 3.7,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "run",
+        "childish"
+      ],
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_run_childish_001.bvh",
+      "description": "court / runs"
+    },
+    {
+      "id": "a-mo-m2-byebye",
+      "path": "elements/motion/m2/clips/byebye-childish.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 212671,
+      "sha256": "348b3a744a7f0ac98f6f7e31f9271f99c40c4f0d22d65021c71bb93639c9d7d9",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 5.6,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "byebye",
+        "childish"
+      ],
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_byebye_childish_001.bvh",
+      "description": "fait au revoir / waves goodbye"
+    },
+    {
+      "id": "a-mo-m3-walk",
+      "path": "elements/motion/m3/clips/walk-old.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 354501,
+      "sha256": "3dd66cfb32844d1d16f82256814ac7ac446c2824ccf3d7f7738c225fe767bde6",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 9.5,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "walk",
+        "old"
+      ],
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_walk_old_001.bvh",
+      "description": "marche / walk"
+    },
+    {
+      "id": "a-mo-m3-guide",
+      "path": "elements/motion/m3/clips/guide-old.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 269936,
+      "sha256": "ac26765b8c5269ef009ba09ed82137a63dab1c122e824ed976d7adc9d0856886",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 7.2,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "guide",
+        "old"
+      ],
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_guide_old_001.bvh",
+      "description": "explique en montrant / explains, pointing"
+    },
+    {
+      "id": "a-mo-m3-bow",
+      "path": "elements/motion/m3/clips/bow-old.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 216938,
+      "sha256": "ed5db7bd555fbf0f54c5dfcd486eede243f1daa9267f08f3e5afe1025dd769a6",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 5.7,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "bow",
+        "old"
+      ],
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_bow_old_001.bvh",
+      "description": "s'incline / bows"
+    },
+    {
+      "id": "a-mo-m4-dash",
+      "path": "elements/motion/m4/clips/dash-active.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 108310,
+      "sha256": "135e0a02201e6502feccfb603d2cd6ab30ab98139235941c7eee24ad96827ff0",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 2.8,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "dash",
+        "active"
+      ],
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_dash_active_001.bvh",
+      "description": "s'élance / dashes"
+    },
+    {
+      "id": "a-mo-m4-kick",
+      "path": "elements/motion/m4/clips/kick-normal.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 442941,
+      "sha256": "1194a1dae534ee065d4e6eed68c21d7437b1bb81d15754bcabef32185b200911",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 11.9,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "kick",
+        "normal"
+      ],
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_kick_normal_001.bvh",
+      "description": "coup de pied / kick"
+    },
+    {
+      "id": "a-mo-m4-punch",
+      "path": "elements/motion/m4/clips/punch-normal.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 278735,
+      "sha256": "000e0093365b7e2a4e6dc7e0fbde15a70d2959630b7bd12750762d1c14e7c652",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 7.5,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "punch",
+        "normal"
+      ],
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_punch_normal_001.bvh",
+      "description": "coup de poing / punch"
+    },
+    {
+      "id": "a-mo-m4-slash",
+      "path": "elements/motion/m4/clips/slash-normal.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 501353,
+      "sha256": "b2fea21820d898cee5229829268b861d783041317bc560ea977d5789fd630d6d",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 13.4,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "slash",
+        "normal"
+      ],
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_slash_normal_001.bvh",
+      "description": "coup de taille / slash"
+    },
+    {
+      "id": "a-mo-m5-walk",
+      "path": "elements/motion/m5/clips/walk-happy.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 266334,
+      "sha256": "ac866d76d00134492e07583aaae68c2d42dd1b295ca57681c49b55848411815c",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 7.1,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "walk",
+        "happy"
+      ],
+      "emotion": "joy",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_walk_happy_001.bvh",
+      "description": "marche / walk"
+    },
+    {
+      "id": "a-mo-m5-byebye",
+      "path": "elements/motion/m5/clips/byebye-happy.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 275865,
+      "sha256": "c5d674446b9473cc54ed5c764c6fcb2689d191726079132eb504ec1826b228cc",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 7.3,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "byebye",
+        "happy"
+      ],
+      "emotion": "joy",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_byebye_happy_001.bvh",
+      "description": "fait au revoir / waves goodbye"
+    },
+    {
+      "id": "a-mo-m5-guide",
+      "path": "elements/motion/m5/clips/guide-happy.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 133493,
+      "sha256": "dfaedb1170fea8dea5c9d8e57dc49b48c7a2ea5e82ae00b680373d9119eeb298",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 3.5,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "guide",
+        "happy"
+      ],
+      "emotion": "joy",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_guide_happy_001.bvh",
+      "description": "explique en montrant / explains, pointing"
+    },
+    {
       "id": "thumbnail",
       "path": "Thumbnails/thumbnail.png",
       "role": "derived",
@@ -1403,7 +1890,8 @@
     "modified": "2026-10-11T16:00:26Z",
     "generator": "cof-builder/0.7.1",
     "source": [
-      "https://github.com/yannsouetre/cof/tree/main/spec/examples/10-clara-mercier"
+      "https://github.com/yannsouetre/cof/tree/main/spec/examples/10-clara-mercier",
+      "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset"
     ],
     "c2pa": null,
     "signatures": []
@@ -1415,7 +1903,10 @@
     "dc:creator": [
       "Yann Souetre"
     ],
-    "dc:rights": "Character, texts and images: CC BY 4.0, Yann Souetre. Voice samples: CC BY-NC 4.0 (generated on free plans; non-commercial use only). Texts and character sheets generated with Google Gemini and translated to English with Claude; images with Google Gemini (Nano Banana 2); voices generated with ElevenLabs (elevenlabs.io, model v4) and Typecast — Voice generated with Typecast (https://typecast.ai). Fictional character; any resemblance to a real person is coincidental."
+    "dc:rights": "Character, texts and images: CC BY 4.0, Yann Souetre. Voice samples: CC BY-NC 4.0 (generated on free plans; non-commercial use only). Texts and character sheets generated with Google Gemini and translated to English with Claude; images with Google Gemini (Nano Banana 2); voices generated with ElevenLabs (elevenlabs.io, model v4) and Typecast — Voice generated with Typecast (https://typecast.ai). Fictional character; any resemblance to a real person is coincidental.",
+    "credits": [
+      "Motion clips: © 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)"
+    ]
   },
   "extensions": {},
   "thumbnail": "Thumbnails/thumbnail.png",
@@ -1425,14 +1916,15 @@
       "appearance",
       "voice",
       "posture",
-      "files"
+      "files",
+      "motion"
     ],
-    "variants": 32,
+    "variants": 37,
     "presets": 12,
     "identities": 1
   },
   "completeness": {
-    "score": 54,
+    "score": 57,
     "level": "C",
     "layers": {
       "identity": 100,
@@ -1441,7 +1933,7 @@
       "physique": 100,
       "voice": 65,
       "volume": 0,
-      "motion": 0,
+      "motion": 75,
       "rights": 85
     },
     "targets_ready": [
@@ -1450,8 +1942,8 @@
       "chat-voice",
       "archive"
     ],
-    "computed_by": "cof-cli/0.7.0",
-    "computed_at": "2026-10-12T12:00:39Z"
+    "computed_by": "cof-cli/1.0.0rc1",
+    "computed_at": "2026-10-12T14:44:47Z"
   },
   "preset_tags": [
     {

@@ -7,7 +7,7 @@ One character, **twelve presets tagged by language and by age**, one file:
 | **English** | young adult (**default**), manga, at 12, at 65, near-future combatant, AI agent |
 | **Français** | jeune adulte, manga, à 12 ans, à 65 ans, combattante du futur, agent IA |
 
-Ten personality variants (5 FR, 5 EN — free text and Character Card V3), five appearance variants and five **environments** (chat / video-avatar backgrounds, each in a desktop 16:9 and a mobile 9:16 version) shared by both languages, ten voices (one per age group and language, all with transcripts), and an OpenPose posture library.
+Ten personality variants (5 FR, 5 EN — free text and Character Card V3), five appearance variants and five **environments** (chat / video-avatar backgrounds, each in a desktop 16:9 and a mobile 9:16 version) shared by both languages, ten voices (one per age group and language, all with transcripts), an OpenPose posture library and a **motion library of 19 BVH clips** (walking, explaining, answering, waving, bowing, dancing, running, fighting) chosen per look: feminine style for the young adult, childish at 12, elderly at 65, combat moves for the combatant, happy style for the manga version.
 
 What it demonstrates:
 - **Languages per variant** — the same images serve both languages; only personality and voice change.
@@ -19,4 +19,6 @@ What it demonstrates:
 
 Provenance: texts and character sheets generated with Google Gemini, English versions translated with Claude; images with Google Gemini (Nano Banana 2); voices with ElevenLabs (model v4) and Typecast, free plans — *Voice generated with Typecast (https://typecast.ai)*. Fictional character; any resemblance to a real person is coincidental.
 
-License: character, texts and images **CC BY 4.0** — Yann Souetre. Voice samples **CC BY-NC 4.0** (generated on free plans: non-commercial use only, with attribution to ElevenLabs and Typecast).
+Motion clips: **Bandai Namco Research Inc.**, [Bandai-Namco-Research-Motiondataset](https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset) (dataset 1), © 2022 Bandai Namco Research Inc., licensed **CC BY-NC 4.0**, unmodified BVH files (30 fps, 22-joint skeleton). Citation: M. Kobayashi, C.-C. Liao, K. Inoue, S. Yojima, M. Takahashi, *Motion Capture Dataset for Practical Use of AI-based Motion Editing and Stylization*, arXiv:2306.08861, 2023. The dataset labels the motion *style* (feminine, childish, elderly…), not the performer: the clips were captured from three professional actors.
+
+License: character, texts and images **CC BY 4.0** — Yann Souetre. Voice samples and motion clips **CC BY-NC 4.0** (generated on free plans: non-commercial use only, with attribution to ElevenLabs and Typecast).
