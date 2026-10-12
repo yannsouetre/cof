@@ -600,3 +600,25 @@ def test_backstage_and_facet_navigation(tmp_path):
     assert any("appearance.c13 is backstage" in w for w in rep.warnings), rep.warnings
     assert not any("appearance.c3 is backstage" in w for w in rep.warnings)   # parent of an offered variant
     assert backstage(m) == [("appearance", "c13")]
+
+
+def test_duplicate_image_warning_and_pack_date(tmp_path):
+    """The same picture embedded twice (reduced copy + original) is warned; front/back views are not."""
+    from PIL import Image
+    import subprocess, sys
+    d = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/10-clara-mercier", d)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    rep = Report(); validate_dir(d, rep, recompute=False)
+    assert not any("same image" in w for w in rep.warnings), [w for w in rep.warnings if "same image" in w]
+    src = d / "elements/appearance/a1/body.front.jpg"
+    im = Image.open(src); im.resize((im.width * 2, im.height * 2)).save(d / "elements/appearance/a1/body.big.jpg", quality=95)
+    m["assets"].append({"id": "a-big", "path": "elements/appearance/a1/body.big.jpg", "role": "reference", "mediaType": "image/jpeg", "license": "CC-BY-4.0"})
+    m["elements"]["appearance"]["variants"]["a1"]["images"].append("a-big")
+    from cof_cli.container import refresh_asset_index
+    refresh_asset_index(d, m); (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep, recompute=False)
+    assert any("same image at two resolutions" in w and "a-big" in w for w in rep.warnings), rep.warnings
+    before = m["provenance"]["modified"]
+    r = subprocess.run([sys.executable, "-m", "cof_cli.cli", "pack", str(d), "-o", str(tmp_path / "o.cof")], capture_output=True, text=True)
+    from cof_cli.container import read_manifest
+    assert read_manifest(tmp_path / "o.cof")["provenance"]["modified"] != before, r.stderr

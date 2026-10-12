@@ -70,6 +70,8 @@ def cmd_pack(a):
         return 1
     if manifest:
         make_thumbnail(src, manifest)
+        from datetime import datetime, timezone
+        manifest.setdefault("provenance", {})["modified"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         (src / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", "utf-8")
     out = Path(a.out) if a.out else src.with_suffix(".cof")
     try:

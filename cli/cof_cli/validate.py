@@ -530,6 +530,8 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
             except Exception:
                 rep.errors.append(f"unreadable NumPy archive: {rel}")
 
+    _duplicate_images(src, manifest, rep)
+
     # KPIs
     comp = compute_completeness(manifest, src)
     if recompute:
@@ -600,6 +602,41 @@ def validate_cof(cof: Path) -> Report:
     if manifest.get("cof") != SPEC_VERSION:
         rep.warnings.append(f"format version {manifest.get('cof')} (tool: {SPEC_VERSION})")
     return rep
+
+
+def _image_sig(path: Path):
+    """24×24 grayscale thumbnail + aspect ratio + pixel size (None if Pillow is missing or the image is unreadable)."""
+    try:
+        from PIL import Image
+        with Image.open(path) as im:
+            size = im.size
+            im.draft("L", (96, 96))
+            px = list(im.convert("L").resize((24, 24)).tobytes())
+        return px, size[0] / size[1] if size[1] else 0, size
+    except Exception:
+        return None
+
+
+def _duplicate_images(src: Path, manifest: dict, rep: "Report") -> None:
+    """Warn when the same picture is embedded twice (e.g. a reduced copy AND the original): same aspect ratio,
+    near-identical pixels (mean difference ≤ 2/255 on a 24×24 thumbnail). Front/back views of a silhouette differ far more."""
+    seen = []
+    for a in manifest.get("assets") or []:
+        if not str(a.get("mediaType", "")).startswith("image/") or a.get("role") == "derived" or not a.get("path"):
+            continue
+        f = src / a["path"]
+        if not f.is_file():
+            continue
+        sig = _image_sig(f)
+        if not sig:
+            continue
+        for b, sb in seen:
+            if abs(sig[1] - sb[1]) <= 0.01 * max(sb[1], 1e-6) and sum(abs(x - y) for x, y in zip(sig[0], sb[0])) / len(sig[0]) <= 2:
+                small, big = (a, b) if sig[2][0] * sig[2][1] <= sb[2][0] * sb[2][1] else (b, a)
+                rep.warnings.append(f"assets {small['id']} and {big['id']} are the same image{' at two resolutions' if sig[2] != sb[2] else ''} ({small['path']}, {big['path']}) — keep one (the lighter one is usually enough)")
+                break
+        else:
+            seen.append((a, sig))
 
 
 HEAD_ONLY = {"closeup", "head", "bust"}      # asset framings that cannot show an outfit
