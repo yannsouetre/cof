@@ -377,11 +377,11 @@ def test_environment_variants_and_self_contained_3d(tmp_path):
     m = json.loads((d / "manifest.json").read_text("utf-8"))
     img = next(a for a in m["assets"] if a.get("role") in ("reference", "view"))
     for i, use in ((1, "background"), (2, "location")):
-        (d / f"elements/appearance/x{i}").mkdir(parents=True)
-        shutil.copy(d / img["path"], d / f"elements/appearance/x{i}/place.jpg")
-        m["assets"].append({"id": f"a-env-{i}", "path": f"elements/appearance/x{i}/place.jpg", "role": "environment", "mediaType": "image/jpeg", "license": "CC-BY-4.0", "bytes": 0, "sha256": "0" * 64})
-        m["elements"]["appearance"]["variants"][f"x{i}"] = {"kind": "environment", "use": use, "label": f"place {i}", "images": [f"a-env-{i}"]}
-    m["presets"]["default"]["slots"]["appearance"] = m["presets"]["default"]["slots"]["appearance"] + ["x1", "x2"]
+        (d / f"elements/appearance/tenv{i}").mkdir(parents=True)
+        shutil.copy(d / img["path"], d / f"elements/appearance/tenv{i}/place.jpg")
+        m["assets"].append({"id": f"a-env-{i}", "path": f"elements/appearance/tenv{i}/place.jpg", "role": "environment", "mediaType": "image/jpeg", "license": "CC-BY-4.0", "bytes": 0, "sha256": "0" * 64})
+        m["elements"]["appearance"]["variants"][f"tenv{i}"] = {"kind": "environment", "use": use, "label": f"place {i}", "images": [f"a-env-{i}"]}
+    m["presets"]["default"]["slots"]["appearance"] = m["presets"]["default"]["slots"]["appearance"] + ["tenv1", "tenv2"]
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     from cof_cli.container import refresh_asset_index
     refresh_asset_index(d, m); (d / "manifest.json").write_text(json.dumps(m), "utf-8")

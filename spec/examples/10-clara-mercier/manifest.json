@@ -237,6 +237,141 @@
             "a-env-e5-desktop",
             "a-env-e5-mobile"
           ]
+        },
+        "c1": {
+          "kind": "clothing",
+          "label": "Pull torsadé crème / Cream cable-knit sweater",
+          "style": "photo-realistic",
+          "images": [
+            "a-cl-c1"
+          ],
+          "garment": "outerwear"
+        },
+        "c2": {
+          "kind": "clothing",
+          "label": "T-shirt « Respecter la nature » / “Respect nature” T-shirt",
+          "style": "photo-realistic",
+          "images": [
+            "a-cl-c2"
+          ],
+          "garment": "top"
+        },
+        "c3": {
+          "kind": "clothing",
+          "label": "Pantalon à pinces beige / Beige pleated trousers",
+          "style": "photo-realistic",
+          "images": [
+            "a-cl-c3"
+          ],
+          "garment": "bottom"
+        },
+        "c4": {
+          "kind": "clothing",
+          "label": "Baskets crème et vertes / Cream and green sneakers",
+          "style": "photo-realistic",
+          "images": [
+            "a-cl-c4"
+          ],
+          "garment": "shoes"
+        },
+        "c5": {
+          "kind": "clothing",
+          "label": "Sweat gris imprimé / Grey graphic sweatshirt",
+          "style": "photo-realistic",
+          "images": [
+            "a-cl-c5"
+          ],
+          "garment": "outerwear"
+        },
+        "c6": {
+          "kind": "clothing",
+          "label": "T-shirt « Paix & Liberté » / “Peace & Freedom” T-shirt",
+          "style": "photo-realistic",
+          "images": [
+            "a-cl-c6"
+          ],
+          "garment": "top"
+        },
+        "c7": {
+          "kind": "clothing",
+          "label": "Jogging bleu marine / Navy joggers",
+          "style": "photo-realistic",
+          "images": [
+            "a-cl-c7"
+          ],
+          "garment": "bottom"
+        },
+        "c8": {
+          "kind": "clothing",
+          "label": "Baskets rouges / Red trainers",
+          "style": "photo-realistic",
+          "images": [
+            "a-cl-c8"
+          ],
+          "garment": "shoes"
+        },
+        "c9": {
+          "kind": "clothing",
+          "label": "Pull vert sauge col montant / Sage green mock-neck sweater",
+          "style": "photo-realistic",
+          "images": [
+            "a-cl-c9"
+          ],
+          "garment": "outerwear"
+        },
+        "c10": {
+          "kind": "clothing",
+          "label": "Chemise fleurie / Floral shirt",
+          "style": "photo-realistic",
+          "images": [
+            "a-cl-c10"
+          ],
+          "garment": "top"
+        },
+        "c11": {
+          "kind": "clothing",
+          "label": "Pantalon bleu marine / Navy trousers",
+          "style": "photo-realistic",
+          "images": [
+            "a-cl-c11"
+          ],
+          "garment": "bottom"
+        },
+        "c12": {
+          "kind": "clothing",
+          "label": "Mocassins camel / Tan loafers",
+          "style": "photo-realistic",
+          "images": [
+            "a-cl-c12"
+          ],
+          "garment": "shoes"
+        },
+        "x1": {
+          "kind": "accessory",
+          "label": "Guitare folk « peace » / Folk guitar with peace motif",
+          "style": "manga",
+          "images": [
+            "a-ac-x1"
+          ],
+          "accessory": "tool"
+        },
+        "x2": {
+          "kind": "accessory",
+          "label": "Drone de reconnaissance (4 vues) / Recon drone (4 views)",
+          "style": "photo-realistic",
+          "images": [
+            "a-ac-x2"
+          ],
+          "accessory": "companion"
+        },
+        "x3": {
+          "kind": "accessory",
+          "label": "Moto blindée X-09 (4 vues, cockpit) / Armoured bike X-09 (4 views, cockpit)",
+          "style": "photo-realistic",
+          "images": [
+            "a-ac-x3"
+          ],
+          "accessory": "vehicle"
         }
       }
     },
@@ -438,7 +573,11 @@
         ],
         "appearance": [
           "a1",
-          "e1"
+          "e1",
+          "c1",
+          "c2",
+          "c3",
+          "c4"
         ],
         "voice": [
           "v6"
@@ -451,12 +590,12 @@
         ]
       },
       "completeness": {
-        "score": 57,
+        "score": 59,
         "level": "C",
         "layers": {
           "identity": 100,
           "personality": 60,
-          "appearance": 20,
+          "appearance": 30,
           "physique": 100,
           "voice": 65,
           "volume": 0,
@@ -467,10 +606,11 @@
           "chat-text",
           "agent-persona",
           "chat-voice",
+          "image-video-gen",
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc1",
-        "computed_at": "2026-10-12T14:44:47Z"
+        "computed_at": "2026-10-12T15:57:00Z"
       }
     },
     "en-manga": {
@@ -486,7 +626,8 @@
       "slots": {
         "appearance": [
           "a5",
-          "e5"
+          "e5",
+          "x1"
         ],
         "voice": [
           "v10"
@@ -515,7 +656,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc1",
-        "computed_at": "2026-10-12T14:44:47Z"
+        "computed_at": "2026-10-12T15:57:00Z"
       }
     },
     "en-12": {
@@ -534,7 +675,11 @@
         ],
         "appearance": [
           "a2",
-          "e4"
+          "e4",
+          "c5",
+          "c6",
+          "c7",
+          "c8"
         ],
         "voice": [
           "v9"
@@ -544,12 +689,12 @@
         ]
       },
       "completeness": {
-        "score": 55,
+        "score": 57,
         "level": "C",
         "layers": {
           "identity": 100,
           "personality": 50,
-          "appearance": 20,
+          "appearance": 30,
           "physique": 100,
           "voice": 65,
           "volume": 0,
@@ -560,10 +705,11 @@
           "chat-text",
           "agent-persona",
           "chat-voice",
+          "image-video-gen",
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc1",
-        "computed_at": "2026-10-12T14:44:47Z"
+        "computed_at": "2026-10-12T15:57:00Z"
       }
     },
     "en-65": {
@@ -582,7 +728,11 @@
         ],
         "appearance": [
           "a3",
-          "e3"
+          "e3",
+          "c9",
+          "c10",
+          "c11",
+          "c12"
         ],
         "voice": [
           "v7"
@@ -592,12 +742,12 @@
         ]
       },
       "completeness": {
-        "score": 55,
+        "score": 57,
         "level": "C",
         "layers": {
           "identity": 100,
           "personality": 50,
-          "appearance": 20,
+          "appearance": 30,
           "physique": 100,
           "voice": 65,
           "volume": 0,
@@ -608,10 +758,11 @@
           "chat-text",
           "agent-persona",
           "chat-voice",
+          "image-video-gen",
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc1",
-        "computed_at": "2026-10-12T14:44:47Z"
+        "computed_at": "2026-10-12T15:57:00Z"
       }
     },
     "en-future": {
@@ -630,7 +781,9 @@
         ],
         "appearance": [
           "a4",
-          "e2"
+          "e2",
+          "x2",
+          "x3"
         ],
         "voice": [
           "v8"
@@ -659,7 +812,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc1",
-        "computed_at": "2026-10-12T14:44:47Z"
+        "computed_at": "2026-10-12T15:57:00Z"
       }
     },
     "en-agent": {
@@ -681,12 +834,12 @@
         ]
       },
       "completeness": {
-        "score": 63,
+        "score": 65,
         "level": "B",
         "layers": {
           "identity": 100,
           "personality": 90,
-          "appearance": 20,
+          "appearance": 30,
           "physique": 100,
           "voice": 65,
           "volume": 0,
@@ -698,10 +851,11 @@
           "agent-persona",
           "agent-runtime",
           "chat-voice",
+          "image-video-gen",
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc1",
-        "computed_at": "2026-10-12T14:44:47Z"
+        "computed_at": "2026-10-12T15:57:00Z"
       }
     },
     "fr": {
@@ -723,12 +877,12 @@
         ]
       },
       "completeness": {
-        "score": 57,
+        "score": 59,
         "level": "C",
         "layers": {
           "identity": 100,
           "personality": 60,
-          "appearance": 20,
+          "appearance": 30,
           "physique": 100,
           "voice": 65,
           "volume": 0,
@@ -739,10 +893,11 @@
           "chat-text",
           "agent-persona",
           "chat-voice",
+          "image-video-gen",
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc1",
-        "computed_at": "2026-10-12T14:44:47Z"
+        "computed_at": "2026-10-12T15:57:00Z"
       }
     },
     "fr-manga": {
@@ -758,7 +913,8 @@
       "slots": {
         "appearance": [
           "a5",
-          "e5"
+          "e5",
+          "x1"
         ],
         "voice": [
           "v5"
@@ -787,7 +943,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc1",
-        "computed_at": "2026-10-12T14:44:47Z"
+        "computed_at": "2026-10-12T15:57:00Z"
       }
     },
     "fr-12": {
@@ -806,7 +962,11 @@
         ],
         "appearance": [
           "a2",
-          "e4"
+          "e4",
+          "c5",
+          "c6",
+          "c7",
+          "c8"
         ],
         "voice": [
           "v4"
@@ -816,12 +976,12 @@
         ]
       },
       "completeness": {
-        "score": 55,
+        "score": 57,
         "level": "C",
         "layers": {
           "identity": 100,
           "personality": 50,
-          "appearance": 20,
+          "appearance": 30,
           "physique": 100,
           "voice": 65,
           "volume": 0,
@@ -832,10 +992,11 @@
           "chat-text",
           "agent-persona",
           "chat-voice",
+          "image-video-gen",
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc1",
-        "computed_at": "2026-10-12T14:44:47Z"
+        "computed_at": "2026-10-12T15:57:00Z"
       }
     },
     "fr-65": {
@@ -854,7 +1015,11 @@
         ],
         "appearance": [
           "a3",
-          "e3"
+          "e3",
+          "c9",
+          "c10",
+          "c11",
+          "c12"
         ],
         "voice": [
           "v2"
@@ -864,12 +1029,12 @@
         ]
       },
       "completeness": {
-        "score": 57,
+        "score": 59,
         "level": "C",
         "layers": {
           "identity": 100,
           "personality": 60,
-          "appearance": 20,
+          "appearance": 30,
           "physique": 100,
           "voice": 65,
           "volume": 0,
@@ -880,10 +1045,11 @@
           "chat-text",
           "agent-persona",
           "chat-voice",
+          "image-video-gen",
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc1",
-        "computed_at": "2026-10-12T14:44:47Z"
+        "computed_at": "2026-10-12T15:57:00Z"
       }
     },
     "fr-futur": {
@@ -902,7 +1068,9 @@
         ],
         "appearance": [
           "a4",
-          "e2"
+          "e2",
+          "x2",
+          "x3"
         ],
         "voice": [
           "v3"
@@ -931,7 +1099,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc1",
-        "computed_at": "2026-10-12T14:44:47Z"
+        "computed_at": "2026-10-12T15:57:00Z"
       }
     },
     "fr-agent": {
@@ -953,12 +1121,12 @@
         ]
       },
       "completeness": {
-        "score": 63,
+        "score": 65,
         "level": "B",
         "layers": {
           "identity": 100,
           "personality": 90,
-          "appearance": 20,
+          "appearance": 30,
           "physique": 100,
           "voice": 65,
           "volume": 0,
@@ -970,10 +1138,11 @@
           "agent-persona",
           "agent-runtime",
           "chat-voice",
+          "image-video-gen",
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc1",
-        "computed_at": "2026-10-12T14:44:47Z"
+        "computed_at": "2026-10-12T15:57:00Z"
       }
     }
   },
@@ -1851,6 +2020,246 @@
       "description": "explique en montrant / explains, pointing"
     },
     {
+      "id": "a-cl-c1",
+      "path": "elements/appearance/c1/outfit.front.jpg",
+      "role": "view",
+      "mediaType": "image/jpeg",
+      "bytes": 120834,
+      "sha256": "53a1b6fdc50385c2bdb01745493656ea1620ea7bdebaf39ddc6db08d8ef67be0",
+      "license": "CC-BY-4.0",
+      "subject": "outfit",
+      "angle": "front",
+      "width": 849,
+      "height": 755,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-cl-c2",
+      "path": "elements/appearance/c2/outfit.front.jpg",
+      "role": "view",
+      "mediaType": "image/jpeg",
+      "bytes": 55330,
+      "sha256": "df54a79139a3fce2372518cdf89b7e525adedf7482869cdbfba70c78b0b8882a",
+      "license": "CC-BY-4.0",
+      "subject": "outfit",
+      "angle": "front",
+      "width": 776,
+      "height": 760,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-cl-c3",
+      "path": "elements/appearance/c3/outfit.front.jpg",
+      "role": "view",
+      "mediaType": "image/jpeg",
+      "bytes": 26729,
+      "sha256": "758fc659e16d82c13c3557bed606a18c0cd678f5bf21b6b2d404bfe40c2eaad1",
+      "license": "CC-BY-4.0",
+      "subject": "outfit",
+      "angle": "front",
+      "width": 474,
+      "height": 746,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-cl-c4",
+      "path": "elements/appearance/c4/outfit.front.jpg",
+      "role": "view",
+      "mediaType": "image/jpeg",
+      "bytes": 66847,
+      "sha256": "d949d79decb4830dceea5d13d5f745eec57b1d45cfacbbb598a24dbcf55c7f12",
+      "license": "CC-BY-4.0",
+      "subject": "outfit",
+      "angle": "front",
+      "width": 1024,
+      "height": 620,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-cl-c5",
+      "path": "elements/appearance/c5/outfit.front.jpg",
+      "role": "view",
+      "mediaType": "image/jpeg",
+      "bytes": 96360,
+      "sha256": "565a80c94b533d8e12a1a310d81ecc97de50b5567de12f20a788ea82e2b23ea6",
+      "license": "CC-BY-4.0",
+      "subject": "outfit",
+      "angle": "front",
+      "width": 757,
+      "height": 746,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-cl-c6",
+      "path": "elements/appearance/c6/outfit.front.jpg",
+      "role": "view",
+      "mediaType": "image/jpeg",
+      "bytes": 53941,
+      "sha256": "e58fdd3f1f894e190af95c731f90878c304da85fbb5f1ef87c991bbd19bbd405",
+      "license": "CC-BY-4.0",
+      "subject": "outfit",
+      "angle": "front",
+      "width": 748,
+      "height": 747,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-cl-c7",
+      "path": "elements/appearance/c7/outfit.front.jpg",
+      "role": "view",
+      "mediaType": "image/jpeg",
+      "bytes": 35155,
+      "sha256": "73bb8e3832efd32fe90b1e729dfe50c68b7252616c0d5a4d9fd077da4ad2ddc9",
+      "license": "CC-BY-4.0",
+      "subject": "outfit",
+      "angle": "front",
+      "width": 414,
+      "height": 745,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-cl-c8",
+      "path": "elements/appearance/c8/outfit.front.jpg",
+      "role": "view",
+      "mediaType": "image/jpeg",
+      "bytes": 74834,
+      "sha256": "da2cfebd3da6fde8d770a66b705d5e5944d2c04666efac27e09903424cd3a457",
+      "license": "CC-BY-4.0",
+      "subject": "outfit",
+      "angle": "front",
+      "width": 1024,
+      "height": 614,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-cl-c9",
+      "path": "elements/appearance/c9/outfit.front.jpg",
+      "role": "view",
+      "mediaType": "image/jpeg",
+      "bytes": 85859,
+      "sha256": "924f66a9ecf5e61bfa0e6fe362fc83c8c8805e7230ac08d780bb31fc6f42624f",
+      "license": "CC-BY-4.0",
+      "subject": "outfit",
+      "angle": "front",
+      "width": 750,
+      "height": 749,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-cl-c10",
+      "path": "elements/appearance/c10/outfit.front.jpg",
+      "role": "view",
+      "mediaType": "image/jpeg",
+      "bytes": 84543,
+      "sha256": "b435b3d9e4bdd936f7730c49c452d7337ab3bf0b685cdf42a7ea9f0204d1f77b",
+      "license": "CC-BY-4.0",
+      "subject": "outfit",
+      "angle": "front",
+      "width": 768,
+      "height": 752,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-cl-c11",
+      "path": "elements/appearance/c11/outfit.front.jpg",
+      "role": "view",
+      "mediaType": "image/jpeg",
+      "bytes": 25861,
+      "sha256": "c0e2868524b3f6233c13fd671d9545d88aed6d96cbdbd20aa9e993228e258ec8",
+      "license": "CC-BY-4.0",
+      "subject": "outfit",
+      "angle": "front",
+      "width": 422,
+      "height": 745,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-cl-c12",
+      "path": "elements/appearance/c12/outfit.front.jpg",
+      "role": "view",
+      "mediaType": "image/jpeg",
+      "bytes": 56292,
+      "sha256": "b4c09971dc1dd71056e0a7c8493595eb87e762781b9e95a93dbd3e2e447c6647",
+      "license": "CC-BY-4.0",
+      "subject": "outfit",
+      "angle": "front",
+      "width": 1024,
+      "height": 593,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-ac-x1",
+      "path": "elements/appearance/x1/accessory.front.jpg",
+      "role": "view",
+      "mediaType": "image/jpeg",
+      "bytes": 96927,
+      "sha256": "3df9b4c07f28bcfcb9a7d921644cb3d5f4c4b5262419b9f6830e690fa9b706f7",
+      "license": "CC-BY-4.0",
+      "subject": "detail",
+      "angle": "front",
+      "width": 1280,
+      "height": 714,
+      "style": "manga",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-ac-x2",
+      "path": "elements/appearance/x2/accessory.front.jpg",
+      "role": "view",
+      "mediaType": "image/jpeg",
+      "bytes": 143836,
+      "sha256": "2fe20cb75e7a56ea52a69518303201be622441860a552668e796afbec0612aa8",
+      "license": "CC-BY-4.0",
+      "subject": "detail",
+      "angle": "front",
+      "width": 1600,
+      "height": 893,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-ac-x3",
+      "path": "elements/appearance/x3/accessory.front.jpg",
+      "role": "view",
+      "mediaType": "image/jpeg",
+      "bytes": 178795,
+      "sha256": "dc6c6f950e0685df836cc96f2e87ad8db5673f078c5d96c06cc3a9aa519277fc",
+      "license": "CC-BY-4.0",
+      "subject": "detail",
+      "angle": "front",
+      "width": 1600,
+      "height": 893,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
       "id": "thumbnail",
       "path": "Thumbnails/thumbnail.png",
       "role": "derived",
@@ -1919,17 +2328,17 @@
       "files",
       "motion"
     ],
-    "variants": 37,
+    "variants": 52,
     "presets": 12,
     "identities": 1
   },
   "completeness": {
-    "score": 57,
+    "score": 59,
     "level": "C",
     "layers": {
       "identity": 100,
       "personality": 60,
-      "appearance": 20,
+      "appearance": 30,
       "physique": 100,
       "voice": 65,
       "volume": 0,
@@ -1940,10 +2349,11 @@
       "chat-text",
       "agent-persona",
       "chat-voice",
+      "image-video-gen",
       "archive"
     ],
     "computed_by": "cof-cli/1.0.0rc1",
-    "computed_at": "2026-10-12T14:44:47Z"
+    "computed_at": "2026-10-12T15:57:00Z"
   },
   "preset_tags": [
     {

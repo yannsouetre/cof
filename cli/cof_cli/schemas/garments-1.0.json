@@ -29,6 +29,8 @@
       "bracelet": { "fr": "bracelet, montre", "region": "wrists", "stackable": true }, "ring": { "fr": "bague", "region": "fingers", "stackable": true },
       "bag": { "fr": "sac, cartable", "region": "back-or-hand", "stackable": true }, "weapon": { "fr": "arme", "region": "held" },
       "tool": { "fr": "outil, instrument", "region": "held" }, "headpiece": { "fr": "diadème, bandeau, couronne", "region": "head" },
+      "companion": { "fr": "compagnon (drone, robot, animal)", "region": "none", "stackable": true },
+      "vehicle": { "fr": "véhicule (moto, voiture, monture)", "region": "none", "stackable": true },
       "other": { "fr": "autre", "region": "none", "stackable": true }
     }
   }
