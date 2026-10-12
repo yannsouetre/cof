@@ -68,7 +68,7 @@ Et une **innovation à part** qui mérite sa propre visibilité : **COF-Vector**
 | # | Étape | État |
 |---|---|---|
 | 1 | Dépôt, licences, gouvernance, RFC 0001 | ✅ |
-| 2 | Spécification + schémas + règles (complétude, tags) | ✅ (v0.5) |
+| 2 | Spécification + schémas + règles (complétude, tags) | ✅ (1.0 RC, schémas publiés sur GitHub Pages) |
 | 3 | `cof-cli` : validate / pack / unpack / tokens / completeness / import-export PNG / SOUL / migrate / merge / extract | ✅ |
 | 4 | Exemples 1–2 (texte seul ; apparence) | ✅ (7 exemples) |
 | 5 | Découpage de planches + post-traitements (Python de référence) | ✅ (dérivés optionnels) |
@@ -76,9 +76,9 @@ Et une **innovation à part** qui mérite sa propre visibilité : **COF-Vector**
 | 7 | Schémas des sous-fichiers : card, psyche, weights, voice profile, attitude, pose, skeleton, hair, body, consent, visemes — validés par la CLI | ✅ (11 schémas ; reste `outfit`, `voice.vec`, `face.mesh`) |
 | 8 | `voice measure` (mesures acoustiques → code vocal) | → 1.1 |
 | 9 | Pose depuis photo → OpenPose normalisé + rendu « bonhomme » | → 1.2 |
-| 10 | Builder (identités, 7 catégories typées, presets multi-emplacements, fusion, export de preset, version facile, interface FR/EN/DE/ES/ZH/JA) | ✅ (0.6.0) |
+| 10 | Builder (identités, 7 catégories typées, presets multi-emplacements, fusion, export de preset, version facile, interface FR/EN/DE/ES/ZH/JA) | ✅ (0.9.0, entièrement traduit) |
 | 11 | Exemples : agent avec skills ✅, mixte adulte/mineur ✅ ; VRM + clips, entreprise, consentement complet → 1.1 | ⏳ |
-| 12 | Relecture croisée, **spec figée en 1.0** (gel de structure mer. 14 oct.), builder ⇄ CLI validés | ⏳ |
+| 12 | Relecture croisée, **spec figée en 1.0** (gel de structure mer. 14 oct.), builder ⇄ CLI validés | ⏳ (numérotation 1.0 + corpus négatif faits le 12) |
 
 ## Phases
 
