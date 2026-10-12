@@ -354,7 +354,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T21:50:28Z"
+        "computed_at": "2026-10-12T08:38:45Z"
       }
     },
     "en-manga": {
@@ -395,7 +395,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T21:50:28Z"
+        "computed_at": "2026-10-12T08:38:45Z"
       }
     },
     "en-12": {
@@ -439,7 +439,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T21:50:28Z"
+        "computed_at": "2026-10-12T08:38:45Z"
       }
     },
     "en-65": {
@@ -483,7 +483,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T21:50:28Z"
+        "computed_at": "2026-10-12T08:38:45Z"
       }
     },
     "en-future": {
@@ -527,7 +527,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T21:50:28Z"
+        "computed_at": "2026-10-12T08:38:45Z"
       }
     },
     "en-agent": {
@@ -569,7 +569,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T21:50:28Z"
+        "computed_at": "2026-10-12T08:38:45Z"
       }
     },
     "fr": {
@@ -610,7 +610,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T21:50:28Z"
+        "computed_at": "2026-10-12T08:38:45Z"
       }
     },
     "fr-manga": {
@@ -651,7 +651,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T21:50:28Z"
+        "computed_at": "2026-10-12T08:38:45Z"
       }
     },
     "fr-12": {
@@ -695,7 +695,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T21:50:28Z"
+        "computed_at": "2026-10-12T08:38:45Z"
       }
     },
     "fr-65": {
@@ -739,7 +739,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T21:50:28Z"
+        "computed_at": "2026-10-12T08:38:45Z"
       }
     },
     "fr-futur": {
@@ -783,7 +783,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T21:50:28Z"
+        "computed_at": "2026-10-12T08:38:45Z"
       }
     },
     "fr-agent": {
@@ -825,7 +825,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/0.7.0",
-        "computed_at": "2026-10-11T21:50:28Z"
+        "computed_at": "2026-10-12T08:38:45Z"
       }
     }
   },
@@ -1258,7 +1258,7 @@
       "archive"
     ],
     "computed_by": "cof-cli/0.7.0",
-    "computed_at": "2026-10-11T21:50:28Z"
+    "computed_at": "2026-10-12T08:38:45Z"
   },
   "preset_tags": [
     {
@@ -1327,6 +1327,32 @@
       "presets": [
         "en-agent",
         "fr-agent"
+      ]
+    },
+    {
+      "id": "photo-realistic",
+      "label": "Photo-réaliste / Photo-realistic",
+      "facet": "style",
+      "presets": [
+        "default",
+        "en-12",
+        "en-65",
+        "en-future",
+        "en-agent",
+        "fr",
+        "fr-12",
+        "fr-65",
+        "fr-futur",
+        "fr-agent"
+      ]
+    },
+    {
+      "id": "manga",
+      "label": "Manga",
+      "facet": "style",
+      "presets": [
+        "en-manga",
+        "fr-manga"
       ]
     }
   ]

@@ -418,6 +418,10 @@
           }
         }
       }
+    },
+    "thumbnail_source": {
+      "$ref": "#/$defs/aid",
+      "description": "asset chosen by the author as the source of Thumbnails/thumbnail.png (default: first view of the default preset)"
     }
   },
   "allOf": [
@@ -774,6 +778,10 @@
         "target": {
           "type": "string",
           "description": "target agent profile for a skill / memory: agent-skills (agentskills.io), openclaw, hermes, claude, custom"
+        },
+        "self_contained": {
+          "type": "boolean",
+          "description": "volume3d: false = the author accepts a 3D file whose external resources (MTL, textures, .bin) are absent, e.g. an untextured posing mesh"
         }
       },
       "required": [
@@ -1048,14 +1056,14 @@
         "id",
         "role",
         "mediaType",
-        "bytes",
-        "sha256",
         "license"
       ],
       "anyOf": [
         {
           "required": [
-            "path"
+            "path",
+            "bytes",
+            "sha256"
           ]
         },
         {
@@ -1073,7 +1081,8 @@
         },
         "uri": {
           "type": "string",
-          "pattern": "^https://"
+          "pattern": "^https://",
+          "description": "External reference (e.g. LoRA weights by link). sha256 pins the exact file; without it the link follows the latest version (not reproducible)."
         },
         "role": {
           "enum": [

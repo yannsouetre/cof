@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.5 — 2026-10-12 — escape hatches, discipline, thumbnail choice
+- **3D escape hatch**: OBJ / glTF with external resources are accepted when the variant declares `self_contained: false` (e.g. an untextured posing mesh); the builder explains why in a dialog and asks first; the validator then warns instead of refusing.
+- **LoRA storage**: embedded by default (warning on size) or **by link** — an asset with `uri` and no `path`; `sha256` pins the version, without it the link follows the latest one (warning on link rot). Schema: `sha256` / `bytes` required only for embedded assets.
+- **Thumbnail choice**: `manifest.thumbnail_source` (asset id) picks the image of `Thumbnails/thumbnail.png`; builder selector in Build with preview; default = first view of the default (or exported) preset.
+- **Spec § 11.4 — authoring discipline**: what the validator blocks, what it warns about, and the coherence review every author MUST do without the builder (AI agents included). README section *Open, with discipline* (EN/FR); `cof-author` skill § 4.
+- Example 10: tag family *style* (`photo-realistic`, `manga`).
+- Builder 0.8.5: “file loaded” shown in the loading pop-up (✓, closes after 1 s) instead of a browser alert, same after a build; completeness badge readable in forced dark mode; warning / error colours readable in dark mode (were below 3:1).
+
 ## 0.8.4 — 2026-10-12 — environments, self-contained 3D, OS thumbnail, size badge
 - **Environments**: `appearance/environment` (stackable, ageless, images with `role: environment`, `use: background | location | other`) for chat / video-avatar backgrounds and places tied to the character; `volume3d/environment` (a place as one GLB, USDZ or splat). Schema, model, spec (EN/FR), builder.
 - **3D must be self-contained**: one file per variant carrying meshes, textures and rig; the validator refuses OBJ and glTF with external resources, warns on FBX; the builder only offers VRM / GLB / USDZ (+ splats, 3MF/STL for print).

@@ -39,6 +39,9 @@ More commands (import, export to SOUL.md/IDENTITY.md, migrate, tokens…) in [`c
 
 **Let an AI agent write it** — COF is designed to be authored by agents: give yours the [`cof-author`](skills/cof-author/SKILL.md) skill (or point it to [`llms.txt`](llms.txt)) and the CLI; it edits an unpacked folder, packs, validates and loops until `cof validate` says OK. The flagship example, Clara Mercier v4 (12 presets, two languages, tags, an agent skill), was assembled and updated this way by Claude.
 
+## Open, with discipline
+COF is deliberately flexible: almost everything is optional, unknown keys survive round-trips, and there are explicit escape hatches — a 3D file without its textures (`self_contained: false`), LoRA weights by link instead of embedded, custom `x-` categories. That openness only works with **discipline in what goes in**: the validator blocks what is unsafe or broken (minors and intimate content, missing hashes, unresolved references, undeclared executables…), warns about what is risky (links that can rot, untextured 3D, missing transcripts…), and every author — human, tool or AI agent — runs the coherence review of [spec § 11.4](spec/SPEC.md) before publishing: ages, identity, style, voice, language, rights, provenance.
+
 ## Repository layout
 | Folder | Content |
 |---|---|

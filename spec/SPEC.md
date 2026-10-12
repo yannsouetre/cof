@@ -86,7 +86,7 @@ No constraint on the nature of the character. `morphology.class` ∈ `humanoid |
 - **ZIP**; zip64 accepted for reading.
 - 1st entry: `mimetype`, stored uncompressed, = `application/vnd.cof.character+zip`.
 - 2nd entry: `manifest.json`. A reader MUST be able to operate after these two entries.
-- Optional 3rd entry: `Thumbnails/thumbnail.png` (reserved path, ODF convention), a PNG of at most 256 px on its longest side, stored uncompressed, derived from the default preset's best view (asset `role: derived`, `method: thumbnail`) and referenced by `manifest.thumbnail`. File-manager thumbnailers (Windows, macOS Quick Look, freedesktop) read this fixed path without parsing the manifest. Writers SHOULD include it; it is regenerated, never edited.
+- Optional 3rd entry: `Thumbnails/thumbnail.png` (reserved path, ODF convention), a PNG of at most 256 px on its longest side, stored uncompressed, derived from the default preset's best view (asset `role: derived`, `method: thumbnail`) and referenced by `manifest.thumbnail`; the author MAY pick the source image with `manifest.thumbnail_source` (an asset id), otherwise it is the first view of the default preset — for an exported preset or tag, that of the exported slice. File-manager thumbnailers (Windows, macOS Quick Look, freedesktop) read this fixed path without parsing the manifest. Writers SHOULD include it; it is regenerated, never edited.
 - ASCII paths `[A-Za-z0-9._/-]`, no `..`, no absolute paths, no symbolic links.
 - High-entropy binaries stored uncompressed (`store`), JSON/text as `deflate`.
 - Optional 64-byte alignment (`container.aligned`); encryption forbidden.
@@ -142,7 +142,7 @@ PNG `chara`+`ccv3` (text + thumbnail), `.charx`, `SOUL.md`/`IDENTITY.md`, `.vrm`
 | `personality` | text | `card` (Character Card V3 + psyche, story, lore), `description` (free text) |
 | `appearance` | photos | `reference-set` (loose photos, the AI works it out), `character-sheet` (several angles in one image), `face`, `body`, `hair`, `clothing` (+ `garment`), `accessory` (+ `accessory`), `intimate`, `pilosity` (+ `area` face/body), `feature` (special features: horns, tail, prosthesis… + `region`), `environment` (backgrounds and places tied to the character + `use`: `background` for chat / video-avatar backgrounds, `location` for home, workplace…), `description` |
 | `identity_weights` | weights | `lora`, `lycoris`, `dora`, `textual-inversion`, `ip-adapter-embedding`, `dreambooth`, `other` (+ `covers`) |
-| `volume3d` | 3D | `mesh` (rigged avatar / complete mesh), `face-mesh`, `point-cloud` (splat), `print` (3MF), `other`, `environment` (a place, as one self-contained GLB, USDZ or splat) — **every 3D variant is one self-contained file** carrying meshes, textures and rig (VRM, GLB, USDZ, 3MF, SPZ/PLY/SPLAT); OBJ and glTF with external resources are refused, FBX is discouraged |
+| `volume3d` | 3D | `mesh` (rigged avatar / complete mesh), `face-mesh`, `point-cloud` (splat), `print` (3MF), `other`, `environment` (a place, as one self-contained GLB, USDZ or splat) — **every 3D variant is one self-contained file** carrying meshes, textures and rig (VRM, GLB, USDZ, 3MF, SPZ/PLY/SPLAT); OBJ and glTF with external resources are refused unless the variant declares `self_contained: false` (e.g. an untextured mesh used for posing; the builder asks first), FBX is discouraged |
 | `voice` | audio | `samples` (samples, optional transcript), `described` (profile without audio) |
 | `posture` | pose (**library**) | `photo` (one pose), `photos` (several views of the same pose), `openpose`, `silhouette`, `attitude` (motion signature), `description` — with `use: pose-only` (inference retains only the pose) |
 | `motion` | motion (**library**) | `clips` (BVH / VRMA), `video` (very short, low resolution, 20 MB cap unless `max_bytes_ack`), `attitude`, `description` |
@@ -270,7 +270,7 @@ Appearance variant type (`kind: intimate`), same schema as `face`/`body`. **Noth
 // elements/identity_weights/l1/weights.json
 { "kind": "lora",                                 // lora | lycoris | dora | textual-inversion | ip-adapter-embedding | dreambooth | other
   "base_model": { "name": "FLUX.1-dev", "family": "flux", "version": "1.0", "hash": "sha256:…" },   // the base model is MANDATORY: a LoRA without a base is unusable
-  "file": "a-lora-l1",                            // asset (safetensors) — externalized by default (uri + sha256), given the sizes
+  "file": "a-lora-l1",                            // asset (safetensors): embedded by default; or by link (asset with `uri`)
   "format": "safetensors", "rank": 16, "bytes": 171000000,
   "trigger_words": ["leamarchand", "woman"], "recommended_weight": 0.8, "weight_range": [0.6, 1.0],
   "covers": ["face", "hair", "body"],             // what the LoRA encodes (for coherence and priorities)
@@ -279,7 +279,7 @@ Appearance variant type (`kind: intimate`), same schema as `face`/`body`. **Noth
   "training": { "images": 40, "steps": 1500, "resolution": 1024, "consent": "rights/consent.json" },
   "style": "photo-realistic", "license": "CC-BY-NC-4.0" }
 ```
-Rules: `base_model.name` REQUIRED; `trigger_words` and `recommended_weight` RECOMMENDED; the weights file is an asset with `role: weights` (hash REQUIRED even if it is external); `allowTraining` and `consent` apply; a LoRA of a real person without consent is invalid. IP-Adapter / "face ID" embeddings are accepted *only* if they are not recognition embeddings (§ 4.2).
+Rules: `base_model.name` REQUIRED; `trigger_words` and `recommended_weight` RECOMMENDED; the weights file is an asset with `role: weights`. **Storage**: embedded in the container by default — reproducible even if the model disappears online, but heavy (tens to hundreds of MB); or **by link**, an asset with `uri` and no `path` — with `sha256` the link is pinned to one exact file, without it the link follows the latest version published at that address (not reproducible). Links rot or move (model removed, account deleted, platform closed): validators warn on every linked asset; `allowTraining` and `consent` apply; a LoRA of a real person without consent is invalid. IP-Adapter / "face ID" embeddings are accepted *only* if they are not recognition embeddings (§ 4.2).
 
 ### 4.7 Visual styles **[NEW]**
 `visual-styles-1.0` vocabulary (CC0, extensible): `photo-realistic`, `cinematic`, `3d-render`, `anime`, `manga`, `comic`, `cartoon`, `pixel-art`, `lego`, `clay`, `watercolor`, `oil-painting`, `ink-sketch`, `lineart`, `low-poly`, `voxel`, `chibi`, `other:<free>`. Carried by **each image** (`assets[].style`), by **each visual variant**, and expected by **each preset** (`presets.<p>.style`). The base list stays **short**; refinements go through **complementary tags** `style_tags[]` (e.g. `anime-90s`, `ghibli-like`, `ukiyo-e`) rather than by lengthening the list. The builder proposes it automatically (lightweight classifier or external AI); the author confirms. The coherence check flags a preset that mixes styles without declaring it.
@@ -344,7 +344,7 @@ Rules:
 
 **Token profiles** per personality variant: `summary` ≤ 512, `standard` 1–2 k, `full` ~4 k, `lore` ≤ 32 k activated per entry; no permanent block > 2,500 tokens without justification; injection order `identity → rules → lore → history → identity_recap`.
 
-**Size classes** (per channel, not by powers of 2): `lite` ≤ 20 MB, `standard` ≤ 100 MB, `full` unlimited with externalization (`uri` + `sha256`) — identity weights and splats **external by default**. Binaries stored uncompressed. A modular file can be large (dozens of variants): the "save as" option for a preset produces a lightweight version.
+**Size classes** (per channel, not by powers of 2): `lite` ≤ 20 MB, `standard` ≤ 100 MB, `full` unlimited. Large assets MAY be externalized (`uri`, `sha256` recommended), but **embedding is the default**, identity weights included: links rot, and a character must survive its sources. Binaries stored uncompressed. A modular file can be large (dozens of variants): the "save as" option for a preset produces a lightweight version.
 
 ---
 
@@ -390,6 +390,23 @@ Single web page (HTML/JS, offline, GitHub Pages + Hugging Face Space), everythin
 **Priorities**: dedicated screen, defaults from § 2.5, editable; exported into the manifest.
 
 **Build**: size class, compression (cropping/JPEG quality, WebP; Opus for long audio; externalization of large assets; **video size/quality** displayed when videos are present, 20 MB cap that can be disabled with a warning), generation of derived files **on request only**, ancillary exports (PNG ccv3, `.charx`, SOUL/IDENTITY, `.vrm`), "save as" per preset, **import and merge** of other `.cof` files.
+
+### 11.4 Authoring discipline: what every author must check — including AI agents
+COF is deliberately permissive: almost everything is optional, unknown keys are preserved, and explicit escape hatches exist (`self_contained: false` for a 3D file without its textures, weights by link, `x-` categories). The price of that openness is **discipline in what goes in**. It rests on three layers.
+
+1. **Validator, blocking** (`cof validate`, every file): age on the representations that require it; `intimate` ≥ 18 and flagged in `tags.content`; per-preset minor rules (no `intimate`, no estimated body, no effective `allowSexualUsage`); unresolved references (assets, variants, presets, tags); one variant per kind in a preset except the stackable kinds; overlapping body regions; undeclared executable content and any pickle; missing hash or size of an embedded asset; a non-fictional character without consent; a non-self-contained 3D file without `self_contained: false`; a coherence finding of severity `illegal`.
+2. **Validator, warnings** (accepted, shown): weights or assets by link (with or without `sha256`), declared non-self-contained 3D, FBX, voice samples without transcript, a permanent prompt block above 2,500 tokens, a voice shared by presets far apart in age, `derives_from` across kinds, deprecated keys.
+3. **Coherence review, judgment.** The builder runs it with local heuristics and an optional AI gateway (§ 11.2). **An author who does not use the builder — a script, another tool, an AI agent — MUST perform it before publishing** and report what could not be checked:
+   - **Age** — the apparent age in every image matches the variant's `age`; text personalities, voices, outfits and poses suit the preset's age.
+   - **Minors** — nothing sexualised, suggestive or intimate in any element of a preset under 18 (text, image, voice, pose); in doubt, the preset is treated as a minor preset. Such a finding is `illegal`: the file is not built.
+   - **Identity** — the same person across the variants of one identity (face, hair, proportions), except deliberate transformations (age, style).
+   - **Style** — the variants of a preset share its declared style (no photo-realistic face in a manga preset).
+   - **Voice** — perceived age and gender presentation match the preset; the sample language equals `language`; transcripts match the audio.
+   - **Language** — every text variant is written in its declared language; `language` tags match the content.
+   - **Rights** — each licence is the real one of its asset (including the generator's plan terms); permissions are what the rights holder actually grants; a real person requires consent.
+   - **Provenance** — AI-generated media carry `digitalSourceType: trainedAlgorithmicMedia` and their generator.
+   - **Third parties and secrets** — environments, documents, skills and memories contain no identifiable third party without consent and no secret (keys, personal data).
+   - **Weight** — the file stays within its target size class; heavy assets (LoRA, 3D scenes, videos) are justified.
 
 ### 11.3 Merging and extraction (`cof merge`, `cof extract`)
 - **Merge**: same `name` + `nickname` ⇒ same identity (elements and presets added to that identity); otherwise a new identity. Variants and presets renamed on collision (prefix), `derives_from`/`extends` rewritten, assets deduplicated by `sha256`, `provenance.source` ← identifiers of the source files.

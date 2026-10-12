@@ -315,7 +315,7 @@ def test_preset_tags_and_extract_tag(tmp_path):
     assert set(m["presets"]) == {"fr", "fr-manga", "fr-12", "fr-65", "fr-futur", "fr-agent"} and m["default_preset"] == "fr"
     assert "extends" not in m["presets"]["fr"]                       # parent (default) outside the selection → flattened
     assert {v["language"] for v in m["elements"]["voice"]["variants"].values()} == {"fr"}
-    assert {t["id"] for t in m["preset_tags"]} == {"fr", "age-12", "age-29", "age-65", "agent"}   # tags kept, restricted
+    assert {t["id"] for t in m["preset_tags"]} == {"fr", "age-12", "age-29", "age-65", "agent", "photo-realistic", "manga"}   # tags kept, restricted
     out2 = tmp_path / "en12"; extract_tag(src, out2, ["en", "age-12"])
     m2 = json.loads((out2 / "manifest.json").read_text("utf-8"))
     assert list(m2["presets"]) == ["en-12"]
@@ -398,3 +398,28 @@ def test_environment_variants_and_self_contained_3d(tmp_path):
         rep = Report(); validate_dir(d, rep, recompute=False)
         assert any("autonome" in e or "externes" in e for e in rep.errors) != ok, (name, rep.errors)
         (d / "elements/volume3d/m1" / name).unlink()
+
+
+def test_escape_hatches_and_thumbnail_source(tmp_path):
+    """self_contained:false turns the OBJ refusal into a warning; weights by link are valid (warned);
+    thumbnail_source picks the OS thumbnail."""
+    import subprocess, sys
+    d = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/10-clara-mercier", d)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    (d / "elements/volume3d/m1").mkdir(parents=True); (d / "elements/volume3d/m1/avatar.obj").write_text("v 0 0 0\n", "utf-8")
+    m["assets"].append({"id": "a-3d", "path": "elements/volume3d/m1/avatar.obj", "role": "mesh", "mediaType": "model/obj", "license": "CC-BY-4.0"})
+    m["elements"]["volume3d"] = {"variants": {"m1": {"kind": "mesh", "path": "elements/volume3d/m1/avatar.obj", "self_contained": False, "age": {"value": 29, "unit": "years", "basis": "canonical"}}}}
+    (d / "elements/identity_weights/w1").mkdir(parents=True)
+    (d / "elements/identity_weights/w1/weights.json").write_text(json.dumps({"kind": "lora", "base_model": {"name": "FLUX.1-dev", "family": "flux"}, "format": "safetensors", "file": "a-w1", "storage": "link"}), "utf-8")
+    m["assets"].append({"id": "a-w1", "uri": "https://huggingface.co/x/y/resolve/main/clara.safetensors", "role": "weights", "mediaType": "application/octet-stream", "license": "CC-BY-4.0", "base_model": "FLUX.1-dev"})
+    m["elements"]["identity_weights"] = {"variants": {"w1": {"kind": "lora", "spec": "elements/identity_weights/w1/weights.json", "age": {"value": 29, "unit": "years", "basis": "canonical"}}}}
+    sheet = next(a for a in m["assets"] if a["path"].startswith("elements/appearance/a3/"))
+    m["thumbnail_source"] = sheet["id"]
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    out = tmp_path / "o.cof"
+    r = subprocess.run([sys.executable, "-c", "import sys; from cof_cli.cli import main; sys.exit(main())", "pack", str(d), "-o", str(out)], capture_output=True, text=True)
+    assert r.returncode == 0, r.stdout + r.stderr
+    rep = validate_cof(out); assert rep.ok, rep.errors
+    assert any("non autonome" in w for w in rep.warnings) and any("sans sha256" in w for w in rep.warnings)
+    pm = json.loads(zipfile.ZipFile(out).read("manifest.json"))
+    assert next(a for a in pm["assets"] if a["id"] == "thumbnail")["source"] == sheet["id"]

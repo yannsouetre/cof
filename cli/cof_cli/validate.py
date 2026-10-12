@@ -313,6 +313,13 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
         if v.get("kind") == "card" and not v.get("card"):
             rep.errors.append(f"personality.{vid} (card) : chemin `card` (card.json) manquant")
 
+    # assets by link (e.g. LoRA weights): allowed, flagged
+    for a in manifest.get("assets", []) or []:
+        if a.get("uri") and not a.get("path"):
+            if a.get("sha256"):
+                rep.warnings.append(f"asset {a.get('id')} par lien ({a.get('uri')}) : version figée par sha256, mais le lien peut disparaître ou changer — l'intégrer au .cof garantit la reproductibilité")
+            else:
+                rep.warnings.append(f"asset {a.get('id')} par lien sans sha256 : suit la dernière version (non reproductible) et le lien peut disparaître")
     # 3D must be self-contained: one file carrying meshes AND textures (GLB/VRM/USDZ/3MF/splats)
     for vid, v in ((elements.get("volume3d") or {}).get("variants") or {}).items():
         for rel in [v.get("path"), (v.get("mesh") or {}).get("path")]:
@@ -320,8 +327,11 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                 continue
             ext = rel.rsplit(".", 1)[-1].lower()
             where3 = f"volume3d.{vid} ({v.get('kind')})"
+            if ext in ("obj", "gltf") and v.get("self_contained") is False:
+                rep.warnings.append(f"{where3} : déclaré non autonome (`self_contained: false`) — matériaux / textures / données externes absents, accepté par choix de l'auteur")
+                continue
             if ext == "obj":
-                rep.errors.append(f"{where3} : OBJ n'est pas autonome (MTL et textures séparés) — convertir en GLB (Blender, obj2gltf)")
+                rep.errors.append(f"{where3} : OBJ n'est pas autonome (MTL et textures séparés) — convertir en GLB (Blender, obj2gltf), ou déclarer `self_contained: false` si un maillage sans texture suffit (ex. poses)")
             elif ext == "gltf":
                 try:
                     g = json.loads((src / rel).read_text("utf-8"))
@@ -329,7 +339,7 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                 except Exception:
                     ext_uris = ["?"]
                 if ext_uris:
-                    rep.errors.append(f"{where3} : glTF avec ressources externes ({len(ext_uris)}) — convertir en GLB (gltf-transform copy in.gltf out.glb)")
+                    rep.errors.append(f"{where3} : glTF avec ressources externes ({len(ext_uris)}) — convertir en GLB (gltf-transform copy in.gltf out.glb), ou déclarer `self_contained: false`")
             elif ext == "fbx":
                 rep.warnings.append(f"{where3} : FBX peut référencer des textures externes et reste propriétaire — préférer GLB/VRM")
             elif v.get("kind") == "environment" and ext not in ("glb", "usdz", "spz", "ply", "splat", "gltf"):
@@ -405,6 +415,9 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
             for v in [x for x in r.get("appearance", []) if x.get("kind") == k]:
                 cand += [A[i] for i in v.get("images", []) or [] if i in A and A[i].get("path")]
         best = next((a for a in cand if a.get("subject") == "head" and a.get("angle") == "front"), cand[0] if cand else None)
+        ts = A.get(manifest.get("thumbnail_source") or "")
+        if ts and ts.get("path"):
+            best = ts                      # the author's explicit choice wins
         if best:
             manifest["thumbnail"] = best["path"]
         # languages = union of personality / voice sample languages

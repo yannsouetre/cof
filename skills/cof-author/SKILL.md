@@ -46,7 +46,17 @@ Other commands: `import` (PNG/JSON character card → folder), `export --format 
 - **Thumbnail**: `cof pack` writes `Thumbnails/thumbnail.png` (≤ 256 px) from the default preset's best view; never edit it by hand.
 - **Slice for a platform**: `cof extract big.cof --tag fr -o fr/` (parents outside the selection are flattened, unused assets dropped).
 
-## 4. Before you hand the file back
+## 4. Coherence review — your job, the validator cannot see images
+The builder runs coherence heuristics; you do not have it, so check by looking (spec § 11.4) and say what you could not verify:
+- **Age**: apparent age of each image = the variant's `age`; texts, voices, outfits and poses suit the preset's age.
+- **Minors**: nothing sexualised, suggestive or intimate in any element of a preset under 18 — if you find any, stop and do not build the file.
+- **Identity**: same person across one identity's variants (except deliberate age / style changes). **Style**: a preset's variants share its style.
+- **Voice**: perceived age and gender presentation match; sample language = `language`; transcripts match the audio.
+- **Language**: text variants are in their declared language. **Rights**: licences and permissions are the real ones; real person ⇒ consent.
+- **Provenance**: AI media carry `digitalSourceType: trainedAlgorithmicMedia`. **Secrets**: no keys or personal data in skills, memories, documents.
+- **Escape hatches are explicit**: a 3D file without textures needs `self_contained: false`; weights by link are an asset with `uri` (add `sha256` to pin a version) — embedding is the default.
+
+## 5. Before you hand the file back
 1. `cof validate` on the packed `.cof` says **OK** (warnings explained to the user, not hidden).
 2. Re-open the manifest: every preset's resolved ages, voices and languages are what the user asked for.
 3. Report what changed, the completeness per preset, and anything you could not do.

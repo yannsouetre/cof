@@ -26,6 +26,9 @@ COF est un format de fichier ouvert (`.cof`, conteneur ZIP) qui réunit tout ce 
 ## Écrit par une IA
 COF est conçu pour être rédigé par des agents : donnez au vôtre la skill [`cof-author`](skills/cof-author/SKILL.md) (ou [`llms.txt`](llms.txt)) et l'outil `cof` ; il modifie un dossier décompressé, empaquette, valide et boucle jusqu'à ce que `cof validate` réponde OK. L'exemple phare Clara Mercier v4 (12 presets, deux langues, tags, une skill d'agent) a été assemblé et mis à jour ainsi par Claude.
 
+## Ouvert, avec discipline
+COF est volontairement souple : presque tout est facultatif, les clés inconnues sont conservées, et il existe des portes de sortie explicites — un fichier 3D sans ses textures (`self_contained: false`), des poids LoRA par lien plutôt qu'intégrés, des catégories `x-` personnalisées. Cette ouverture ne tient qu'avec une **discipline sur ce qu'on y met** : le validateur bloque ce qui est dangereux ou cassé (mineurs et contenu intime, empreintes manquantes, références non résolues, exécutables non déclarés…), avertit sur ce qui est risqué (liens qui peuvent disparaître, 3D sans texture, transcriptions absentes…), et chaque auteur — humain, outil ou agent IA — fait la revue de cohérence du [§ 11.4 de la spec](spec/SPEC.fr.md) avant de publier : âges, identité, style, voix, langue, droits, provenance.
+
 ## Englober, pas remplacer
 Un `.cof` contient une Character Card V3 valide et s'exporte en PNG `ccv3`, `.charx`, `SOUL.md`/`IDENTITY.md`, `.vrm`. Les outils existants n'ont rien à réécrire.
 
