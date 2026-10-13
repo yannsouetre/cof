@@ -96,8 +96,16 @@ def cmd_info(a):
     print(json.dumps({"name": m.get("name"), "id": m.get("id"), "cof": m.get("cof"), "age": {p: preset_age(m, p) for p in (m.get("presets") or {})},
                       "fictional": m.get("fictional"), "size_class": m.get("size_class"), "thumbnail": m.get("thumbnail"),
                       "completeness": c["file"] if isinstance(c, dict) and "file" in c else c, "coverage": m.get("coverage"),
-                      "presets": {k: {"label": v.get("label"), "slots": v.get("slots"), "score": (v.get("completeness") or {}).get("score")} for k, v in (m.get("presets") or {}).items()},
-                      "default_preset": m.get("default_preset"), "tags": m.get("tags"), "assets": len(m.get("assets", []))},
+                      "presets": {k: {kk: vv for kk, vv in {"label": v.get("label"), "identity": v.get("identity"), "extends": v.get("extends"), "slots": v.get("slots"),
+                                          "alternatives": v.get("alternatives"), "primary_image": v.get("primary_image"),
+                                          "tags": [t.get("id") for t in m.get("preset_tags") or [] if k in (t.get("presets") or [])],
+                                          "score": (v.get("completeness") or {}).get("score")}.items() if vv} for k, v in (m.get("presets") or {}).items()},
+                      "default_preset": m.get("default_preset"),
+                      "variants": {cat: {vid: " · ".join(str(x) for x in (v.get("kind"), v.get("label"), v.get("language"), v.get("identity")) if x)
+                                         for vid, v in (e.get("variants") or {}).items()} for cat, e in (m.get("elements") or {}).items()},
+                      "preset_tags": [{"id": t.get("id"), "facet": t.get("facet"), "presets": t.get("presets")} for t in m.get("preset_tags") or []],
+                      "characters": list((m.get("identities") or {}).keys()) or None,
+                      "tags": m.get("tags"), "assets": len(m.get("assets", []))},
                      ensure_ascii=False, indent=2))
     return 0
 
@@ -179,6 +187,11 @@ def cmd_export(a):
             out.mkdir(parents=True, exist_ok=True)
             (out / "SOUL.md").write_text(soul, "utf-8")
             (out / "IDENTITY.md").write_text(identity, "utf-8")
+        elif fmt == "agent":
+            from .convert import export_agent
+            out = out or Path(f"{manifest['name']}-agent")
+            done = export_agent(d, out, pid)
+            print(f"skills: {', '.join(done['skills']) or '—'} · memories: {len(done['memories'])} · documents: {len(done['documents'])}")
         elif fmt == "card":
             card = json.loads((d / card_path).read_text("utf-8"))
             out = out or Path(f"{manifest['name']}.card.json")
@@ -216,6 +229,10 @@ def cmd_extract(a):
             extract_identity(d, Path(a.out), a.identity)
         else:
             extract_preset(d, Path(a.out), a.preset)
+        if getattr(a, "no_intimate", False):
+            from .ops import strip_intimate
+            gone = strip_intimate(Path(a.out))
+            print(f"--no-intimate: removed {', '.join(gone) or 'nothing'}; allowSexualUsage set to false — review tags.content")
     rep = Report(); validate_dir(Path(a.out), rep, recompute=True)
     what = 'tags ' + '+'.join(a.tag) if a.tag else ('character ' + a.identity if getattr(a, "identity", None) else 'preset ' + a.preset)
     print(f"{what} extracted to: {a.out}")
@@ -254,6 +271,11 @@ def _placeholder_png(image_path: Path | None) -> bytes:
 
 
 def main(argv=None) -> int:
+    for stream in (sys.stdout, sys.stderr):      # Windows consoles default to cp1252: never crash on « — ✔ é »
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
     ap = argparse.ArgumentParser(prog="cof", description="COF — Character Open File tooling")
     ap.add_argument("--version", action="version", version=f"cof-cli {__version__}")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -266,10 +288,10 @@ def main(argv=None) -> int:
     s = sub.add_parser("embed-text", help="write a text (.md/.txt) into a PNG as iTXt 'Description' — readable by the builder (personality + appearance)"); s.add_argument("png"); s.add_argument("text"); s.add_argument("-o", "--out"); s.set_defaults(fn=cmd_embed_text)
     s = sub.add_parser("read-text", help="show the descriptive text embedded in an image (PNG/JPEG: iTXt, XMP, EXIF)"); s.add_argument("image"); s.set_defaults(fn=cmd_read_text)
     s = sub.add_parser("import", help="PNG/JSON card (CCv2/V3) → COF folder"); s.add_argument("src"); s.add_argument("-o", "--out"); s.add_argument("--age", type=int); s.add_argument("--real", action="store_true", help="character based on a real person (consent required)"); s.add_argument("--lang", default="en"); s.add_argument("--keep-png", action="store_true", help="keep the PNG as the head.front view"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_import)
-    s = sub.add_parser("export", help="folder/.cof → png | soul | card (from the default preset or --preset)"); s.add_argument("src"); s.add_argument("--format", choices=["png", "soul", "card"], required=True); s.add_argument("-o", "--out"); s.add_argument("--preset"); s.set_defaults(fn=cmd_export)
+    s = sub.add_parser("export", help="folder/.cof → png | soul | card | agent (workspace: SOUL.md, IDENTITY.md, skills/, memories) — from the default preset or --preset"); s.add_argument("src"); s.add_argument("--format", choices=["png", "soul", "card", "agent"], required=True); s.add_argument("-o", "--out"); s.add_argument("--preset"); s.set_defaults(fn=cmd_export)
     s = sub.add_parser("migrate", help="folder v0.2 … v0.5 → v1.0"); s.add_argument("dir"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_migrate)
     s = sub.add_parser("merge", help="merge several .cof files/folders (same name+nickname ⇒ same identity, otherwise multiple identities)"); s.add_argument("sources", nargs="+"); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_merge)
-    s = sub.add_parser("extract", help="extract a preset, a character (--identity), or the presets carrying one or more tags (intersection), into a lighter COF folder"); s.add_argument("src"); g = s.add_mutually_exclusive_group(required=True); g.add_argument("--preset"); g.add_argument("--identity", help="one character: all its presets, elements, files and rights"); g.add_argument("--tag", action="append", help="repeatable: --tag english --tag age-12"); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_extract)
+    s = sub.add_parser("extract", help="extract a preset, a character (--identity), or the presets carrying one or more tags (intersection), into a lighter COF folder"); s.add_argument("src"); g = s.add_mutually_exclusive_group(required=True); g.add_argument("--preset"); g.add_argument("--identity", help="one character: all its presets, elements, files and rights"); g.add_argument("--tag", action="append", help="repeatable: --tag english --tag age-12"); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.add_argument("--no-intimate", action="store_true", help="safe-for-work slice: drop intimate variants, allowSexualUsage = false"); s.set_defaults(fn=cmd_extract)
 
     a = ap.parse_args(argv)
     try:

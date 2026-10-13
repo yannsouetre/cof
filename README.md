@@ -37,7 +37,7 @@ cof export lea.cof --format png -o lea.png     # → PNG card (chara + ccv3 chun
 ```
 More commands (import, export to SOUL.md/IDENTITY.md, migrate, tokens…) in [`cli/README.md`](cli/README.md).
 
-**Let an AI agent write it** — COF is designed to be authored by agents: give yours the [`cof-author`](skills/cof-author/SKILL.md) skill (or point it to [`llms.txt`](llms.txt)) and the CLI; it edits an unpacked folder, packs, validates and loops until `cof validate` says OK. The flagship example, Clara Mercier v4 (12 presets, two languages, tags, an agent skill), was assembled and updated this way by Claude.
+**Let an AI agent write it** — COF is designed to be authored by agents: give yours the [`cof-author`](skills/cof-author/SKILL.md) skill (or point it to [`llms.txt`](llms.txt)) and the CLI; it edits an unpacked folder, packs, validates and loops until `cof validate` says OK. The flagship example, Clara Mercier (12 presets, two languages, tags, an agent skill), was assembled and updated this way by Claude; in blind tests, Codex and Google Antigravity added two presets with the skill alone and produced a valid file. **This needs an agent that can run commands** — a coding agent installed on your computer (Claude Code, Codex, Antigravity, Cursor…) or a cloud agent with a shell; a chat assistant without code execution cannot build a `.cof`. Expect several minutes and, depending on the agent, many command approvals: for a small change, the [builder](https://yannsouetre.github.io/cof/builder/) is often quicker.
 
 ## Open, with discipline
 COF is deliberately flexible: almost everything is optional, unknown keys survive round-trips, and there are explicit escape hatches — a 3D file without its textures (`self_contained: false`), LoRA weights by link instead of embedded, custom `x-` categories. That openness only works with **discipline in what goes in**: the validator blocks what is unsafe or broken (minors and intimate content, missing hashes, unresolved references, undeclared executables…), warns about what is risky (links that can rot, untextured 3D, missing transcripts…), and every author — human, tool or AI agent — runs the coherence review of [spec § 11.4](spec/SPEC.md) before publishing: ages, identity, style, voice, language, rights, provenance.
@@ -60,7 +60,7 @@ COF is deliberately flexible: almost everything is optional, unknown keys surviv
 - [`spec/examples/`](spec/examples/) — 10 conformant example characters
 - [`skills/cof-author/SKILL.md`](skills/cof-author/SKILL.md) — the skill that teaches an AI agent to create and update `.cof` files
 - [`spec/schemas/`](spec/schemas/) — JSON Schemas (draft 2020-12)
-- [`CHANGELOG.md`](CHANGELOG.md), [`CONTRIBUTING.md`](CONTRIBUTING.md), [`GOVERNANCE.md`](GOVERNANCE.md)
+- [`CHANGELOG.md`](CHANGELOG.md), [`CONTRIBUTING.md`](CONTRIBUTING.md), [`GOVERNANCE.md`](GOVERNANCE.md), [`SECURITY.md`](SECURITY.md)
 
 ## Embrace, don't replace
 A `.cof` contains a valid Character Card V3 and exports to `ccv3` PNG, `.charx`, `SOUL.md`/`IDENTITY.md`, `.vrm`. Existing tools have nothing to rewrite.

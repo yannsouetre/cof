@@ -268,15 +268,20 @@ def card_to_cof_dir(card: dict, dest: Path, *, png: bytes | None = None, age: in
 # ---------- COF directory → SOUL.md / IDENTITY.md ----------
 
 def export_soul(src: Path, preset: str | None = None) -> tuple[str, str]:
-    from .model import asset_index, default_preset_id, first, resolved
+    from .model import asset_index, default_preset_id, effective_permissions, first, preset_identity, preset_primary_image, resolved
     manifest = json.loads((src / "manifest.json").read_text("utf-8"))
-    r = resolved(manifest, preset or default_preset_id(manifest))
+    pid = preset or default_preset_id(manifest)
+    r = resolved(manifest, pid)
+    ident = preset_identity(manifest, pid) or {}
+    name = ident.get("name") or manifest.get("name")
     p = first(r, "personality") or {}
     data = json.loads((src / p["card"]).read_text("utf-8")).get("data", {}) if p.get("card") else {}
     psyche = json.loads((src / p["psyche"]).read_text("utf-8")) if p.get("psyche") and (src / p["psyche"]).is_file() else {}
     A = asset_index(manifest)
 
-    lines = [f"# SOUL.md — {manifest.get('name')}", ""]
+    lines = [f"# SOUL.md — {name}", ""]
+    if p.get("kind") == "description" and (p.get("text") or "").strip():
+        lines += ["## Persona", p["text"].strip(), ""]
     if data.get("personality"):
         lines += ["## Voice & stance", data["personality"].strip(), ""]
     beh = (data.get("extensions", {}).get("cof", {}) or {}).get("behavior")
@@ -290,18 +295,68 @@ def export_soul(src: Path, preset: str | None = None) -> tuple[str, str]:
         lines += ["## Fears", *[f"- {f.get('text')}" for f in psyche["fears"]], ""]
     if data.get("system_prompt"):
         lines += ["## Boundaries", data["system_prompt"].strip(), ""]
-    perms = manifest.get("rights", {}).get("permissions", {})
+    perms = effective_permissions(manifest, pid)
     if perms.get("aiDisclosure", True):
         lines += ["## Disclosure", "I am a synthetic character. I say so when asked.", ""]
     soul = "\n".join(lines)[:20000]
 
-    avatar = manifest.get("thumbnail") or next((A[i]["path"] for i in (first(r, "appearance", "face") or {}).get("images", []) if i in A and A[i].get("subject") == "head"), "")
+    pim = A.get(preset_primary_image(manifest, pid) or "") or {}
+    avatar = pim.get("path") or manifest.get("thumbnail") or next((A[i]["path"] for i in (first(r, "appearance", "face") or {}).get("images", []) if i in A and A[i].get("subject") == "head"), "")
     identity = "\n".join([
-        f"- Name: {manifest.get('name')}",
-        f"- Creature: {manifest.get('morphology', {}).get('species', 'human')}",
-        f"- Vibe: {(manifest.get('summary') or '').strip()}",
+        f"- Name: {name}",
+        f"- Creature: {(ident.get('morphology') or manifest.get('morphology') or {}).get('species') or 'human'}",
+        f"- Vibe: {(ident.get('summary') or manifest.get('summary') or '').strip()}",
         f"- Emoji: {manifest.get('extensions', {}).get('emoji', '🙂')}",
         f"- Avatar: {avatar}",
         "",
     ])
     return soul, identity
+
+
+def export_agent(src: Path, out: Path, preset: str | None = None) -> dict:
+    """A ready-to-use agent workspace from one preset: SOUL.md, IDENTITY.md, avatar, skills/<name>/,
+    memories at the root, documents in docs/, and COF.md (rights and provenance the agent host must honour)."""
+    import shutil
+    from .model import asset_index, default_preset_id, effective_permissions, preset_identity, resolved
+    manifest = json.loads((src / "manifest.json").read_text("utf-8"))
+    pid = preset or default_preset_id(manifest)
+    out.mkdir(parents=True, exist_ok=True)
+    soul, identity = export_soul(src, pid)
+    A = asset_index(manifest)
+    av = next((l.split(": ", 1)[1] for l in identity.splitlines() if l.startswith("- Avatar: ")), "")
+    if av and (src / av).is_file():
+        dst = out / ("avatar" + Path(av).suffix.lower()); shutil.copy(src / av, dst)
+        identity = identity.replace(f"- Avatar: {av}", f"- Avatar: {dst.name}")
+    (out / "SOUL.md").write_text(soul, "utf-8"); (out / "IDENTITY.md").write_text(identity, "utf-8")
+    done = {"skills": [], "memories": [], "documents": []}
+    for v in resolved(manifest, pid).get("files", []):
+        base = f"elements/files/{v['_id']}/"
+        files = [A[i] for i in v.get("files") or [] if i in A and A[i].get("path")]
+        kind = v.get("kind")
+        if kind == "skill":
+            name = v.get("name") or v["_id"]
+            entry = src / v["entry"] if v.get("entry") else None
+            if entry and entry.is_file():                  # Agent Skills: the folder is named after the front-matter `name`
+                import re as _re
+                mm = _re.search(r"^name:\s*([A-Za-z0-9._-]+)\s*$", entry.read_text("utf-8", errors="replace"), _re.M)
+                if mm:
+                    name = mm.group(1)
+            root = out / "skills" / name
+            for a in files:
+                rel = a["path"][len(base):] if a["path"].startswith(base) else Path(a["path"]).name
+                (root / rel).parent.mkdir(parents=True, exist_ok=True); shutil.copy(src / a["path"], root / rel)
+            done["skills"].append(name)
+        else:
+            dest = out if kind == "memory" else out / "docs"
+            for a in files:
+                dest.mkdir(parents=True, exist_ok=True); shutil.copy(src / a["path"], dest / Path(a["path"]).name)
+                done["memories" if kind == "memory" else "documents"].append(Path(a["path"]).name)
+    perms = effective_permissions(manifest, pid)
+    ident = preset_identity(manifest, pid) or {}
+    note = [f"# COF.md — {ident.get('name') or manifest.get('name')} (preset `{pid}`)", "",
+            f"Exported from `{manifest.get('id')}` ({manifest.get('cof')}). The host MUST honour these permissions:", ""]
+    note += [f"- `{k}`: {json.dumps(v)}" for k, v in sorted(perms.items())]
+    if manifest.get("container", {}).get("executableContent") == "scripts":
+        note += ["", "Skills may contain scripts: never run them without the user's explicit approval."]
+    (out / "COF.md").write_text("\n".join(note) + "\n", "utf-8")
+    return done

@@ -330,3 +330,32 @@ def extract_presets(src: Path, dst: Path, pids: list[str], tags: list[str] | Non
         out.pop(k, None)
     (dst / "manifest.json").write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", "utf-8")
     return out
+
+
+def strip_intimate(dst: Path) -> list[str]:
+    """Safe-for-work slice: remove every `intimate` variant (and the files only it used), drop it from presets,
+    and set allowSexualUsage to false everywhere (root, characters, presets). Returns the removed variant ids."""
+    from .model import variant_asset_ids
+    m = json.loads((dst / "manifest.json").read_text("utf-8"))
+    V = ((m.get("elements") or {}).get("appearance") or {}).get("variants") or {}
+    gone = [vid for vid, v in V.items() if v.get("kind") == "intimate"]
+    freed = set()
+    for vid in gone:
+        freed |= variant_asset_ids(V.pop(vid))
+    still = {aid for e in (m.get("elements") or {}).values() for v in (e.get("variants") or {}).values() for aid in variant_asset_ids(v)}
+    for a in list(m.get("assets") or []):
+        if a["id"] in freed - still or a.get("source") in freed - still:
+            if a.get("path") and (dst / a["path"]).is_file():
+                (dst / a["path"]).unlink()
+            m["assets"].remove(a)
+    for p in (m.get("presets") or {}).values():
+        for key in ("slots", "alternatives"):
+            if (p.get(key) or {}).get("appearance"):
+                p[key]["appearance"] = [x for x in p[key]["appearance"] if x not in gone]
+        if (p.get("permissions_override") or {}).get("allowSexualUsage"):
+            p["permissions_override"]["allowSexualUsage"] = False
+    for r in [m.get("rights") or {}] + [(i or {}).get("rights") or {} for i in (m.get("identities") or {}).values()]:
+        if "permissions" in r:
+            r["permissions"]["allowSexualUsage"] = False
+    (dst / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
+    return gone

@@ -341,7 +341,7 @@ A `.cof` can describe an **agent** just as well as a character to be displayed. 
 
 | Agent concept | Where it lives in COF | Projection (export) |
 |---|---|---|
-| Soul / style (`SOUL.md`) | `personality` — structured text (V3 card: `description`, `personality`, `system_prompt`, examples) or free text; `psyche.json` for typed traits | `cof export --soul` → `SOUL.md` + `IDENTITY.md` (already available) |
+| Soul / style (`SOUL.md`) | `personality` — structured text (V3 card: `description`, `personality`, `system_prompt`, examples) or free text; `psyche.json` for typed traits | `cof export --format soul` → `SOUL.md` + `IDENTITY.md`; `cof export --format agent` → a whole workspace (`SOUL.md`, `IDENTITY.md`, avatar, `skills/<name>/`, memories, `docs/`, `COF.md` with the permissions the host must honour) |
 | Short identity (`IDENTITY.md`) | identity (`name`, `summary`, `morphology`) + `thumbnail` | same |
 | Skills (`skills/<name>/SKILL.md`, YAML header `name`, `description`, then instructions; resources and scripts alongside) | `files` / `kind: skill` — one variant per skill, `entry` = `SKILL.md`, `target` indicates the dialect if the skill is not portable | copy of the folder `elements/files/<v>/` to `skills/<name>/` |
 | Persistent memory (`MEMORY.md`, `USER.md`, dated notes) | `files` / `kind: memory` — `entry` = main file | copy to the root of the agent's workspace |

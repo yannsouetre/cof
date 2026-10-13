@@ -197,6 +197,12 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                 elif dpi and preset_owner(manifest, dpi) != iid:
                     rep.errors.append(f"identities.{iid}.default_preset: preset {dpi} belongs to character {preset_owner(manifest, dpi)}")
     _character_rules(manifest, ids, rep)
+    for iid, ident in ({**ids} if ids else {None: {k: manifest.get(k) for k in ("fictional",)} | {"consent": (manifest.get("rights") or {}).get("consent")}}).items():
+        if (ident or {}).get("fictional") is False:
+            perms = identity_rights(manifest, iid).get("permissions") or {}
+            scope = (((ident or {}).get("consent") or (manifest.get("rights") or {}).get("consent")) or {}).get("scope") or []
+            if perms.get("allowVoiceCloning") and "voice-synthesis" not in scope:
+                rep.errors.append(f"{'identities.' + iid if iid else 'rights'}: allowVoiceCloning is true for a real person but the consent scope does not include 'voice-synthesis'")
 
     # asset ids unique, files present
     seen = set()
@@ -557,6 +563,7 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
             best = ts                      # the author's explicit choice wins
         if best:
             manifest["thumbnail"] = best["path"]
+        manifest.setdefault("tags", {})["auto"] = auto_tags(manifest)
         # languages = union of personality / voice sample languages
         langs = set(manifest.get("languages") or [])
         for v in (elements.get("personality") or {}).get("variants", {}).values():
@@ -639,6 +646,35 @@ def _duplicate_images(src: Path, manifest: dict, rep: "Report") -> None:
                 break
         else:
             seen.append((a, sig))
+
+
+def auto_tags(manifest: dict) -> list[str]:
+    """tags.auto, computed (same rules as the builder): morphology, age buckets, languages, contents, size of the cast."""
+    bucket = lambda a: "age-unknown" if a is None else "child" if a < 13 else "teen" if a < 18 else "elder" if a >= 65 else "adult"
+    P = manifest.get("presets") or {}
+    E = manifest.get("elements") or {}
+    ids = manifest.get("identities") or {}
+    at = {((i or {}).get("morphology") or {}).get("class") for i in ids.values()} | {(manifest.get("morphology") or {}).get("class")}
+    ages = [preset_age(manifest, p) for p in P]
+    at |= {bucket(a) for a in ages} | set(manifest.get("languages") or [])
+    if any(a is not None and a < 18 for a in ages):
+        at.add("has-minor-preset")
+    for cat, tag in (("voice", "has-voice"), ("volume3d", "has-3d"), ("motion", "has-motion"), ("identity_weights", "has-weights")):
+        if (E.get(cat) or {}).get("variants"):
+            at.add(tag)
+    kinds = {v.get("kind") for v in ((E.get("files") or {}).get("variants") or {}).values()}
+    if "skill" in kinds:
+        at.add("has-skills")
+    if "memory" in kinds:
+        at.add("has-memory")
+    if len(P) > 1:
+        at.add("multi-preset")
+    if len(ids) > 1:
+        at.add("multi-identity")
+    st = (P.get(default_preset_id(manifest) or "") or {}).get("style")
+    if st:
+        at.add(f"style-{st}")
+    return sorted(x for x in at if x)
 
 
 def _perms_of(manifest: dict, cat: str, vid: str) -> dict:

@@ -1,0 +1,14 @@
+name: Bug report
+description: Something does not work in the CLI, the builder or a reader
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes: {label: What happened, description: "Steps, expected vs actual. Paste `cof validate` output if relevant."}
+    validations: {required: true}
+  - type: input
+    id: versions
+    attributes: {label: Versions, placeholder: "cof-cli 1.0.0 / builder 0.11.0 / OS / browser"}
+  - type: textarea
+    id: file
+    attributes: {label: File, description: "Attach a minimal .cof only if it contains nothing private or third-party."}

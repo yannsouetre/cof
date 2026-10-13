@@ -678,3 +678,32 @@ def test_neutral_elements_may_share_files(tmp_path):
     assert any("is not neutral" in e and "sk-mar" in e for e in r.errors), r.errors
     r = run(lambda mm: [v.__setitem__("kind", "memory") for v in mm["elements"]["files"]["variants"].values()])
     assert any("is not neutral" in e for e in r.errors), r.errors          # memories carry the character
+
+
+def test_export_agent_no_intimate_voice_consent_auto_tags(tmp_path):
+    """export --format agent builds a workspace; extract --no-intimate makes a safe slice; a real person's voice may only
+    be cloned with consent scope voice-synthesis; tags.auto is computed."""
+    from cof_cli.convert import export_agent
+    from cof_cli.ops import extract_presets, strip_intimate
+    from cof_cli.validate import auto_tags
+    out = tmp_path / "ws"; done = export_agent(ROOT / "spec/examples/10-clara-mercier", out, "en-agent")
+    assert done["skills"] == ["accessible-color-palette"] and (out / "skills/accessible-color-palette/SKILL.md").is_file()
+    assert (out / "SOUL.md").read_text("utf-8").startswith("# SOUL.md — Clara Mercier") and (out / "COF.md").is_file()
+    assert "Avatar: avatar." in (out / "IDENTITY.md").read_text("utf-8")
+    sfw = tmp_path / "sfw"; extract_presets(ROOT / "spec/examples/09-mixte-adulte-mineur", sfw, ["default"]); gone = strip_intimate(sfw)
+    m = json.loads((sfw / "manifest.json").read_text("utf-8"))
+    assert gone == ["i1"] and "i1" not in m["elements"]["appearance"]["variants"] and m["rights"]["permissions"]["allowSexualUsage"] is False
+    rep = Report(); validate_dir(sfw, rep); assert rep.ok, rep.errors
+    t = auto_tags(json.loads((ROOT / "spec/examples/10-clara-mercier/manifest.json").read_text("utf-8")))
+    assert {"child", "adult", "elder", "has-minor-preset", "fr", "en", "has-skills"} <= set(t)
+    d = tmp_path / "real"; shutil.copytree(ROOT / "spec/examples/01-lea-text-only", d)
+    mm = json.loads((d / "manifest.json").read_text("utf-8"))
+    mm["fictional"] = False
+    mm["rights"]["consent"] = {"subject_is_real_person": True, "scope": ["conversational-persona"], "granted": "2026-10-01", "jurisdictions": ["FR"], "proof": [{"type": "other", "uri": "https://example.org/consent"}]}
+    mm["rights"]["permissions"]["allowVoiceCloning"] = True
+    (d / "manifest.json").write_text(json.dumps(mm), "utf-8")
+    rep = Report(); validate_dir(d, rep, recompute=False)
+    assert any("voice-synthesis" in e for e in rep.errors), rep.errors
+    mm["rights"]["consent"]["scope"].append("voice-synthesis"); (d / "manifest.json").write_text(json.dumps(mm), "utf-8")
+    rep = Report(); validate_dir(d, rep, recompute=False)
+    assert not any("voice-synthesis" in e for e in rep.errors), rep.errors

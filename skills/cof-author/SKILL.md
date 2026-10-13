@@ -7,19 +7,22 @@ description: Create, update, slice or repair Character Open File (.cof) containe
 A `.cof` is a ZIP: `mimetype`, `manifest.json`, then `elements/<category>/<variant-id>/…`. The normative text is `spec/SPEC.md` in https://github.com/yannsouetre/cof; JSON Schemas are in `spec/schemas/`. You do not need to memorise them: **the validator tells you what is wrong — loop until it says OK.**
 
 ## 0. Tooling
+Tell the user up front: this takes a few minutes and several command approvals; for a one-off small edit (a label, one image, one preset) the offline builder is often quicker — https://yannsouetre.github.io/cof/builder/.
 ```bash
 pip install "git+https://github.com/yannsouetre/cof#subdirectory=cli"   # provides `cof`
+# no Python (common on Windows)? uv brings its own:  uv tool install "git+https://github.com/yannsouetre/cof#subdirectory=cli" --python 3.12
 cof unpack in.cof -o work/        # edit a folder, never the ZIP
 cof pack work/ -o out.cof --force # computes sha256, bytes, completeness, coverage, languages
 cof validate out.cof              # errors (blocking) / warnings / completeness — fix, re-pack, repeat
 ```
 Validator messages: `ERROR` (blocking) and `WARN`; each names the rule and the JSON path.
 ```bash
-cof info out.cof                  # presets, ages, tokens
+cof info out.cof                  # START HERE: presets (extends, slots, alternatives, primary image, tags), variants per category, tags, ages
 ```
+Do not read the CLI's source code to learn the format: `cof info` plus this page are enough, and the validator names every mistake.
 **No shell? Stop here.** This skill needs an environment that runs commands (a coding agent: Claude Code, Codex, Gemini CLI, Cursor…). In a chat without code execution, do **not** write a manifest from memory — the format has details you will get wrong (presets are an object keyed by id, sub-files like `card.json` are not assets…). Say so, and point the user to the offline builder, https://yannsouetre.github.io/cof/builder/, where files are dropped and presets set by clicks.
 
-Other commands: `import` (PNG/JSON character card → folder), `export --format soul|card|png`, `extract --preset X` or `--tag A --tag B` (lighter slice), `merge`, `migrate`, `embed-text`, `read-text`.
+Other commands: `import` (PNG/JSON character card → folder), `export --format soul|card|png|agent` (agent = workspace with SOUL.md, skills/, memories), `extract --preset X`, `--identity C` or `--tag A --tag B` (lighter slice; add `--no-intimate` for a safe-for-work slice), `merge`, `migrate`, `embed-text`, `read-text`.
 
 ## 1. Model in one minute
 - **Elements → variants → presets.** Eight categories: `personality`, `appearance`, `identity_weights`, `volume3d`, `voice`, `posture`, `motion`, `files`. Each variant declares a `kind` (e.g. personality `card` | `description`; appearance `reference-set`, `character-sheet`, `face`, `body`, `hair`, `clothing`, `accessory`, `pilosity`, `feature`, `environment`, `description` (opt-in kinds: spec § 4.5); voice `samples` | `described`; files `skill` | `memory` | `document` | `other`).
@@ -46,6 +49,20 @@ Other commands: `import` (PNG/JSON character card → folder), `export --format 
 - **Images**: embed **one resolution per picture**. If the user gives you a reduced copy, embed it **instead of** the original, never both (the validator warns about duplicates); about 2048 px on the long side is plenty. Prefer `.jpg` / `.png` / `.webp` extensions.
 - **Personality from a structured source**: if the source has fields (`system_prompt`, `first_message`, `tags`, `description`…, often as JSON), make a `card` (Character Card V3: `system_prompt`, `first_mes`, `tags`, `description`, `personality`, `scenario`, `mes_example`) — never paste JSON into a `description` text. Free prose stays a `description`.
 - **Unknown licence** of user-supplied media: ask; if nobody can answer, use `LicenseRef-UserProvided` and say so in your report.
+- **Add a look in two languages** (the most common request) — new variants, then two presets that extend the language bases; ids are free but unique per category:
+  ```jsonc
+  "elements": { "appearance": { "variants": {
+      "a6": { "kind": "reference-set", "label": "Look", "age": { "value": 29, "unit": "years", "basis": "apparent" }, "style": "photo-realistic", "images": ["a-a6-body"] },
+      "x4": { "kind": "accessory", "label": "Staff", "accessory_use": "worn", "accessory": "tool", "images": ["a-x4"] } } },
+    "personality": { "variants": { "p11": { "kind": "card", "language": "fr", "card": "elements/personality/p11/card.json" } } } },
+  "presets": {                                     // an OBJECT keyed by preset id, never a list
+    "fr-look": { "label": "…", "extends": "fr", "slots": { "personality": ["p11"], "appearance": ["a6"], "voice": ["v11"] },
+                 "alternatives": { "appearance": ["x4"] }, "primary_image": "a-a6-body" },
+    "en-look": { "label": "…", "extends": "default", "slots": { "personality": ["p12"], "appearance": ["a6"], "voice": ["v12"] },
+                 "alternatives": { "appearance": ["x4"] }, "primary_image": "a-a6-body" } }
+  // + the image / audio files in assets[], the two presets added to the existing `fr` / `en` tags, and a new tag (facet "look") so each preset keeps a unique tag set
+  ```
+  Transcripts: only write one if you know what is said (e.g. the audio was generated from a given text) — and say so in your report.
 - **Agent persona**: personality `card` (Character Card V3 in `card.json`): keep `system_prompt` short — behaviour rules only. Persona facts go to `description` / `personality` / `scenario`, examples to `mes_example`, structured traits to `psyche.json`. **Know-how goes to a skill**, not to the prompt.
 - **Skill**: variant in `files` with `kind: "skill"`, `files: [asset ids]`, `entry: "elements/files/<vid>/SKILL.md"`, `target: "agent-skills"`; `SKILL.md` starts with YAML `name` + `description`; `SKILL.md` and every extra file (`reference/…`, `examples/…`) are assets with `role: "skill-file"` (memories: `role: "memory"`). Slot it in the presets that may use it.
 - **Voice**: `samples` = asset ids (`role: "voice-sample"`, `duration_s`, optional `transcript` = path of a `.txt` next to the audio), plus `profile.json`. Respect the licence of the TTS plan (free plans are often non-commercial).
