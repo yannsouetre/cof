@@ -160,8 +160,42 @@ def merge_dirs(sources: list[Path], dst: Path) -> dict:
     out["provenance"]["source"] = sorted({s for src in sources for s in (json.loads((src / "manifest.json").read_text("utf-8")).get("provenance", {}).get("source") or [])} | {f"cof:{json.loads((src / 'manifest.json').read_text('utf-8')).get('id')}" for src in sources})
     out["provenance"]["generator"] = "cof-cli merge"
     out.pop("completeness", None); out.pop("coverage", None); out.pop("thumbnail", None)
+    _relocate_files(dst, out)
     (dst / "manifest.json").write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", "utf-8")
     return out
+
+
+def _relocate_files(dst: Path, out: dict) -> None:
+    """After a merge, move each file used by a single element into that element's own folder
+    (elements/<category>/<variant>/), dropping the collision prefix — a renamed variant keeps its files together."""
+    import re
+    from .model import variant_asset_ids
+    users: dict[str, list[tuple[str, str]]] = {}
+    for cat, e in (out.get("elements") or {}).items():
+        for vid, v in (e.get("variants") or {}).items():
+            for aid in variant_asset_ids(v):
+                users.setdefault(aid, []).append((cat, vid))
+    for a in out.get("assets") or []:
+        u = users.get(a["id"]) or []
+        if len(u) != 1 or not a.get("path", "").startswith("elements/"):
+            continue
+        cat, vid = u[0]
+        parts = a["path"].split("/")
+        if len(parts) < 4 or parts[1] != cat or parts[2] == vid:
+            continue
+        for fld in ("path", "transcript"):
+            old = a.get(fld)
+            if not old or not (dst / old).is_file():
+                continue
+            base = re.sub(r"^m\d+-", "", old.split("/")[-1])
+            new = "/".join(["elements", cat, vid, *old.split("/")[3:-1], base])
+            k = 2
+            while (dst / new).exists():
+                stem, dot, ext = base.rpartition(".")
+                new = "/".join(["elements", cat, vid, *old.split("/")[3:-1], f"{stem}.{k}.{ext}" if dot else f"{base}.{k}"]); k += 1
+            (dst / new).parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(dst / old), str(dst / new))
+            a[fld] = new
 
 
 def extract_preset(src: Path, dst: Path, pid: str) -> dict:

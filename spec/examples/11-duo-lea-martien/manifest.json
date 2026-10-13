@@ -1,11 +1,11 @@
 {
   "cof": "1.0",
-  "id": "01M4T4WEDY8QB5QD1ZRCSHSSMW",
+  "id": "01M4T5A8GAC2JX86CJ3KFM2P1T",
   "name": "Léa Marchand",
   "nickname": "Léa",
   "languages": [
-    "fr",
-    "en"
+    "en",
+    "fr"
   ],
   "summary": "Ingénieure acoustique devenue archiviste sonore ; sceptique, drôle, loyale. Exemple modulaire : 2 personnalités, 2 presets.",
   "fictional": true,
@@ -247,8 +247,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/0.3.0",
-        "computed_at": "2026-10-10T08:09:14Z"
+        "computed_by": "cof-cli/1.0.0rc2",
+        "computed_at": "2026-10-13T08:16:04Z"
       },
       "age_override": {
         "value": 34,
@@ -273,12 +273,12 @@
         "basis": "canonical"
       },
       "completeness": {
-        "score": 56,
+        "score": 46,
         "level": "C",
         "layers": {
           "identity": 100,
           "personality": 90,
-          "appearance": 75,
+          "appearance": 25,
           "physique": 0,
           "voice": 0,
           "volume": 0,
@@ -291,8 +291,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/0.3.0",
-        "computed_at": "2026-10-10T08:09:14Z"
+        "computed_by": "cof-cli/1.0.0rc2",
+        "computed_at": "2026-10-13T08:16:04Z"
       },
       "identity": "lea-marchand"
     },
@@ -307,12 +307,12 @@
       },
       "style": "photo-realistic",
       "completeness": {
-        "score": 33,
-        "level": "D",
+        "score": 35,
+        "level": "C",
         "layers": {
           "identity": 100,
           "personality": 0,
-          "appearance": 50,
+          "appearance": 60,
           "physique": 0,
           "voice": 0,
           "volume": 0,
@@ -323,8 +323,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/0.4.0",
-        "computed_at": "2026-10-10T17:38:28Z"
+        "computed_by": "cof-cli/1.0.0rc2",
+        "computed_at": "2026-10-13T08:16:04Z"
       },
       "age_override": {
         "value": 40,
@@ -487,7 +487,7 @@
       "generator": "exemple fictif — hash illustratif"
     },
     {
-      "path": "elements/appearance/b1/m1-body.front.jpg",
+      "path": "elements/appearance/m1-b1/body.front.jpg",
       "role": "view",
       "subject": "body",
       "angle": "front",
@@ -505,7 +505,7 @@
       "style": "photo-realistic"
     },
     {
-      "path": "elements/appearance/b1/m1-body.left.jpg",
+      "path": "elements/appearance/m1-b1/body.left.jpg",
       "role": "view",
       "subject": "body",
       "angle": "left",
@@ -523,7 +523,7 @@
       "style": "photo-realistic"
     },
     {
-      "path": "elements/appearance/b1/m1-body.back.jpg",
+      "path": "elements/appearance/m1-b1/body.back.jpg",
       "role": "view",
       "subject": "body",
       "angle": "back",
@@ -541,7 +541,7 @@
       "style": "photo-realistic"
     },
     {
-      "path": "elements/appearance/f1/m1-head.front.closeup.jpg",
+      "path": "elements/appearance/m1-f1/head.front.closeup.jpg",
       "role": "view",
       "subject": "head",
       "angle": "front",
@@ -559,7 +559,7 @@
       "style": "photo-realistic"
     },
     {
-      "path": "elements/appearance/f1/m1-head.right.closeup.jpg",
+      "path": "elements/appearance/m1-f1/head.right.closeup.jpg",
       "role": "view",
       "subject": "head",
       "angle": "right",
@@ -578,7 +578,7 @@
       "style": "photo-realistic"
     },
     {
-      "path": "elements/appearance/f1/m1-head.front.jpg",
+      "path": "elements/appearance/m1-f1/head.front.jpg",
       "role": "view",
       "subject": "head",
       "angle": "front",
@@ -724,6 +724,17 @@
       "generator": "Google Gemini (Nano Banana 2)",
       "bytes": 113824,
       "sha256": "76ac39caa6c3dd9575a4c3be327fd02807d55d4f792db855d40980cb38a862f5"
+    },
+    {
+      "id": "thumbnail",
+      "path": "Thumbnails/thumbnail.png",
+      "role": "derived",
+      "method": "thumbnail",
+      "source": "a-body-front",
+      "mediaType": "image/png",
+      "bytes": 23733,
+      "sha256": "9a2c88a4b84563218a35b2dda45b5b4ed7cd8319dcd6bdf3aa5fe983f0518eba",
+      "license": "CC-BY-4.0"
     }
   ],
   "size_class": "lite",
@@ -753,7 +764,7 @@
   },
   "provenance": {
     "created": "2026-10-10T08:30:00Z",
-    "modified": "2026-10-13T08:08:24Z",
+    "modified": "2026-10-13T08:16:04Z",
     "generator": "cof-cli merge (example 11)",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/01-lea-text-only",
@@ -819,5 +830,38 @@
       "default_preset": "m1-default"
     }
   },
-  "default_identity": "lea-marchand"
+  "default_identity": "lea-marchand",
+  "completeness": {
+    "score": 56,
+    "level": "C",
+    "layers": {
+      "identity": 100,
+      "personality": 90,
+      "appearance": 75,
+      "physique": 0,
+      "voice": 0,
+      "volume": 0,
+      "motion": 0,
+      "rights": 85
+    },
+    "targets_ready": [
+      "chat-text",
+      "agent-persona",
+      "image-video-gen",
+      "archive"
+    ],
+    "computed_by": "cof-cli/1.0.0rc2",
+    "computed_at": "2026-10-13T08:16:04Z"
+  },
+  "coverage": {
+    "elements": [
+      "personality",
+      "appearance",
+      "identity_weights"
+    ],
+    "variants": 10,
+    "presets": 3,
+    "identities": 2
+  },
+  "thumbnail": "Thumbnails/thumbnail.png"
 }

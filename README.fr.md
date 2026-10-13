@@ -4,7 +4,7 @@
 
 COF est un format de fichier ouvert (`.cof`, conteneur ZIP) qui réunit tout ce qui définit un personnage IA : personnalité, apparence (photos, code vectoriel, descriptif), voix, corps 3D, mouvement — **et** ses droits, son consentement et sa provenance. Un même fichier s'ouvre dans un chat, un générateur d'images ou de vidéo, un moteur de jeu, Blender, ou sert d'« âme » à un agent.
 
-> Statut : **version candidate 1.0** — format 1.0 (structure gelée le 14 octobre 2026, publication v1.0.0 le 17 octobre), outil de référence `cof-cli` 1.0.0rc2, builder 0.10. Les retours sont bienvenus via les [issues](https://github.com/yannsouetre/cof/issues).
+> Statut : **version candidate 1.0** — format 1.0 (structure gelée le 14 octobre 2026, publication v1.0.0 le 17 octobre), outil de référence `cof-cli` 1.0.0rc2, builder 0.11. Les retours sont bienvenus via les [issues](https://github.com/yannsouetre/cof/issues).
 
 ## Pourquoi
 - Fin de la jonglerie entre PNG, WAV, VRM, LoRA et notes éparses.
