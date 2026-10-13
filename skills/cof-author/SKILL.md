@@ -17,6 +17,8 @@ Validator messages: `ERROR` (blocking) and `WARN`; each names the rule and the J
 ```bash
 cof info out.cof                  # presets, ages, tokens
 ```
+**No shell? Stop here.** This skill needs an environment that runs commands (a coding agent: Claude Code, Codex, Gemini CLI, Cursor…). In a chat without code execution, do **not** write a manifest from memory — the format has details you will get wrong (presets are an object keyed by id, sub-files like `card.json` are not assets…). Say so, and point the user to the offline builder, https://yannsouetre.github.io/cof/builder/, where files are dropped and presets set by clicks.
+
 Other commands: `import` (PNG/JSON character card → folder), `export --format soul|card|png`, `extract --preset X` or `--tag A --tag B` (lighter slice), `merge`, `migrate`, `embed-text`, `read-text`.
 
 ## 1. Model in one minute

@@ -26,6 +26,10 @@
 | Contributeurs externes | 1 | 10 | 25 | 50 |
 | Visiteurs uniques / mois (site, builder, explorateur) | 2 000 | 5 000 | 15 000 | 50 000 |
 
+**Questions ouvertes pour une version ultérieure** (sans casser les fichiers 1.0) :
+- *Intime neutre* — permettre qu'une même image intime serve à plusieurs personnages **fictifs et originaux** (jamais une personne réelle ; une franchise seulement si ses droits l'autorisent explicitement ; jamais dans un preset de moins de 18 ans, règle déjà en place). En 1.0, l'intime reste « jamais neutre » : rien n'empêche un personnage fictif d'avoir son propre élément intime, quel qu'il soit ; seul le **partage du même fichier** entre deux personnages est fermé. À rouvrir collectivement, par RFC.
+- *Auteurs sans environnement d'exécution* — un assistant de chat sans exécution de code (Gemini web, test du 13 oct.) ne peut pas produire un `.cof` ; la skill le renvoie au builder. Piste : un « patch » JSON qu'un assistant rédige et que le builder applique.
+
 **Règle de pilotage** : si fin novembre aucune intégration tierce n'existe, le projet écrit lui-même l'extension SillyTavern et le nœud ComfyUI, puis les propose en PR. Si la galerie ne reçoit aucun personnage tiers fin mars, priorité à l'outillage de création (builder, pipeline) plutôt qu'à la communication.
 
 ---
