@@ -12,9 +12,23 @@
         "dora",
         "textual-inversion",
         "ip-adapter-embedding",
+        "reference-latent",
         "dreambooth",
         "other"
       ]
+    },
+    "encoding": {
+      "type": "object",
+      "description": "reference-latent only: how the references were pre-encoded (e.g. MiniMax H3 RefMods). Tool-specific keys are allowed.",
+      "additionalProperties": true,
+      "properties": {
+        "method": { "type": "string", "description": "encoder / tool, e.g. minimax-h3-refmod" },
+        "mode": { "enum": ["full", "pooled"], "description": "full = identity (one latent per frame), pooled = concept (spatially averaged)" },
+        "pool": { "type": "array", "items": { "type": "integer", "minimum": 1 }, "minItems": 2, "maxItems": 2, "description": "[h, w] grid when mode is pooled" },
+        "frames": { "type": "integer", "minimum": 1 },
+        "resolution": { "type": "integer", "minimum": 1 },
+        "sources": { "type": "array", "items": { "type": "string" }, "description": "asset ids of the images / videos that were encoded — keeps the latent re-encodable for another model" }
+      }
     },
     "base_model": {
       "type": "object",

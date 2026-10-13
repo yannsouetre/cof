@@ -1729,6 +1729,7 @@
         "dora",
         "textual-inversion",
         "ip-adapter-embedding",
+        "reference-latent",
         "dreambooth",
         "other"
       ],

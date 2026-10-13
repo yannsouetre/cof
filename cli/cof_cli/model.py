@@ -8,7 +8,7 @@ CATEGORIES = ["personality", "appearance", "identity_weights", "volume3d", "voic
 KINDS = {
     "personality": ["card", "description"],
     "appearance": ["reference-set", "character-sheet", "face", "body", "hair", "clothing", "accessory", "intimate", "pilosity", "feature", "environment", "description"],
-    "identity_weights": ["lora", "lycoris", "dora", "textual-inversion", "ip-adapter-embedding", "dreambooth", "other"],
+    "identity_weights": ["lora", "lycoris", "dora", "textual-inversion", "ip-adapter-embedding", "reference-latent", "dreambooth", "other"],
     "volume3d": ["mesh", "face-mesh", "point-cloud", "print", "other", "environment", "daz"],
     "voice": ["samples", "described", "embedding"],
     "posture": ["photo", "photos", "openpose", "silhouette", "attitude", "description"],

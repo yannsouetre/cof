@@ -42,6 +42,29 @@ def _is_pickle(path: Path) -> bool:
     return False
 
 
+def _safetensors_header(path: Path):
+    """Return the parsed safetensors header (dict), or an error string. Reads only the header: no tensor data, no code."""
+    import struct
+    try:
+        size = path.stat().st_size
+        with path.open("rb") as f:
+            head = f.read(8)
+            if len(head) < 8:
+                return "file shorter than the 8-byte header length"
+            n = struct.unpack("<Q", head)[0]
+            if n < 2 or n > min(size - 8, 100_000_000):
+                return f"header length {n} does not fit the file ({size} bytes)"
+            h = json.loads(f.read(n).decode("utf-8"))
+        if not isinstance(h, dict):
+            return "header is not a JSON object"
+        end = max([t["data_offsets"][1] for k, t in h.items() if k != "__metadata__" and isinstance(t, dict) and "data_offsets" in t] or [0])
+        if 8 + n + end > size:
+            return "tensor data extends past the end of the file (truncated?)"
+        return h
+    except Exception as ex:
+        return f"unreadable header ({ex.__class__.__name__})"
+
+
 def _npy_has_objects(data: bytes) -> bool:
     """A .npy whose dtype is object needs pickle to load: refuse it."""
     if not data.startswith(b"\x93NUMPY"):
@@ -273,6 +296,13 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                     rep.errors.append(f"{where}: weights.json without base_model.name (a LoRA without its base model is unusable)")
                 if w.get("file") and w["file"] not in A:
                     rep.errors.append(f"{where}: unknown weights asset {w['file']}")
+                if rv.get("kind") == "reference-latent":
+                    srcs = (w.get("encoding") or {}).get("sources") or []
+                    for aid in srcs:
+                        if aid not in A:
+                            rep.errors.append(f"{where}: encoding.sources: unknown asset {aid}")
+                    if not srcs:
+                        rep.warnings.append(f"{where}: reference-latent without encoding.sources — the source images are not in the file, so it cannot be re-encoded for another model")
 
     # presets: slots resolvable, extends known, identity known, kind/region rules
     pids = preset_ids(manifest)
@@ -527,6 +557,8 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
             rep.errors.append(f"pickle file refused: {rel} — loading it runs code; convert to .safetensors (or numeric .npz)")
         elif pth.suffix.lower() in EXEC_EXT and declared == "none":
             rep.errors.append(f"undeclared executable content: {rel} — declare container.executableContent: \"scripts\" or remove the file")
+        elif pth.suffix.lower() == ".safetensors" and isinstance(err := _safetensors_header(pth), str):
+            rep.errors.append(f"invalid safetensors file: {rel} — {err}")
         elif pth.suffix.lower() == ".npy" and _npy_has_objects(pth.read_bytes()[:4096]):
             rep.errors.append(f"NumPy object array (requires pickle): {rel} — save a numeric array")
         elif pth.suffix.lower() == ".npz":

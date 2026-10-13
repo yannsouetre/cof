@@ -28,6 +28,7 @@ validator's error (`expect`) — other implementations only need to reject the f
 | `real-person-without-consent.cof` | a non-fictional character requires consent |
 | `weights-without-base-model.cof` | identity weights declare their base model |
 | `pickle-file.cof` | pickles are always refused |
+| `invalid-safetensors.cof` | a `.safetensors` must have a readable header that fits the file (a renamed pickle is refused) |
 | `undeclared-script.cof` | scripts require `container.executableContent` |
 | `obj-not-self-contained.cof` | 3D variants are self-contained (unless `self_contained: false`) |
 | `tag-unknown-preset.cof` | a preset tag lists existing presets |

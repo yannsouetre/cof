@@ -116,6 +116,12 @@
       "expect": "pickle"
     },
     {
+      "file": "invalid-safetensors.cof",
+      "rule": "a .safetensors file has a readable header that fits the file (a renamed pickle is refused)",
+      "spec": "§ 4.6",
+      "expect": "invalid safetensors"
+    },
+    {
       "file": "undeclared-script.cof",
       "rule": "scripts require container.executableContent",
       "spec": "§ 9.3",

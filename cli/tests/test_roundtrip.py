@@ -707,3 +707,40 @@ def test_export_agent_no_intimate_voice_consent_auto_tags(tmp_path):
     mm["rights"]["consent"]["scope"].append("voice-synthesis"); (d / "manifest.json").write_text(json.dumps(mm), "utf-8")
     rep = Report(); validate_dir(d, rep, recompute=False)
     assert not any("voice-synthesis" in e for e in rep.errors), rep.errors
+
+
+def _safetensors(path, ok=True):
+    import struct
+    h = json.dumps({"__metadata__": {"refmod.mode": "full"}, "t": {"dtype": "F16", "shape": [1], "data_offsets": [0, 2]}}).encode()
+    path.write_bytes(struct.pack("<Q", len(h)) + h + (b"\x00\x00" if ok else b""))
+
+
+def test_reference_latent_and_safetensors_header(tmp_path):
+    """A pre-encoded reference (e.g. MiniMax H3 RefMod) is identity_weights kind reference-latent; it should
+    name its source images; any .safetensors must have a readable header that fits the file."""
+    d = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/10-clara-mercier", d)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    img = next(a for a in m["assets"] if a["path"].startswith("elements/appearance/") and a.get("mediaType", "").startswith("image/"))
+    (d / "elements/identity_weights/r1").mkdir(parents=True)
+    _safetensors(d / "elements/identity_weights/r1/clara.refmod.safetensors")
+    spec = {"kind": "reference-latent", "base_model": {"name": "MiniMax H3", "family": "minimax-h3"}, "file": "a-r1",
+            "encoding": {"method": "minimax-h3-refmod", "mode": "full", "frames": 1, "resolution": 512, "sources": [img["id"]]},
+            "recommended_weight": 1.0, "covers": ["face"]}
+    (d / "elements/identity_weights/r1/weights.json").write_text(json.dumps(spec), "utf-8")
+    import hashlib
+    st = (d / "elements/identity_weights/r1/clara.refmod.safetensors").read_bytes()
+    m["assets"].append({"id": "a-r1", "path": "elements/identity_weights/r1/clara.refmod.safetensors", "role": "weights", "mediaType": "application/octet-stream", "license": "CC-BY-4.0", "base_model": "MiniMax H3", "bytes": len(st), "sha256": hashlib.sha256(st).hexdigest()})
+    m["elements"]["identity_weights"] = {"variants": {"r1": {"kind": "reference-latent", "spec": "elements/identity_weights/r1/weights.json", "age": {"value": 29, "unit": "years", "basis": "canonical"}}}}
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep)
+    assert rep.ok, rep.errors
+    assert not any("reference-latent" in w for w in rep.warnings)
+    spec["encoding"].pop("sources"); (d / "elements/identity_weights/r1/weights.json").write_text(json.dumps(spec), "utf-8")
+    rep = Report(); validate_dir(d, rep)
+    assert rep.ok and any("cannot be re-encoded" in w for w in rep.warnings)
+    _safetensors(d / "elements/identity_weights/r1/clara.refmod.safetensors", ok=False)
+    rep = Report(); validate_dir(d, rep)
+    assert any("invalid safetensors" in e and "truncated" in e for e in rep.errors)
+    (d / "elements/identity_weights/r1/clara.refmod.safetensors").write_bytes(b"\x80\x04K\x01.")   # a pickle renamed
+    rep = Report(); validate_dir(d, rep)
+    assert any("invalid safetensors" in e for e in rep.errors)

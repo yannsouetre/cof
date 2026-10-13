@@ -117,6 +117,11 @@ def _(d):
     m = load(d); p = d / "elements/identity_weights/l1/weights.pt"; p.parent.mkdir(parents=True, exist_ok=True); p.write_bytes(b"\x80\x02}q\x00.")
     m["assets"].append({"id": "a-pt", "path": "elements/identity_weights/l1/weights.pt", "role": "other", "mediaType": "application/octet-stream", "license": "CC-BY-4.0"}); refresh_asset_index(d, m); save(d, m)
 
+@case("invalid-safetensors", "a .safetensors file has a readable header that fits the file (a renamed pickle is refused)", "§ 4.6", "invalid safetensors")
+def _(d):
+    m = load(d); p = d / "elements/identity_weights/l1/fake.safetensors"; p.parent.mkdir(parents=True, exist_ok=True); p.write_bytes(b"\x80\x04K\x01.")
+    m["assets"].append({"id": "a-st", "path": "elements/identity_weights/l1/fake.safetensors", "role": "weights", "mediaType": "application/octet-stream", "license": "CC-BY-4.0", "base_model": "FLUX.1-dev"}); refresh_asset_index(d, m); save(d, m)
+
 @case("undeclared-script", "scripts require container.executableContent", "§ 9.3", "undeclared executable content")
 def _(d):
     m = load(d); p = d / "elements/files/f9/run.py"; p.parent.mkdir(parents=True); p.write_text("print('hi')\n", "utf-8")
