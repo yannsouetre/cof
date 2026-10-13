@@ -248,7 +248,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-13T08:16:04Z"
+        "computed_at": "2026-10-13T08:24:55Z"
       },
       "age_override": {
         "value": 34,
@@ -292,7 +292,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-13T08:16:04Z"
+        "computed_at": "2026-10-13T08:24:55Z"
       },
       "identity": "lea-marchand"
     },
@@ -324,7 +324,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-13T08:16:04Z"
+        "computed_at": "2026-10-13T08:24:55Z"
       },
       "age_override": {
         "value": 40,
@@ -764,7 +764,7 @@
   },
   "provenance": {
     "created": "2026-10-10T08:30:00Z",
-    "modified": "2026-10-13T08:16:04Z",
+    "modified": "2026-10-13T08:24:55Z",
     "generator": "cof-cli merge (example 11)",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/01-lea-text-only",
@@ -851,7 +851,7 @@
       "archive"
     ],
     "computed_by": "cof-cli/1.0.0rc2",
-    "computed_at": "2026-10-13T08:16:04Z"
+    "computed_at": "2026-10-13T08:24:55Z"
   },
   "coverage": {
     "elements": [
