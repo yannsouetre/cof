@@ -50,6 +50,24 @@
       "expect": "alternatives"
     },
     {
+      "file": "cross-character-element.cof",
+      "rule": "a preset only uses its own character's elements",
+      "spec": "§ 2.1",
+      "expect": "belongs to character"
+    },
+    {
+      "file": "likeness-shared-between-characters.cof",
+      "rule": "a file carrying a likeness or a voice belongs to one character",
+      "spec": "§ 2.1",
+      "expect": "likeness"
+    },
+    {
+      "file": "element-without-character.cof",
+      "rule": "in a file with several characters, every element names its character",
+      "spec": "§ 2.1",
+      "expect": "no `identity`"
+    },
+    {
       "file": "intimate-without-content-tag.cof",
       "rule": "a file with intimate content flags it in tags.content",
       "spec": "§ 4.5",

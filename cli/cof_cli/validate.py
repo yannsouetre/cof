@@ -15,7 +15,7 @@ from jsonschema import Draft202012Validator
 from . import SPEC_VERSION, __version__
 from .completeness import compute as compute_completeness
 from .container import ContainerError, inspect, read_manifest, unpack, verify_hashes
-from .model import garments, ADULT, implicit_resolved, AGELESS_KINDS, AGE_CATEGORIES, CATEGORIES, KINDS, MULTI_KINDS, _age_value, age_required, asset_index, default_preset_id, first, lowest_age, preset_age, preset_identity, preset_ids, region_conflicts, resolve_preset_slots, resolve_variant, resolved, single_kind_violations, by_kind, preset_alternatives, preset_primary_image, resolved_all, backstage
+from .model import garments, ADULT, implicit_resolved, AGELESS_KINDS, AGE_CATEGORIES, CATEGORIES, KINDS, MULTI_KINDS, _age_value, age_required, asset_index, default_preset_id, first, lowest_age, preset_age, preset_identity, preset_ids, region_conflicts, resolve_preset_slots, resolve_variant, resolved, single_kind_violations, by_kind, preset_alternatives, preset_primary_image, resolved_all, backstage, variant_owner, preset_owner, is_likeness, effective_permissions, identity_rights, variant_asset_ids
 from .tokens import count as count_tokens, tokenizer_name
 
 PROMPT_FIELDS = ("description", "personality", "scenario", "first_mes", "mes_example", "system_prompt", "post_history_instructions")
@@ -191,6 +191,12 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
             for iid, ident in ids.items():
                 if ident.get("fictional") is False and not ident.get("consent"):
                     rep.errors.append(f"identities.{iid}: real person without consent")
+                dpi = ident.get("default_preset")
+                if dpi and dpi not in (manifest.get("presets") or {}):
+                    rep.errors.append(f"identities.{iid}.default_preset: unknown preset {dpi}")
+                elif dpi and preset_owner(manifest, dpi) != iid:
+                    rep.errors.append(f"identities.{iid}.default_preset: preset {dpi} belongs to character {preset_owner(manifest, dpi)}")
+        _character_rules(manifest, ids, rep)
 
     # asset ids unique, files present
     seen = set()
@@ -269,17 +275,16 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
         p = manifest["presets"][pid]
         if p.get("extends") and p["extends"] not in manifest["presets"]:
             rep.errors.append(f"presets.{pid}: unknown extends {p['extends']}")
+        elif p.get("extends") and preset_owner(manifest, p["extends"]) != preset_owner(manifest, pid):
+            rep.errors.append(f"presets.{pid}: extends {p['extends']}, a preset of another character")
         if p.get("identity") and ids and p["identity"] not in ids:
             rep.errors.append(f"presets.{pid}: unknown identity {p['identity']}")
         for cat, vids in resolve_preset_slots(manifest, pid).items():
             for vid in vids:
                 if cat not in elements or vid not in (elements[cat] or {}).get("variants", {}):
                     rep.errors.append(f"presets.{pid}.slots.{cat}: unknown variant {vid}")
-                else:
-                    rv = resolve_variant(manifest, cat, vid) or {}
-                    pidn = p.get("identity") or manifest.get("default_identity")
-                    if rv.get("identity") and pidn and rv["identity"] != pidn:
-                        rep.errors.append(f"presets.{pid}: '{vid}' is reserved for identity {rv['identity']}")
+                elif ids and variant_owner(manifest, cat, vid) != preset_owner(manifest, pid):
+                    rep.errors.append(f"presets.{pid} (character {preset_owner(manifest, pid)}): '{cat}.{vid}' belongs to character {variant_owner(manifest, cat, vid)} — a preset only uses its own character's elements")
         own_slots = p.get("slots") or {}
         for cat, vids in (p.get("alternatives") or {}).items():
             for vid in vids:
@@ -289,11 +294,8 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
             for vid in vids:
                 if cat not in elements or vid not in (elements[cat] or {}).get("variants", {}):
                     rep.errors.append(f"presets.{pid}.alternatives.{cat}: unknown variant {vid}")
-                else:
-                    rv = resolve_variant(manifest, cat, vid) or {}
-                    pidn = p.get("identity") or manifest.get("default_identity")
-                    if rv.get("identity") and pidn and rv["identity"] != pidn:
-                        rep.errors.append(f"presets.{pid}: alternative '{vid}' is reserved for identity {rv['identity']}")
+                elif ids and variant_owner(manifest, cat, vid) != preset_owner(manifest, pid):
+                    rep.errors.append(f"presets.{pid} (character {preset_owner(manifest, pid)}): alternative '{cat}.{vid}' belongs to character {variant_owner(manifest, cat, vid)} — a preset only offers its own character's elements")
         rules = p.get("rules") or {}
         res = resolved(manifest, pid)
         if rules.get("single_per_kind", True):
@@ -301,7 +303,7 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
         if rules.get("exclusive_regions", True):
             rep.warnings += [f"presets.{pid}: {x}" for x in region_conflicts(res)]
         _primary_image_rules(manifest, pid, res, A, rep)
-        _age_rules(manifest, pid, resolved_all(manifest, pid), perms_all, rep)   # applied ∪ offered
+        _age_rules(manifest, pid, resolved_all(manifest, pid), perms_all, rep)   # applied ∪ offered (perms: the character's)
     if not pids:
         _age_rules(manifest, None, implicit_resolved(manifest), perms_all, rep)
     for etype, e in elements.items():
@@ -381,18 +383,18 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
             prof = {}
         for i, en in enumerate(prof.get("engines") or []):
             w = f"voice.{vid}.engines[{i}] ({en.get('engine')})"
-            ids = list(en.get("files") or []) + ([en["artifact"]] if en.get("artifact") else [])
-            if not ids and not en.get("voice_id"):
+            eids = list(en.get("files") or []) + ([en["artifact"]] if en.get("artifact") else [])
+            if not eids and not en.get("voice_id"):
                 rep.warnings.append(f"{w}: neither files nor voice_id — entry has no effect")
-            if ids and not en.get("model"):
+            if eids and not en.get("model"):
                 rep.warnings.append(f"{w}: specify `model` (exact model, e.g. coqui/XTTS-v2) — a voice embedding is only readable by the model that produced it")
-            for aid in ids:
+            for aid in eids:
                 a = A.get(aid)
                 if not a:
                     rep.errors.append(f"{w}: unknown asset '{aid}'")
                 elif a.get("path") and Path(a["path"]).suffix.lower() not in ENGINE_EXT:
                     rep.warnings.append(f"{w}: unexpected format {Path(a['path']).suffix} — expected: {', '.join(sorted(ENGINE_EXT))}")
-            if ids and perms0.get("allowVoiceCloning") is False:
+            if eids and _perms_of(manifest, "voice", vid).get("allowVoiceCloning") is False:
                 rep.warnings.append(f"{w}: voice embedding included while allowVoiceCloning = false — readers may only use it to voice THIS character")
     # Daz Studio content: references a content library by design; licence of store products
     for vid, v in ((elements.get("volume3d") or {}).get("variants") or {}).items():
@@ -419,7 +421,7 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                     rep.errors.append(f"{w}: unreadable archive {ap.name}")
             elif ap.suffix.lower() == ".rar":
                 rep.warnings.append(f"{w}: RAR archive {ap.name} not inspected by the validator — prefer .zip, or only open trusted archives")
-            if str(a.get("license", "")).startswith("LicenseRef-Daz") and perms0.get("allowRedistribution"):
+            if str(a.get("license", "")).startswith("LicenseRef-Daz") and _perms_of(manifest, "volume3d", vid).get("allowRedistribution"):
                 rep.warnings.append(f"{w}: {ap.name} is under a Daz licence (Store product) while allowRedistribution = true — such a .cof must not be shared")
         rep.warnings.append(f"{w}: Daz licence — the standard licence covers renders, not redistribution of Store 3D files (an Interactive License is required); only embed your own files (preset or pose .duf, morphs you made)")
     # assets by link (e.g. LoRA weights): allowed, flagged
@@ -639,6 +641,40 @@ def _duplicate_images(src: Path, manifest: dict, rep: "Report") -> None:
             seen.append((a, sig))
 
 
+def _perms_of(manifest: dict, cat: str, vid: str) -> dict:
+    return identity_rights(manifest, variant_owner(manifest, cat, vid)).get("permissions") or {}
+
+
+def _character_rules(manifest: dict, ids: dict, rep: "Report") -> None:
+    """Several characters in one file = logical containers: every element belongs to one character; a file that
+    carries a likeness or a voice is never used by two characters (neutral files — places, clothes, poses — may be)."""
+    elements = manifest.get("elements") or {}
+    multi = len(ids) >= 2
+    owners_by_asset: dict[str, set] = {}
+    likeness_assets: set[str] = set()
+    for cat, e in elements.items():
+        V = (e or {}).get("variants") or {}
+        for vid, v in V.items():
+            rv = resolve_variant(manifest, cat, vid) or {}
+            if multi and not rv.get("identity"):
+                rep.errors.append(f"elements.{cat}.{vid}: no `identity` — required as soon as the file holds several characters (each element belongs to one character)")
+            par = v.get("derives_from")
+            if par in V and ids and variant_owner(manifest, cat, par) != variant_owner(manifest, cat, vid):
+                rep.errors.append(f"elements.{cat}.{vid}: derives from {par}, an element of another character")
+            o = variant_owner(manifest, cat, vid)
+            for aid in variant_asset_ids(rv):
+                owners_by_asset.setdefault(aid, set()).add(o)
+                if is_likeness(cat, rv):
+                    likeness_assets.add(aid)
+    if multi:
+        for aid in sorted(likeness_assets):
+            if len(owners_by_asset.get(aid, ())) > 1:
+                rep.errors.append(f"asset {aid} carries a likeness or a voice and is used by several characters ({', '.join(sorted(map(str, owners_by_asset[aid])))}) — a character's face, body, voice, weights or 3D belong to that character only")
+        dp, di = manifest.get("default_preset"), manifest.get("default_identity")
+        if dp in (manifest.get("presets") or {}) and preset_owner(manifest, dp) != di:
+            rep.warnings.append(f"default_preset {dp} belongs to {preset_owner(manifest, dp)}, not to the default character {di}")
+
+
 HEAD_ONLY = {"closeup", "head", "bust"}      # asset framings that cannot show an outfit
 
 
@@ -678,7 +714,7 @@ def _age_rules(manifest: dict, pid: str | None, res: dict, perms_all: dict, rep:
                 continue
             if age_required(manifest, pid, v) and _age_value(v.get("age")) is None:
                 rep.errors.append(f"{label}: {cat}.{v['_id']} ({v['kind']}) must declare an age (basis 'apparent' if the canonical age is unknown)")
-    eff_perms = {**perms_all, **(p.get("permissions_override") or {})}
+    eff_perms = effective_permissions(manifest, pid) if pid else {**perms_all}
     if pa is not None and pa < ADULT:
         if by_kind(res, "appearance", "intimate"):
             rep.errors.append(f"{label}: intimate variant combined with an element under {ADULT} (preset age {pa}) — forbidden")

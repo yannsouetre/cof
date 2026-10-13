@@ -48,7 +48,10 @@ A product MAY claim several classes. A claim SHOULD be stated as e.g. *"COF 1.0 
 1. Open the ZIP defensively (§ 9): reject absolute paths, "..", symlinks; cap entries, total size and ratio.
 2. Check entry 0 == "mimetype" with the exact media type. Otherwise: not a COF file.
 3. Parse manifest.json. If manifest.cof major > supported major: refuse politely. Unknown fields: IGNORE (never fail).
-4. Choose a preset: the one the user picks, else manifest.default_preset, else the first one.
+4. Several characters (manifest.identities)? Choose one first (default_identity by default): each character is a
+   logical container — its elements (variant.identity), its presets (preset.identity), its default preset
+   (identities.<id>.default_preset) and its rights (identities.<id>.rights replaces the root rights).
+   Choose a preset of that character: the one the user picks, else its default preset, else the first one.
    (Optional `preset_tags` at container level let a picker filter presets: same-facet tags are alternatives, different facets intersect. Pure organisation — ignore them if you show no picker.
     Facet navigation: to switch language (or age, look…), go to the preset carrying the same tags in every
     other facet — en-12 → fr-12 — so text and voice change together; list the candidates if 0 or several.
@@ -67,7 +70,8 @@ A product MAY claim several classes. A claim SHOULD be stated as e.g. *"COF 1.0 
    Never take an element from another preset without switching to it.
    Variants referenced by no preset are BACKSTAGE (model.backstage()): keep them, never apply or offer them;
    an explorer may list them apart.
-6. Compute effective rights: rights.permissions merged with preset.permissions_override.
+6. Compute effective rights: the character's permissions (identities.<id>.rights, else rights) merged with
+   preset.permissions_override.
    Apply § 6 before using anything.
 7. Load only what your profile needs, lazily: assets[] gives path, mediaType, bytes, sha256.
    Verifying sha256 is RECOMMENDED for anything you store or redistribute.
@@ -176,7 +180,7 @@ The skill itself was tested blind: fresh agents with no access to the spec, the 
 ## 10. Conformance testing
 
 - **Reference validator**: `pip install "git+https://github.com/yannsouetre/cof#subdirectory=cli"` (MIT; PyPI package `cof-cli` after 1.0.0) → `cof validate file.cof` (schemas + rules + completeness; `--json` for CI).
-- **Test vectors**: `spec/examples/` (text-only, appearance, multi-preset, robot, medieval, modular, mixed adult/minor, agent with skills…) — each MUST validate. A negative corpus ships in `tests/invalid/`: 25 files, one rule violated per file, each listed in `cases.json` with the rule and the spec section — a conformant validator rejects every one of them, and accepts `_base.cof`.
+- **Test vectors**: `spec/examples/` (text-only, appearance, multi-preset, robot, medieval, modular, mixed adult/minor, agent with skills…) — each MUST validate. A negative corpus ships in `tests/invalid/`: 28 files, one rule violated per file, each listed in `cases.json` with the rule and the spec section — a conformant validator rejects every one of them, and accepts `_base.cof`.
 - **Builder**: `builder/index.html`, offline, zero dependencies — a reference *writer*.
 - A reader SHOULD at least open every positive vector without error and refuse every negative vector that concerns its classes.
 

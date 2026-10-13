@@ -1,0 +1,823 @@
+{
+  "cof": "1.0",
+  "id": "01M4T4WEDY8QB5QD1ZRCSHSSMW",
+  "name": "Léa Marchand",
+  "nickname": "Léa",
+  "languages": [
+    "fr",
+    "en"
+  ],
+  "summary": "Ingénieure acoustique devenue archiviste sonore ; sceptique, drôle, loyale. Exemple modulaire : 2 personnalités, 2 presets.",
+  "fictional": true,
+  "morphology": {
+    "class": "human",
+    "species": "human"
+  },
+  "tags": {
+    "auto": [
+      "humanoid",
+      "adult",
+      "contemporary",
+      "fr",
+      "en",
+      "style-photo-realistic",
+      "multi-preset"
+    ],
+    "manual": [
+      "fiction",
+      "mentor",
+      "archiviste",
+      "exemple-modulaire"
+    ],
+    "content": [
+      "none"
+    ],
+    "ip": {
+      "original": true,
+      "franchise": null,
+      "based_on": null
+    }
+  },
+  "elements": {
+    "personality": {
+      "variants": {
+        "p1": {
+          "kind": "card",
+          "label": "Léa Marchand",
+          "card": "elements/personality/p1/card.json",
+          "psyche": "elements/personality/p1/psyche.json",
+          "profiles": {
+            "summary": {
+              "tokens": 120,
+              "tokenizer": "heuristic-chars",
+              "blocks": [
+                "name",
+                "summary",
+                "psyche.core"
+              ]
+            },
+            "standard": {
+              "tokens": 420,
+              "tokenizer": "heuristic-chars",
+              "blocks": [
+                "card.description",
+                "card.personality",
+                "card.scenario",
+                "psyche"
+              ]
+            }
+          },
+          "identity": "lea-marchand"
+        },
+        "p2": {
+          "kind": "card",
+          "label": "Léa à 14 ans",
+          "derives_from": "p1",
+          "card": "elements/personality/p2/card.json"
+        }
+      }
+    },
+    "appearance": {
+      "variants": {
+        "f1": {
+          "kind": "face",
+          "label": "Visage (planche Gemini)",
+          "style": "photo-realistic",
+          "images": [
+            "a-head-front-closeup",
+            "a-head-right-closeup",
+            "a-head-front"
+          ],
+          "age": {
+            "value": 34,
+            "unit": "years",
+            "basis": "declared"
+          },
+          "identity": "lea-marchand"
+        },
+        "b1": {
+          "kind": "body",
+          "label": "Corps (planche Gemini)",
+          "style": "photo-realistic",
+          "images": [
+            "a-body-front",
+            "a-body-left",
+            "a-body-back"
+          ],
+          "age": {
+            "value": 34,
+            "unit": "years",
+            "basis": "declared"
+          },
+          "identity": "lea-marchand"
+        },
+        "o1": {
+          "kind": "clothing",
+          "garment": "full-outfit",
+          "label": "Casual contemporain",
+          "spec": "elements/appearance/o1/outfit.json",
+          "images": [
+            "a-body-front",
+            "a-body-left",
+            "a-body-back"
+          ],
+          "style": "photo-realistic",
+          "identity": "lea-marchand"
+        },
+        "m1-f1": {
+          "kind": "face",
+          "label": "Visage",
+          "images": [
+            "m1-a-head-front-closeup",
+            "m1-a-head-right-closeup",
+            "m1-a-head-front"
+          ],
+          "derived": [
+            "a-head-front-canny",
+            "a-head-front-canny-2",
+            "a-head-front-lineart",
+            "a-head-front-lineart-2",
+            "a-head-front-softedge"
+          ],
+          "style": "photo-realistic",
+          "age": {
+            "value": 40,
+            "unit": "years",
+            "basis": "apparent"
+          },
+          "identity": "martien"
+        },
+        "m1-b1": {
+          "kind": "body",
+          "label": "Corps",
+          "images": [
+            "m1-a-body-front",
+            "m1-a-body-left",
+            "m1-a-body-back"
+          ],
+          "derived": [
+            "a-body-front-canny",
+            "a-body-front-lineart",
+            "a-body-front-softedge"
+          ],
+          "style": "photo-realistic",
+          "age": {
+            "value": 40,
+            "unit": "years",
+            "basis": "apparent"
+          },
+          "identity": "martien"
+        },
+        "env-lea": {
+          "kind": "environment",
+          "use": "background",
+          "label": "Atelier commun / Shared studio",
+          "identity": "lea-marchand",
+          "images": [
+            "a-place-shared"
+          ]
+        },
+        "env-martien": {
+          "kind": "environment",
+          "use": "background",
+          "label": "Atelier commun / Shared studio",
+          "identity": "martien",
+          "images": [
+            "a-place-shared"
+          ]
+        }
+      }
+    },
+    "identity_weights": {
+      "variants": {
+        "l1": {
+          "kind": "lora",
+          "label": "LoRA Flux (fictif)",
+          "spec": "elements/identity_weights/l1/weights.json",
+          "style": "photo-realistic",
+          "covers": [
+            "face",
+            "hair",
+            "body"
+          ],
+          "age": {
+            "value": 34,
+            "unit": "years",
+            "basis": "declared"
+          },
+          "identity": "lea-marchand"
+        }
+      }
+    }
+  },
+  "presets": {
+    "default": {
+      "label": "Léa aujourd'hui",
+      "style": "photo-realistic",
+      "slots": {
+        "personality": [
+          "p1"
+        ],
+        "appearance": [
+          "f1",
+          "b1",
+          "o1",
+          "env-lea"
+        ],
+        "identity_weights": [
+          "l1"
+        ]
+      },
+      "completeness": {
+        "score": 56,
+        "level": "C",
+        "layers": {
+          "identity": 100,
+          "personality": 90,
+          "appearance": 75,
+          "physique": 0,
+          "voice": 0,
+          "volume": 0,
+          "motion": 0,
+          "rights": 85
+        },
+        "targets_ready": [
+          "chat-text",
+          "agent-persona",
+          "image-video-gen",
+          "archive"
+        ],
+        "computed_by": "cof-cli/0.3.0",
+        "computed_at": "2026-10-10T08:09:14Z"
+      },
+      "age_override": {
+        "value": 34,
+        "unit": "years",
+        "basis": "declared"
+      },
+      "identity": "lea-marchand",
+      "primary_image": "a-body-front"
+    },
+    "young": {
+      "label": "Léa à 14 ans (texte seul)",
+      "extends": "default",
+      "slots": {
+        "personality": [
+          "p2"
+        ],
+        "appearance": []
+      },
+      "age_override": {
+        "value": 14,
+        "unit": "years",
+        "basis": "canonical"
+      },
+      "completeness": {
+        "score": 56,
+        "level": "C",
+        "layers": {
+          "identity": 100,
+          "personality": 90,
+          "appearance": 75,
+          "physique": 0,
+          "voice": 0,
+          "volume": 0,
+          "motion": 0,
+          "rights": 85
+        },
+        "targets_ready": [
+          "chat-text",
+          "agent-persona",
+          "image-video-gen",
+          "archive"
+        ],
+        "computed_by": "cof-cli/0.3.0",
+        "computed_at": "2026-10-10T08:09:14Z"
+      },
+      "identity": "lea-marchand"
+    },
+    "m1-default": {
+      "label": "Défaut",
+      "slots": {
+        "appearance": [
+          "m1-f1",
+          "m1-b1",
+          "env-martien"
+        ]
+      },
+      "style": "photo-realistic",
+      "completeness": {
+        "score": 33,
+        "level": "D",
+        "layers": {
+          "identity": 100,
+          "personality": 0,
+          "appearance": 50,
+          "physique": 0,
+          "voice": 0,
+          "volume": 0,
+          "motion": 0,
+          "rights": 85
+        },
+        "targets_ready": [
+          "image-video-gen",
+          "archive"
+        ],
+        "computed_by": "cof-cli/0.4.0",
+        "computed_at": "2026-10-10T17:38:28Z"
+      },
+      "age_override": {
+        "value": 40,
+        "unit": "years",
+        "basis": "apparent"
+      },
+      "identity": "martien",
+      "primary_image": "m1-a-body-front"
+    }
+  },
+  "default_preset": "default",
+  "priorities": {
+    "visual": [
+      "identity_weights",
+      "images",
+      "avatar",
+      "descriptive"
+    ],
+    "voice": [
+      "samples",
+      "described"
+    ],
+    "by_target": {
+      "game-3d": {
+        "visual": [
+          "avatar",
+          "images",
+          "identity_weights",
+          "descriptive"
+        ]
+      },
+      "chat-text": {
+        "visual": [
+          "descriptive",
+          "images"
+        ]
+      }
+    }
+  },
+  "mapping_vocabularies": {},
+  "assets": [
+    {
+      "path": "elements/appearance/b1/body.front.jpg",
+      "role": "view",
+      "subject": "body",
+      "angle": "front",
+      "framing": "full",
+      "mediaType": "image/jpeg",
+      "bytes": 213494,
+      "sha256": "0444fe667277ba2264d4abd4e4a009355e69c65f8aefe4d81564bbc2be964956",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 2048,
+      "confidence": 0.9,
+      "id": "a-body-front",
+      "style": "photo-realistic"
+    },
+    {
+      "path": "elements/appearance/b1/body.left.jpg",
+      "role": "view",
+      "subject": "body",
+      "angle": "left",
+      "framing": "full",
+      "mediaType": "image/jpeg",
+      "bytes": 163540,
+      "sha256": "de2d2c6d0204aebfa835d21cced4636b09f9cbd28d42332275dd491c6bd9d98d",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 2048,
+      "confidence": 0.9,
+      "id": "a-body-left",
+      "style": "photo-realistic"
+    },
+    {
+      "path": "elements/appearance/b1/body.back.jpg",
+      "role": "view",
+      "subject": "body",
+      "angle": "back",
+      "framing": "full",
+      "mediaType": "image/jpeg",
+      "bytes": 231853,
+      "sha256": "522b1c0832ef26b2a0ecde4a3a09b6b2053e45538450c9c6f3cd6d7a68b7d236",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 2048,
+      "confidence": 0.6,
+      "id": "a-body-back",
+      "style": "photo-realistic"
+    },
+    {
+      "path": "elements/appearance/f1/head.front.closeup.jpg",
+      "role": "view",
+      "subject": "head",
+      "angle": "front",
+      "framing": "closeup",
+      "mediaType": "image/jpeg",
+      "bytes": 103310,
+      "sha256": "b319c31122cdf11e8374da6ddc54eb5fdbb57a19b8720f4f15149e939dcc7f2b",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 1024,
+      "confidence": 0.9,
+      "id": "a-head-front-closeup",
+      "style": "photo-realistic"
+    },
+    {
+      "path": "elements/appearance/f1/head.right.closeup.jpg",
+      "role": "view",
+      "subject": "head",
+      "angle": "right",
+      "framing": "closeup",
+      "mediaType": "image/jpeg",
+      "bytes": 83155,
+      "sha256": "bde899e5caf3619f594a777b3888eedd8a007e5c84ae0ee50544dc022e8121ff",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 1024,
+      "confidence": 0.7,
+      "id": "a-head-right-closeup",
+      "style": "photo-realistic"
+    },
+    {
+      "path": "elements/appearance/f1/head.front.jpg",
+      "role": "view",
+      "subject": "head",
+      "angle": "front",
+      "framing": "head",
+      "mediaType": "image/jpeg",
+      "bytes": 113199,
+      "sha256": "b9d35f09cd70aba1f5f638c17c29eeea80b3c088648251a7fd24d762c9fcc50e",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 1024,
+      "confidence": 0.8,
+      "derived_from": "m1-a-body-front",
+      "id": "a-head-front",
+      "style": "photo-realistic"
+    },
+    {
+      "id": "a-lora-l1",
+      "uri": "https://example.org/models/lea-marchand-lora/lea.safetensors",
+      "role": "weights",
+      "base_model": "FLUX.1-dev",
+      "mediaType": "application/octet-stream",
+      "bytes": 171000000,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "license": "CC-BY-NC-4.0",
+      "generator": "exemple fictif — hash illustratif"
+    },
+    {
+      "path": "elements/appearance/b1/m1-body.front.jpg",
+      "role": "view",
+      "subject": "body",
+      "angle": "front",
+      "framing": "full",
+      "mediaType": "image/jpeg",
+      "bytes": 225753,
+      "sha256": "2e1c21bf0dece1c5e998eff5e008beda4681c6e65ee98699f74356b9843f9faf",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 2048,
+      "confidence": 0.9,
+      "id": "m1-a-body-front",
+      "style": "photo-realistic"
+    },
+    {
+      "path": "elements/appearance/b1/m1-body.left.jpg",
+      "role": "view",
+      "subject": "body",
+      "angle": "left",
+      "framing": "full",
+      "mediaType": "image/jpeg",
+      "bytes": 148854,
+      "sha256": "a580d62cf86e6524d843c3ad0d8cd63f8873963712f1341c7ee806ce1a42da8b",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 2048,
+      "confidence": 0.5,
+      "id": "m1-a-body-left",
+      "style": "photo-realistic"
+    },
+    {
+      "path": "elements/appearance/b1/m1-body.back.jpg",
+      "role": "view",
+      "subject": "body",
+      "angle": "back",
+      "framing": "full",
+      "mediaType": "image/jpeg",
+      "bytes": 229807,
+      "sha256": "64540e2536c9fa382635c38b7e71a99d591cbc4669fa0bd26624e09e860d1fbc",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 2048,
+      "confidence": 0.6,
+      "id": "m1-a-body-back",
+      "style": "photo-realistic"
+    },
+    {
+      "path": "elements/appearance/f1/m1-head.front.closeup.jpg",
+      "role": "view",
+      "subject": "head",
+      "angle": "front",
+      "framing": "closeup",
+      "mediaType": "image/jpeg",
+      "bytes": 114211,
+      "sha256": "a7627cc277ab0d235fadd49444d810f1c05f11c91db87a3f4e284f38de3f9721",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 1024,
+      "confidence": 0.9,
+      "id": "m1-a-head-front-closeup",
+      "style": "photo-realistic"
+    },
+    {
+      "path": "elements/appearance/f1/m1-head.right.closeup.jpg",
+      "role": "view",
+      "subject": "head",
+      "angle": "right",
+      "framing": "closeup",
+      "mediaType": "image/jpeg",
+      "bytes": 98273,
+      "sha256": "1e733e55f8de9e8059a1ceed475a43bc3a17482c523fad5a4197be5cc9b93bcb",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 1024,
+      "confidence": 1.0,
+      "human_confirmed": true,
+      "id": "m1-a-head-right-closeup",
+      "style": "photo-realistic"
+    },
+    {
+      "path": "elements/appearance/f1/m1-head.front.jpg",
+      "role": "view",
+      "subject": "head",
+      "angle": "front",
+      "framing": "head",
+      "mediaType": "image/jpeg",
+      "bytes": 100736,
+      "sha256": "560378a67e4f486e7ec103739c32aeba14554cdcf94860a7ffa4459781a36405",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 1024,
+      "confidence": 0.8,
+      "derived_from": "m1-a-body-front",
+      "id": "m1-a-head-front",
+      "style": "photo-realistic"
+    },
+    {
+      "path": "derived/face/f1/head.front.canny.png",
+      "role": "derived",
+      "method": "canny",
+      "mediaType": "image/png",
+      "bytes": 8315,
+      "sha256": "043c39f30a9e57a51f3c12accd3f8872771be2de4832db2e779f270d77934d80",
+      "license": "CC-BY-4.0",
+      "width": 1024,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "m1-a-head-front",
+      "id": "a-head-front-canny",
+      "source": "m1-a-head-front"
+    },
+    {
+      "path": "derived/face/f1/head.front.canny.svg",
+      "role": "derived",
+      "method": "canny",
+      "format": "svg",
+      "mediaType": "image/svg+xml",
+      "bytes": 26763,
+      "sha256": "474a68a2f0cd2fa3b0cbdfdc666c1233043b22754304d17e61fbeff5e994f0d3",
+      "license": "CC-BY-4.0",
+      "derived_from": "a-head-front-canny",
+      "id": "a-head-front-canny-2",
+      "source": "m1-a-head-front"
+    },
+    {
+      "path": "derived/face/f1/head.front.lineart.png",
+      "role": "derived",
+      "method": "lineart",
+      "mediaType": "image/png",
+      "bytes": 9628,
+      "sha256": "41c74c8446005b19d7c1010494883a1ae214149d879103627e2883c7cd64bb57",
+      "license": "CC-BY-4.0",
+      "width": 1024,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "m1-a-head-front",
+      "id": "a-head-front-lineart",
+      "source": "m1-a-head-front"
+    },
+    {
+      "path": "derived/face/f1/head.front.lineart.svg",
+      "role": "derived",
+      "method": "lineart",
+      "format": "svg",
+      "mediaType": "image/svg+xml",
+      "bytes": 63190,
+      "sha256": "cd68f9bfdc5b35771e8159fc0d1f1d3b76e691afa988aa405945d9180f995cc4",
+      "license": "CC-BY-4.0",
+      "derived_from": "a-head-front-lineart",
+      "id": "a-head-front-lineart-2",
+      "source": "m1-a-head-front"
+    },
+    {
+      "path": "derived/face/f1/head.front.softedge.png",
+      "role": "derived",
+      "method": "softedge",
+      "mediaType": "image/png",
+      "bytes": 33907,
+      "sha256": "034a12479534dccff3b41288f1bc82543a2000210edfee5e4621dbcb38af327e",
+      "license": "CC-BY-4.0",
+      "width": 512,
+      "height": 512,
+      "bits": 4,
+      "derived_from": "m1-a-head-front",
+      "id": "a-head-front-softedge",
+      "source": "m1-a-head-front"
+    },
+    {
+      "path": "derived/body/b1/body.front.canny.png",
+      "role": "derived",
+      "method": "canny",
+      "mediaType": "image/png",
+      "bytes": 6398,
+      "sha256": "e642be415d3daaf637cb9b1a3811c5448558800144f9bd17967ff8edfb0197eb",
+      "license": "CC-BY-4.0",
+      "width": 512,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "m1-a-body-front",
+      "id": "a-body-front-canny",
+      "source": "m1-a-body-front"
+    },
+    {
+      "path": "derived/body/b1/body.front.lineart.png",
+      "role": "derived",
+      "method": "lineart",
+      "mediaType": "image/png",
+      "bytes": 8584,
+      "sha256": "1d54684623f4bcf50e0070376d9a1c91d6f78a229eb2eeef14e6bae88343aea6",
+      "license": "CC-BY-4.0",
+      "width": 512,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "m1-a-body-front",
+      "id": "a-body-front-lineart",
+      "source": "m1-a-body-front"
+    },
+    {
+      "path": "derived/body/b1/body.front.softedge.png",
+      "role": "derived",
+      "method": "softedge",
+      "mediaType": "image/png",
+      "bytes": 12088,
+      "sha256": "c93da0168881e173359276add050cdeb948826d92b563aaeea9a542aaca230c0",
+      "license": "CC-BY-4.0",
+      "width": 256,
+      "height": 512,
+      "bits": 4,
+      "derived_from": "m1-a-body-front",
+      "id": "a-body-front-softedge",
+      "source": "m1-a-body-front"
+    },
+    {
+      "id": "a-place-shared",
+      "path": "elements/appearance/env-shared/place.jpg",
+      "role": "environment",
+      "mediaType": "image/jpeg",
+      "license": "CC-BY-4.0",
+      "width": 960,
+      "height": 536,
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)",
+      "bytes": 113824,
+      "sha256": "76ac39caa6c3dd9575a4c3be327fd02807d55d4f792db855d40980cb38a862f5"
+    }
+  ],
+  "size_class": "lite",
+  "container": {
+    "aligned": 0,
+    "executableContent": "none"
+  },
+  "rights": {
+    "permissions": {
+      "avatarPermission": "everyone",
+      "commercialUsage": "personalNonProfit",
+      "modification": "allowModification",
+      "allowRedistribution": true,
+      "creditNotation": "required",
+      "allowExcessivelyViolentUsage": false,
+      "allowSexualUsage": false,
+      "allowPoliticalOrReligiousUsage": false,
+      "allowAntisocialOrHateUsage": false,
+      "allowVoiceCloning": false,
+      "allowTraining": "finetune-private",
+      "allowImpersonationOfRealPerson": false,
+      "ageRating": "PEGI-12",
+      "minUserAge": 13,
+      "aiDisclosure": true
+    },
+    "consent": null
+  },
+  "provenance": {
+    "created": "2026-10-10T08:30:00Z",
+    "modified": "2026-10-13T08:08:24Z",
+    "generator": "cof-cli merge (example 11)",
+    "source": [
+      "https://github.com/yannsouetre/cof/tree/main/spec/examples/01-lea-text-only",
+      "https://github.com/yannsouetre/cof/tree/main/spec/examples/03-femme-moderne",
+      "https://github.com/yannsouetre/cof/tree/main/spec/examples/04-martien",
+      "https://github.com/yannsouetre/cof/tree/main/spec/examples/07-lea-modulaire",
+      "https://github.com/yannsouetre/cof/tree/main/spec/examples/04-martien"
+    ],
+    "c2pa": null,
+    "signatures": []
+  },
+  "metadata": {
+    "@context": {
+      "dc": "http://purl.org/dc/elements/1.1/",
+      "schema": "https://schema.org/"
+    },
+    "dc:creator": [
+      "Yann Souetre"
+    ],
+    "dc:rights": "CC-BY-4.0",
+    "schema:version": "1.0.0"
+  },
+  "extensions": {},
+  "identities": {
+    "lea-marchand": {
+      "name": "Léa Marchand",
+      "nickname": "Léa",
+      "summary": "Ingénieure acoustique devenue archiviste sonore ; sceptique, drôle, loyale. Exemple modulaire : 2 personnalités, 2 presets.",
+      "fictional": true,
+      "morphology": {
+        "class": "human",
+        "species": "human"
+      },
+      "default_preset": "default"
+    },
+    "martien": {
+      "name": "Martien",
+      "summary": "Humanoïde extraterrestre à la peau verte, grands yeux noirs, oreilles pointues, combinaison argentée.",
+      "fictional": true,
+      "morphology": {
+        "class": "humanoid",
+        "species": "martian (fictional)"
+      },
+      "rights": {
+        "permissions": {
+          "avatarPermission": "everyone",
+          "commercialUsage": "personalNonProfit",
+          "modification": "prohibited",
+          "allowRedistribution": false,
+          "creditNotation": "required",
+          "allowExcessivelyViolentUsage": false,
+          "allowSexualUsage": false,
+          "allowPoliticalOrReligiousUsage": false,
+          "allowAntisocialOrHateUsage": false,
+          "allowVoiceCloning": false,
+          "allowTraining": "none",
+          "allowImpersonationOfRealPerson": false,
+          "ageRating": "PEGI-3",
+          "minUserAge": 0,
+          "aiDisclosure": true
+        }
+      },
+      "default_preset": "m1-default"
+    }
+  },
+  "default_identity": "lea-marchand"
+}

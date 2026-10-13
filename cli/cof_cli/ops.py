@@ -79,12 +79,19 @@ def merge_dirs(sources: list[Path], dst: Path) -> dict:
         # identities of this file
         src_ids = m.get("identities") or {m.get("default_identity") or _slug(m.get("name")): {k: m.get(k) for k in ("name", "nickname", "summary", "fictional", "morphology") if m.get(k) is not None}}
         id_map = {}
+        src_default = m.get("default_identity") or next(iter(src_ids))
         for iid, ident in src_ids.items():
             key = _ident_key(m, ident)
             if key in ids_by_key:
                 id_map[iid] = ids_by_key[key]
             else:
                 new_iid = iid if iid not in out["identities"] else f"{prefix}-{iid}"
+                ident = json.loads(json.dumps(ident))
+                # each character keeps ITS rights: the source file's rights travel with its characters
+                if not ident.get("rights") and m.get("rights") and json.dumps(m["rights"].get("permissions"), sort_keys=True) != json.dumps((base.get("rights") or {}).get("permissions"), sort_keys=True):
+                    ident["rights"] = {"permissions": m["rights"]["permissions"]}
+                if iid == src_default and not ident.get("consent") and (m.get("rights") or {}).get("consent"):
+                    ident["consent"] = m["rights"]["consent"]
                 out["identities"][new_iid] = ident; ids_by_key[key] = new_iid; id_map[iid] = new_iid
         if n == 0:
             out["default_identity"] = id_map.get(m.get("default_identity") or next(iter(src_ids)))
@@ -102,7 +109,9 @@ def merge_dirs(sources: list[Path], dst: Path) -> dict:
                 for lst in ("images", "derived", "samples", "clips", "videos"):
                     if nv.get(lst):
                         nv[lst] = [aid_map.get(x, x) for x in nv[lst]]
-                if nv.get("identity"):
+                if not v.get("derives_from"):          # every element names its character (inherited by derived ones)
+                    nv["identity"] = id_map.get(v.get("identity") or src_default, v.get("identity") or src_default)
+                elif nv.get("identity"):
                     nv["identity"] = id_map.get(nv["identity"], nv["identity"])
                 _copy_variant_files(src, dst, nv, prefix)
                 out["elements"].setdefault(cat, {"variants": {}})["variants"][new_vid] = nv
@@ -121,6 +130,12 @@ def merge_dirs(sources: list[Path], dst: Path) -> dict:
             if p.get("primary_image"):
                 np_["primary_image"] = aid_map.get(p["primary_image"], p["primary_image"])
             np_["identity"] = id_map.get(p.get("identity") or m.get("default_identity") or next(iter(src_ids)))
+            if pid == m.get("default_preset"):
+                for oi in {id_map.get(src_default)}:
+                    out["identities"][oi].setdefault("default_preset", new_pid)
+            for iid0, ident0 in (m.get("identities") or {}).items():
+                if ident0.get("default_preset") == pid:
+                    out["identities"][id_map[iid0]]["default_preset"] = new_pid
             if np_.get("extends") and np_["extends"] in (m.get("presets") or {}) and np_["extends"] != pid:
                 np_["extends"] = np_["extends"] if np_["extends"] in out["presets"] else f"{prefix}-{np_['extends']}"
             out["presets"][new_pid] = np_
@@ -152,6 +167,24 @@ def merge_dirs(sources: list[Path], dst: Path) -> dict:
 def extract_preset(src: Path, dst: Path, pid: str) -> dict:
     """Keep only what preset `pid` references (variants, their parents, assets, identity)."""
     return extract_presets(src, dst, [pid])
+
+
+def extract_identity(src: Path, dst: Path, iid: str) -> dict:
+    """Export one character: all its presets, its elements, their files, its rights."""
+    from .model import preset_owner
+    m = json.loads((src / "manifest.json").read_text("utf-8"))
+    if iid not in (m.get("identities") or {}) and iid != m.get("default_identity"):
+        raise ValueError(f"unknown character: {iid}")
+    pids = [p for p in (m.get("presets") or {}) if preset_owner(m, p) == iid]
+    if not pids:
+        raise ValueError(f"character {iid} has no preset")
+    dp = ((m.get("identities") or {}).get(iid) or {}).get("default_preset")
+    if dp in pids:
+        pids.remove(dp); pids.insert(0, dp)
+    out = extract_presets(src, dst, pids)
+    out["default_preset"] = pids[0]
+    (dst / "manifest.json").write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", "utf-8")
+    return out
 
 
 def extract_tag(src: Path, dst: Path, tids: list[str]) -> dict:
@@ -236,6 +269,15 @@ def extract_presets(src: Path, dst: Path, pids: list[str], tags: list[str] | Non
             for k in ("name", "nickname", "summary", "fictional", "morphology"):
                 if m["identities"][dp_ident].get(k) is not None:
                     out[k] = m["identities"][dp_ident][k]
+        if len(out["identities"]) == 1:                  # one character left: its rights become the file's
+            only = next(iter(out["identities"].values()))
+            if only.get("rights"):
+                out["rights"] = {**(out.get("rights") or {}), **only["rights"]}
+            if only.get("consent"):
+                out.setdefault("rights", {})["consent"] = only["consent"]
+        for iid, ident in out["identities"].items():
+            if ident.get("default_preset") and ident["default_preset"] not in sel:
+                ident.pop("default_preset")
     out["assets"] = []
     for a in m.get("assets", []):
         if a["id"] in keep_assets or a.get("source") in keep_assets:

@@ -697,7 +697,7 @@
         },
         "identity": {
           "$ref": "#/$defs/vid",
-          "description": "identity to which the variant is restricted (optional)"
+          "description": "the character this element belongs to (required as soon as the file holds several characters; otherwise the default character). A preset only uses its own character's elements."
         },
         "language": {
           "type": "string",
@@ -983,7 +983,8 @@
           "description": "free-form refinements complementing style (e.g. anime-90s, ghibli-like)"
         },
         "identity": {
-          "$ref": "#/$defs/vid"
+          "$ref": "#/$defs/vid",
+          "description": "the character this preset belongs to (inherited through extends; default: default_identity)"
         },
         "rules": {
           "type": "object",
@@ -1680,6 +1681,22 @@
               "$ref": "#/$defs/consent"
             }
           ]
+        },
+        "rights": {
+          "type": "object",
+          "description": "Rights of THIS character. When present, it replaces the root `rights` entirely for this character (no merge); characters without it use the root rights. Consent stays in `consent`.",
+          "required": [
+            "permissions"
+          ],
+          "properties": {
+            "permissions": {
+              "$ref": "#/$defs/permissions"
+            }
+          }
+        },
+        "default_preset": {
+          "$ref": "#/$defs/vid",
+          "description": "The default preset of this character (must belong to it). The root default_preset is the default character's."
         }
       }
     },

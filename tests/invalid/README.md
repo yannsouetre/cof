@@ -17,6 +17,9 @@ validator's error (`expect`) — other implementations only need to reject the f
 | `minor-preset-offers-intimate.cof` | a preset under 18 never offers intimate content either (rules cover `slots` ∪ `alternatives`) |
 | `primary-image-not-applied.cof` | a preset's `primary_image` belongs to a variant it applies |
 | `alternative-in-library.cof` | no `alternatives` on the libraries (posture, motion, files) |
+| `cross-character-element.cof` | a preset only uses its own character's elements |
+| `likeness-shared-between-characters.cof` | a file carrying a likeness or a voice belongs to one character |
+| `element-without-character.cof` | with several characters, every element names its character |
 | `intimate-without-content-tag.cof` | intimate content is flagged in `tags.content` |
 | `minor-preset-with-intimate.cof` | a preset under 18 never contains intimate content |
 | `minor-preset-sexual-usage.cof` | a preset under 18 never has an effective `allowSexualUsage` |

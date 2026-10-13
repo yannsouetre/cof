@@ -147,7 +147,8 @@ def facet_switch(manifest: dict, pid: str, tag_id: str) -> list[str]:
     tags_of = lambda p: {tid for tid, t in T.items() if p in (t.get("presets") or [])}
     others = lambda p: {x for x in tags_of(p) if fac(x) != target_facet}
     ref = others(pid)
-    return [q for q in (manifest.get("presets") or {}) if q in (T[tag_id].get("presets") or []) and others(q) == ref]
+    me = preset_owner(manifest, pid)                 # never switch to another character
+    return [q for q in (manifest.get("presets") or {}) if q in (T[tag_id].get("presets") or []) and others(q) == ref and preset_owner(manifest, q) == me]
 
 
 def implicit_preset(manifest: dict) -> dict[str, list[str]]:
@@ -208,13 +209,69 @@ def first(res: dict[str, list[dict]], cat: str, kind: str | None = None) -> dict
 
 
 def preset_identity(manifest: dict, pid: str | None) -> dict:
-    """Identity record for a preset: identities[preset.identity] or the root copy."""
-    p = (manifest.get("presets", {}) or {}).get(pid or "", {}) or {}
-    iid = p.get("identity") or manifest.get("default_identity")
+    """Identity record for a preset: identities[preset.identity] (inherited through extends) or the root copy."""
+    iid = preset_owner(manifest, pid)
     ids = manifest.get("identities") or {}
     if iid and iid in ids:
         return ids[iid]
     return {k: manifest.get(k) for k in ("name", "nickname", "summary", "fictional", "morphology")}
+
+
+# ---------- characters (identities) as logical containers (1.0) ----------
+LIKENESS_APPEARANCE = {"face", "body", "reference-set", "character-sheet", "hair", "intimate", "pilosity", "feature"}
+
+
+def is_likeness(cat: str, v: dict) -> bool:
+    """Does this (resolved) variant carry a person's likeness or voice? Such files belong to ONE character."""
+    k = v.get("kind")
+    if cat in ("identity_weights", "voice"):
+        return True
+    if cat == "appearance":
+        return k in LIKENESS_APPEARANCE
+    if cat == "volume3d":
+        return k != "environment" and not (k == "daz" and v.get("daz_category") not in (None, "characters"))
+    return False
+
+
+def variant_owner(manifest: dict, cat: str, vid: str) -> str | None:
+    """The character a variant belongs to: its `identity` (inherited through derives_from) or the default identity."""
+    v = resolve_variant(manifest, cat, vid) or {}
+    return v.get("identity") or manifest.get("default_identity")
+
+
+def preset_owner(manifest: dict, pid: str | None) -> str | None:
+    """The character a preset belongs to: its `identity` (inherited through extends) or the default identity."""
+    P = manifest.get("presets") or {}
+    q, seen = pid, set()
+    while q in P and q not in seen:
+        seen.add(q)
+        if P[q].get("identity"):
+            return P[q]["identity"]
+        q = P[q].get("extends")
+    return manifest.get("default_identity")
+
+
+def identity_rights(manifest: dict, iid: str | None) -> dict:
+    """Rights of a character: identities.<id>.rights REPLACES the root rights (no merge); root rights otherwise."""
+    ident = (manifest.get("identities") or {}).get(iid or "") or {}
+    return ident.get("rights") or manifest.get("rights") or {}
+
+
+def effective_permissions(manifest: dict, pid: str | None) -> dict:
+    p = (manifest.get("presets") or {}).get(pid or "") or {}
+    base = (identity_rights(manifest, preset_owner(manifest, pid)).get("permissions") or {})
+    return {**base, **(p.get("permissions_override") or {})}
+
+
+def variant_asset_ids(v: dict) -> set[str]:
+    ids = set()
+    for k in ("images", "derived", "samples", "clips", "videos", "files"):
+        ids |= set(v.get(k) or [])
+    if isinstance(v.get("mesh"), dict):
+        ids |= set(v["mesh"].get("textures") or [])
+    for en in v.get("engines") or []:
+        ids |= set(en.get("files") or [])
+    return ids
 
 
 # Age is a property of the REPRESENTATION, never of the identity (v0.5).

@@ -1,0 +1,44 @@
+{
+  "id": "o1",
+  "label": "Casual contemporain",
+  "default": true,
+  "items": [
+    {
+      "fashionpedia_category": "jacket",
+      "attributes": [
+        "utility",
+        "cotton",
+        "khaki"
+      ],
+      "color_hex": "#6B6B4A"
+    },
+    {
+      "fashionpedia_category": "top",
+      "attributes": [
+        "t-shirt",
+        "white"
+      ],
+      "color_hex": "#F2F2F0"
+    },
+    {
+      "fashionpedia_category": "pants",
+      "attributes": [
+        "jeans",
+        "slim",
+        "blue"
+      ],
+      "color_hex": "#3B5A8A"
+    },
+    {
+      "fashionpedia_category": "shoe",
+      "attributes": [
+        "sneakers",
+        "suede",
+        "brown"
+      ]
+    }
+  ],
+  "renderings": {
+    "prompt": "khaki cotton utility jacket over a white t-shirt, slim blue jeans, brown suede sneakers"
+  }
+}

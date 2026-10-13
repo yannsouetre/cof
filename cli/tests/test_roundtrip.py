@@ -622,3 +622,30 @@ def test_duplicate_image_warning_and_pack_date(tmp_path):
     r = subprocess.run([sys.executable, "-m", "cof_cli.cli", "pack", str(d), "-o", str(tmp_path / "o.cof")], capture_output=True, text=True)
     from cof_cli.container import read_manifest
     assert read_manifest(tmp_path / "o.cof")["provenance"]["modified"] != before, r.stderr
+
+
+def test_characters_are_logical_containers(tmp_path):
+    """Several characters: each element and preset belongs to one; likeness files are never shared (neutral ones may
+    be); rights and default preset per character; extract --identity carries the character's rights; merge keeps them."""
+    from cof_cli.model import effective_permissions, preset_owner
+    from cof_cli.ops import extract_identity
+    src = ROOT / "spec/examples/11-duo-lea-martien"
+    rep = Report(); validate_dir(src, rep, recompute=False); assert rep.ok, rep.errors
+    m = json.loads((src / "manifest.json").read_text("utf-8"))
+    assert preset_owner(m, "young") == "lea-marchand" and preset_owner(m, "m1-default") == "martien"
+    assert effective_permissions(m, "default")["allowRedistribution"] is True and effective_permissions(m, "m1-default")["allowRedistribution"] is False
+    V = m["elements"]["appearance"]["variants"]
+    assert V["env-lea"]["images"] == V["env-martien"]["images"]           # neutral file stored once, two elements
+    d = tmp_path / "c"; shutil.copytree(src, d)
+    def check(mut, needle):
+        mm = json.loads(json.dumps(m)); mut(mm); (d / "manifest.json").write_text(json.dumps(mm), "utf-8")
+        r = Report(); validate_dir(d, r, recompute=False)
+        assert any(needle in e for e in r.errors), (needle, r.errors)
+    check(lambda mm: mm["presets"]["m1-default"]["slots"]["appearance"].append("f1"), "belongs to character lea-marchand")
+    check(lambda mm: mm["elements"]["appearance"]["variants"]["m1-f1"].__setitem__("images", ["a-head-front-closeup"]), "carries a likeness")
+    check(lambda mm: mm["presets"]["young"].__setitem__("extends", "m1-default"), "another character")
+    check(lambda mm: mm["identities"]["martien"].__setitem__("default_preset", "default"), "belongs to character lea-marchand")
+    out = tmp_path / "martien"; e = extract_identity(src, out, "martien")
+    assert list(e["presets"]) == ["m1-default"] and e["rights"]["permissions"]["allowRedistribution"] is False and e["name"] == "Martien"
+    assert (out / "elements/appearance/env-shared/place.jpg").is_file()  # the shared file travels with the character
+    r = Report(); validate_dir(out, r); assert r.ok, r.errors

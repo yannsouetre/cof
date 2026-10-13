@@ -211,10 +211,14 @@ def cmd_extract(a):
         d = src if src.is_dir() else unpack(src, td)
         if a.tag:
             extract_tag(d, Path(a.out), a.tag)
+        elif getattr(a, "identity", None):
+            from .ops import extract_identity
+            extract_identity(d, Path(a.out), a.identity)
         else:
             extract_preset(d, Path(a.out), a.preset)
     rep = Report(); validate_dir(Path(a.out), rep, recompute=True)
-    print(f"{'tags ' + '+'.join(a.tag) if a.tag else 'preset ' + a.preset} extracted to: {a.out}")
+    what = 'tags ' + '+'.join(a.tag) if a.tag else ('character ' + a.identity if getattr(a, "identity", None) else 'preset ' + a.preset)
+    print(f"{what} extracted to: {a.out}")
     return _print_report(rep, a.json)
 
 
@@ -265,7 +269,7 @@ def main(argv=None) -> int:
     s = sub.add_parser("export", help="folder/.cof → png | soul | card (from the default preset or --preset)"); s.add_argument("src"); s.add_argument("--format", choices=["png", "soul", "card"], required=True); s.add_argument("-o", "--out"); s.add_argument("--preset"); s.set_defaults(fn=cmd_export)
     s = sub.add_parser("migrate", help="folder v0.2 … v0.5 → v1.0"); s.add_argument("dir"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_migrate)
     s = sub.add_parser("merge", help="merge several .cof files/folders (same name+nickname ⇒ same identity, otherwise multiple identities)"); s.add_argument("sources", nargs="+"); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_merge)
-    s = sub.add_parser("extract", help="extract a preset, or the presets carrying one or more tags (intersection), into a lighter COF folder"); s.add_argument("src"); g = s.add_mutually_exclusive_group(required=True); g.add_argument("--preset"); g.add_argument("--tag", action="append", help="repeatable: --tag english --tag age-12"); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_extract)
+    s = sub.add_parser("extract", help="extract a preset, a character (--identity), or the presets carrying one or more tags (intersection), into a lighter COF folder"); s.add_argument("src"); g = s.add_mutually_exclusive_group(required=True); g.add_argument("--preset"); g.add_argument("--identity", help="one character: all its presets, elements, files and rights"); g.add_argument("--tag", action="append", help="repeatable: --tag english --tag age-12"); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_extract)
 
     a = ap.parse_args(argv)
     try:

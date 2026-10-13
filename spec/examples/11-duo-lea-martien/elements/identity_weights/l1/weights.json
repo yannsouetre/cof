@@ -1,0 +1,39 @@
+{
+  "kind": "lora",
+  "base_model": {
+    "name": "FLUX.1-dev",
+    "family": "flux",
+    "version": "1.0"
+  },
+  "file": "a-lora-l1",
+  "format": "safetensors",
+  "rank": 16,
+  "trigger_words": [
+    "leamarchand",
+    "woman"
+  ],
+  "recommended_weight": 0.8,
+  "weight_range": [
+    0.6,
+    1.0
+  ],
+  "covers": [
+    "face",
+    "hair",
+    "body"
+  ],
+  "pages": [
+    {
+      "label": "Page du modèle (exemple fictif)",
+      "url": "https://example.org/models/lea-marchand-lora"
+    }
+  ],
+  "notes": "EXEMPLE FICTIF — aucun poids réel n'est distribué. Illustre la fiche : modèle de base obligatoire, mots déclencheurs, poids recommandé, notes d'usage.",
+  "training": {
+    "images": 40,
+    "steps": 1500,
+    "resolution": 1024
+  },
+  "style": "photo-realistic",
+  "license": "CC-BY-NC-4.0"
+}

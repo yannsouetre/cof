@@ -63,6 +63,32 @@ def _(d):
 @case("alternative-in-library", "alternatives are not allowed on the libraries (posture, motion, files)", "§ 2.3", "alternatives")
 def _(d): m = load(d); m["presets"]["default"]["alternatives"] = {"motion": ["z1"]}; save(d, m)
 
+def two_characters(m):
+    """Turn the base into a cast: the existing character + Marc, every element owned by its character."""
+    root = {k: m[k] for k in ("name", "nickname", "summary", "fictional", "morphology") if m.get(k) is not None}
+    m["identities"] = {"lea": root, "marc": {"name": "Marc", "fictional": True, "morphology": {"class": "human"}}}
+    m["default_identity"] = "lea"
+    for e in m["elements"].values():
+        for v in e["variants"].values():
+            v["identity"] = "lea"
+    for p in m["presets"].values():
+        p["identity"] = "lea"
+    m["elements"]["personality"]["variants"]["p-marc"] = {"kind": "description", "label": "Marc", "text": "Marc, 40, a calm carpenter.", "language": "en", "identity": "marc"}
+    m["presets"]["marc"] = {"label": "Marc", "identity": "marc", "age_override": {"value": 40, "unit": "years", "basis": "canonical"}, "slots": {"personality": ["p-marc"]}}
+    return m
+
+@case("cross-character-element", "a preset only uses its own character's elements", "§ 2.1", "belongs to character")
+def _(d): m = two_characters(load(d)); m["presets"]["marc"]["slots"]["appearance"] = ["b1"]; save(d, m)
+
+@case("likeness-shared-between-characters", "a file carrying a likeness or a voice belongs to one character", "§ 2.1", "likeness")
+def _(d):
+    m = two_characters(load(d)); img = V(m, "appearance")["b1"]["images"][0]
+    V(m, "appearance")["b-marc"] = {"kind": "body", "label": "Marc", "identity": "marc", "age": {"value": 40, "unit": "years", "basis": "apparent"}, "images": [img]}
+    m["presets"]["marc"]["slots"]["appearance"] = ["b-marc"]; save(d, m)
+
+@case("element-without-character", "in a file with several characters, every element names its character", "§ 2.1", "no `identity`")
+def _(d): m = two_characters(load(d)); V(m, "appearance")["b1"].pop("identity"); save(d, m)
+
 @case("intimate-without-content-tag", "a file with intimate content flags it in tags.content", "§ 4.5", "nudity")
 def _(d): m = load(d); m["tags"]["content"] = ["none"]; save(d, m)
 
