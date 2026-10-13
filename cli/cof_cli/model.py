@@ -221,6 +221,38 @@ def preset_identity(manifest: dict, pid: str | None) -> dict:
 LIKENESS_APPEARANCE = {"face", "body", "reference-set", "character-sheet", "hair", "intimate", "pilosity", "feature"}
 
 
+# Neutral element = carries nothing of a particular character (no likeness, no voice, no personal data): its files
+# MAY be shared by several characters. Fixed by kind, or chosen by the author (`neutral`) where the kind is ambiguous.
+NEUTRAL_FIXED = {("appearance", "environment"): True, ("volume3d", "environment"): True,
+                 ("posture", "openpose"): True, ("posture", "silhouette"): True, ("posture", "attitude"): True, ("posture", "description"): True,
+                 ("motion", "clips"): True, ("motion", "attitude"): True, ("motion", "description"): True}
+NEUTRAL_EDITABLE = {("appearance", "clothing"): True, ("appearance", "accessory"): True,        # default value
+                    ("posture", "photo"): False, ("posture", "photos"): False, ("motion", "video"): False,
+                    ("volume3d", "other"): False,
+                    ("files", "skill"): True, ("files", "memory"): False, ("files", "document"): False, ("files", "other"): False}
+
+
+def neutrality(cat: str, v: dict) -> tuple[bool, bool]:
+    """(default neutral?, editable by the author?) for a resolved variant."""
+    k = v.get("kind")
+    if cat == "volume3d" and k == "daz":
+        return (v.get("daz_category") not in (None, "characters")), False
+    if (cat, k) in NEUTRAL_FIXED:
+        return NEUTRAL_FIXED[(cat, k)], False
+    if (cat, k) in NEUTRAL_EDITABLE:
+        return NEUTRAL_EDITABLE[(cat, k)], True
+    return False, False
+
+
+def is_neutral(cat: str, v: dict) -> bool:
+    default, editable = neutrality(cat, v)
+    if v.get("neutral") is False:
+        return False                      # an author may always be stricter
+    if editable and v.get("neutral") is True:
+        return True
+    return default
+
+
 def is_likeness(cat: str, v: dict) -> bool:
     """Does this (resolved) variant carry a person's likeness or voice? Such files belong to ONE character."""
     k = v.get("kind")

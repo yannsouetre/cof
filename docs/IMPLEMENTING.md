@@ -180,7 +180,7 @@ The skill itself was tested blind: fresh agents with no access to the spec, the 
 ## 10. Conformance testing
 
 - **Reference validator**: `pip install "git+https://github.com/yannsouetre/cof#subdirectory=cli"` (MIT; PyPI package `cof-cli` after 1.0.0) → `cof validate file.cof` (schemas + rules + completeness; `--json` for CI).
-- **Test vectors**: `spec/examples/` (text-only, appearance, multi-preset, robot, medieval, modular, mixed adult/minor, agent with skills, flagship bilingual, cast of two characters…) — each MUST validate. A negative corpus ships in `tests/invalid/`: 28 files, one rule violated per file, each listed in `cases.json` with the rule and the spec section — a conformant validator rejects every one of them, and accepts `_base.cof`.
+- **Test vectors**: `spec/examples/` (text-only, appearance, multi-preset, robot, medieval, modular, mixed adult/minor, agent with skills, flagship bilingual, cast of two characters…) — each MUST validate. A negative corpus ships in `tests/invalid/`: 29 files, one rule violated per file, each listed in `cases.json` with the rule and the spec section — a conformant validator rejects every one of them, and accepts `_base.cof`.
 - **Builder**: `builder/index.html`, offline, zero dependencies — a reference *writer*.
 - A reader SHOULD at least open every positive vector without error and refuse every negative vector that concerns its classes.
 

@@ -59,7 +59,13 @@
       "file": "likeness-shared-between-characters.cof",
       "rule": "a file carrying a likeness or a voice belongs to one character",
       "spec": "§ 2.1",
-      "expect": "likeness"
+      "expect": "not neutral"
+    },
+    {
+      "file": "face-marked-neutral.cof",
+      "rule": "a kind that carries the character (face, body, voice…) is never neutral",
+      "spec": "§ 2.1",
+      "expect": "never neutral"
     },
     {
       "file": "element-without-character.cof",

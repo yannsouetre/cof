@@ -642,10 +642,39 @@ def test_characters_are_logical_containers(tmp_path):
         r = Report(); validate_dir(d, r, recompute=False)
         assert any(needle in e for e in r.errors), (needle, r.errors)
     check(lambda mm: mm["presets"]["m1-default"]["slots"]["appearance"].append("f1"), "belongs to character lea-marchand")
-    check(lambda mm: mm["elements"]["appearance"]["variants"]["m1-f1"].__setitem__("images", ["a-head-front-closeup"]), "carries a likeness")
+    check(lambda mm: mm["elements"]["appearance"]["variants"]["m1-f1"].__setitem__("images", ["a-head-front-closeup"]), "is not neutral")
     check(lambda mm: mm["presets"]["young"].__setitem__("extends", "m1-default"), "another character")
     check(lambda mm: mm["identities"]["martien"].__setitem__("default_preset", "default"), "belongs to character lea-marchand")
     out = tmp_path / "martien"; e = extract_identity(src, out, "martien")
     assert list(e["presets"]) == ["m1-default"] and e["rights"]["permissions"]["allowRedistribution"] is False and e["name"] == "Martien"
     assert (out / "elements/appearance/env-shared/place.jpg").is_file()  # the shared file travels with the character
     r = Report(); validate_dir(out, r); assert r.ok, r.errors
+
+
+def test_neutral_elements_may_share_files(tmp_path):
+    """Neutral by kind (places, BVH clips…) or by choice (skills by default, clothes) may share a file between
+    characters; memories, documents (default) and anything marked neutral: false may not."""
+    from cof_cli.model import is_neutral, neutrality
+    assert neutrality("files", {"kind": "skill"}) == (True, True) and neutrality("files", {"kind": "memory"}) == (False, True)
+    assert neutrality("appearance", {"kind": "environment"}) == (True, False) and neutrality("appearance", {"kind": "face"}) == (False, False)
+    assert neutrality("volume3d", {"kind": "daz", "daz_category": "props"}) == (True, False) and not is_neutral("volume3d", {"kind": "daz", "daz_category": "characters"})
+    src = ROOT / "spec/examples/11-duo-lea-martien"
+    d = tmp_path / "c"; shutil.copytree(src, d)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    (d / "elements/files/sk").mkdir(parents=True); (d / "elements/files/sk/SKILL.md").write_text("---\nname: x\ndescription: y\n---\nhi\n", "utf-8")
+    m["assets"].append({"id": "a-sk", "path": "elements/files/sk/SKILL.md", "role": "skill-file", "mediaType": "text/markdown", "license": "CC0-1.0"})
+    m["elements"]["files"] = {"variants": {
+        "sk-lea": {"kind": "skill", "identity": "lea-marchand", "files": ["a-sk"], "entry": "elements/files/sk/SKILL.md"},
+        "sk-mar": {"kind": "skill", "identity": "martien", "files": ["a-sk"], "entry": "elements/files/sk/SKILL.md"}}}
+    m["presets"]["default"]["slots"]["files"] = ["sk-lea"]; m["presets"]["m1-default"]["slots"]["files"] = ["sk-mar"]
+    from cof_cli.container import refresh_asset_index
+    def run(mut=None):
+        mm = json.loads(json.dumps(m))
+        if mut: mut(mm)
+        refresh_asset_index(d, mm); (d / "manifest.json").write_text(json.dumps(mm), "utf-8")
+        r = Report(); validate_dir(d, r, recompute=False); return r
+    r = run(); assert r.ok, r.errors                                       # a skill is neutral by default
+    r = run(lambda mm: mm["elements"]["files"]["variants"]["sk-mar"].__setitem__("neutral", False))
+    assert any("is not neutral" in e and "sk-mar" in e for e in r.errors), r.errors
+    r = run(lambda mm: [v.__setitem__("kind", "memory") for v in mm["elements"]["files"]["variants"].values()])
+    assert any("is not neutral" in e for e in r.errors), r.errors          # memories carry the character

@@ -15,7 +15,7 @@ from jsonschema import Draft202012Validator
 from . import SPEC_VERSION, __version__
 from .completeness import compute as compute_completeness
 from .container import ContainerError, inspect, read_manifest, unpack, verify_hashes
-from .model import garments, ADULT, implicit_resolved, AGELESS_KINDS, AGE_CATEGORIES, CATEGORIES, KINDS, MULTI_KINDS, _age_value, age_required, asset_index, default_preset_id, first, lowest_age, preset_age, preset_identity, preset_ids, region_conflicts, resolve_preset_slots, resolve_variant, resolved, single_kind_violations, by_kind, preset_alternatives, preset_primary_image, resolved_all, backstage, variant_owner, preset_owner, is_likeness, effective_permissions, identity_rights, variant_asset_ids
+from .model import garments, ADULT, implicit_resolved, AGELESS_KINDS, AGE_CATEGORIES, CATEGORIES, KINDS, MULTI_KINDS, _age_value, age_required, asset_index, default_preset_id, first, lowest_age, preset_age, preset_identity, preset_ids, region_conflicts, resolve_preset_slots, resolve_variant, resolved, single_kind_violations, by_kind, preset_alternatives, preset_primary_image, resolved_all, backstage, variant_owner, preset_owner, is_likeness, is_neutral, neutrality, effective_permissions, identity_rights, variant_asset_ids
 from .tokens import count as count_tokens, tokenizer_name
 
 PROMPT_FIELDS = ("description", "personality", "scenario", "first_mes", "mes_example", "system_prompt", "post_history_instructions")
@@ -196,7 +196,7 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                     rep.errors.append(f"identities.{iid}.default_preset: unknown preset {dpi}")
                 elif dpi and preset_owner(manifest, dpi) != iid:
                     rep.errors.append(f"identities.{iid}.default_preset: preset {dpi} belongs to character {preset_owner(manifest, dpi)}")
-        _character_rules(manifest, ids, rep)
+    _character_rules(manifest, ids, rep)
 
     # asset ids unique, files present
     seen = set()
@@ -651,7 +651,7 @@ def _character_rules(manifest: dict, ids: dict, rep: "Report") -> None:
     elements = manifest.get("elements") or {}
     multi = len(ids) >= 2
     owners_by_asset: dict[str, set] = {}
-    likeness_assets: set[str] = set()
+    non_neutral_users: dict[str, list[str]] = {}
     for cat, e in elements.items():
         V = (e or {}).get("variants") or {}
         for vid, v in V.items():
@@ -662,14 +662,17 @@ def _character_rules(manifest: dict, ids: dict, rep: "Report") -> None:
             if par in V and ids and variant_owner(manifest, cat, par) != variant_owner(manifest, cat, vid):
                 rep.errors.append(f"elements.{cat}.{vid}: derives from {par}, an element of another character")
             o = variant_owner(manifest, cat, vid)
+            default, editable = neutrality(cat, rv)
+            if v.get("neutral") is True and not editable and not default:
+                rep.errors.append(f"elements.{cat}.{vid}: a '{rv.get('kind')}' is never neutral — it carries the character (likeness, voice or personal content)")
             for aid in variant_asset_ids(rv):
                 owners_by_asset.setdefault(aid, set()).add(o)
-                if is_likeness(cat, rv):
-                    likeness_assets.add(aid)
+                if not is_neutral(cat, rv):
+                    non_neutral_users.setdefault(aid, []).append(f"{cat}.{vid} ({rv.get('kind')})")
     if multi:
-        for aid in sorted(likeness_assets):
+        for aid, users in sorted(non_neutral_users.items()):
             if len(owners_by_asset.get(aid, ())) > 1:
-                rep.errors.append(f"asset {aid} carries a likeness or a voice and is used by several characters ({', '.join(sorted(map(str, owners_by_asset[aid])))}) — a character's face, body, voice, weights or 3D belong to that character only")
+                rep.errors.append(f"asset {aid} is used by several characters ({', '.join(sorted(map(str, owners_by_asset[aid])))}) but {', '.join(users)} is not neutral — a file that carries a character (likeness, voice, personal content) belongs to that character only; only neutral elements (places, poses, motion clips, objects, skills…) may share a file")
         dp, di = manifest.get("default_preset"), manifest.get("default_identity")
         if dp in (manifest.get("presets") or {}) and preset_owner(manifest, dp) != di:
             rep.warnings.append(f"default_preset {dp} belongs to {preset_owner(manifest, dp)}, not to the default character {di}")

@@ -80,11 +80,14 @@ def two_characters(m):
 @case("cross-character-element", "a preset only uses its own character's elements", "§ 2.1", "belongs to character")
 def _(d): m = two_characters(load(d)); m["presets"]["marc"]["slots"]["appearance"] = ["b1"]; save(d, m)
 
-@case("likeness-shared-between-characters", "a file carrying a likeness or a voice belongs to one character", "§ 2.1", "likeness")
+@case("likeness-shared-between-characters", "a file carrying a likeness or a voice belongs to one character", "§ 2.1", "not neutral")
 def _(d):
     m = two_characters(load(d)); img = V(m, "appearance")["b1"]["images"][0]
     V(m, "appearance")["b-marc"] = {"kind": "body", "label": "Marc", "identity": "marc", "age": {"value": 40, "unit": "years", "basis": "apparent"}, "images": [img]}
     m["presets"]["marc"]["slots"]["appearance"] = ["b-marc"]; save(d, m)
+
+@case("face-marked-neutral", "a kind that carries the character (face, body, voice…) is never neutral", "§ 2.1", "never neutral")
+def _(d): m = load(d); V(m, "appearance")["f1"]["neutral"] = True; save(d, m)
 
 @case("element-without-character", "in a file with several characters, every element names its character", "§ 2.1", "no `identity`")
 def _(d): m = two_characters(load(d)); V(m, "appearance")["b1"].pop("identity"); save(d, m)

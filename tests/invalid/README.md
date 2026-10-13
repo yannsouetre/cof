@@ -19,6 +19,7 @@ validator's error (`expect`) — other implementations only need to reject the f
 | `alternative-in-library.cof` | no `alternatives` on the libraries (posture, motion, files) |
 | `cross-character-element.cof` | a preset only uses its own character's elements |
 | `likeness-shared-between-characters.cof` | a file carrying a likeness or a voice belongs to one character |
+| `face-marked-neutral.cof` | a face, body, voice… is never neutral |
 | `element-without-character.cof` | with several characters, every element names its character |
 | `intimate-without-content-tag.cof` | intimate content is flagged in `tags.content` |
 | `minor-preset-with-intimate.cof` | a preset under 18 never contains intimate content |

@@ -699,6 +699,10 @@
           "$ref": "#/$defs/vid",
           "description": "the character this element belongs to (required as soon as the file holds several characters; otherwise the default character). A preset only uses its own character's elements."
         },
+        "neutral": {
+          "type": "boolean",
+          "description": "Does this element carry nothing of a particular character (no likeness, no voice, no personal content)? Only neutral elements may share a file with another character's elements. Fixed by kind for most kinds (spec § 2.1); chosen by the author for clothing, accessory, posture photos, motion video, volume3d 'other' and every files kind. `false` is always allowed (stricter); `true` on a kind that is never neutral is an error."
+        },
         "language": {
           "type": "string",
           "pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
