@@ -227,6 +227,7 @@ NEUTRAL_FIXED = {("appearance", "environment"): True, ("volume3d", "environment"
                  ("posture", "openpose"): True, ("posture", "silhouette"): True, ("posture", "attitude"): True, ("posture", "description"): True,
                  ("motion", "clips"): True, ("motion", "attitude"): True, ("motion", "description"): True}
 NEUTRAL_EDITABLE = {("appearance", "clothing"): True, ("appearance", "accessory"): True,        # default value
+                    ("appearance", "hair"): False, ("appearance", "pilosity"): False, ("appearance", "feature"): False,
                     ("posture", "photo"): False, ("posture", "photos"): False, ("motion", "video"): False,
                     ("volume3d", "other"): False,
                     ("files", "skill"): True, ("files", "memory"): False, ("files", "document"): False, ("files", "other"): False}

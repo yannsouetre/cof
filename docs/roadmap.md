@@ -1,3 +1,35 @@
+# Révision du 13 octobre 2026 — stratégie d'adoption et objectifs de réussite
+
+**Principe** : le but est l'**adoption**, pas la monétisation. Un format gagne s'il est **neutre** (aucun acteur, pas même son auteur, n'en tire un avantage exclusif), **utile dès le premier jour** (il s'ouvre dans des outils réels) et s'il y a **des personnages à ouvrir**. Tout ce qui suit sert ces trois conditions.
+
+## Les leviers, par ordre d'impact
+
+1. **Des personnages prêts à l'emploi (phase 1, novembre)** — 30 personnages d'amorçage sous CC BY 4.0, produits par un **pipeline de génération** qui tourne sur le PC de Yann : fiche → prompts → images de référence et vues cohérentes (API Gemini, clé de Yann en variable d'environnement, jamais dans une conversation ni une skill) → voix éventuelles → `cof pack` → `cof validate` → **revue humaine** (cohérence, droits). Variété : styles (photo, manga, 3D…), morphologies (humains adultes, non-humains, robots), usages (compagnon, agent, personnage de jeu), FR + EN. **Uniquement des adultes et des non-humains** dans la galerie d'amorçage : pas de version enfant, pas de personne réelle, pas de franchise, pas de contenu intime — c'est la vitrine, elle doit passer tous les filtres (cf. le refus de Gemini du 12 octobre). Conditions d'utilisation de l'API d'images à vérifier avant publication.
+2. **Des endroits où le format se consomme (phase 1)** — explorateur web en lecture seule (`/viewer/` sur GitHub Pages, démonstration du lecteur avancé : preset, photo principale, tenues proposées, voix, droits) ; extension **SillyTavern** ; nœud **ComfyUI** ; export agents (`cof export --agent`) ; puis add-on Blender. Chaque intégration est un PR chez l'autre, pas un service chez nous.
+3. **Une galerie ouverte (phase 1 → 2)** — un **catalogue**, pas un magasin : un index public (JSON + page web) où chacun liste ses `.cof` par PR, **hébergés chez lui** (release GitHub, Hugging Face, site perso). Chaque entrée passe `cof validate` en CI (âge, droits, consentement, contenu signalé) ; déclaration de droits obligatoire ; modèle d'issue « signalement / retrait » traité sous 72 h. Le dépôt n'héberge que les personnages du projet, ce qui limite les obligations d'hébergeur. Exclus : personnes réelles sans consentement, franchises sans licence, contenu intime.
+4. **Un magasin, plus tard (phase 3, seulement si la demande existe)** — d'abord via des plateformes qui gèrent déjà paiement, TVA et vérification des vendeurs (itch.io, Gumroad) ; un magasin propre seulement s'il sert l'adoption. Dans tous les cas, la spec reste neutre : l'API du catalogue est ouverte, d'autres galeries et magasins sont bienvenus, le badge « COF-compatible » est gratuit.
+
+## Autonomie : ce que Claude tient seul, ce qui reste à Yann
+
+| Claude (tâches planifiées, dès la phase 2) | Validé par Yann |
+|---|---|
+| tri des issues et réponses proposées ; tests, correctifs, mises à jour de la doc et du CHANGELOG ; préparation des versions ; CI de la galerie ; **rapport hebdomadaire** (lundi) : étoiles, forks, téléchargements, trafic, intégrations repérées, écart aux objectifs ; veille (nouveaux formats, plateformes, régulation) ; brouillons des posts | toute prise de parole publique en son nom (HN, Reddit, réseaux) ; décisions de modération et de droits (personnes réelles, âge, franchises) ; tout ce qui touche à l'argent |
+
+## Objectifs de réussite (à recalibrer après Show HN)
+
+| Indicateur | 31 oct. 2026 | fin nov. 2026 | fin mars 2027 | fin 2027 |
+|---|---|---|---|---|
+| Étoiles GitHub | 300 | 800 | 2 000 | 5 000 |
+| Personnages dans la galerie (dont tiers) | 10 | 30 (5) | 150 (100) | 1 000 (900) |
+| Outils tiers qui lisent ou écrivent `.cof` | 1 | 3 | 6 | 12 |
+| Plateformes qui **exportent** en `.cof` | 0 | 0 | 1 | 3 |
+| Contributeurs externes | 1 | 10 | 25 | 50 |
+| Visiteurs uniques / mois (site, builder, explorateur) | 2 000 | 5 000 | 15 000 | 50 000 |
+
+**Règle de pilotage** : si fin novembre aucune intégration tierce n'existe, le projet écrit lui-même l'extension SillyTavern et le nœud ComfyUI, puis les propose en PR. Si la galerie ne reçoit aucun personnage tiers fin mars, priorité à l'outillage de création (builder, pipeline) plutôt qu'à la communication.
+
+---
+
 # Révision du 11 octobre 2026 — v1.0 du **conteneur**, annonce le week-end du 17–18 octobre
 
 **Décision** : COF est d'abord un conteneur. Il est publiable maintenant : spec v0.5 (structure stabilisée), 12 schémas, CLI de référence (20 tests), builder hors ligne (facile + avancé, 6 langues d'interface), 9 exemples conformes, fiche d'implémentation (`docs/IMPLEMENTING.md`, en anglais). Les **codes descriptifs** (vocabulaires visage / cheveux / FACS / LMA / squelettes, mesures vocales, extraction de pose) passent en **1.1 / 1.2**, par PR, sans casser les lecteurs 1.0 (§ 8 de la fiche d'implémentation).

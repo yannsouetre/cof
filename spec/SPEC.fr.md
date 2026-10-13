@@ -130,7 +130,7 @@ Champs **obligatoires** de l'identité : `name`, `fictional`, `morphology` (`cla
 
 | Neutre (fixé par le type) | Au choix de l'auteur (défaut) | Jamais neutre (fixé par le type) |
 |---|---|---|
-| apparence `environment` ; volume3d `environment` et contenus Daz autres que `characters` ; posture `openpose`, `silhouette`, `attitude` ; mouvement `clips`, `attitude` | apparence `clothing`, `accessory` (oui — non si l'image montre le personnage) ; posture `photo` / `photos` et mouvement `video` (non) ; volume3d `other` (non) ; fichiers `skill` (oui), `memory`, `document`, `other` (non) | personnalité ; apparence `face`, `body`, `reference-set`, `character-sheet`, `hair`, `intimate`, `pilosity`, `feature` ; tout `identity_weights` et toute `voice` ; volume3d `mesh`, `face-mesh`, `point-cloud`, `print`, Daz `characters` |
+| apparence `environment` ; volume3d `environment` et contenus Daz autres que `characters` ; posture `openpose`, `silhouette`, `attitude` ; mouvement `clips`, `attitude` | apparence `clothing`, `accessory` (oui — non si l'image montre le personnage), `hair`, `pilosity`, `feature` (non — oui si l'image ne montre que la coiffure / la particularité) ; posture `photo` / `photos` et mouvement `video` (non — oui pour une pose montrée par une silhouette ou un mannequin) ; volume3d `other`, fichiers `other` (non — formats inconnus) ; fichiers `skill` (oui), `memory`, `document` (non) | personnalité ; apparence `face`, `body`, `reference-set`, `character-sheet`, `intimate` ; tout `identity_weights` et toute `voice` ; volume3d `mesh`, `face-mesh`, `point-cloud`, `print`, Daz `characters` |
 
 
 ```jsonc
