@@ -4,16 +4,16 @@ Outil de référence pour COF (Character Open File) : validation, empaquetage, c
 
 ```bash
 pip install -e ".[dev]"          # depuis le dossier cli/
-cof validate spec/examples/01-lea-text-only      # dossier ou fichier .cof
-cof pack spec/examples/01-lea-text-only -o lea.cof   # recalcule hashes + complétude
-cof info lea.cof
-cof unpack lea.cof -o lea/
-cof tokens lea.cof
+cof validate spec/examples/01-clara-text-only      # dossier ou fichier .cof
+cof pack spec/examples/01-clara-text-only -o clara.cof   # recalcule hashes + complétude
+cof info clara.cof
+cof unpack clara.cof -o clara/
+cof tokens clara.cof
 cof import carte.png -o perso/ --age 30 --lang fr --keep-png   # carte PNG CCv2/V3 → dossier COF
-cof export lea.cof --format png -o lea.png                     # → PNG avec chunks chara + ccv3
-cof export lea.cof --format soul -o ./agent/                   # → SOUL.md + IDENTITY.md (OpenClaw)
-cof export lea.cof --format card -o lea.card.json
-cof export lea.cof --format soul --preset young -o ./agent/        # export depuis un autre preset
+cof export clara.cof --format png -o clara.png                     # → PNG avec chunks chara + ccv3
+cof export clara.cof --format soul -o ./agent/                   # → SOUL.md + IDENTITY.md (OpenClaw)
+cof export clara.cof --format card -o clara.card.json
+cof export clara.cof --format soul --preset young -o ./agent/        # export depuis un autre preset
 cof migrate dossier-v0.2/                                      # v0.2 → v0.3 (elements / presets)
 ```
 

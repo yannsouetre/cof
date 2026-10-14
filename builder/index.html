@@ -107,7 +107,7 @@ header h1{white-space:nowrap}@media (max-width:1380px){header h1 span{display:no
 </header>
 <section id="easy" style="display:none">
   <div class="easy-wrap">
-    <div class="easy-top"><div><label>Nom du personnage *</label><input type="text" id="e_name" placeholder="Léa Marchand"></div><div id="e_ageBox" style="visibility:hidden"><label>Âge apparent sur les photos *</label><input type="number" id="e_age" min="0" step="1" placeholder="34"></div></div>
+    <div class="easy-top"><div><label>Nom du personnage *</label><input type="text" id="e_name" placeholder="Clara Mercier"></div><div id="e_ageBox" style="visibility:hidden"><label>Âge apparent sur les photos *</label><input type="number" id="e_age" min="0" step="1" placeholder="34"></div></div>
     <div class="easy-main">
       <div>
         <div class="drop easy-drop" id="e_drop"><div style="font-size:40px">⬇</div><div>Déposez ici vos fichiers : fiche de personnage (PNG/JSON/MD/TXT), photo, échantillon de voix</div><div class="hint">ou cliquez pour choisir</div></div>
@@ -428,7 +428,7 @@ function renderIdentities(){_renderIdentities();foldAll($("#identityList"),"i")}
 function _renderIdentities(){const L=$("#identityList");L.innerHTML="";const ids=Object.entries(S.identities);if(!ids.length)newIdentity();
   for(const [iid,I] of Object.entries(S.identities)){const d=document.createElement("div");d.className="variant";
     d.innerHTML=`<h4><input type="radio" name="defid" ${iid===S.defaultIdentity?"checked":""} title="${t("personnage par défaut")}"> <span>${esc(I.name||t("(sans nom)"))}</span><span class="id">${iid}</span><span class="spacer"></span>${Object.keys(S.identities).length>1?`<button class="btn small danger" data-idel>${t("supprimer")}</button>`:""}</h4>
-    <div class="row">${field("Nom *",`<input type="text" data-i="name" value="${esc(I.name)}" placeholder="Léa Marchand">`)}${field("Surnom",`<input type="text" data-i="nickname" value="${esc(I.nickname)}">`)}
+    <div class="row">${field("Nom *",`<input type="text" data-i="name" value="${esc(I.name)}" placeholder="Clara Mercier">`)}${field("Surnom",`<input type="text" data-i="nickname" value="${esc(I.nickname)}">`)}
     ${field("Fictif ? *",sel('data-i="fictional"',[["true","oui — entièrement fictif"],["false","non — basé sur une personne réelle (consentement recommandé)"]],I.fictional))}${field("Morphologie *",sel('data-i="morph"',MORPH,I.morph))}${field("Espèce (libre)",`<input type="text" data-i="species" value="${esc(I.species)}" placeholder="human, elf, mecha…">`)}</div>
     <label>${t("Résumé (1–2 phrases)")}</label><textarea data-i="summary">${esc(I.summary)}</textarea>
     <div class="row">${field("Tags manuels (virgules)",`<input type="text" data-i="tags" value="${esc(I.tags)}">`)}${field("Contenu signalé",`<select data-i="content" multiple size="4">${["none","nudity","sexual","violence","gore","drugs","profanity","horror","political","religious"].map(c=>`<option ${I.content.includes(c)?"selected":""}>${c}</option>`).join("")}</select>`)}${field("Propriété intellectuelle",sel('data-i="ip"',[["original","personnage original"],["franchise","personnage d'une franchise / sous droits tiers"]],I.ip)+`<input type="text" data-i="franchise" value="${esc(I.franchise)}" placeholder="${t("franchise — ayant droit")}" style="margin-top:6px;display:${I.ip==="franchise"?"block":"none"}">`)}</div>`;

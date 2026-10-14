@@ -9,7 +9,7 @@ The key words MUST, MUST NOT, SHOULD, SHOULD NOT and MAY are to be read as in RF
 
 ## 1. What a `.cof` is, in one paragraph
 
-A `.cof` is a ZIP container holding **one or more characters**: identity, personality (Character Card V3 or free text), appearance (photos, character sheets, LoRA references), voice (samples, described voice), 3D (VRM/GLB), poses and motion clips, agent files (skills, memories), and a **rights** block (VRM-style permissions + consent for real people). Content is organised as **elements → variants → presets**: a preset is one ready-to-use combination ("Léa, casual, photo-realistic, voice A"). Nothing is encrypted; protection is done by validation rules and by obligations on readers (§ 6).
+A `.cof` is a ZIP container holding **one or more characters**: identity, personality (Character Card V3 or free text), appearance (photos, character sheets, LoRA references), voice (samples, described voice), 3D (VRM/GLB), poses and motion clips, agent files (skills, memories), and a **rights** block (VRM-style permissions + consent for real people). Content is organised as **elements → variants → presets**: a preset is one ready-to-use combination ("Clara, casual, photo-realistic, voice A"). Nothing is encrypted; protection is done by validation rules and by obligations on readers (§ 6).
 
 You do not need to support everything. A chat app can ignore 3D; a TTS service can ignore images. The format is designed so that **partial readers are conformant**.
 

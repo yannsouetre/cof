@@ -134,11 +134,11 @@ PNG `chara`+`ccv3` (text + thumbnail), `.charx`, `SOUL.md`/`IDENTITY.md`, `.vrm`
 
 
 ```jsonc
-{ "cof": "1.0", "id": "01J9…", "name": "Léa Marchand", "nickname": "Léa", "fictional": true,   // no age here: age is carried by the variants
+{ "cof": "1.0", "id": "01J9…", "name": "Clara Mercier", "nickname": "Clacla", "fictional": true,   // no age here: age is carried by the variants
   "morphology": { "class": "human", "species": "human" }, "summary": "…", "languages": ["fr", "en"],   // computed
-  "identities": { "lea": { "name": "Léa Marchand", "nickname": "Léa", "fictional": true, "morphology": {…} },
+  "identities": { "clara": { "name": "Clara Mercier", "nickname": "Clacla", "fictional": true, "morphology": {…} },
                   "marc": { "name": "Marc", "fictional": true, "morphology": {…} } },
-  "default_identity": "lea",
+  "default_identity": "clara",
   "tags": {…}, "thumbnail": "elements/appearance/f1/head.front.jpg", … }
 ```
 
@@ -165,8 +165,8 @@ Rules:
 
 ```jsonc
 "elements": {
-  "personality": { "variants": { "p1": { "kind": "card", "label": "Léa", "language": "fr", "card": "elements/personality/p1/card.json", "psyche": "…" },
-                                 "p2": { "kind": "card", "label": "Léa in English", "language": "en", "derives_from": "p1", "card": "…" } } },
+  "personality": { "variants": { "p1": { "kind": "card", "label": "Clara", "language": "fr", "card": "elements/personality/p1/card.json", "psyche": "…" },
+                                 "p2": { "kind": "card", "label": "Clara in English", "language": "en", "derives_from": "p1", "card": "…" } } },
   "appearance":  { "variants": { "f1": { "kind": "face", "style": "photo-realistic", "images": ["a-f1-front", "a-f1-left"], "params": "…/face.json" },
                                  "b1": { "kind": "body", "images": ["a-b1-front"] },
                                  "h1": { "kind": "hair", "code": "…/hair.json" }, "h2": { "kind": "hair", "label": "Short blond" },
@@ -188,13 +188,13 @@ Rules:
 
 ```jsonc
 "presets": {
-  "default": { "label": "Léa today", "identity": "lea", "style": "photo-realistic",
+  "default": { "label": "Clara today", "identity": "clara", "style": "photo-realistic",
                "slots": { "personality": ["p1"], "appearance": ["f1", "b1", "h1", "o1", "o2", "a1"], "voice": ["v1"], "posture": ["at1"], "volume3d": ["m1"], "identity_weights": ["l1"] },
                "alternatives": { "appearance": ["h3", "o4", "o5", "a3"] },   // h3, o4, o5, a3, v2…: further variants, not shown above
                "primary_image": "a-body-front",
                "rules": { "single_per_kind": true, "exclusive_regions": true } },
   "soiree":  { "label": "Evening out", "extends": "default", "slots": { "appearance": ["f1", "b1", "h2", "o3", "o2", "a2"] } },
-  "en":      { "label": "Léa in English", "extends": "default", "slots": { "personality": ["p2"], "voice": ["v2"] } }
+  "en":      { "label": "Clara in English", "extends": "default", "slots": { "personality": ["p2"], "voice": ["v2"] } }
 },
 "default_preset": "default"
 ```
@@ -289,7 +289,7 @@ Appearance variant type (`kind: intimate`), same schema as `face`/`body`. **Noth
   "base_model": { "name": "FLUX.1-dev", "family": "flux", "version": "1.0", "hash": "sha256:…" },   // the base model is MANDATORY: a LoRA without a base is unusable
   "file": "a-lora-l1",                            // asset (safetensors): embedded by default; or by link (asset with `uri`)
   "format": "safetensors", "rank": 16, "bytes": 171000000,
-  "trigger_words": ["leamarchand", "woman"], "recommended_weight": 0.8, "weight_range": [0.6, 1.0],
+  "trigger_words": ["claramercier", "woman"], "recommended_weight": 0.8, "weight_range": [0.6, 1.0],
   "covers": ["face", "hair", "body"],             // what the LoRA encodes (for coherence and priorities)
   "pages": [ { "label": "Civitai", "url": "https://civitai.com/models/…" } ],
   "notes": "Trained on 40 images, 1500 steps; avoid > 1.0; works best with the trigger word at the start of the prompt.",

@@ -10,12 +10,12 @@ from cof_cli.convert import card_to_cof_dir, read_card_from_png, write_card_to_p
 from cof_cli.validate import Report, validate_cof, validate_dir
 
 ROOT = Path(__file__).resolve().parents[2]
-EXAMPLE = ROOT / "spec" / "examples" / "01-lea-text-only"
+EXAMPLE = ROOT / "spec" / "examples" / "01-clara-text-only"
 
 
 @pytest.fixture
 def workdir(tmp_path):
-    d = tmp_path / "lea"
+    d = tmp_path / "clara"
     shutil.copytree(EXAMPLE, d)
     return d
 
@@ -28,7 +28,7 @@ def test_example_dir_is_valid(workdir):
 
 
 def test_pack_layout_and_validate(workdir, tmp_path):
-    out = tmp_path / "lea.cof"
+    out = tmp_path / "clara.cof"
     pack(workdir, out)
     with zipfile.ZipFile(out) as z:
         infos = z.infolist()
@@ -42,7 +42,7 @@ def test_pack_layout_and_validate(workdir, tmp_path):
 
 
 def test_unpack_matches(workdir, tmp_path):
-    out = tmp_path / "lea.cof"
+    out = tmp_path / "clara.cof"
     pack(workdir, out)
     d = unpack(out, tmp_path / "x")
     a = json.loads((d / "elements/personality/p1/card.json").read_text("utf-8"))
@@ -100,7 +100,7 @@ def test_png_card_roundtrip(workdir, tmp_path):
     assert rep.ok, rep.errors
 
 
-MODULAR = ROOT / "spec" / "examples" / "07-lea-modulaire"
+MODULAR = ROOT / "spec" / "examples" / "07-clara-modulaire"
 
 
 def test_presets_resolve_and_inherit():
@@ -168,7 +168,7 @@ def test_weights_need_base_model(tmp_path):
 
 
 def test_derived_cannot_be_listed_as_image(tmp_path):
-    d = tmp_path / "m"; shutil.copytree(ROOT / "spec" / "examples" / "03-femme-moderne", d)
+    d = tmp_path / "m"; shutil.copytree(ROOT / "spec" / "examples" / "03-clara-photos", d)
     m = json.loads((d / "manifest.json").read_text("utf-8"))
     der = next(a["id"] for a in m["assets"] if a["role"] == "derived")
     m["elements"]["appearance"]["variants"]["f1"]["images"].append(der)
@@ -200,7 +200,7 @@ def test_merge_and_extract(tmp_path):
     rep = Report(); validate_dir(out, rep)
     assert rep.ok, rep.errors
     m = json.loads((out / "manifest.json").read_text("utf-8"))
-    assert len(m["identities"]) == 2 and m["name"] == "Léa Marchand"
+    assert len(m["identities"]) == 2 and m["name"] == "Clara Mercier"
     ex = tmp_path / "ext"; extract_preset(out, ex, "m1-default")
     rep2 = Report(); validate_dir(ex, rep2)
     assert rep2.ok, rep2.errors
@@ -356,7 +356,7 @@ def test_enum_errors_list_every_value(tmp_path):
 def test_pack_recomputes_after_new_assets(tmp_path):
     """New assets without sha256/bytes must not block the recompute of coverage / completeness at pack time."""
     import subprocess, sys
-    d = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/01-lea-text-only", d)
+    d = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/01-clara-text-only", d)
     (d / "elements/files/f9").mkdir(parents=True)
     (d / "elements/files/f9/SKILL.md").write_text("---\nname: t\ndescription: t\n---\nok\n", "utf-8")
     m = json.loads((d / "manifest.json").read_text("utf-8"))
@@ -484,7 +484,7 @@ def test_daz_archive_and_voice_embedding_kind(tmp_path):
 def test_version_gate_1_0(tmp_path):
     """1.0 is the format; 0.5 must be migrated; a newer 1.x minor is read with a warning."""
     from cof_cli.migrate import migrate_any
-    d = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/01-lea-text-only", d)
+    d = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/01-clara-text-only", d)
     m = json.loads((d / "manifest.json").read_text("utf-8")); assert m["cof"] == "1.0"
     m["cof"] = "0.5"; (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep, recompute=False); assert not rep.ok and any("cof migrate" in e for e in rep.errors)
@@ -664,9 +664,9 @@ def test_neutral_elements_may_share_files(tmp_path):
     (d / "elements/files/sk").mkdir(parents=True); (d / "elements/files/sk/SKILL.md").write_text("---\nname: x\ndescription: y\n---\nhi\n", "utf-8")
     m["assets"].append({"id": "a-sk", "path": "elements/files/sk/SKILL.md", "role": "skill-file", "mediaType": "text/markdown", "license": "CC0-1.0"})
     m["elements"]["files"] = {"variants": {
-        "sk-lea": {"kind": "skill", "identity": "clara-mercier", "files": ["a-sk"], "entry": "elements/files/sk/SKILL.md"},
+        "sk-clara": {"kind": "skill", "identity": "clara-mercier", "files": ["a-sk"], "entry": "elements/files/sk/SKILL.md"},
         "sk-mar": {"kind": "skill", "identity": "martien", "files": ["a-sk"], "entry": "elements/files/sk/SKILL.md"}}}
-    m["presets"]["default"]["slots"]["files"] = ["sk-lea"]; m["presets"]["m1-default"]["slots"]["files"] = ["sk-mar"]
+    m["presets"]["default"]["slots"]["files"] = ["sk-clara"]; m["presets"]["m1-default"]["slots"]["files"] = ["sk-mar"]
     from cof_cli.container import refresh_asset_index
     def run(mut=None):
         mm = json.loads(json.dumps(m))
@@ -696,7 +696,7 @@ def test_export_agent_no_intimate_voice_consent_auto_tags(tmp_path):
     rep = Report(); validate_dir(sfw, rep); assert rep.ok, rep.errors
     t = auto_tags(json.loads((ROOT / "spec/examples/10-clara-mercier/manifest.json").read_text("utf-8")))
     assert {"child", "adult", "elder", "has-minor-preset", "fr", "en", "has-skills"} <= set(t)
-    d = tmp_path / "real"; shutil.copytree(ROOT / "spec/examples/01-lea-text-only", d)
+    d = tmp_path / "real"; shutil.copytree(ROOT / "spec/examples/01-clara-text-only", d)
     mm = json.loads((d / "manifest.json").read_text("utf-8"))
     mm["fictional"] = False
     mm["rights"]["consent"] = {"subject_is_real_person": True, "scope": ["conversational-persona"], "granted": "2026-10-01", "jurisdictions": ["FR"], "proof": [{"type": "other", "uri": "https://example.org/consent"}]}
@@ -775,7 +775,7 @@ def test_freeze_rules_consent_exec_forward_compat(tmp_path):
     rep = Report(); validate_dir(d, rep, recompute=False)
     assert any("consent scope 'intimate'" in e for e in rep.errors), rep.errors
     assert any("consent scope 'conversational-persona'" in w for w in rep.warnings)
-    d2 = tmp_path / "e"; shutil.copytree(ROOT / "spec/examples/01-lea-text-only", d2)
+    d2 = tmp_path / "e"; shutil.copytree(ROOT / "spec/examples/01-clara-text-only", d2)
     (d2 / "elements/files").mkdir(parents=True, exist_ok=True)
     (d2 / "elements/files/x.svg").write_text('<svg xmlns="http://www.w3.org/2000/svg" onload="alert(1)"/>', "utf-8")
     with _z.ZipFile(d2 / "elements/files/pack.zip", "w") as z:
@@ -783,7 +783,7 @@ def test_freeze_rules_consent_exec_forward_compat(tmp_path):
     rep = Report(); validate_dir(d2, rep, recompute=False)
     assert any("x.svg carries script" in e for e in rep.errors), rep.errors
     assert any("inside archive" in e and "tool.exe" in e for e in rep.errors) and any("pickle file refused inside archive" in e for e in rep.errors)
-    d3 = tmp_path / "f"; shutil.copytree(ROOT / "spec/examples/01-lea-text-only", d3)
+    d3 = tmp_path / "f"; shutil.copytree(ROOT / "spec/examples/01-clara-text-only", d3)
     m = json.loads((d3 / "manifest.json").read_text("utf-8")); m["cof"] = "1.3"; m["tags"]["content"] = ["future-flag"]
     (d3 / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d3, rep, recompute=False)

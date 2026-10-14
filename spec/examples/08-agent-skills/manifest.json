@@ -1,13 +1,13 @@
 {
   "cof": "1.0",
   "id": "01M4NK5NRDCWM0CKEGEX1EY06F",
-  "name": "Léa Marchand",
-  "nickname": "Léa",
+  "name": "Clara Mercier",
+  "nickname": "Clacla",
   "languages": [
-    "fr",
-    "en"
+    "en",
+    "fr"
   ],
-  "summary": "Léa en agent : personnalité structurée + un skill (Agent Skills) + une mémoire. Montre l'usage agent (§ 7 bis).",
+  "summary": "Clara en agent : personnalité structurée + un skill (Agent Skills) + une mémoire. Montre l'usage agent (§ 7 bis).",
   "fictional": true,
   "morphology": {
     "class": "human",
@@ -24,7 +24,7 @@
     ],
     "manual": [
       "agent",
-      "archiviste",
+      "designer",
       "exemple"
     ],
     "content": [
@@ -41,7 +41,7 @@
       "variants": {
         "p1": {
           "kind": "card",
-          "label": "Léa Marchand",
+          "label": "Clara Mercier",
           "card": "elements/personality/p1/card.json",
           "psyche": "elements/personality/p1/psyche.json",
           "profiles": {
@@ -92,7 +92,7 @@
   },
   "presets": {
     "default": {
-      "label": "Agent archiviste",
+      "label": "Agent éco-UX",
       "slots": {
         "personality": [
           "p1"
@@ -101,6 +101,28 @@
           "fi1",
           "fi2"
         ]
+      },
+      "completeness": {
+        "score": 39,
+        "level": "C",
+        "layers": {
+          "identity": 80,
+          "personality": 90,
+          "appearance": 0,
+          "physique": 0,
+          "voice": 0,
+          "volume": 0,
+          "motion": 0,
+          "rights": 85
+        },
+        "targets_ready": [
+          "chat-text",
+          "agent-persona",
+          "agent-runtime",
+          "archive"
+        ],
+        "computed_by": "cof-cli/1.0.0rc3",
+        "computed_at": "2026-10-14T18:29:30Z"
       }
     }
   },
@@ -124,8 +146,8 @@
       "path": "elements/files/fi1/SKILL.md",
       "role": "skill-file",
       "mediaType": "text/markdown",
-      "bytes": 557,
-      "sha256": "b46d8ae29d314a9f2a372b3e83d3a5e89f9ece468d6f18ce632b4b8f24cf00b5",
+      "bytes": 655,
+      "sha256": "7bb918c51eacddb4af8424611f3e1f6d55c07f29765286f71391c606d40af4f8",
       "license": "CC-BY-4.0"
     },
     {
@@ -133,8 +155,8 @@
       "path": "elements/files/fi2/MEMORY.md",
       "role": "memory",
       "mediaType": "text/markdown",
-      "bytes": 353,
-      "sha256": "90e9f916069403ce25ec8dd0ac800dbecb26256af9093609e9e89b571f2c5c5a",
+      "bytes": 301,
+      "sha256": "def9298c3ee2942302aa7bce24a59669b8d0f5452c06cc6b6571b525501feb64",
       "license": "CC-BY-4.0"
     }
   ],
@@ -165,7 +187,7 @@
   },
   "provenance": {
     "created": "2026-10-09T19:40:00Z",
-    "modified": "2026-10-09T19:40:00Z",
+    "modified": "2026-10-14T18:29:30Z",
     "generator": "cof-cli/0.2.0",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/08-agent-skills"
@@ -187,9 +209,33 @@
   "extensions": {},
   "coverage": {
     "elements": [
-      "personality"
+      "personality",
+      "files"
     ],
-    "variants": 1,
-    "presets": 1
+    "variants": 3,
+    "presets": 1,
+    "identities": 1
+  },
+  "completeness": {
+    "score": 39,
+    "level": "C",
+    "layers": {
+      "identity": 80,
+      "personality": 90,
+      "appearance": 0,
+      "physique": 0,
+      "voice": 0,
+      "volume": 0,
+      "motion": 0,
+      "rights": 85
+    },
+    "targets_ready": [
+      "chat-text",
+      "agent-persona",
+      "agent-runtime",
+      "archive"
+    ],
+    "computed_by": "cof-cli/1.0.0rc3",
+    "computed_at": "2026-10-14T18:29:30Z"
   }
 }

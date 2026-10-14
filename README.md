@@ -34,9 +34,9 @@ See [`spec/SPEC.md`](spec/SPEC.md) for the full definition.
 ```bash
 pip install -e cli
 cof validate file.cof                          # a .cof file or an unpacked folder
-cof validate spec/examples/01-lea-text-only
-cof pack spec/examples/01-lea-text-only -o lea.cof
-cof export lea.cof --format png -o lea.png     # → PNG card (chara + ccv3 chunks)
+cof validate spec/examples/01-clara-text-only
+cof pack spec/examples/01-clara-text-only -o clara.cof
+cof export clara.cof --format png -o clara.png     # → PNG card (chara + ccv3 chunks)
 ```
 More commands (import, export to SOUL.md/IDENTITY.md, migrate, tokens…) in [`cli/README.md`](cli/README.md).
 

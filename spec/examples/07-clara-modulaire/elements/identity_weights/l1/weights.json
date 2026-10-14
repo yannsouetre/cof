@@ -9,7 +9,7 @@
   "format": "safetensors",
   "rank": 16,
   "trigger_words": [
-    "leamarchand",
+    "claramercier",
     "woman"
   ],
   "recommended_weight": 0.8,
@@ -25,7 +25,7 @@
   "pages": [
     {
       "label": "Page du modèle (exemple fictif)",
-      "url": "https://example.org/models/lea-marchand-lora"
+      "url": "https://example.org/models/clara-mercier-lora"
     }
   ],
   "notes": "EXEMPLE FICTIF — aucun poids réel n'est distribué. Illustre la fiche : modèle de base obligatoire, mots déclencheurs, poids recommandé, notes d'usage.",

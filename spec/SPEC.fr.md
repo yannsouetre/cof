@@ -134,11 +134,11 @@ Champs **obligatoires** de l'identité : `name`, `fictional`, `morphology` (`cla
 
 
 ```jsonc
-{ "cof": "1.0", "id": "01J9…", "name": "Léa Marchand", "nickname": "Léa", "fictional": true,   // pas d'âge ici : l'âge est porté par les déclinaisons
+{ "cof": "1.0", "id": "01J9…", "name": "Clara Mercier", "nickname": "Clacla", "fictional": true,   // pas d'âge ici : l'âge est porté par les déclinaisons
   "morphology": { "class": "human", "species": "human" }, "summary": "…", "languages": ["fr", "en"],   // calculé
-  "identities": { "lea": { "name": "Léa Marchand", "nickname": "Léa", "fictional": true, "morphology": {…} },
+  "identities": { "clara": { "name": "Clara Mercier", "nickname": "Clacla", "fictional": true, "morphology": {…} },
                   "marc": { "name": "Marc", "fictional": true, "morphology": {…} } },
-  "default_identity": "lea",
+  "default_identity": "clara",
   "tags": {…}, "thumbnail": "elements/appearance/f1/head.front.jpg", … }
 ```
 
@@ -165,8 +165,8 @@ Règles :
 
 ```jsonc
 "elements": {
-  "personality": { "variants": { "p1": { "kind": "card", "label": "Léa", "language": "fr", "card": "elements/personality/p1/card.json", "psyche": "…" },
-                                 "p2": { "kind": "card", "label": "Léa en anglais", "language": "en", "derives_from": "p1", "card": "…" } } },
+  "personality": { "variants": { "p1": { "kind": "card", "label": "Clara", "language": "fr", "card": "elements/personality/p1/card.json", "psyche": "…" },
+                                 "p2": { "kind": "card", "label": "Clara en anglais", "language": "en", "derives_from": "p1", "card": "…" } } },
   "appearance":  { "variants": { "f1": { "kind": "face", "style": "photo-realistic", "images": ["a-f1-front", "a-f1-left"], "params": "…/face.json" },
                                  "b1": { "kind": "body", "images": ["a-b1-front"] },
                                  "h1": { "kind": "hair", "code": "…/hair.json" }, "h2": { "kind": "hair", "label": "Court blond" },
@@ -188,13 +188,13 @@ Règles :
 
 ```jsonc
 "presets": {
-  "default": { "label": "Léa aujourd'hui", "identity": "lea", "style": "photo-realistic",
+  "default": { "label": "Clara aujourd'hui", "identity": "clara", "style": "photo-realistic",
                "slots": { "personality": ["p1"], "appearance": ["f1", "b1", "h1", "o1", "o2", "a1"], "voice": ["v1"], "posture": ["at1"], "volume3d": ["m1"], "identity_weights": ["l1"] },
                "alternatives": { "appearance": ["h3", "o4", "o5", "a3"] },   // h3, o4, o5, a3, v2… : autres déclinaisons, non montrées plus haut
                "primary_image": "a-body-front",
                "rules": { "single_per_kind": true, "exclusive_regions": true } },
   "soiree":  { "label": "Soirée", "extends": "default", "slots": { "appearance": ["f1", "b1", "h2", "o3", "o2", "a2"] } },
-  "en":      { "label": "Léa in English", "extends": "default", "slots": { "personality": ["p2"], "voice": ["v2"] } }
+  "en":      { "label": "Clara in English", "extends": "default", "slots": { "personality": ["p2"], "voice": ["v2"] } }
 },
 "default_preset": "default"
 ```
@@ -289,7 +289,7 @@ Type de déclinaison d'apparence (`kind: intimate`), même schéma que `face`/`b
   "base_model": { "name": "FLUX.1-dev", "family": "flux", "version": "1.0", "hash": "sha256:…" },   // le modèle de base est OBLIGATOIRE : un LoRA sans base est inutilisable
   "file": "a-lora-l1",                            // asset (safetensors) : intégré par défaut ; ou par lien (asset avec `uri`)
   "format": "safetensors", "rank": 16, "bytes": 171000000,
-  "trigger_words": ["leamarchand", "woman"], "recommended_weight": 0.8, "weight_range": [0.6, 1.0],
+  "trigger_words": ["claramercier", "woman"], "recommended_weight": 0.8, "weight_range": [0.6, 1.0],
   "covers": ["face", "hair", "body"],             // ce que le LoRA encode (pour la cohérence et les priorités)
   "pages": [ { "label": "Civitai", "url": "https://civitai.com/models/…" } ],
   "notes": "Entraîné sur 40 images, 1500 pas ; éviter > 1.0 ; fonctionne mieux avec le mot déclencheur en tête de prompt.",

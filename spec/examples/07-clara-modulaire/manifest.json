@@ -1,11 +1,13 @@
 {
   "cof": "1.0",
-  "id": "01K72R1A2B3C4D5E6F7G8H9J1K",
-  "name": "Femme moderne",
+  "id": "01K72S9A8B7C6D5E4F3G2H1J0K",
+  "name": "Clara Mercier",
+  "nickname": "Clacla",
   "languages": [
+    "en",
     "fr"
   ],
-  "summary": "Femme contemporaine, cheveux châtains ondulés, veste kaki, jean et baskets.",
+  "summary": "Designer UX/UI et éco-conceptrice web à Lyon ; observatrice, calme, chaleureuse. Exemple modulaire : 2 personnalités, 2 presets.",
   "fictional": true,
   "morphology": {
     "class": "human",
@@ -14,13 +16,20 @@
   "tags": {
     "auto": [
       "adult",
+      "en",
       "fr",
+      "has-minor-preset",
+      "has-weights",
       "human",
-      "style-photo-realistic"
+      "multi-preset",
+      "style-photo-realistic",
+      "teen"
     ],
     "manual": [
       "fiction",
-      "contemporain"
+      "mentor",
+      "designer",
+      "exemple-modulaire"
     ],
     "content": [
       "none"
@@ -32,48 +41,105 @@
     }
   },
   "elements": {
+    "personality": {
+      "variants": {
+        "p1": {
+          "kind": "card",
+          "label": "Clara Mercier",
+          "card": "elements/personality/p1/card.json",
+          "psyche": "elements/personality/p1/psyche.json",
+          "profiles": {
+            "summary": {
+              "tokens": 120,
+              "tokenizer": "heuristic-chars",
+              "blocks": [
+                "name",
+                "summary",
+                "psyche.core"
+              ]
+            },
+            "standard": {
+              "tokens": 420,
+              "tokenizer": "heuristic-chars",
+              "blocks": [
+                "card.description",
+                "card.personality",
+                "card.scenario",
+                "psyche"
+              ]
+            }
+          }
+        },
+        "p2": {
+          "kind": "card",
+          "label": "Clara à 14 ans",
+          "derives_from": "p1",
+          "card": "elements/personality/p2/card.json"
+        }
+      }
+    },
     "appearance": {
       "variants": {
         "f1": {
           "kind": "face",
-          "label": "Visage",
+          "label": "Visage (planche Gemini)",
+          "style": "photo-realistic",
           "images": [
             "a-head-front-closeup",
             "a-head-right-closeup",
             "a-head-front"
           ],
-          "derived": [
-            "a-head-front-canny",
-            "a-head-front-canny-2",
-            "a-head-front-lineart",
-            "a-head-front-lineart-2",
-            "a-head-front-softedge"
-          ],
-          "style": "photo-realistic",
           "age": {
-            "value": 32,
+            "value": 34,
             "unit": "years",
-            "basis": "apparent"
+            "basis": "declared"
           }
         },
         "b1": {
           "kind": "body",
-          "label": "Corps",
+          "label": "Corps (planche Gemini)",
+          "style": "photo-realistic",
           "images": [
             "a-body-front",
             "a-body-left",
             "a-body-back"
           ],
-          "derived": [
-            "a-body-front-canny",
-            "a-body-front-lineart",
-            "a-body-front-softedge"
-          ],
-          "style": "photo-realistic",
           "age": {
-            "value": 32,
+            "value": 34,
             "unit": "years",
-            "basis": "apparent"
+            "basis": "declared"
+          }
+        },
+        "o1": {
+          "kind": "clothing",
+          "garment": "full-outfit",
+          "label": "Casual contemporain",
+          "spec": "elements/appearance/o1/outfit.json",
+          "images": [
+            "a-body-front",
+            "a-body-left",
+            "a-body-back"
+          ],
+          "style": "photo-realistic"
+        }
+      }
+    },
+    "identity_weights": {
+      "variants": {
+        "l1": {
+          "kind": "lora",
+          "label": "LoRA Flux (fictif)",
+          "spec": "elements/identity_weights/l1/weights.json",
+          "style": "photo-realistic",
+          "covers": [
+            "face",
+            "hair",
+            "body"
+          ],
+          "age": {
+            "value": 34,
+            "unit": "years",
+            "basis": "declared"
           }
         }
       }
@@ -81,21 +147,28 @@
   },
   "presets": {
     "default": {
-      "label": "Défaut",
+      "label": "Clara aujourd'hui",
+      "style": "photo-realistic",
       "slots": {
+        "personality": [
+          "p1"
+        ],
         "appearance": [
           "f1",
-          "b1"
+          "b1",
+          "o1"
+        ],
+        "identity_weights": [
+          "l1"
         ]
       },
-      "style": "photo-realistic",
       "completeness": {
-        "score": 33,
-        "level": "D",
+        "score": 56,
+        "level": "C",
         "layers": {
           "identity": 100,
-          "personality": 0,
-          "appearance": 50,
+          "personality": 90,
+          "appearance": 75,
           "physique": 0,
           "voice": 0,
           "volume": 0,
@@ -103,16 +176,55 @@
           "rights": 85
         },
         "targets_ready": [
+          "chat-text",
+          "agent-persona",
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/0.3.0",
-        "computed_at": "2026-10-10T08:09:15Z"
+        "computed_by": "cof-cli/1.0.0rc3",
+        "computed_at": "2026-10-14T18:29:29Z"
       },
       "age_override": {
-        "value": 32,
+        "value": 34,
         "unit": "years",
-        "basis": "apparent"
+        "basis": "declared"
+      }
+    },
+    "young": {
+      "label": "Clara à 14 ans (texte seul)",
+      "extends": "default",
+      "slots": {
+        "personality": [
+          "p2"
+        ],
+        "appearance": [],
+        "identity_weights": []
+      },
+      "age_override": {
+        "value": 14,
+        "unit": "years",
+        "basis": "canonical"
+      },
+      "completeness": {
+        "score": 41,
+        "level": "C",
+        "layers": {
+          "identity": 100,
+          "personality": 90,
+          "appearance": 0,
+          "physique": 0,
+          "voice": 0,
+          "volume": 0,
+          "motion": 0,
+          "rights": 85
+        },
+        "targets_ready": [
+          "chat-text",
+          "agent-persona",
+          "archive"
+        ],
+        "computed_by": "cof-cli/1.0.0rc3",
+        "computed_at": "2026-10-14T18:29:29Z"
       }
     }
   },
@@ -127,11 +239,25 @@
     "voice": [
       "samples",
       "described"
-    ]
+    ],
+    "by_target": {
+      "game-3d": {
+        "visual": [
+          "avatar",
+          "images",
+          "identity_weights",
+          "descriptive"
+        ]
+      },
+      "chat-text": {
+        "visual": [
+          "descriptive",
+          "images"
+        ]
+      }
+    }
   },
-  "mapping_vocabularies": {
-    "line_maps": "controlnet-preprocessors"
-  },
+  "mapping_vocabularies": {},
   "assets": [
     {
       "path": "elements/appearance/b1/body.front.jpg",
@@ -243,120 +369,26 @@
       "style": "photo-realistic"
     },
     {
-      "path": "derived/face/f1/head.front.canny.png",
+      "id": "a-lora-l1",
+      "uri": "https://example.org/models/clara-mercier-lora/clara.safetensors",
+      "role": "weights",
+      "base_model": "FLUX.1-dev",
+      "mediaType": "application/octet-stream",
+      "bytes": 171000000,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "license": "CC-BY-NC-4.0",
+      "generator": "exemple fictif — hash illustratif"
+    },
+    {
+      "id": "thumbnail",
+      "path": "Thumbnails/thumbnail.png",
       "role": "derived",
-      "method": "canny",
+      "method": "thumbnail",
+      "source": "a-head-front-closeup",
       "mediaType": "image/png",
-      "bytes": 7543,
-      "sha256": "692ddb8ef172d12b104e931cd46f3711d6369c937ca327172b5549e59b42f5b9",
-      "license": "CC-BY-4.0",
-      "width": 1024,
-      "height": 1024,
-      "bits": 1,
-      "derived_from": "a-head-front",
-      "id": "a-head-front-canny",
-      "source": "a-head-front"
-    },
-    {
-      "path": "derived/face/f1/head.front.canny.svg",
-      "role": "derived",
-      "method": "canny",
-      "format": "svg",
-      "mediaType": "image/svg+xml",
-      "bytes": 32968,
-      "sha256": "f2002a1dede98214157d443fd835f21e1b6482c97a444cd89b44713430e5e20c",
-      "license": "CC-BY-4.0",
-      "derived_from": "a-head-front-canny",
-      "id": "a-head-front-canny-2",
-      "source": "a-head-front"
-    },
-    {
-      "path": "derived/face/f1/head.front.lineart.png",
-      "role": "derived",
-      "method": "lineart",
-      "mediaType": "image/png",
-      "bytes": 8458,
-      "sha256": "dd5123634d2ff0335fdbbc35a26cad332deafab3ae1c47025ba81a3bfb415742",
-      "license": "CC-BY-4.0",
-      "width": 1024,
-      "height": 1024,
-      "bits": 1,
-      "derived_from": "a-head-front",
-      "id": "a-head-front-lineart",
-      "source": "a-head-front"
-    },
-    {
-      "path": "derived/face/f1/head.front.lineart.svg",
-      "role": "derived",
-      "method": "lineart",
-      "format": "svg",
-      "mediaType": "image/svg+xml",
-      "bytes": 52382,
-      "sha256": "b57a92b760ac041571f2295abd82f410800e5b1a8528912ea9bcc9af536367c7",
-      "license": "CC-BY-4.0",
-      "derived_from": "a-head-front-lineart",
-      "id": "a-head-front-lineart-2",
-      "source": "a-head-front"
-    },
-    {
-      "path": "derived/face/f1/head.front.softedge.png",
-      "role": "derived",
-      "method": "softedge",
-      "mediaType": "image/png",
-      "bytes": 32355,
-      "sha256": "bba44211bda88e276711dcda0a054c7948fae46ddd5f57e994bcd23327a514ba",
-      "license": "CC-BY-4.0",
-      "width": 512,
-      "height": 512,
-      "bits": 4,
-      "derived_from": "a-head-front",
-      "id": "a-head-front-softedge",
-      "source": "a-head-front"
-    },
-    {
-      "path": "derived/body/b1/body.front.canny.png",
-      "role": "derived",
-      "method": "canny",
-      "mediaType": "image/png",
-      "bytes": 4392,
-      "sha256": "8fb7d4ecfebcf8d76d408e25dd3fb9929a796b95622a9fa0ccb6a27890bff5c1",
-      "license": "CC-BY-4.0",
-      "width": 512,
-      "height": 1024,
-      "bits": 1,
-      "derived_from": "a-body-front",
-      "id": "a-body-front-canny",
-      "source": "a-body-front"
-    },
-    {
-      "path": "derived/body/b1/body.front.lineart.png",
-      "role": "derived",
-      "method": "lineart",
-      "mediaType": "image/png",
-      "bytes": 6804,
-      "sha256": "0a551d9f6d6b278191780db46d62470ce5f40d14180ff95969abef26beb73e2c",
-      "license": "CC-BY-4.0",
-      "width": 512,
-      "height": 1024,
-      "bits": 1,
-      "derived_from": "a-body-front",
-      "id": "a-body-front-lineart",
-      "source": "a-body-front"
-    },
-    {
-      "path": "derived/body/b1/body.front.softedge.png",
-      "role": "derived",
-      "method": "softedge",
-      "mediaType": "image/png",
-      "bytes": 10034,
-      "sha256": "b740035184cc84d9439fbbf8396330c02ad0273d6625fec0109ee618e1968434",
-      "license": "CC-BY-4.0",
-      "width": 256,
-      "height": 512,
-      "bits": 4,
-      "derived_from": "a-body-front",
-      "id": "a-body-front-softedge",
-      "source": "a-body-front"
+      "bytes": 33888,
+      "sha256": "f502bc1a29a7f653da2557546fbc5db6960efa7b04cc7981736b825937ded8a9",
+      "license": "CC-BY-4.0"
     }
   ],
   "size_class": "lite",
@@ -376,43 +408,44 @@
       "allowPoliticalOrReligiousUsage": false,
       "allowAntisocialOrHateUsage": false,
       "allowVoiceCloning": false,
-      "allowTraining": "none",
+      "allowTraining": "finetune-private",
       "allowImpersonationOfRealPerson": false,
-      "ageRating": "PEGI-3",
-      "minUserAge": 0,
+      "ageRating": "PEGI-12",
+      "minUserAge": 13,
       "aiDisclosure": true
     },
     "consent": null
   },
   "provenance": {
-    "created": "2026-10-09T20:30:00Z",
-    "modified": "2026-10-09T20:30:00Z",
-    "generator": "cof-vector/0.2 sheet_split + edges",
+    "created": "2026-10-10T08:30:00Z",
+    "modified": "2026-10-14T18:29:29Z",
+    "generator": "cof-cli/0.3.0 (assemblage manuel)",
     "source": [
-      "https://github.com/yannsouetre/cof/tree/main/spec/examples/03-femme-moderne"
+      "https://github.com/yannsouetre/cof/tree/main/spec/examples/01-clara-text-only",
+      "https://github.com/yannsouetre/cof/tree/main/spec/examples/03-clara-photos"
     ],
     "c2pa": null,
     "signatures": []
   },
   "metadata": {
     "@context": {
-      "dc": "http://purl.org/dc/elements/1.1/"
+      "dc": "http://purl.org/dc/elements/1.1/",
+      "schema": "https://schema.org/"
     },
     "dc:creator": [
       "Yann Souetre"
     ],
     "dc:rights": "CC-BY-4.0",
-    "dc:description": "Exemple COF « apparence seule » : vues extraites automatiquement d'une planche de personnage générée (Gemini) ; code vectoriel visage COF-Vector v0.1 quand un maillage facial est détecté."
+    "schema:version": "1.0.0"
   },
   "extensions": {},
-  "profiles": {},
   "completeness": {
-    "score": 33,
-    "level": "D",
+    "score": 56,
+    "level": "C",
     "layers": {
       "identity": 100,
-      "personality": 0,
-      "appearance": 50,
+      "personality": 90,
+      "appearance": 75,
       "physique": 0,
       "voice": 0,
       "volume": 0,
@@ -420,19 +453,23 @@
       "rights": 85
     },
     "targets_ready": [
+      "chat-text",
+      "agent-persona",
       "image-video-gen",
       "archive"
     ],
-    "computed_by": "cof-cli/0.3.0",
-    "computed_at": "2026-10-10T08:09:15Z"
+    "computed_by": "cof-cli/1.0.0rc3",
+    "computed_at": "2026-10-14T18:29:29Z"
   },
   "coverage": {
     "elements": [
-      "face",
-      "body"
+      "personality",
+      "appearance",
+      "identity_weights"
     ],
-    "variants": 2,
-    "presets": 1
+    "variants": 6,
+    "presets": 2,
+    "identities": 1
   },
-  "thumbnail": "elements/appearance/f1/head.front.closeup.jpg"
+  "thumbnail": "Thumbnails/thumbnail.png"
 }

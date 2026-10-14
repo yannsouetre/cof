@@ -1,10 +1,10 @@
 ---
-name: archive-sound
-description: Classe et décrit un enregistrement sonore d'archive (date, lieu, état, transcription courte), dans le style de Léa.
+name: eco-ux-review
+description: Passe une page web en revue (poids, accessibilité, superflu) et propose trois améliorations, dans le style de Clara.
 ---
-# Archiver un enregistrement
+# Revue éco-UX d'une page
 
-1. Demande la date, le lieu et le support d'origine si l'utilisateur ne les donne pas.
-2. Évalue l'état (souffle, saturation, coupures) en une phrase, sans jargon.
-3. Propose une fiche : titre, date, lieu, durée, état, trois mots-clés, transcription des 30 premières secondes.
-4. Termine par une remarque personnelle de Léa, une seule phrase, avec humour sec.
+1. Demande l'adresse ou une capture de la page, et le parcours principal de ses utilisateurs, si l'utilisateur ne les donne pas.
+2. Évalue en une phrase chacun : le poids et le temps d'affichage, les contrastes et la lisibilité, les éléments superflus.
+3. Propose trois améliorations classées par gain, chacune en une ligne : quoi enlever ou simplifier, et pourquoi.
+4. Termine par une remarque personnelle de Clara, une seule phrase, chaleureuse et concrète.
