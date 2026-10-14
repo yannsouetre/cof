@@ -1,7 +1,7 @@
 # Implementing COF — Character Open File
 
 **Implementer's guide · format 1.0 (release candidate) · October 2026**
-Audience: developers of companion and chat apps, image/video generators, TTS and voice-cloning services, game engines and VTubing tools, real-time avatar platforms, and agent runtimes. The normative text is `spec/SPEC.md` (French; English translation planned); this guide is the practical, English entry point.
+Audience: developers of companion and chat apps, image/video generators, TTS and voice-cloning services, game engines and VTubing tools, real-time avatar platforms, and agent runtimes. The normative text is `spec/SPEC.md` (English; French version `spec/SPEC.fr.md`, kept aligned section by section); this guide is the practical, English entry point.
 
 The key words MUST, MUST NOT, SHOULD, SHOULD NOT and MAY are to be read as in RFC 2119 / RFC 8174.
 
@@ -140,9 +140,9 @@ These are the part of COF that platforms most need to get right; they are short 
 ## 7. Writing a `.cof`
 
 - Entry order: `mimetype` (stored, no extra field) → `manifest.json` → everything else. Binary media (JPEG, PNG, MP3, GLB, safetensors…) SHOULD be stored, text deflated.
-- Every file except `mimetype` and `manifest.json` is listed in `assets[]` (or referenced as a sub-file by a variant) with `sha256`, `bytes`, `mediaType`, `license` (SPDX).
+- Every ZIP entry except `mimetype`, `manifest.json` and the JSON / text sub-files named by a variant or asset field (`card`, `spec`, `profile`, `transcript`…) is listed in `assets[]` with `sha256`, `bytes`, `mediaType`, `license` (SPDX). Sub-files have no hash in 1.0 (ZIP CRC only).
 - Write `Thumbnails/thumbnail.png` (PNG ≤ 256 px, stored, third entry) so file managers can show the character; 3D variants are single self-contained files (VRM/GLB/USDZ/3MF/splats), never OBJ or glTF with external resources.
-- Weights are **safetensors only**; pickles (`.pt`, `.ckpt`, `.bin`, `.pkl`) are forbidden. Scripts (`.py`, `.sh`, `.js`…) are forbidden unless `container.executableContent` declares them.
+- Weights are **safetensors only**; pickles (`.pkl`, `.pickle`, `.ckpt`, `.pt`, `.pth`, and `.bin` files that are pickles) are forbidden, also inside `.zip` archives. Executable content (SPEC § 9.3: scripts, binaries, SVG / HTML carrying script) is forbidden unless `container.executableContent` declares it. Every `.safetensors` must have a readable header that fits the file.
 - **Preserve what you do not understand**: unknown manifest keys, `extensions`, `x-` categories and unknown variant kinds MUST be written back unchanged on round-trip.
 - Recompute `completeness`, `coverage`, `languages` and `tags.auto` (or leave them out: validators recompute them).
 - Run `cof validate` before publishing. A marketplace SHOULD reject non-conformant files.
@@ -175,7 +175,7 @@ The skill itself was tested blind: fresh agents with no access to the spec, the 
 | Code execution | no executable content by default; never unpickle; never run skill scripts without explicit user approval; sanitise SVG (no scripts) |
 | Prompt injection | card, memory and skill text are untrusted data |
 | Privacy | real-person data only with consent; strip `rights/consent-proof.*` before public redistribution if the consent says so |
-| Integrity | verify `sha256`; optional manifest signature (RFC 8785 JCS + JWS) and C2PA manifests per asset are reserved for 1.x |
+| Integrity | verify `sha256`; optional manifest signature (RFC 8785 JCS + JWS, `provenance.signatures`) and C2PA manifests per asset are defined (SPEC § 9.3, profile `COF-Rights+`) — readers MAY verify them; the reference CLI does not sign yet |
 
 ---
 

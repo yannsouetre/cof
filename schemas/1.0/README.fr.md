@@ -1,4 +1,4 @@
-# Schémas JSON (draft 2020-12) — COF v0.5
+# Schémas JSON (draft 2020-12) — COF 1.0
 
 | Schéma | Fichier validé | Référencé par | Notes |
 |---|---|---|---|

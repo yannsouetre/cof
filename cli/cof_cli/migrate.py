@@ -282,6 +282,16 @@ def migrate_any(src: Path) -> dict:
         if not tags:
             m.pop("preset_tags")
         changed = True
+    if not (m.get("presets") or {}) and len(m.get("identities") or {}) <= 1:
+        # 1.0 requires a preset: 'default' applies every variant except intimate ones (never applied by default)
+        slots = {}
+        for cat, e in (m.get("elements") or {}).items():
+            vids = [vid for vid, v in ((e or {}).get("variants") or {}).items() if not (cat == "appearance" and (v or {}).get("kind") == "intimate")]
+            if vids:
+                slots[cat] = vids
+        m["presets"] = {"default": {"label": "Default", "slots": slots}}
+        m["default_preset"] = "default"
+        changed = True
     if changed:
         (src / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
     return m

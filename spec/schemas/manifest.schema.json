@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://yannsouetre.github.io/cof/schemas/1.0/manifest.schema.json",
-  "title": "COF manifest.json (v0.5)",
+  "title": "COF manifest.json (1.0)",
   "type": "object",
   "required": [
     "cof",
@@ -13,7 +13,9 @@
     "elements",
     "assets",
     "rights",
-    "provenance"
+    "provenance",
+    "presets",
+    "default_preset"
   ],
   "additionalProperties": true,
   "properties": {
@@ -171,6 +173,8 @@
     },
     "presets": {
       "type": "object",
+      "minProperties": 1,
+      "description": "at least one preset (a file without presets is migrated: cof migrate adds 'default')",
       "propertyNames": {
         "$ref": "#/$defs/vid"
       },
@@ -743,9 +747,10 @@
           "enum": [
             "background",
             "location",
+            "pose-only",
             "other"
           ],
-          "description": "environment variants: chat / video-avatar background, or a place tied to the character (home, workplace…)"
+          "description": "environment variants: chat / video-avatar background, or a place tied to the character (home, workplace…); posture photos: pose-only (inference keeps only the pose)"
         },
         "videos": {
           "type": "array",
@@ -975,7 +980,7 @@
               "type": "boolean"
             }
           },
-          "additionalProperties": false
+          "additionalProperties": true
         },
         "style_tags": {
           "type": "array",

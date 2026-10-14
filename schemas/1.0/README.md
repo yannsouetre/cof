@@ -1,4 +1,4 @@
-# JSON Schemas (draft 2020-12) — COF v0.5
+# JSON Schemas (draft 2020-12) — COF 1.0
 
 | Schema | File validated | Referenced by | Notes |
 |---|---|---|---|

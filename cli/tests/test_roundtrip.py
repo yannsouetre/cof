@@ -756,3 +756,39 @@ def test_age_units_and_inheritance():
          "rights": {"permissions": {"allowSexualUsage": False}}}
     assert preset_age(m, "kid2") == 12 and preset_age(m, "child") == 10
     assert effective_permissions(m, "child").get("allowSexualUsage") is False
+
+
+def test_freeze_rules_consent_exec_forward_compat(tmp_path):
+    """Real person: intimate needs scope 'intimate' (error), likeness needs its scope (warning);
+    scripts in SVG and executables inside archives are refused; a later 1.x enum value is a warning."""
+    import zipfile as _z
+    d = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/09-mixte-adulte-mineur", d)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    m["fictional"] = False
+    for i in (m.get("identities") or {}).values():
+        i["fictional"] = False
+    cons = {"subject_is_real_person": True, "scope": ["likeness-image"], "granted": "2026-10-10", "jurisdictions": ["FR"], "proof": [{"type": "signed-document"}]}
+    m["rights"]["consent"] = cons
+    for i in (m.get("identities") or {}).values():
+        i["consent"] = cons
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep, recompute=False)
+    assert any("consent scope 'intimate'" in e for e in rep.errors), rep.errors
+    assert any("consent scope 'conversational-persona'" in w for w in rep.warnings)
+    d2 = tmp_path / "e"; shutil.copytree(ROOT / "spec/examples/01-lea-text-only", d2)
+    (d2 / "elements/files").mkdir(parents=True, exist_ok=True)
+    (d2 / "elements/files/x.svg").write_text('<svg xmlns="http://www.w3.org/2000/svg" onload="alert(1)"/>', "utf-8")
+    with _z.ZipFile(d2 / "elements/files/pack.zip", "w") as z:
+        z.writestr("tool.exe", b"MZ"); z.writestr("w.pt", b"\x80\x02.")
+    rep = Report(); validate_dir(d2, rep, recompute=False)
+    assert any("x.svg carries script" in e for e in rep.errors), rep.errors
+    assert any("inside archive" in e and "tool.exe" in e for e in rep.errors) and any("pickle file refused inside archive" in e for e in rep.errors)
+    d3 = tmp_path / "f"; shutil.copytree(ROOT / "spec/examples/01-lea-text-only", d3)
+    m = json.loads((d3 / "manifest.json").read_text("utf-8")); m["cof"] = "1.3"; m["tags"]["content"] = ["none", "future-flag"]
+    (d3 / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d3, rep, recompute=False)
+    assert rep.ok, rep.errors
+    assert any("later 1.x" in w for w in rep.warnings)
+    m.pop("presets"); m.pop("default_preset"); m["cof"] = "1.0"; (d3 / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d3, rep, recompute=False)
+    assert any("at least one preset" in e for e in rep.errors), rep.errors

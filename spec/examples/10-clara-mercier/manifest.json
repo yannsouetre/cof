@@ -473,11 +473,26 @@
     "posture": {
       "variants": {
         "ps1": {
-          "kind": "openpose",
-          "label": "Poses préférées / favorite poses",
+          "kind": "photo",
+          "label": "Pose préférée 1 / favorite pose 1",
+          "use": "pose-only",
           "images": [
-            "a-posture-ps1-2-05-mr0d",
-            "a-posture-ps1-2-08-zjzt",
+            "a-posture-ps1-2-05-mr0d"
+          ]
+        },
+        "ps2": {
+          "kind": "photo",
+          "label": "Pose préférée 2 / favorite pose 2",
+          "use": "pose-only",
+          "images": [
+            "a-posture-ps1-2-08-zjzt"
+          ]
+        },
+        "ps3": {
+          "kind": "photo",
+          "label": "Pose préférée 3 / favorite pose 3",
+          "use": "pose-only",
+          "images": [
             "a-posture-ps1-2-04-drsa"
           ]
         }
@@ -580,7 +595,9 @@
           "v6"
         ],
         "posture": [
-          "ps1"
+          "ps1",
+          "ps2",
+          "ps3"
         ],
         "motion": [
           "m1"

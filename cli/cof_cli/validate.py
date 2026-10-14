@@ -19,7 +19,10 @@ from .model import AGE_REQUIRED_KINDS, extends_cycle, garments, ADULT, implicit_
 from .tokens import count as count_tokens, tokenizer_name
 
 PROMPT_FIELDS = ("description", "personality", "scenario", "first_mes", "mes_example", "system_prompt", "post_history_instructions")
-EXEC_EXT = {".js", ".lua", ".py", ".wasm", ".exe", ".sh", ".bat", ".ps1"}
+EXEC_EXT = {".js", ".mjs", ".lua", ".py", ".wasm", ".exe", ".com", ".msi", ".scr", ".dll", ".so", ".dylib", ".jar", ".apk",
+            ".sh", ".bash", ".bat", ".cmd", ".ps1", ".vbs", ".applescript"}          # executable content (SPEC § 9.3)
+ACTIVE_WEB = {".svg", ".html", ".htm", ".xhtml"}                                # executable only if they carry script
+DAZ_SCRIPTS = (".dsa", ".dse")                                                  # run inside Daz Studio: flagged, not refused
 PICKLE_EXT = {".pkl", ".pickle", ".ckpt", ".pt", ".pth"}          # never allowed: loading them runs arbitrary code
 ENGINE_EXT = {".safetensors", ".npz", ".npy", ".json", ".onnx", ".index"}
 
@@ -133,10 +136,17 @@ def _schema_msg(e) -> str:
     return e.message if len(e.message) <= 300 else e.message[:300] + "…"
 
 
-def validate_manifest(manifest: dict, rep: Report) -> None:
+def validate_manifest(manifest: dict, rep: Report, newer: bool = False) -> None:
+    """newer = the file declares a later 1.x minor: 1.x only ADDS enum values and fields, so an unknown enum value or
+    property is a warning there, never a reason to refuse the file (SPEC § 12)."""
     for e in sorted(manifest_validator().iter_errors(manifest), key=lambda e: list(e.path)):
         loc = "/".join(str(p) for p in e.path) or "(root)"
-        rep.errors.append(f"manifest.json [{loc}]: {_schema_msg(e)}")
+        if newer and (e.validator == "enum" or (e.validator == "additionalProperties")):
+            rep.warnings.append(f"manifest.json [{loc}]: {_schema_msg(e)} (value or field from a later 1.x version — kept, not checked)")
+        elif e.validator == "required" and "'presets'" in e.message:
+            rep.errors.append(f"manifest.json [{loc}]: {_schema_msg(e)} — a file declares at least one preset (`cof migrate` adds 'default')")
+        else:
+            rep.errors.append(f"manifest.json [{loc}]: {_schema_msg(e)}")
 
 
 def validate_card(card: dict, rep: Report, lang: str, where: str) -> dict:
@@ -191,9 +201,10 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
     if ver in ("0.2", "0.3", "0.4", "0.5"):
         rep.errors.append(f"manifest v{ver}: run `cof migrate` (format 1.x expected)")
         return manifest
-    if re.fullmatch(r"1\.\d+", ver) and int(ver.split(".")[1]) > int(SPEC_VERSION.split(".")[1]):
+    newer = bool(re.fullmatch(r"1\.\d+", ver) and int(ver.split(".")[1]) > int(SPEC_VERSION.split(".")[1]))
+    if newer:
         rep.warnings.append(f"manifest v{ver} is newer than this validator ({SPEC_VERSION}): unknown optional fields are preserved, not checked")
-    validate_manifest(manifest, rep)
+    validate_manifest(manifest, rep, newer)
     if rep.errors:
         return manifest
 
@@ -226,6 +237,27 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
             scope = (((ident or {}).get("consent") or (manifest.get("rights") or {}).get("consent")) or {}).get("scope") or []
             if perms.get("allowVoiceCloning") and "voice-synthesis" not in scope:
                 rep.errors.append(f"{'identities.' + iid if iid else 'rights'}: allowVoiceCloning is true for a real person but the consent scope does not include 'voice-synthesis'")
+            who = 'identities.' + iid if iid else 'rights'
+            need: dict[str, list[str]] = {}
+            for cat, e in (manifest.get("elements") or {}).items():
+                for vid in ((e or {}).get("variants") or {}):
+                    if ids and variant_owner(manifest, cat, vid) != iid:
+                        continue
+                    rv = resolve_variant(manifest, cat, vid) or {}
+                    k = rv.get("kind")
+                    sc = ("intimate" if (cat, k) == ("appearance", "intimate") else
+                          "likeness-image" if cat == "identity_weights" or (cat == "appearance" and k in ("face", "body", "character-sheet", "reference-set", "hair")) else
+                          "likeness-3d" if cat == "volume3d" and k not in ("environment", "other") and not is_neutral(cat, rv) else
+                          "voice-synthesis" if cat == "voice" and k in ("samples", "embedding") else
+                          "conversational-persona" if cat == "personality" or (cat == "files" and k == "memory") else
+                          "motion-capture" if cat == "motion" and k in ("clips", "video") and not is_neutral(cat, rv) else None)
+                    if sc and sc not in scope:
+                        need.setdefault(sc, []).append(f"{cat}.{vid}")
+            for sc, where in need.items():
+                msg = f"{who}: real person — {', '.join(where[:3])}{'…' if len(where) > 3 else ''} need(s) consent scope '{sc}'"
+                (rep.errors if sc in ("intimate",) or (sc == "conversational-persona" and any(w.startswith("files.") for w in where)) else rep.warnings).append(msg)
+            if (perms.get("allowTraining") or "none") != "none" and "training" not in scope:
+                rep.warnings.append(f"{who}: real person — allowTraining is {perms.get('allowTraining')} but the consent scope does not include 'training'")
 
     # asset ids unique, files present
     seen = set()
@@ -453,13 +485,11 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                 try:
                     import zipfile as _z
                     names = _z.ZipFile(ap).namelist()
-                    risky = [x for x in names if x.lower().endswith((".dsa", ".dse", ".exe", ".dll", ".bat", ".ps1", ".sh", ".py", ".js"))]
+                    risky = [x for x in names if x.lower().endswith(DAZ_SCRIPTS)]
                     if risky:
-                        rep.warnings.append(f"{w}: archive {ap.name} contains {len(risky)} script(s) or executable(s) (e.g. {risky[0]}) — Daz scripts (.dsa/.dse) run inside Daz Studio: only open trusted archives")
+                        rep.warnings.append(f"{w}: archive {ap.name} contains {len(risky)} Daz script(s) (e.g. {risky[0]}) — they run inside Daz Studio: only open trusted archives")
                 except Exception:
                     rep.errors.append(f"{w}: unreadable archive {ap.name}")
-            elif ap.suffix.lower() == ".rar":
-                rep.warnings.append(f"{w}: RAR archive {ap.name} not inspected by the validator — prefer .zip, or only open trusted archives")
             if str(a.get("license", "")).startswith("LicenseRef-Daz") and _perms_of(manifest, "volume3d", vid).get("allowRedistribution"):
                 rep.warnings.append(f"{w}: {ap.name} is under a Daz licence (Store product) while allowRedistribution = true — such a .cof must not be shared")
         rep.warnings.append(f"{w}: Daz licence — the standard licence covers renders, not redistribution of Store 3D files (an Interactive License is required); only embed your own files (preset or pose .duf, morphs you made)")
@@ -560,6 +590,23 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
             rep.errors.append(f"pickle file refused: {rel} — loading it runs code; convert to .safetensors (or numeric .npz)")
         elif pth.suffix.lower() in EXEC_EXT and declared == "none":
             rep.errors.append(f"undeclared executable content: {rel} — declare container.executableContent: \"scripts\" or remove the file")
+        elif pth.suffix.lower() in ACTIVE_WEB and declared == "none" and re.search(rb"<script|\son[a-z]+\s*=|javascript:", pth.read_bytes()[:2_000_000], re.I):
+            rep.errors.append(f"undeclared executable content: {rel} carries script (<script>, on…= handler or javascript: URL) — remove it or declare container.executableContent")
+        elif pth.suffix.lower() == ".zip":
+            import zipfile as _z
+            try:
+                names = _z.ZipFile(pth).namelist()
+            except Exception:
+                rep.errors.append(f"unreadable archive: {rel}")
+                names = []
+            pk = [x for x in names if Path(x).suffix.lower() in PICKLE_EXT]
+            ex = [x for x in names if Path(x).suffix.lower() in EXEC_EXT]
+            if pk:
+                rep.errors.append(f"pickle file refused inside archive {rel}: {pk[0]}{f' (+{len(pk) - 1})' if len(pk) > 1 else ''}")
+            if ex and declared == "none":
+                rep.errors.append(f"undeclared executable content inside archive {rel}: {ex[0]}{f' (+{len(ex) - 1})' if len(ex) > 1 else ''} — remove it or declare container.executableContent")
+        elif pth.suffix.lower() in (".rar", ".7z"):
+            rep.warnings.append(f"archive {rel} not inspected by the validator (only .zip is) — prefer .zip, or only open trusted archives")
         elif pth.suffix.lower() == ".safetensors" and isinstance(err := _safetensors_header(pth), str):
             rep.errors.append(f"invalid safetensors file: {rel} — {err}")
         elif pth.suffix.lower() == ".npy" and _npy_has_objects(pth.read_bytes()[:4096]):
