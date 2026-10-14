@@ -10,7 +10,7 @@ COF (Character Open File) is an open file format for AI characters: a `.cof` is 
 - **Elements → variants → presets.** A preset is a ready-to-use combination ("Clara, 29, stage outfit, English voice"). It **applies** a default look and **offers** compatible alternatives (other outfits, accessories) that a richer reader can swap in. Tags organise presets on facets (language, age, style), and switching one facet keeps the others (`en-12` → `fr-12`).
 - **Several characters per file**, each a logical container with its own elements, presets, default preset and rights. Only neutral elements (places, clothes, poses, skills) may share a file between characters; a face or a voice never does.
 - **Rights travel with the character.** VRM-style permissions extended for AI (voice cloning, training, impersonation, AI disclosure), per character and per preset; a consent record whose scopes must match what the file contains when a real person is depicted; provenance and synthetic-content labelling per asset.
-- **Age is a property of the representation, checked per preset.** A file can hold an adult preset and a childhood preset; intimate content is opt-in, isolated in its own files, never loaded by default, and impossible in any preset that touches a representation under 18. Before the freeze, a blind review by another model tried to get around these rules; the five ways it found are closed and covered by the negative test corpus.
+- **Age is a property of the representation, checked per preset.** A file can hold an adult preset and a childhood preset; intimate content is opt-in, isolated in its own files, never loaded by default, and impossible in any preset that touches a representation under 18. Before the freeze, a blind review by another model tried to get around these rules; the seven ways it found over two passes are closed and covered by the negative test corpus.
 - **Safe by construction.** No executable content unless declared, no pickles (also inside archives), `.safetensors` headers checked, ZIP paths restricted, nothing encrypted or hidden.
 - **Embrace, don't replace.** A `.cof` contains a valid Character Card V3 and exports to a `ccv3` PNG card, `SOUL.md` / `IDENTITY.md` and an agent workspace.
 
@@ -24,7 +24,7 @@ COF (Character Open File) is an open file format for AI characters: a `.cof` is 
 
 - Specification: `spec/SPEC.md` (English) and `spec/SPEC.fr.md` (French), JSON Schemas (draft 2020-12) in `spec/schemas/`, published at `https://yannsouetre.github.io/cof/schemas/1.0/`.
 - `docs/IMPLEMENTING.md`: reader algorithm, simple and advanced reader profiles, per-category mappings.
-- Test vectors: 11 conformant examples in `spec/examples/` and 36 negative files in `tests/invalid/` (one rule violated per file, with the rule and the spec section).
+- Test vectors: 11 conformant examples in `spec/examples/` and 38 negative files in `tests/invalid/` (one rule violated per file, with the rule and the spec section).
 - Compatibility promise: 1.x versions only add optional fields and enumeration values; a 1.0 validator warns on what it does not know and never refuses a later 1.x file for it.
 
 ## Known limits of 1.0

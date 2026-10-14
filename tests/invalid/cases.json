@@ -140,6 +140,18 @@
       "expect": "manifest.thumbnail"
     },
     {
+      "file": "age-unknown-unit.cof",
+      "rule": "an age whose unit is not understood is unknown and never counts as adult",
+      "spec": "§ 2.2",
+      "expect": "intimate variant combined"
+    },
+    {
+      "file": "nested-archive-pickle.cof",
+      "rule": "archives are inspected with their nested archives (pickles refused at any depth)",
+      "spec": "§ 9.3",
+      "expect": "pickle file refused inside archive"
+    },
+    {
       "file": "weights-without-base-model.cof",
       "rule": "identity weights declare their base model",
       "spec": "§ 4.6",

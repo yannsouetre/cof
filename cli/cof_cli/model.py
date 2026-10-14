@@ -319,7 +319,10 @@ def _age_value(a) -> float | None:
     """Age in YEARS (every comparison is made in years: `unit: months` is divided by 12)."""
     if not (isinstance(a, dict) and isinstance(a.get("value"), (int, float)) and not isinstance(a.get("value"), bool)):
         return None
-    return a["value"] / 12 if a.get("unit") == "months" else a["value"]
+    u = a.get("unit")
+    if u not in (None, "years", "months"):
+        return 0.0                      # unknown unit (e.g. from a later 1.x): an unknown age never counts as adult
+    return a["value"] / 12 if u == "months" else a["value"]
 
 
 def preset_age_override(manifest: dict, pid: str | None):

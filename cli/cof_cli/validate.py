@@ -1,6 +1,7 @@
 """Validation (v0.3): schema + structure + semantic rules + KPI recomputation (per preset)."""
 from __future__ import annotations
 
+import io
 import json
 import re
 import tempfile
@@ -43,6 +44,42 @@ def _is_pickle(path: Path) -> bool:
         except Exception:
             return False
     return False
+
+
+ARCHIVE_DEPTH = 3
+
+
+def _archive_names(path: Path, rel: str, rep: "Report"):
+    """Entry names of a .zip, nested .zip archives included (detected by extension or by magic), up to ARCHIVE_DEPTH
+    levels. Returns (names as 'outer.zip!inner.zip!file', entries left uninspected because too deep)."""
+    import zipfile as _z
+    names, deep = [], []
+    def walk(zf, prefix, depth):
+        for n in zf.namelist():
+            names.append(prefix + n)
+            if n.endswith("/"):
+                continue
+            try:
+                with zf.open(n) as fh:
+                    head = fh.read(4)
+            except Exception:
+                continue
+            if head == b"PK\x03\x04" or n.lower().endswith(".zip"):
+                if depth >= ARCHIVE_DEPTH:
+                    deep.append(prefix + n); continue
+                try:
+                    with _z.ZipFile(io.BytesIO(zf.read(n))) as inner:
+                        walk(inner, prefix + n + "!", depth + 1)
+                except Exception:
+                    deep.append(prefix + n)
+            elif n.lower().endswith((".rar", ".7z")):
+                deep.append(prefix + n)
+    try:
+        with _z.ZipFile(path) as zf:
+            walk(zf, "", 1)
+    except Exception:
+        rep.errors.append(f"unreadable archive: {rel}")
+    return names, deep
 
 
 def _safetensors_header(path: Path):
@@ -286,6 +323,9 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
             where = f"elements.{etype}.{vid}"
             if v.get("derives_from") and v["derives_from"] not in e["variants"]:
                 rep.errors.append(f"{where}: unknown derives_from {v['derives_from']}")
+            au = (v.get("age") or {}).get("unit") if isinstance(v.get("age"), dict) else None
+            if au not in (None, "years", "months"):
+                rep.warnings.append(f"{where}: age unit '{au}' is not understood — the age counts as unknown, never as adult")
             seen_df, cur = set(), vid
             while cur and cur in e["variants"]:
                 if cur in seen_df:
@@ -604,12 +644,9 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
         elif pth.suffix.lower() in ACTIVE_WEB and declared == "none" and re.search(rb"<script|\son[a-z]+\s*=|javascript:", pth.read_bytes()[:2_000_000], re.I):
             rep.errors.append(f"undeclared executable content: {rel} carries script (<script>, on…= handler or javascript: URL) — remove it or declare container.executableContent")
         elif pth.suffix.lower() == ".zip":
-            import zipfile as _z
-            try:
-                names = _z.ZipFile(pth).namelist()
-            except Exception:
-                rep.errors.append(f"unreadable archive: {rel}")
-                names = []
+            names, deep = _archive_names(pth, rel, rep)
+            if deep:
+                rep.warnings.append(f"archive {rel} nests archives deeper than {ARCHIVE_DEPTH} levels ({deep[0]}) — not inspected; only open trusted archives")
             pk = [x for x in names if Path(x).suffix.lower() in PICKLE_EXT]
             ex = [x for x in names if Path(x).suffix.lower() in EXEC_EXT]
             if pk:

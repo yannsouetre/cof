@@ -51,3 +51,16 @@
 | F-43 | MINOR | mimetype local header "no extra field" only in IMPLEMENTING | 📝 normative in § 1.1 |
 | F-44 | MINOR | a voice perceived as a child in a preset with intimate content | ✅ warning |
 | F-45 | EDITORIAL | debris: v0.3 headings, § 11.4 before § 11.3, `pt-unsafe-not-allowed` hack, stale `tags.auto`, adult dialogue in the 14-year-old card | ✅ headings renamed, sections reordered, `format: const safetensors`, `tags.auto` recomputed, childhood dialogue rewritten (examples 07 / 09; 09's childhood face aligned on its card: 14) |
+
+## Second pass on rc3 (same reviewer)
+
+F-1 to F-5 re-probed and confirmed closed, plus new probes (inherited images through `derives_from`, intimate only in `alternatives`, uppercase extensions and SVG handlers, pickles one level inside a zip): all caught. All 11 examples valid, every negative case fails for its expected reason, EN / FR aligned. Two more problems found, both fixed the same day:
+
+| # | Severity | Finding | Status |
+|---|---|---|---|
+| R-1 | MAJOR | an unknown age `unit` in a later-minor file (`weeks`) was read as years — a bypass of F-3 through the § 12 relaxation | ✅ an age with a unit the validator does not understand is an unknown age, never adult (CLI and builder); negative case `age-unknown-unit` |
+| R-2 | MAJOR | a zip nested in a zip was neither inspected nor warned | ✅ nested archives inspected up to three levels (by extension or magic), deeper nesting warned; negative case `nested-archive-pickle` |
+| R-3 | MINOR | § 12 vs validator on an unknown `kind` | 📝 an unknown `kind` stays an error in every version (a kind may carry safety rules) |
+| R-4 | EDITORIAL | example 09 label still said 12 years | ✅ fixed |
+
+Reviewer's conclusion: *"With items 1 and 2 closed, the age/intimate rule set holds against every probe I could construct, and I consider the structure freezable."*

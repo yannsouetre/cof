@@ -129,6 +129,21 @@ def _(d): m = load(d); m["presets"]["default"]["extends"] = "young"; save(d, m)
 @case("thumbnail-missing", "manifest.thumbnail names an existing file", "§ 1.1", "manifest.thumbnail")
 def _(d): m = load(d); m["thumbnail"] = "Thumbnails/missing.png"; save(d, m)
 
+@case("age-unknown-unit", "an age whose unit is not understood is unknown and never counts as adult", "§ 2.2", "intimate variant combined")
+def _(d): m = load(d); m["cof"] = "1.3"; V(m, "appearance")["f-young"]["age"] = {"value": 500, "unit": "weeks", "basis": "canonical"}; m["presets"]["young"]["slots"]["appearance"] = ["f-young", "i1"]; save(d, m)
+
+@case("nested-archive-pickle", "archives are inspected with their nested archives (pickles refused at any depth)", "§ 9.3", "pickle file refused inside archive")
+def _(d):
+    import io as _io
+    m = load(d); inner = _io.BytesIO()
+    with zipfile.ZipFile(inner, "w") as z:
+        z.writestr("model.pkl", b"\x80\x02}q\x00.")
+    p = d / "elements/files/x1/bundle.zip"; p.parent.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(p, "w") as z:
+        z.writestr("inner.dat", inner.getvalue())
+    m["assets"].append({"id": "a-bundle", "path": "elements/files/x1/bundle.zip", "role": "archive", "mediaType": "application/zip", "license": "CC-BY-4.0"})
+    m["elements"]["files"] = {"variants": {"x1": {"kind": "other", "files": ["a-bundle"]}}}; refresh_asset_index(d, m); save(d, m)
+
 @case("weights-without-base-model", "identity weights declare their base model", "§ 4.6", "base_model")
 def _(d):
     m = load(d)

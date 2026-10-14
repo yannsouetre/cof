@@ -35,6 +35,8 @@ validator's error (`expect`) — other implementations only need to reject the f
 | `intimate-age-any-morphology.cof` | with an intimate element, every body representation of the preset carries an age, whatever the morphology class |
 | `extends-cycle.cof` | preset inheritance has no cycle |
 | `thumbnail-missing.cof` | `manifest.thumbnail` names an existing file |
+| `age-unknown-unit.cof` | an age whose unit is not understood never counts as adult |
+| `nested-archive-pickle.cof` | archives are inspected with their nested archives |
 | `undeclared-script.cof` | scripts require `container.executableContent` |
 | `obj-not-self-contained.cof` | 3D variants are self-contained (unless `self_contained: false`) |
 | `tag-unknown-preset.cof` | a preset tag lists existing presets |
