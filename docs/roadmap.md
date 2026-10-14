@@ -53,7 +53,7 @@ La structure 1.0 est **gelée le 14 octobre** (1.0.0rc3) après une relecture à
 **Idées pour plus tard (Yann, 14 oct.)** — ajouts optionnels, par RFC, sans casser la 1.0 :
 - *Presets inter-personnages* (danses, duos, trios) : une **scène** liste des rôles (place, rôle, personnage choisi ou « au choix ») et ne porte que des éléments **neutres** — poses, mouvements, lieux, accessoires —, jamais un visage, un corps ni une voix : chaque rôle reprend le preset de son personnage. Les règles d'âge s'appliquent à la scène entière (le plus jeune des presets choisis).
 - *Prompt de preset* : un texte qui guide l'IA d'inférence sur l'usage des éléments combinés (« la guitare se porte en bandoulière », « l'environnement sert d'arrière-plan, pas de décor à décrire ») et des variantes proposées. Distinct de la personnalité, qui dit *qui* est le personnage ; le prompt de preset dit *comment* utiliser ce preset.
-- *Consentement recommandé* (builder) : fenêtre d'incitation quand une personne réelle est déclarée sans consentement — recommander, jamais imposer (cf. point 1 ci-dessus).
+- ✅ *Consentement recommandé* (builder 0.11.4, 14 oct.) : fenêtre d'incitation quand une personne réelle est déclarée — recommander, jamais imposer (cf. point 1 ci-dessus).
 
 **Règle de pilotage** : si fin novembre aucune intégration tierce n'existe, le projet écrit lui-même l'extension SillyTavern et le nœud ComfyUI, puis les propose en PR. Si la galerie ne reçoit aucun personnage tiers fin mars, priorité à l'outillage de création (builder, pipeline) plutôt qu'à la communication.
 

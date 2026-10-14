@@ -2,6 +2,7 @@
 
 ## 1.0.0rc3 — 2026-10-14 — structure freeze, blind review
 
+- **Builder 0.11.4**: declaring a real person opens a window that **recommends** recording consent (and leads to the consent form) without imposing it; the consent scope list gains `intimate`.
 - **COF Explorer** (`viewer/`, <https://yannsouetre.github.io/cof/viewer/>): read-only page that opens a `.cof` in the browser — characters, presets by facet with one-click switching (language, age, style), primary image, applied and offered elements, personality, voice samples, poses and motion, skills, effective rights. Intimate elements are never displayed. Two examples load with one click (Clara, Léa & Martien).
 
 **Structure frozen on 14 October 2026.** From here to 1.0.0, only fixes; open decisions are listed at the top of `docs/roadmap.md`.
