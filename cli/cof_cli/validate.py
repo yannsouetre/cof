@@ -16,7 +16,7 @@ from jsonschema import Draft202012Validator
 from . import SPEC_VERSION, __version__
 from .completeness import compute as compute_completeness
 from .container import ContainerError, inspect, read_manifest, unpack, verify_hashes
-from .model import AGE_REQUIRED_KINDS, extends_cycle, garments, ADULT, implicit_resolved, AGELESS_KINDS, AGE_CATEGORIES, CATEGORIES, KINDS, MULTI_KINDS, _age_value, age_required, asset_index, default_preset_id, first, lowest_age, preset_age, preset_identity, preset_ids, region_conflicts, resolve_preset_slots, resolve_variant, resolved, single_kind_violations, by_kind, preset_alternatives, preset_primary_image, resolved_all, backstage, variant_owner, preset_owner, is_likeness, is_neutral, neutrality, effective_permissions, identity_rights, variant_asset_ids
+from .model import HUMAN_FORM, AGE_REQUIRED_KINDS, extends_cycle, garments, ADULT, implicit_resolved, AGELESS_KINDS, AGE_CATEGORIES, CATEGORIES, KINDS, MULTI_KINDS, _age_value, age_required, asset_index, default_preset_id, first, lowest_age, preset_age, preset_identity, preset_ids, region_conflicts, resolve_preset_slots, resolve_variant, resolved, single_kind_violations, by_kind, preset_alternatives, preset_primary_image, resolved_all, backstage, variant_owner, preset_owner, is_likeness, is_neutral, neutrality, effective_permissions, identity_rights, variant_asset_ids
 from .tokens import count as count_tokens, tokenizer_name
 
 PROMPT_FIELDS = ("description", "personality", "scenario", "first_mes", "mes_example", "system_prompt", "post_history_instructions")
@@ -794,13 +794,16 @@ def _duplicate_images(src: Path, manifest: dict, rep: "Report") -> None:
 
 
 def auto_tags(manifest: dict) -> list[str]:
-    """tags.auto, computed (same rules as the builder): morphology, age buckets, languages, contents, size of the cast."""
+    """tags.auto, computed (same rules as the builder): morphology, age buckets (human-shaped characters only), languages, contents, size of the cast."""
     bucket = lambda a: "age-unknown" if a is None else "child" if a < 13 else "teen" if a < 18 else "elder" if a >= 65 else "adult"
     P = manifest.get("presets") or {}
     E = manifest.get("elements") or {}
     ids = manifest.get("identities") or {}
     at = {((i or {}).get("morphology") or {}).get("class") for i in ids.values()} | {(manifest.get("morphology") or {}).get("class")}
-    ages = [preset_age(manifest, p) for p in P]
+    def form(p):                          # age tags only for human-shaped characters (a robot "3 years old" is no child)
+        I = ids.get(preset_owner(manifest, p)) or manifest
+        return ((I.get("morphology") or manifest.get("morphology") or {}).get("class") or "human") in HUMAN_FORM
+    ages = [preset_age(manifest, p) for p in P if form(p)]
     at |= {bucket(a) for a in ages} | set(manifest.get("languages") or [])
     if any(a is not None and a < 18 for a in ages):
         at.add("has-minor-preset")

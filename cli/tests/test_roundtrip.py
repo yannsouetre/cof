@@ -803,3 +803,12 @@ def test_adult_fictional_nudity_is_allowed(tmp_path):
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d, rep, recompute=False)
     assert rep.ok, rep.errors
+
+
+def test_age_tags_only_for_human_shapes():
+    """Age buckets are tagged for human-shaped characters only: the robot of example 05 ("3 years old") is no child."""
+    from cof_cli.validate import auto_tags
+    t = auto_tags(json.loads((ROOT / "spec/examples/05-robot/manifest.json").read_text("utf-8")))
+    assert "child" not in t and "has-minor-preset" not in t and "mechanical" in t
+    t2 = auto_tags(json.loads((ROOT / "spec/examples/02-ecoliere/manifest.json").read_text("utf-8")))
+    assert "child" in t2

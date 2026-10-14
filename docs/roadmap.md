@@ -9,7 +9,7 @@ La structure 1.0 est **gelée le 14 octobre** (1.0.0rc3) après une relecture à
 | 1 bis | Une personne réelle **sans aucun** consentement est-elle possible ? | ✅ **Tranché (14 oct.)** : oui — avertissement, jamais un blocage. L'usage personnel ou la satire d'une personnalité publique restent possibles dans le respect des réglementations locales ; personne privée : consentement requis sur le principe ; partage public et surtout vente : consentement vivement recommandé. Le créateur est responsable (« nul n'est censé ignorer la loi ») ; le format ne remplace pas la loi. **Deux règles restent dures** : les mineurs, et le contenu intime d'une personne réelle sans son consentement explicite (portée `intimate`). Fait : spec § 9.2, CLI, builder 0.11.5 (fenêtre d'avertissement), nœuds ComfyUI, corpus de test. | Pour 1.1 : un champ optionnel `public_figure` permettrait d'adapter l'avertissement (personnalité publique / personne privée). |
 | 1 ter | Nudité sans parties génitales et contenu intime : même règle ? | ✅ **Tranché (14 oct.)** : non. `intimate` = parties génitales visibles ou acte sexuel, seul endroit autorisé. La nudité sans parties génitales est possible ailleurs, déclarée par `nudity: true` et confirmée par l'auteur ; **jamais sous 18 ans** ; personne réelle (publique ou privée) : consentement explicite obligatoire (la satire n'en demande pas, la nudité si). Contrôle IA intransigeant sur les parties génitales et les mineurs, souple (confirmation) sur la nudité. | — |
 | 3 | Un preset est désormais **obligatoire** (le « preset implicite » n'était pas déterministe). | Fait ; `cof migrate` ajoute `default`. Tous les outils en écrivaient déjà un. | Garder. |
-| 4 | Étiquettes automatiques d'âge (`child`, `teen`…) pour un robot ou un être non humain. | Calculées pour toutes les classes (le robot de l'exemple 05, « 3 ans », reçoit `child`). | Ne les calculer que pour les classes de forme humaine (correctif mineur, `tags.auto` est recalculé). |
+| 4 | Étiquettes automatiques d'âge (`child`, `teen`…) pour un robot ou un être non humain. | ✅ **Tranché (14 oct.)** : seulement pour les formes humaines (`human`, `humanoid`, `anthropomorphic-animal`). Fait : CLI, builder, exemple 05 ; les règles de sécurité sur l'âge, elles, restent valables pour toutes les classes. | — |
 | 5 | Empreintes des sous-fichiers JSON (aujourd'hui seulement le CRC du ZIP). | Documenté. | Ajouter en 1.1 un index optionnel `subfiles` (chemin → sha256) — additif. |
 | 6 | Nom du champ `age_override`. | Gardé, défini (« l'âge que le preset déclare pour lui-même »). | Garder : renommer coûterait une migration pour un gain de lisibilité faible. |
 
@@ -137,6 +137,8 @@ Et une **innovation à part** qui mérite sa propre visibilité : **COF-Vector**
 | `cof-examples` (optionnel) | Personnages d'exemple lourds (VRM, voix) en Git LFS / HF | CC-BY-4.0 |
 
 ## Suivi de la phase 0 (→ 31 octobre 2026) — 12 étapes
+
+**Clôture décidée par Yann le 14 octobre** : la phase 0 se termine avec la publication de la v1.0.0 (sam. 17 oct.). Les étapes 6 et 8 passent en 1.1, l'étape 9 en 1.2, et le reste de l'étape 11 (VRM + clips, entreprise, consentement complet) en 1.1.
 
 | # | Étape | État |
 |---|---|---|

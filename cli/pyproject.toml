@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,7 +7,7 @@ name = "cof-cli"
 version = "1.0.0rc3"
 description = "COF — Character Open File: validate, pack, unpack and convert .cof character containers"
 readme = "README.md"
-license = { text = "MIT" }
+license = "MIT"
 authors = [{ name = "Yann Souetre" }]
 requires-python = ">=3.11"
 dependencies = ["jsonschema>=4.20"]

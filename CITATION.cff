@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use or cite COF, please cite it as below."
+title: "COF — Character Open File"
+abstract: "An open file format (a ZIP container) that bundles everything that defines an AI character — personality, appearance, voice, 3D, motion, agent files — together with its rights, consent and provenance."
+type: software
+authors:
+  - family-names: Souetre
+    given-names: Yann
+repository-code: "https://github.com/yannsouetre/cof"
+url: "https://yannsouetre.github.io/cof/"
+license: CC-BY-4.0
+keywords:
+  - file format
+  - AI characters
+  - character card
+  - consent
+  - provenance
+  - ComfyUI
+version: 1.0.0rc3
+date-released: "2026-10-14"

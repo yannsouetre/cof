@@ -1,0 +1,9 @@
+{
+  "title": "COF — Character Open File",
+  "description": "An open file format (a ZIP container) that bundles everything that defines an AI character — personality, appearance, voice, 3D, motion, agent files — together with its rights, consent and provenance. Specification (CC BY 4.0), schemas and vocabularies (CC0), reference tools (MIT).",
+  "upload_type": "software",
+  "creators": [{"name": "Souetre, Yann"}],
+  "license": "CC-BY-4.0",
+  "keywords": ["file format", "AI characters", "character card", "consent", "provenance"],
+  "related_identifiers": [{"identifier": "https://github.com/yannsouetre/cof", "relation": "isSupplementTo", "scheme": "url"}]
+}
