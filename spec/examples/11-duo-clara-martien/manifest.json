@@ -25,7 +25,7 @@
     },
     "martien": {
       "name": "Martien",
-      "summary": "Humanoïde extraterrestre à la peau verte, grands yeux noirs, oreilles pointues, combinaison argentée.",
+      "summary": "Humanoïde extraterrestre à la peau verte, grands yeux noirs, oreilles pointues, combinaison argentée. / Green-skinned humanoid alien, large black eyes, pointed ears, silver suit.",
       "fictional": true,
       "morphology": {
         "class": "humanoid",
@@ -358,7 +358,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc3",
-        "computed_at": "2026-10-14T18:21:30Z"
+        "computed_at": "2026-10-14T20:46:25Z"
       }
     },
     "fr": {
@@ -400,7 +400,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc3",
-        "computed_at": "2026-10-14T18:21:30Z"
+        "computed_at": "2026-10-14T20:46:25Z"
       }
     },
     "m1-default": {
@@ -431,7 +431,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.0.0rc3",
-        "computed_at": "2026-10-14T18:21:30Z"
+        "computed_at": "2026-10-14T20:46:25Z"
       },
       "age_override": {
         "value": 40,
@@ -1053,7 +1053,7 @@
   },
   "provenance": {
     "created": "2026-10-11T10:32:23Z",
-    "modified": "2026-10-14T18:21:30Z",
+    "modified": "2026-10-14T20:46:25Z",
     "generator": "cof-cli merge (example 11)",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/10-clara-mercier",
@@ -1132,7 +1132,7 @@
       "archive"
     ],
     "computed_by": "cof-cli/1.0.0rc3",
-    "computed_at": "2026-10-14T18:21:30Z"
+    "computed_at": "2026-10-14T20:46:25Z"
   },
   "coverage": {
     "elements": [
