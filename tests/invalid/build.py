@@ -3,7 +3,7 @@
     python tests/invalid/build.py        # regenerates tests/invalid/*.cof and cases.json
 
 Every `.cof` here MUST be rejected by a conformant validator. The base file (`_base.cof`, valid) is a
-shrunk copy of spec/examples/09-mixte-adulte-mineur: an adult preset with intimate content and a minor preset.
+shrunk copy of tests/fixtures/mixed-age: an adult preset with intimate content and a minor preset.
 """
 from __future__ import annotations
 import io, json, shutil, sys, tempfile, zipfile
@@ -16,7 +16,7 @@ from cof_cli.container import MIMETYPE, pack, refresh_asset_index  # noqa: E402
 
 def base(tmp: Path) -> Path:
     from PIL import Image
-    d = tmp / "base"; shutil.copytree(ROOT / "spec/examples/09-mixte-adulte-mineur", d)
+    d = tmp / "base"; shutil.copytree(ROOT / "tests/fixtures/mixed-age", d)
     for p in d.rglob("*"):
         if p.suffix.lower() in (".jpg", ".jpeg", ".png", ".webp"):
             im = Image.open(p).convert("RGB"); im.thumbnail((32, 32)); im.save(p, "JPEG" if p.suffix.lower() in (".jpg", ".jpeg") else "PNG")

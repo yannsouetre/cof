@@ -1,0 +1,33 @@
+{
+  "spec": "chara_card_v3",
+  "spec_version": "3.0",
+  "data": {
+    "name": "Test character",
+    "nickname": "",
+    "description": "Test character at 14. Fictional placeholder.",
+    "personality": "Neutral placeholder personality.",
+    "scenario": "Placeholder scenario.",
+    "first_mes": "Hello.",
+    "mes_example": "<START>\n{{user}}: Hi.\n{{char}}: Hello.",
+    "creator_notes": "COF test fixture, not an example character.",
+    "system_prompt": "",
+    "post_history_instructions": "",
+    "alternate_greetings": [],
+    "tags": [
+      "test-fixture"
+    ],
+    "creator": "Yann Souetre",
+    "character_version": "1.0.0",
+    "extensions": {
+      "cof": {
+        "behavior": [],
+        "goals": [],
+        "fears": []
+      }
+    },
+    "source": [],
+    "group_only_greetings": [],
+    "creation_date": 1760000000,
+    "modification_date": 1760000000
+  }
+}

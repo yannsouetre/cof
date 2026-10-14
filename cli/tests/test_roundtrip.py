@@ -285,10 +285,10 @@ def test_subfile_schemas(tmp_path):
 
 
 def test_examples_agent_and_mixed():
-    """08: agent-runtime ready (skill + memory). 09: adult preset with intimate + minor preset without is valid;
+    """08: agent-runtime ready (skill + memory). Mixed-age fixture: adult preset with intimate + minor preset without is valid;
     moving the intimate variant into the minor preset is refused."""
-    for ex in ("08-agent-skills", "09-mixte-adulte-mineur"):
-        rep = Report(); validate_dir(ROOT / "spec" / "examples" / ex, rep, recompute=False)
+    for ex in ("spec/examples/08-agent-skills", "tests/fixtures/mixed-age"):
+        rep = Report(); validate_dir(ROOT / ex, rep, recompute=False)
         assert rep.ok, (ex, rep.errors)
     from cof_cli.completeness import compute_preset
     m8 = json.loads((ROOT / "spec/examples/08-agent-skills/manifest.json").read_text("utf-8"))
@@ -296,7 +296,7 @@ def test_examples_agent_and_mixed():
 
 
 def test_example_mixed_refuses_intimate_in_minor_preset(tmp_path):
-    d = tmp_path / "m"; shutil.copytree(ROOT / "spec/examples/09-mixte-adulte-mineur", d)
+    d = tmp_path / "m"; shutil.copytree(ROOT / "tests/fixtures/mixed-age", d)
     m = json.loads((d / "manifest.json").read_text("utf-8"))
     m["presets"]["young"]["slots"]["appearance"].append("i1")
     (d / "manifest.json").write_text(json.dumps(m), "utf-8")
@@ -690,7 +690,7 @@ def test_export_agent_no_intimate_voice_consent_auto_tags(tmp_path):
     assert done["skills"] == ["accessible-color-palette"] and (out / "skills/accessible-color-palette/SKILL.md").is_file()
     assert (out / "SOUL.md").read_text("utf-8").startswith("# SOUL.md — Clara Mercier") and (out / "COF.md").is_file()
     assert "Avatar: avatar." in (out / "IDENTITY.md").read_text("utf-8")
-    sfw = tmp_path / "sfw"; extract_presets(ROOT / "spec/examples/09-mixte-adulte-mineur", sfw, ["default"]); gone = strip_intimate(sfw)
+    sfw = tmp_path / "sfw"; extract_presets(ROOT / "tests/fixtures/mixed-age", sfw, ["default"]); gone = strip_intimate(sfw)
     m = json.loads((sfw / "manifest.json").read_text("utf-8"))
     assert gone == ["i1"] and "i1" not in m["elements"]["appearance"]["variants"] and m["rights"]["permissions"]["allowSexualUsage"] is False
     rep = Report(); validate_dir(sfw, rep); assert rep.ok, rep.errors
@@ -762,7 +762,7 @@ def test_freeze_rules_consent_exec_forward_compat(tmp_path):
     """Real person: intimate needs scope 'intimate' (error), likeness needs its scope (warning);
     scripts in SVG and executables inside archives are refused; a later 1.x enum value is a warning."""
     import zipfile as _z
-    d = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/09-mixte-adulte-mineur", d)
+    d = tmp_path / "c"; shutil.copytree(ROOT / "tests/fixtures/mixed-age", d)
     m = json.loads((d / "manifest.json").read_text("utf-8"))
     m["fictional"] = False
     for i in (m.get("identities") or {}).values():
@@ -796,7 +796,7 @@ def test_freeze_rules_consent_exec_forward_compat(tmp_path):
 
 def test_adult_fictional_nudity_is_allowed(tmp_path):
     """Nudity without genitals (variant flag `nudity`) is fine for an adult fictional character once flagged."""
-    d = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/09-mixte-adulte-mineur", d)
+    d = tmp_path / "c"; shutil.copytree(ROOT / "tests/fixtures/mixed-age", d)
     m = json.loads((d / "manifest.json").read_text("utf-8"))
     V = m["elements"]["appearance"]["variants"]
     V["b1"]["nudity"] = True; V["o1"]["nudity"] = True

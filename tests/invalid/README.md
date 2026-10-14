@@ -2,7 +2,7 @@
 
 Every `.cof` in this folder violates **one** rule of the specification and MUST be rejected by a conformant
 validator. `_base.cof` is the valid file they are derived from (a shrunk copy of
-`spec/examples/09-mixte-adulte-mineur`: an adult preset with intimate content and a minor preset).
+`tests/fixtures/mixed-age`: an adult preset with intimate content and a minor preset).
 
 `cases.json` lists, for each file, the rule broken, the spec section and a substring of the reference
 validator's error (`expect`) — other implementations only need to reject the file; their wording is free.

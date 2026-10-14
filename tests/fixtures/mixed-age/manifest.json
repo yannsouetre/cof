@@ -1,0 +1,519 @@
+{
+  "cof": "1.0",
+  "id": "01M4NK5NREMHCS1VQ8JKD7H4MF",
+  "name": "Test character",
+  "languages": [
+    "en",
+    "fr"
+  ],
+  "summary": "Test fixture, not an example: an adult preset with an opt-in intimate variant and a minor preset, to test the per-preset age rules (§ 9.4). Placeholder images only.",
+  "fictional": true,
+  "morphology": {
+    "class": "human",
+    "species": "human"
+  },
+  "tags": {
+    "auto": [
+      "adult",
+      "en",
+      "fr",
+      "has-minor-preset",
+      "has-weights",
+      "human",
+      "multi-preset",
+      "style-photo-realistic",
+      "teen"
+    ],
+    "manual": [
+      "test-fixture"
+    ],
+    "content": [
+      "nudity"
+    ],
+    "ip": {
+      "original": true,
+      "franchise": null,
+      "based_on": null
+    }
+  },
+  "elements": {
+    "personality": {
+      "variants": {
+        "p1": {
+          "kind": "card",
+          "label": "Test character (adult)",
+          "card": "elements/personality/p1/card.json",
+          "psyche": "elements/personality/p1/psyche.json",
+          "profiles": {
+            "summary": {
+              "tokens": 120,
+              "tokenizer": "heuristic-chars",
+              "blocks": [
+                "name",
+                "summary",
+                "psyche.core"
+              ]
+            },
+            "standard": {
+              "tokens": 420,
+              "tokenizer": "heuristic-chars",
+              "blocks": [
+                "card.description",
+                "card.personality",
+                "card.scenario",
+                "psyche"
+              ]
+            }
+          }
+        },
+        "p2": {
+          "kind": "card",
+          "label": "Test character at 14",
+          "derives_from": "p1",
+          "card": "elements/personality/p2/card.json"
+        }
+      }
+    },
+    "appearance": {
+      "variants": {
+        "f1": {
+          "kind": "face",
+          "label": "Face (placeholder)",
+          "style": "photo-realistic",
+          "images": [
+            "a-head-front-closeup",
+            "a-head-right-closeup",
+            "a-head-front"
+          ],
+          "age": {
+            "value": 34,
+            "unit": "years",
+            "basis": "declared"
+          }
+        },
+        "b1": {
+          "kind": "body",
+          "label": "Body (placeholder)",
+          "style": "photo-realistic",
+          "images": [
+            "a-body-front",
+            "a-body-left",
+            "a-body-back"
+          ],
+          "age": {
+            "value": 34,
+            "unit": "years",
+            "basis": "declared"
+          }
+        },
+        "o1": {
+          "kind": "clothing",
+          "garment": "full-outfit",
+          "label": "Outfit (placeholder)",
+          "spec": "elements/appearance/o1/outfit.json",
+          "images": [
+            "a-body-front",
+            "a-body-left",
+            "a-body-back"
+          ],
+          "style": "photo-realistic"
+        },
+        "i1": {
+          "kind": "intimate",
+          "label": "Intimate (placeholder image, no nudity)",
+          "images": [
+            "a-i1-placeholder"
+          ],
+          "age": {
+            "value": 34,
+            "unit": "years",
+            "basis": "declared"
+          }
+        },
+        "f-young": {
+          "kind": "face",
+          "label": "Face at 14 (placeholder)",
+          "images": [
+            "a-young-head-front"
+          ],
+          "age": {
+            "value": 14,
+            "unit": "years",
+            "basis": "canonical"
+          }
+        }
+      }
+    },
+    "identity_weights": {
+      "variants": {
+        "l1": {
+          "kind": "lora",
+          "label": "LoRA Flux (fictif)",
+          "spec": "elements/identity_weights/l1/weights.json",
+          "style": "photo-realistic",
+          "covers": [
+            "face",
+            "hair",
+            "body"
+          ],
+          "age": {
+            "value": 34,
+            "unit": "years",
+            "basis": "declared"
+          }
+        }
+      }
+    }
+  },
+  "presets": {
+    "default": {
+      "label": "Adult",
+      "style": "photo-realistic",
+      "slots": {
+        "personality": [
+          "p1"
+        ],
+        "appearance": [
+          "f1",
+          "b1",
+          "o1",
+          "i1"
+        ],
+        "identity_weights": [
+          "l1"
+        ]
+      },
+      "completeness": {
+        "score": 56,
+        "level": "C",
+        "layers": {
+          "identity": 100,
+          "personality": 90,
+          "appearance": 75,
+          "physique": 0,
+          "voice": 0,
+          "volume": 0,
+          "motion": 0,
+          "rights": 85
+        },
+        "targets_ready": [
+          "chat-text",
+          "agent-persona",
+          "image-video-gen",
+          "archive"
+        ],
+        "computed_by": "cof-cli/1.0.0rc3",
+        "computed_at": "2026-10-14T20:41:18Z"
+      },
+      "age_override": {
+        "value": 34,
+        "unit": "years",
+        "basis": "declared"
+      },
+      "permissions_override": {
+        "allowSexualUsage": true
+      }
+    },
+    "young": {
+      "label": "At 14",
+      "extends": "default",
+      "slots": {
+        "personality": [
+          "p2"
+        ],
+        "appearance": [
+          "f-young"
+        ],
+        "identity_weights": []
+      },
+      "completeness": {
+        "score": 46,
+        "level": "C",
+        "layers": {
+          "identity": 100,
+          "personality": 90,
+          "appearance": 25,
+          "physique": 0,
+          "voice": 0,
+          "volume": 0,
+          "motion": 0,
+          "rights": 85
+        },
+        "targets_ready": [
+          "chat-text",
+          "agent-persona",
+          "image-video-gen",
+          "archive"
+        ],
+        "computed_by": "cof-cli/1.0.0rc3",
+        "computed_at": "2026-10-14T20:41:18Z"
+      }
+    }
+  },
+  "default_preset": "default",
+  "priorities": {
+    "visual": [
+      "identity_weights",
+      "images",
+      "avatar",
+      "descriptive"
+    ],
+    "voice": [
+      "samples",
+      "described"
+    ],
+    "by_target": {
+      "game-3d": {
+        "visual": [
+          "avatar",
+          "images",
+          "identity_weights",
+          "descriptive"
+        ]
+      },
+      "chat-text": {
+        "visual": [
+          "descriptive",
+          "images"
+        ]
+      }
+    }
+  },
+  "mapping_vocabularies": {},
+  "assets": [
+    {
+      "path": "elements/appearance/b1/body.front.jpg",
+      "role": "view",
+      "subject": "body",
+      "angle": "front",
+      "framing": "full",
+      "mediaType": "image/jpeg",
+      "bytes": 42900,
+      "sha256": "23d650ab35f0d5f72868919f72b5e3de1441cdd0d48a77edc2284c8885d7b85b",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 2048,
+      "confidence": 0.9,
+      "id": "a-body-front",
+      "style": "photo-realistic"
+    },
+    {
+      "path": "elements/appearance/b1/body.left.jpg",
+      "role": "view",
+      "subject": "body",
+      "angle": "left",
+      "framing": "full",
+      "mediaType": "image/jpeg",
+      "bytes": 42900,
+      "sha256": "23d650ab35f0d5f72868919f72b5e3de1441cdd0d48a77edc2284c8885d7b85b",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 2048,
+      "confidence": 0.9,
+      "id": "a-body-left",
+      "style": "photo-realistic"
+    },
+    {
+      "path": "elements/appearance/b1/body.back.jpg",
+      "role": "view",
+      "subject": "body",
+      "angle": "back",
+      "framing": "full",
+      "mediaType": "image/jpeg",
+      "bytes": 42900,
+      "sha256": "23d650ab35f0d5f72868919f72b5e3de1441cdd0d48a77edc2284c8885d7b85b",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 2048,
+      "confidence": 0.6,
+      "id": "a-body-back",
+      "style": "photo-realistic"
+    },
+    {
+      "path": "elements/appearance/f1/head.front.closeup.jpg",
+      "role": "view",
+      "subject": "head",
+      "angle": "front",
+      "framing": "closeup",
+      "mediaType": "image/jpeg",
+      "bytes": 23636,
+      "sha256": "7b31afb9eaf31df28a05275340dcfba9169bc0a079f0bb1f97918869874c1477",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 1024,
+      "confidence": 0.9,
+      "id": "a-head-front-closeup",
+      "style": "photo-realistic"
+    },
+    {
+      "path": "elements/appearance/f1/head.right.closeup.jpg",
+      "role": "view",
+      "subject": "head",
+      "angle": "right",
+      "framing": "closeup",
+      "mediaType": "image/jpeg",
+      "bytes": 23636,
+      "sha256": "7b31afb9eaf31df28a05275340dcfba9169bc0a079f0bb1f97918869874c1477",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 1024,
+      "confidence": 0.7,
+      "id": "a-head-right-closeup",
+      "style": "photo-realistic"
+    },
+    {
+      "path": "elements/appearance/f1/head.front.jpg",
+      "role": "view",
+      "subject": "head",
+      "angle": "front",
+      "framing": "head",
+      "mediaType": "image/jpeg",
+      "bytes": 23636,
+      "sha256": "7b31afb9eaf31df28a05275340dcfba9169bc0a079f0bb1f97918869874c1477",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 1024,
+      "confidence": 0.8,
+      "derived_from": "a-body-front",
+      "id": "a-head-front",
+      "style": "photo-realistic"
+    },
+    {
+      "id": "a-lora-l1",
+      "uri": "https://example.org/models/test-lora/test.safetensors",
+      "role": "weights",
+      "base_model": "FLUX.1-dev",
+      "mediaType": "application/octet-stream",
+      "bytes": 171000000,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "license": "CC-BY-NC-4.0",
+      "generator": "exemple fictif — hash illustratif"
+    },
+    {
+      "id": "a-i1-placeholder",
+      "path": "elements/appearance/i1/placeholder.jpg",
+      "role": "reference",
+      "mediaType": "image/jpeg",
+      "license": "CC0-1.0",
+      "subject": "body",
+      "framing": "full",
+      "bytes": 3620,
+      "sha256": "024ce89a1abfb180c9b18fde21d17f802a352efe15f7265becb549e1a4582d03"
+    },
+    {
+      "id": "a-young-head-front",
+      "path": "elements/appearance/f-young/head.front.jpg",
+      "role": "reference",
+      "mediaType": "image/jpeg",
+      "license": "CC0-1.0",
+      "subject": "head",
+      "angle": "front",
+      "framing": "head",
+      "bytes": 3620,
+      "sha256": "024ce89a1abfb180c9b18fde21d17f802a352efe15f7265becb549e1a4582d03"
+    },
+    {
+      "id": "thumbnail",
+      "path": "Thumbnails/thumbnail.png",
+      "role": "derived",
+      "method": "thumbnail",
+      "source": "a-head-front-closeup",
+      "mediaType": "image/png",
+      "bytes": 943,
+      "sha256": "f11e3c4a5b682ea2df8e7d858bc04db88b00296c47b014c23afd0f661c39e4b0",
+      "license": "CC-BY-4.0"
+    }
+  ],
+  "size_class": "lite",
+  "container": {
+    "aligned": 0,
+    "executableContent": "none"
+  },
+  "rights": {
+    "permissions": {
+      "avatarPermission": "everyone",
+      "commercialUsage": "personalNonProfit",
+      "modification": "allowModification",
+      "allowRedistribution": true,
+      "creditNotation": "required",
+      "allowExcessivelyViolentUsage": false,
+      "allowSexualUsage": false,
+      "allowPoliticalOrReligiousUsage": false,
+      "allowAntisocialOrHateUsage": false,
+      "allowVoiceCloning": false,
+      "allowTraining": "finetune-private",
+      "allowImpersonationOfRealPerson": false,
+      "ageRating": "PEGI-12",
+      "minUserAge": 13,
+      "aiDisclosure": true
+    },
+    "consent": null
+  },
+  "provenance": {
+    "created": "2026-10-10T08:30:00Z",
+    "modified": "2026-10-14T20:41:18Z",
+    "generator": "cof-cli/0.3.0 (assemblage manuel)",
+    "source": [
+      "https://github.com/yannsouetre/cof/tree/main/tests/fixtures/mixed-age"
+    ],
+    "c2pa": null,
+    "signatures": []
+  },
+  "metadata": {
+    "@context": {
+      "dc": "http://purl.org/dc/elements/1.1/",
+      "schema": "https://schema.org/"
+    },
+    "dc:creator": [
+      "Yann Souetre"
+    ],
+    "dc:rights": "CC-BY-4.0",
+    "schema:version": "1.0.0"
+  },
+  "extensions": {},
+  "coverage": {
+    "elements": [
+      "personality",
+      "appearance",
+      "identity_weights"
+    ],
+    "variants": 8,
+    "presets": 2,
+    "identities": 1
+  },
+  "thumbnail": "Thumbnails/thumbnail.png",
+  "completeness": {
+    "score": 56,
+    "level": "C",
+    "layers": {
+      "identity": 100,
+      "personality": 90,
+      "appearance": 75,
+      "physique": 0,
+      "voice": 0,
+      "volume": 0,
+      "motion": 0,
+      "rights": 85
+    },
+    "targets_ready": [
+      "chat-text",
+      "agent-persona",
+      "image-video-gen",
+      "archive"
+    ],
+    "computed_by": "cof-cli/1.0.0rc3",
+    "computed_at": "2026-10-14T20:41:18Z"
+  }
+}
