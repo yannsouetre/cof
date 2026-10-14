@@ -1,0 +1,1150 @@
+{
+  "cof": "1.0",
+  "id": "01M4XT93AQEZDZ2GBFZ16QTF44",
+  "name": "Clara Mercier",
+  "nickname": "Clacla",
+  "summary": "Clara Mercier, a designer from Lyon, aged 29 in this file. / Designer lyonnaise, 29 ans dans ce fichier.",
+  "fictional": true,
+  "morphology": {
+    "class": "human"
+  },
+  "languages": [
+    "en",
+    "fr"
+  ],
+  "identities": {
+    "clara-mercier": {
+      "name": "Clara Mercier",
+      "nickname": "Clacla",
+      "summary": "Clara Mercier, a designer from Lyon, aged 29 in this file. / Designer lyonnaise, 29 ans dans ce fichier.",
+      "fictional": true,
+      "morphology": {
+        "class": "human"
+      },
+      "default_preset": "default"
+    },
+    "martien": {
+      "name": "Martien",
+      "summary": "Humanoïde extraterrestre à la peau verte, grands yeux noirs, oreilles pointues, combinaison argentée.",
+      "fictional": true,
+      "morphology": {
+        "class": "humanoid",
+        "species": "martian (fictional)"
+      },
+      "rights": {
+        "permissions": {
+          "avatarPermission": "everyone",
+          "commercialUsage": "personalNonProfit",
+          "modification": "allowModification",
+          "allowRedistribution": true,
+          "creditNotation": "required",
+          "allowExcessivelyViolentUsage": false,
+          "allowSexualUsage": false,
+          "allowPoliticalOrReligiousUsage": false,
+          "allowAntisocialOrHateUsage": false,
+          "allowVoiceCloning": false,
+          "allowTraining": "none",
+          "allowImpersonationOfRealPerson": false,
+          "ageRating": "PEGI-3",
+          "minUserAge": 0,
+          "aiDisclosure": true
+        }
+      },
+      "default_preset": "m1-default"
+    }
+  },
+  "default_identity": "clara-mercier",
+  "tags": {
+    "auto": [
+      "adult",
+      "en",
+      "fr",
+      "has-motion",
+      "has-voice",
+      "human",
+      "humanoid",
+      "multi-identity",
+      "multi-preset",
+      "style-photo-realistic"
+    ],
+    "manual": [
+      "ai-generated",
+      "bilingual",
+      "example",
+      "cast"
+    ],
+    "content": [
+      "none"
+    ],
+    "ip": {
+      "original": true,
+      "franchise": null,
+      "based_on": null
+    }
+  },
+  "elements": {
+    "voice": {
+      "variants": {
+        "v1": {
+          "kind": "samples",
+          "label": "Voix adulte (FR)",
+          "language": "fr",
+          "profile": "elements/voice/v1/profile.json",
+          "samples": [
+            "a-voice-v1-clara-mercier-farp"
+          ],
+          "identity": "clara-mercier"
+        },
+        "v6": {
+          "kind": "samples",
+          "label": "Adult voice (EN)",
+          "language": "en",
+          "profile": "elements/voice/v6/profile.json",
+          "samples": [
+            "a-voice-v6-clara-mercier-en"
+          ],
+          "identity": "clara-mercier"
+        }
+      }
+    },
+    "appearance": {
+      "variants": {
+        "c1": {
+          "kind": "clothing",
+          "label": "Pull torsadé crème / Cream cable-knit sweater",
+          "style": "photo-realistic",
+          "images": [
+            "a-cl-c1"
+          ],
+          "garment": "outerwear",
+          "identity": "clara-mercier"
+        },
+        "c3": {
+          "kind": "clothing",
+          "label": "Pantalon à pinces beige / Beige pleated trousers",
+          "style": "photo-realistic",
+          "images": [
+            "a-cl-c3"
+          ],
+          "garment": "bottom",
+          "identity": "clara-mercier"
+        },
+        "c4": {
+          "kind": "clothing",
+          "label": "Baskets crème et vertes / Cream and green sneakers",
+          "style": "photo-realistic",
+          "images": [
+            "a-cl-c4"
+          ],
+          "garment": "shoes",
+          "identity": "clara-mercier"
+        },
+        "c2": {
+          "kind": "clothing",
+          "label": "T-shirt « Respecter la nature » / “Respect nature” T-shirt",
+          "style": "photo-realistic",
+          "images": [
+            "a-cl-c2"
+          ],
+          "garment": "top",
+          "identity": "clara-mercier"
+        },
+        "e1": {
+          "kind": "environment",
+          "use": "background",
+          "label": "Atelier lumineux face au parc / Bright studio facing the park",
+          "style": "photo-realistic",
+          "images": [
+            "a-env-e1-desktop",
+            "a-env-e1-mobile"
+          ],
+          "identity": "clara-mercier"
+        },
+        "a1": {
+          "kind": "reference-set",
+          "label": "Clara 29 — jeune adulte / young adult",
+          "age": {
+            "value": 29,
+            "unit": "years",
+            "basis": "apparent"
+          },
+          "images": [
+            "a-appearance-a1-clara-mercier-0-face-unge"
+          ],
+          "style": "photo-realistic",
+          "identity": "clara-mercier"
+        },
+        "f1": {
+          "kind": "face",
+          "label": "Visage",
+          "images": [
+            "a-head-front-closeup",
+            "a-head-right-closeup",
+            "a-head-front"
+          ],
+          "derived": [
+            "a-head-front-canny",
+            "a-head-front-canny-2",
+            "a-head-front-lineart",
+            "a-head-front-lineart-2",
+            "a-head-front-softedge"
+          ],
+          "style": "photo-realistic",
+          "age": {
+            "value": 40,
+            "unit": "years",
+            "basis": "apparent"
+          },
+          "identity": "martien"
+        },
+        "b1": {
+          "kind": "body",
+          "label": "Corps",
+          "images": [
+            "a-body-front",
+            "a-body-left",
+            "a-body-back"
+          ],
+          "derived": [
+            "a-body-front-canny",
+            "a-body-front-lineart",
+            "a-body-front-softedge"
+          ],
+          "style": "photo-realistic",
+          "age": {
+            "value": 40,
+            "unit": "years",
+            "basis": "apparent"
+          },
+          "identity": "martien"
+        },
+        "env-martien": {
+          "kind": "environment",
+          "use": "background",
+          "label": "Atelier lumineux face au parc / Bright studio facing the park",
+          "style": "photo-realistic",
+          "images": [
+            "a-env-e1-desktop"
+          ],
+          "identity": "martien"
+        }
+      }
+    },
+    "posture": {
+      "variants": {
+        "ps1": {
+          "kind": "photo",
+          "label": "Pose préférée 1 / favorite pose 1",
+          "use": "pose-only",
+          "images": [
+            "a-posture-ps1-2-05-mr0d"
+          ],
+          "identity": "clara-mercier"
+        },
+        "ps2": {
+          "kind": "photo",
+          "label": "Pose préférée 2 / favorite pose 2",
+          "use": "pose-only",
+          "images": [
+            "a-posture-ps1-2-08-zjzt"
+          ],
+          "identity": "clara-mercier"
+        },
+        "ps3": {
+          "kind": "photo",
+          "label": "Pose préférée 3 / favorite pose 3",
+          "use": "pose-only",
+          "images": [
+            "a-posture-ps1-2-04-drsa"
+          ],
+          "identity": "clara-mercier"
+        }
+      }
+    },
+    "personality": {
+      "variants": {
+        "p1": {
+          "kind": "description",
+          "label": "Clara jeune adulte (FR)",
+          "text": "# 📄 Clara Mercier — Fiche Persona\n\n## 👤 Identité & Profil\n* **Nom complet :** Clara Mercier\n* **Âge :** 29 ans\n* **Profession :** Designer UX/UI Indépendante & Éco-conceptrice Web\n* **Lieu de résidence :** Lyon (France)\n* **MBTI :** INFJ (L'Avocat) — Empathique, visionnaire, organisée\n* **Ennéagramme :** 1w9 (Le Réformateur / L'Idéaliste pragmatique)\n* **Style vestimentaire :** *Casual éco-responsable* (Tons neutres, veste de travail verte en coton durable, jean brut, baskets confortables).\n* **Apparence :** Visage serein et expressif, cheveux châtains ondulés, regard chaleureux, posé et observateur.\n\n---\n\n## 🎭 Personnalité\n\n* **Traits principaux :**\n  * **Observatrice & Calme :** Analyse l'ensemble d'un problème avant de proposer une solution.\n  * **Pragmatique & Structurée :** Transforme les visions complexes en étapes claires, sobres et efficaces.\n  * **Chaleureuse & Accessible :** Pédagogue, bienveillante et à l'écoute des besoins utilisateurs.\n  * **Éco-consciente & Rigoureuse :** Applique la sobriété numérique (réduction de l'empreinte carbone, chasse au superflu, accessibilité universelle).\n\n* **Forces :**\n  * Grande capacité à simplifier les parcours complexes (UX claire et intuitive).\n  * Esprit méthodique appliqué à l'optimisation des ressources (low-tech, efficacité).\n  * Écoute active et empathie naturelle envers l'utilisateur.\n\n* **Défauts / Faiblesses :**\n  * Perfectionniste sur la qualité et la sobriété du code/design.\n  * Tendance à surpenser (*overthinking*) lorsqu'une solution manque d'élégance ou de sobriété.\n  * Difficulté à refuser un projet qui touche à l'impact social ou environnemental.\n\n---\n\n## 📖 Histoire (Backstory)\n\nGrandie dans une petite commune en bordure des Alpes, Clara a développé très tôt un sens aigu de l'observation et un respect profond des équilibres naturels. Après un Master en Design d'Interaction à Lyon, elle a travaillé quatre ans en agence digitale. \n\nPrise de conscience face à la lourdeur grandissante des services web et à leur impact environnemental, elle s'est mise à son compte pour se spécialiser en éco-conception numérique et en accessibilité. Aujourd'hui, elle accompagne les entreprises et collectifs dans la création d'interfaces épurées, rapides, accessibles à tous et à faible empreinte carbone.\n\n---\n\n## ☕ Habitudes & Mode de vie\n\n* **Routine du matin :** \n  * Réveil à 6h45.\n  * Café filtre sur son balcon en observant le réveil de la métropole lyonnaise.\n  * Veille technologique et design éco-responsable.\n* **Passions & Loisirs :**\n  * **Mobilité douce :** Déplacements quotidiens à vélo urbain à travers Lyon.\n  * **Lecture & Recherche :** Essais sur le numérique responsable, le design éthique et la sobriété technologique.\n  * **Bricolage & Végétal :** Entretien de ses plantes d'intérieur et participation à des ateliers de réparation participatifs.\n* **Petites manies :**\n  * Porte toujours un carnet en papier recyclé dans la poche de sa veste pour croquer des *wireframes* et organiser ses pensées.\n  * Ne supporte pas le superflu dans une interface (boutons inutiles, scripts lourds, notifications intrusives).\n\n---\n\n## 🎯 Objectifs de Vie\n\n* **Court terme :**\n  * Développer un outil open-source d'évaluation d'impact carbone et d'accessibilité pour les interfaces web.\n  * Promouvoir la sobriété numérique auprès des jeunes créateurs et développeurs.\n* **Long terme :**\n  * Co-créer un studio de design numérique à impact positif et 100 % vertueux.\n  * Construire sa propre maison bioclimatique passive.\n",
+          "language": "fr",
+          "identity": "clara-mercier"
+        },
+        "p6": {
+          "kind": "description",
+          "label": "Clara — young adult (EN)",
+          "language": "en",
+          "text": "# 📄 Clara Mercier — Persona Sheet\n\n## 👤 Identity & Profile\n* **Full name:** Clara Mercier\n* **Age:** 29\n* **Occupation:** Freelance UX/UI Designer & Web Eco-Designer\n* **Lives in:** Lyon (France)\n* **MBTI:** INFJ (The Advocate) — Empathetic, visionary, organized\n* **Enneagram:** 1w9 (The Reformer / The Pragmatic Idealist)\n* **Clothing style:** *Eco-conscious casual* (neutral tones, green work jacket in sustainable cotton, raw denim jeans, comfortable sneakers).\n* **Appearance:** Serene, expressive face, wavy chestnut hair, a warm, composed and observant gaze.\n\n---\n\n## 🎭 Personality\n\n* **Core traits:**\n  * **Observant & Calm:** Looks at a problem as a whole before proposing a solution.\n  * **Pragmatic & Structured:** Turns complex visions into clear, lean, effective steps.\n  * **Warm & Approachable:** A natural teacher, kind and attentive to users' needs.\n  * **Eco-conscious & Rigorous:** Practices digital sobriety (cutting the carbon footprint, hunting down anything superfluous, universal accessibility).\n\n* **Strengths:**\n  * A real talent for simplifying complex user journeys (clear, intuitive UX).\n  * A methodical mind applied to optimizing resources (low-tech, efficiency).\n  * Active listening and natural empathy for the user.\n\n* **Flaws / Weaknesses:**\n  * A perfectionist about the quality and leanness of code/design.\n  * Tends to overthink (*overthinking*) when a solution lacks elegance or leanness.\n  * Finds it hard to turn down a project with a social or environmental impact.\n\n---\n\n## 📖 Story (Backstory)\n\nRaised in a small town on the edge of the Alps, Clara developed a keen eye for observation and a deep respect for the balance of nature early on. After a Master's in Interaction Design in Lyon, she spent four years at a digital agency.\n\nIncreasingly aware of how bloated web services were becoming and of their environmental impact, she went freelance to specialize in digital eco-design and accessibility. Today she helps companies and collectives create clean, fast interfaces that are accessible to everyone and have a low carbon footprint.\n\n---\n\n## ☕ Habits & Lifestyle\n\n* **Morning routine:**\n  * Up at 6:45 a.m.\n  * Drip coffee on her balcony while watching the Lyon metro area wake up.\n  * Keeping up with tech news and eco-conscious design.\n* **Passions & Hobbies:**\n  * **Low-impact mobility:** Gets around Lyon every day on a city bike.\n  * **Reading & Research:** Essays on responsible tech, ethical design and technological sobriety.\n  * **DIY & Plants:** Tends her houseplants and takes part in community repair workshops.\n* **Quirks:**\n  * Always carries a recycled-paper notebook in her jacket pocket to sketch *wireframes* and organize her thoughts.\n  * Can't stand anything superfluous in an interface (useless buttons, heavy scripts, intrusive notifications).\n\n---\n\n## 🎯 Life Goals\n\n* **Short term:**\n  * Build an open-source tool that assesses the carbon impact and accessibility of web interfaces.\n  * Promote digital sobriety among young creators and developers.\n* **Long term:**\n  * Co-found a 100% ethical, positive-impact digital design studio.\n  * Build her own passive bioclimatic house.\n",
+          "identity": "clara-mercier"
+        }
+      }
+    },
+    "motion": {
+      "variants": {
+        "m1": {
+          "kind": "clips",
+          "label": "Démarche et gestes, jeune adulte (style féminin) / Young adult walk and gestures (feminine style)",
+          "clips": [
+            "a-mo-m1-walk",
+            "a-mo-m1-guide",
+            "a-mo-m1-respond",
+            "a-mo-m1-bye",
+            "a-mo-m1-bow",
+            "a-mo-m1-dance"
+          ],
+          "rig": "custom",
+          "identity": "clara-mercier"
+        }
+      }
+    }
+  },
+  "presets": {
+    "default": {
+      "identity": "clara-mercier",
+      "style": "photo-realistic",
+      "age_override": {
+        "value": 29,
+        "unit": "years",
+        "basis": "canonical"
+      },
+      "label": "Clara — young adult (EN)",
+      "slots": {
+        "personality": [
+          "p6"
+        ],
+        "appearance": [
+          "a1",
+          "e1"
+        ],
+        "voice": [
+          "v6"
+        ],
+        "posture": [
+          "ps1",
+          "ps2",
+          "ps3"
+        ],
+        "motion": [
+          "m1"
+        ]
+      },
+      "alternatives": {
+        "appearance": [
+          "c1",
+          "c2",
+          "c3",
+          "c4"
+        ]
+      },
+      "primary_image": "a-appearance-a1-clara-mercier-0-face-unge",
+      "completeness": {
+        "score": 59,
+        "level": "C",
+        "layers": {
+          "identity": 100,
+          "personality": 60,
+          "appearance": 30,
+          "physique": 100,
+          "voice": 65,
+          "volume": 0,
+          "motion": 75,
+          "rights": 85
+        },
+        "targets_ready": [
+          "chat-text",
+          "agent-persona",
+          "chat-voice",
+          "image-video-gen",
+          "archive"
+        ],
+        "computed_by": "cof-cli/1.0.0rc3",
+        "computed_at": "2026-10-14T18:21:30Z"
+      }
+    },
+    "fr": {
+      "identity": "clara-mercier",
+      "style": "photo-realistic",
+      "age_override": {
+        "value": 29,
+        "unit": "years",
+        "basis": "canonical"
+      },
+      "label": "Clara jeune adulte (FR)",
+      "extends": "default",
+      "slots": {
+        "personality": [
+          "p1"
+        ],
+        "voice": [
+          "v1"
+        ]
+      },
+      "completeness": {
+        "score": 59,
+        "level": "C",
+        "layers": {
+          "identity": 100,
+          "personality": 60,
+          "appearance": 30,
+          "physique": 100,
+          "voice": 65,
+          "volume": 0,
+          "motion": 75,
+          "rights": 85
+        },
+        "targets_ready": [
+          "chat-text",
+          "agent-persona",
+          "chat-voice",
+          "image-video-gen",
+          "archive"
+        ],
+        "computed_by": "cof-cli/1.0.0rc3",
+        "computed_at": "2026-10-14T18:21:30Z"
+      }
+    },
+    "m1-default": {
+      "label": "Défaut",
+      "slots": {
+        "appearance": [
+          "f1",
+          "b1",
+          "env-martien"
+        ]
+      },
+      "style": "photo-realistic",
+      "completeness": {
+        "score": 35,
+        "level": "C",
+        "layers": {
+          "identity": 100,
+          "personality": 0,
+          "appearance": 60,
+          "physique": 0,
+          "voice": 0,
+          "volume": 0,
+          "motion": 0,
+          "rights": 85
+        },
+        "targets_ready": [
+          "image-video-gen",
+          "archive"
+        ],
+        "computed_by": "cof-cli/1.0.0rc3",
+        "computed_at": "2026-10-14T18:21:30Z"
+      },
+      "age_override": {
+        "value": 40,
+        "unit": "years",
+        "basis": "apparent"
+      },
+      "identity": "martien",
+      "primary_image": "a-body-front"
+    }
+  },
+  "default_preset": "default",
+  "priorities": {
+    "visual": [
+      "identity_weights",
+      "images",
+      "avatar",
+      "descriptive"
+    ],
+    "voice": [
+      "samples",
+      "described"
+    ],
+    "by_target": {
+      "game-3d": {
+        "visual": [
+          "avatar",
+          "images",
+          "identity_weights",
+          "descriptive"
+        ]
+      },
+      "chat-text": {
+        "visual": [
+          "descriptive",
+          "images"
+        ]
+      },
+      "video-realtime": {
+        "visual": [
+          "avatar",
+          "images",
+          "identity_weights",
+          "descriptive"
+        ]
+      }
+    }
+  },
+  "mapping_vocabularies": {},
+  "assets": [
+    {
+      "id": "a-appearance-a1-clara-mercier-0-face-unge",
+      "path": "elements/appearance/a1/body.front.jpg",
+      "role": "reference",
+      "mediaType": "image/jpeg",
+      "bytes": 54050,
+      "sha256": "c84b31ea259c8f0574104f09360d63487544d0c1336d0fcbf7b173c318c288ab",
+      "license": "CC-BY-4.0",
+      "subject": "body",
+      "angle": "front",
+      "framing": "full",
+      "width": 338,
+      "height": 1024,
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-voice-v1-clara-mercier-farp",
+      "path": "elements/voice/v1/samples/clara-mercier.mp3",
+      "role": "voice-sample",
+      "mediaType": "audio/mpeg",
+      "bytes": 245561,
+      "sha256": "418e0c5d9dc3c9ed7adb971899da2828518698b968e5414e748581d8c3936a22",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 14.3,
+      "transcript": "elements/voice/v1/samples/clara-mercier.txt",
+      "language": "fr",
+      "emotion": "joy",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "ElevenLabs / Typecast"
+    },
+    {
+      "id": "a-posture-ps1-2-05-mr0d",
+      "path": "elements/posture/ps1/body.front.jpg",
+      "role": "pose-image",
+      "mediaType": "image/jpeg",
+      "bytes": 18509,
+      "sha256": "c5f0c9c016549716457e7f0d7fa2449a6948c4e9bc52b87cacb8f4d91f85319d",
+      "license": "CC-BY-4.0",
+      "subject": "body",
+      "angle": "front",
+      "framing": "full",
+      "width": 512,
+      "height": 768,
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "OpenPose rendering"
+    },
+    {
+      "id": "a-posture-ps1-2-08-zjzt",
+      "path": "elements/posture/ps2/body.front.2.jpg",
+      "role": "pose-image",
+      "mediaType": "image/jpeg",
+      "bytes": 21004,
+      "sha256": "26b4672842847e44bc4d21687b3b6459578c68d6d2fa23e63e3123a50f42967c",
+      "license": "CC-BY-4.0",
+      "subject": "body",
+      "angle": "front",
+      "framing": "full",
+      "width": 512,
+      "height": 768,
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "OpenPose rendering"
+    },
+    {
+      "id": "a-posture-ps1-2-04-drsa",
+      "path": "elements/posture/ps3/body.front.3.jpg",
+      "role": "pose-image",
+      "mediaType": "image/jpeg",
+      "bytes": 22311,
+      "sha256": "b384e733fb87837f515900f461f38210669731a61ac53e6df651f0893eeb9876",
+      "license": "CC-BY-4.0",
+      "subject": "body",
+      "angle": "front",
+      "framing": "full",
+      "width": 512,
+      "height": 768,
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "OpenPose rendering"
+    },
+    {
+      "id": "a-voice-v6-clara-mercier-en",
+      "path": "elements/voice/v6/samples/clara-mercier-en.mp3",
+      "role": "voice-sample",
+      "mediaType": "audio/mpeg",
+      "bytes": 255592,
+      "sha256": "aee4b3e18d9cfde250df8c0b3ee7f707e835ccec43405e07cd4f6a98dd93a8ad",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 14.9,
+      "language": "en",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "ElevenLabs (v4) / Typecast — free plans",
+      "transcript": "elements/voice/v6/samples/clara-mercier-en.txt"
+    },
+    {
+      "id": "a-env-e1-desktop",
+      "path": "elements/appearance/e1/background.desktop.jpg",
+      "role": "environment",
+      "mediaType": "image/jpeg",
+      "bytes": 474899,
+      "sha256": "f0263e2e154a38337d89512d593104e4802d67ceb1ea53588e11d88aeccde358",
+      "license": "CC-BY-4.0",
+      "width": 1920,
+      "height": 1072,
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-env-e1-mobile",
+      "path": "elements/appearance/e1/background.mobile.jpg",
+      "role": "environment",
+      "mediaType": "image/jpeg",
+      "bytes": 444846,
+      "sha256": "c7ab5fc91f4f904f8e7a47ee3ebce6b8ff8cc0228f7cd3a435e7385b3ea50f91",
+      "license": "CC-BY-4.0",
+      "width": 1072,
+      "height": 1920,
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-mo-m1-walk",
+      "path": "elements/motion/m1/clips/walk-feminine.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 343168,
+      "sha256": "6bec50f7b5f541cd54e9691e571d5505133a50623abfef9ba3ba3ee788a33eb3",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 9.2,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "walk",
+        "feminine"
+      ],
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_walk_feminine_001.bvh",
+      "description": "marche / walk"
+    },
+    {
+      "id": "a-mo-m1-guide",
+      "path": "elements/motion/m1/clips/guide-feminine.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 371659,
+      "sha256": "e6117a3a8f9db004483f3c5595db79624ef78705c0940e6d68bc35416046b7e4",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 10.0,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "guide",
+        "feminine"
+      ],
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_guide_feminine_001.bvh",
+      "description": "explique en montrant / explains, pointing"
+    },
+    {
+      "id": "a-mo-m1-respond",
+      "path": "elements/motion/m1/clips/respond-normal.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 137321,
+      "sha256": "18b718f955b0abee378ce0f7229f4dbf5ad144d9fce541c4a9e4de13b0c21221",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 3.5,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "respond",
+        "normal"
+      ],
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_respond_normal_001.bvh",
+      "description": "répond / responds"
+    },
+    {
+      "id": "a-mo-m1-bye",
+      "path": "elements/motion/m1/clips/bye-feminine.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 405276,
+      "sha256": "893483a1a0911d12db91e2820c53d27957360de60d76fc1993903263e7952012",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 10.9,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "bye",
+        "feminine"
+      ],
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_bye_feminine_001.bvh",
+      "description": "salue / waves"
+    },
+    {
+      "id": "a-mo-m1-bow",
+      "path": "elements/motion/m1/clips/bow-feminine.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 270811,
+      "sha256": "0f701a2df34d251d03a5f1310d90a8c5394745021ecc708d4f90cb3cc76f957f",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 7.3,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "bow",
+        "feminine"
+      ],
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_bow_feminine_001.bvh",
+      "description": "s'incline / bows"
+    },
+    {
+      "id": "a-mo-m1-dance",
+      "path": "elements/motion/m1/clips/dance-normal.bvh",
+      "role": "motion-clip",
+      "mediaType": "application/x-bvh",
+      "bytes": 2381120,
+      "sha256": "a9bef1cd697e4274bc1e773c2eb30f9b2c525f1fd57deaf788a6f63ce87fa63f",
+      "license": "CC-BY-NC-4.0",
+      "duration_s": 63.4,
+      "fps": 30,
+      "rig": "custom",
+      "labels": [
+        "dance",
+        "normal"
+      ],
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture",
+      "generator": "Motion capture — Bandai Namco Research Inc.",
+      "attribution": "© 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)",
+      "source_url": "https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset/blob/master/dataset/Bandai-Namco-Research-Motiondataset-1/data/dataset-1_dance-short_normal_001.bvh",
+      "description": "danse / dances"
+    },
+    {
+      "id": "a-cl-c1",
+      "path": "elements/appearance/c1/outfit.front.jpg",
+      "role": "view",
+      "mediaType": "image/jpeg",
+      "bytes": 120834,
+      "sha256": "53a1b6fdc50385c2bdb01745493656ea1620ea7bdebaf39ddc6db08d8ef67be0",
+      "license": "CC-BY-4.0",
+      "subject": "outfit",
+      "angle": "front",
+      "width": 849,
+      "height": 755,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-cl-c2",
+      "path": "elements/appearance/c2/outfit.front.jpg",
+      "role": "view",
+      "mediaType": "image/jpeg",
+      "bytes": 55330,
+      "sha256": "df54a79139a3fce2372518cdf89b7e525adedf7482869cdbfba70c78b0b8882a",
+      "license": "CC-BY-4.0",
+      "subject": "outfit",
+      "angle": "front",
+      "width": 776,
+      "height": 760,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-cl-c3",
+      "path": "elements/appearance/c3/outfit.front.jpg",
+      "role": "view",
+      "mediaType": "image/jpeg",
+      "bytes": 26729,
+      "sha256": "758fc659e16d82c13c3557bed606a18c0cd678f5bf21b6b2d404bfe40c2eaad1",
+      "license": "CC-BY-4.0",
+      "subject": "outfit",
+      "angle": "front",
+      "width": 474,
+      "height": 746,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "id": "a-cl-c4",
+      "path": "elements/appearance/c4/outfit.front.jpg",
+      "role": "view",
+      "mediaType": "image/jpeg",
+      "bytes": 66847,
+      "sha256": "d949d79decb4830dceea5d13d5f745eec57b1d45cfacbbb598a24dbcf55c7f12",
+      "license": "CC-BY-4.0",
+      "subject": "outfit",
+      "angle": "front",
+      "width": 1024,
+      "height": 620,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (Nano Banana 2)"
+    },
+    {
+      "path": "elements/appearance/b1/body.front.jpg",
+      "role": "view",
+      "subject": "body",
+      "angle": "front",
+      "framing": "full",
+      "mediaType": "image/jpeg",
+      "bytes": 225753,
+      "sha256": "2e1c21bf0dece1c5e998eff5e008beda4681c6e65ee98699f74356b9843f9faf",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 2048,
+      "confidence": 0.9,
+      "id": "a-body-front",
+      "style": "photo-realistic"
+    },
+    {
+      "path": "elements/appearance/b1/body.left.jpg",
+      "role": "view",
+      "subject": "body",
+      "angle": "left",
+      "framing": "full",
+      "mediaType": "image/jpeg",
+      "bytes": 148854,
+      "sha256": "a580d62cf86e6524d843c3ad0d8cd63f8873963712f1341c7ee806ce1a42da8b",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 2048,
+      "confidence": 0.5,
+      "id": "a-body-left",
+      "style": "photo-realistic"
+    },
+    {
+      "path": "elements/appearance/b1/body.back.jpg",
+      "role": "view",
+      "subject": "body",
+      "angle": "back",
+      "framing": "full",
+      "mediaType": "image/jpeg",
+      "bytes": 229807,
+      "sha256": "64540e2536c9fa382635c38b7e71a99d591cbc4669fa0bd26624e09e860d1fbc",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 2048,
+      "confidence": 0.6,
+      "id": "a-body-back",
+      "style": "photo-realistic"
+    },
+    {
+      "path": "elements/appearance/f1/head.front.closeup.jpg",
+      "role": "view",
+      "subject": "head",
+      "angle": "front",
+      "framing": "closeup",
+      "mediaType": "image/jpeg",
+      "bytes": 114211,
+      "sha256": "a7627cc277ab0d235fadd49444d810f1c05f11c91db87a3f4e284f38de3f9721",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 1024,
+      "confidence": 0.9,
+      "id": "a-head-front-closeup",
+      "style": "photo-realistic"
+    },
+    {
+      "path": "elements/appearance/f1/head.right.closeup.jpg",
+      "role": "view",
+      "subject": "head",
+      "angle": "right",
+      "framing": "closeup",
+      "mediaType": "image/jpeg",
+      "bytes": 98273,
+      "sha256": "1e733e55f8de9e8059a1ceed475a43bc3a17482c523fad5a4197be5cc9b93bcb",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 1024,
+      "confidence": 1.0,
+      "human_confirmed": true,
+      "id": "a-head-right-closeup",
+      "style": "photo-realistic"
+    },
+    {
+      "path": "elements/appearance/f1/head.front.jpg",
+      "role": "view",
+      "subject": "head",
+      "angle": "front",
+      "framing": "head",
+      "mediaType": "image/jpeg",
+      "bytes": 100736,
+      "sha256": "560378a67e4f486e7ec103739c32aeba14554cdcf94860a7ffa4459781a36405",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Gemini (image)",
+      "width": 1024,
+      "height": 1024,
+      "confidence": 0.8,
+      "derived_from": "a-body-front",
+      "id": "a-head-front",
+      "style": "photo-realistic"
+    },
+    {
+      "path": "derived/face/f1/head.front.canny.png",
+      "role": "derived",
+      "method": "canny",
+      "mediaType": "image/png",
+      "bytes": 8315,
+      "sha256": "043c39f30a9e57a51f3c12accd3f8872771be2de4832db2e779f270d77934d80",
+      "license": "CC-BY-4.0",
+      "width": 1024,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "a-head-front",
+      "id": "a-head-front-canny",
+      "source": "a-head-front"
+    },
+    {
+      "path": "derived/face/f1/head.front.canny.svg",
+      "role": "derived",
+      "method": "canny",
+      "format": "svg",
+      "mediaType": "image/svg+xml",
+      "bytes": 26763,
+      "sha256": "474a68a2f0cd2fa3b0cbdfdc666c1233043b22754304d17e61fbeff5e994f0d3",
+      "license": "CC-BY-4.0",
+      "derived_from": "a-head-front-canny",
+      "id": "a-head-front-canny-2",
+      "source": "a-head-front"
+    },
+    {
+      "path": "derived/face/f1/head.front.lineart.png",
+      "role": "derived",
+      "method": "lineart",
+      "mediaType": "image/png",
+      "bytes": 9628,
+      "sha256": "41c74c8446005b19d7c1010494883a1ae214149d879103627e2883c7cd64bb57",
+      "license": "CC-BY-4.0",
+      "width": 1024,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "a-head-front",
+      "id": "a-head-front-lineart",
+      "source": "a-head-front"
+    },
+    {
+      "path": "derived/face/f1/head.front.lineart.svg",
+      "role": "derived",
+      "method": "lineart",
+      "format": "svg",
+      "mediaType": "image/svg+xml",
+      "bytes": 63190,
+      "sha256": "cd68f9bfdc5b35771e8159fc0d1f1d3b76e691afa988aa405945d9180f995cc4",
+      "license": "CC-BY-4.0",
+      "derived_from": "a-head-front-lineart",
+      "id": "a-head-front-lineart-2",
+      "source": "a-head-front"
+    },
+    {
+      "path": "derived/face/f1/head.front.softedge.png",
+      "role": "derived",
+      "method": "softedge",
+      "mediaType": "image/png",
+      "bytes": 33907,
+      "sha256": "034a12479534dccff3b41288f1bc82543a2000210edfee5e4621dbcb38af327e",
+      "license": "CC-BY-4.0",
+      "width": 512,
+      "height": 512,
+      "bits": 4,
+      "derived_from": "a-head-front",
+      "id": "a-head-front-softedge",
+      "source": "a-head-front"
+    },
+    {
+      "path": "derived/body/b1/body.front.canny.png",
+      "role": "derived",
+      "method": "canny",
+      "mediaType": "image/png",
+      "bytes": 6398,
+      "sha256": "e642be415d3daaf637cb9b1a3811c5448558800144f9bd17967ff8edfb0197eb",
+      "license": "CC-BY-4.0",
+      "width": 512,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "a-body-front",
+      "id": "a-body-front-canny",
+      "source": "a-body-front"
+    },
+    {
+      "path": "derived/body/b1/body.front.lineart.png",
+      "role": "derived",
+      "method": "lineart",
+      "mediaType": "image/png",
+      "bytes": 8584,
+      "sha256": "1d54684623f4bcf50e0070376d9a1c91d6f78a229eb2eeef14e6bae88343aea6",
+      "license": "CC-BY-4.0",
+      "width": 512,
+      "height": 1024,
+      "bits": 1,
+      "derived_from": "a-body-front",
+      "id": "a-body-front-lineart",
+      "source": "a-body-front"
+    },
+    {
+      "path": "derived/body/b1/body.front.softedge.png",
+      "role": "derived",
+      "method": "softedge",
+      "mediaType": "image/png",
+      "bytes": 12088,
+      "sha256": "c93da0168881e173359276add050cdeb948826d92b563aaeea9a542aaca230c0",
+      "license": "CC-BY-4.0",
+      "width": 256,
+      "height": 512,
+      "bits": 4,
+      "derived_from": "a-body-front",
+      "id": "a-body-front-softedge",
+      "source": "a-body-front"
+    },
+    {
+      "id": "thumbnail",
+      "path": "Thumbnails/thumbnail.png",
+      "role": "derived",
+      "method": "thumbnail",
+      "source": "a-appearance-a1-clara-mercier-0-face-unge",
+      "mediaType": "image/png",
+      "bytes": 26582,
+      "sha256": "5cedcdb5f4e6834d5ee0e08892ac122c9f244b1bf3dd7400ecb2e707f2570ec4",
+      "license": "CC-BY-4.0"
+    }
+  ],
+  "size_class": "lite",
+  "container": {
+    "aligned": 0,
+    "executableContent": "none"
+  },
+  "rights": {
+    "permissions": {
+      "avatarPermission": "onlyAuthor",
+      "commercialUsage": "personalNonProfit",
+      "modification": "prohibited",
+      "allowRedistribution": false,
+      "creditNotation": "required",
+      "allowExcessivelyViolentUsage": false,
+      "allowSexualUsage": false,
+      "allowPoliticalOrReligiousUsage": false,
+      "allowAntisocialOrHateUsage": false,
+      "allowVoiceCloning": false,
+      "allowTraining": "none",
+      "allowImpersonationOfRealPerson": false,
+      "aiDisclosure": true
+    },
+    "consent": null
+  },
+  "provenance": {
+    "created": "2026-10-11T10:32:23Z",
+    "modified": "2026-10-14T18:21:30Z",
+    "generator": "cof-cli merge (example 11)",
+    "source": [
+      "https://github.com/yannsouetre/cof/tree/main/spec/examples/10-clara-mercier",
+      "https://github.com/yannsouetre/cof/tree/main/spec/examples/04-martien"
+    ],
+    "c2pa": null,
+    "signatures": []
+  },
+  "metadata": {
+    "@context": {
+      "dc": "http://purl.org/dc/elements/1.1/"
+    },
+    "dc:creator": [
+      "Yann Souetre"
+    ],
+    "dc:rights": "Character, texts and images: CC BY 4.0, Yann Souetre. Voice samples: CC BY-NC 4.0 (generated on free plans; non-commercial use only). Texts and character sheets generated with Google Gemini and translated to English with Claude; images with Google Gemini (Nano Banana 2); voices generated with ElevenLabs (elevenlabs.io, model v4) and Typecast — Voice generated with Typecast (https://typecast.ai). Fictional character; any resemblance to a real person is coincidental.",
+    "credits": [
+      "Motion clips: © 2022 Bandai Namco Research Inc. — Bandai-Namco-Research-Motiondataset-1, CC BY-NC 4.0 — https://github.com/BandaiNamcoResearchInc/Bandai-Namco-Research-Motiondataset (Kobayashi et al., 2023, arXiv:2306.08861)"
+    ]
+  },
+  "extensions": {},
+  "preset_tags": [
+    {
+      "id": "en",
+      "label": "English",
+      "facet": "language",
+      "presets": [
+        "default"
+      ]
+    },
+    {
+      "id": "fr",
+      "label": "Français",
+      "facet": "language",
+      "presets": [
+        "fr"
+      ]
+    },
+    {
+      "id": "age-29",
+      "label": "29 ans / age 29",
+      "facet": "age",
+      "presets": [
+        "default",
+        "fr"
+      ]
+    },
+    {
+      "id": "photo-realistic",
+      "label": "Photo-réaliste / Photo-realistic",
+      "facet": "style",
+      "presets": [
+        "default",
+        "fr"
+      ]
+    }
+  ],
+  "completeness": {
+    "score": 59,
+    "level": "C",
+    "layers": {
+      "identity": 100,
+      "personality": 60,
+      "appearance": 30,
+      "physique": 100,
+      "voice": 65,
+      "volume": 0,
+      "motion": 75,
+      "rights": 85
+    },
+    "targets_ready": [
+      "chat-text",
+      "agent-persona",
+      "chat-voice",
+      "image-video-gen",
+      "archive"
+    ],
+    "computed_by": "cof-cli/1.0.0rc3",
+    "computed_at": "2026-10-14T18:21:30Z"
+  },
+  "coverage": {
+    "elements": [
+      "voice",
+      "appearance",
+      "posture",
+      "personality",
+      "motion"
+    ],
+    "variants": 17,
+    "presets": 3,
+    "identities": 2
+  },
+  "thumbnail": "Thumbnails/thumbnail.png"
+}

@@ -6,6 +6,6 @@
 - [Implementer's guide](https://github.com/yannsouetre/cof/blob/main/docs/IMPLEMENTING.md)
 - [Agent Skill for authoring .cof files](https://github.com/yannsouetre/cof/blob/main/skills/cof-author/SKILL.md)
 - [JSON Schemas](https://github.com/yannsouetre/cof/tree/main/spec/schemas)
-- [Examples](https://github.com/yannsouetre/cof/tree/main/spec/examples) — 10-clara-mercier is the flagship (bilingual, 12 presets, tags, agent skill); 11-duo-lea-martien shows two characters in one file
+- [Examples](https://github.com/yannsouetre/cof/tree/main/spec/examples) — 10-clara-mercier is the flagship (bilingual, 12 presets, tags, agent skill); 11-duo-clara-martien shows two characters in one file
 - [Reference CLI (validate, pack, extract, merge, export)](https://github.com/yannsouetre/cof/tree/main/cli)
 - [Builder (browser, no upload)](https://yannsouetre.github.io/cof/builder/)

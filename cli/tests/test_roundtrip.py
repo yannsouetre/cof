@@ -629,25 +629,25 @@ def test_characters_are_logical_containers(tmp_path):
     be); rights and default preset per character; extract --identity carries the character's rights; merge keeps them."""
     from cof_cli.model import effective_permissions, preset_owner
     from cof_cli.ops import extract_identity
-    src = ROOT / "spec/examples/11-duo-lea-martien"
+    src = ROOT / "spec/examples/11-duo-clara-martien"
     rep = Report(); validate_dir(src, rep, recompute=False); assert rep.ok, rep.errors
     m = json.loads((src / "manifest.json").read_text("utf-8"))
-    assert preset_owner(m, "young") == "lea-marchand" and preset_owner(m, "m1-default") == "martien"
-    assert effective_permissions(m, "default")["allowRedistribution"] is True and effective_permissions(m, "m1-default")["allowRedistribution"] is False
+    assert preset_owner(m, "fr") == "clara-mercier" and preset_owner(m, "m1-default") == "martien"
+    assert effective_permissions(m, "default")["allowRedistribution"] is False and effective_permissions(m, "m1-default")["allowRedistribution"] is True
     V = m["elements"]["appearance"]["variants"]
-    assert V["env-lea"]["images"] == V["env-martien"]["images"]           # neutral file stored once, two elements
+    assert V["env-martien"]["images"] == V["e1"]["images"][:1]           # neutral file stored once, two elements
     d = tmp_path / "c"; shutil.copytree(src, d)
     def check(mut, needle):
         mm = json.loads(json.dumps(m)); mut(mm); (d / "manifest.json").write_text(json.dumps(mm), "utf-8")
         r = Report(); validate_dir(d, r, recompute=False)
         assert any(needle in e for e in r.errors), (needle, r.errors)
-    check(lambda mm: mm["presets"]["m1-default"]["slots"]["appearance"].append("f1"), "belongs to character lea-marchand")
-    check(lambda mm: mm["elements"]["appearance"]["variants"]["m1-f1"].__setitem__("images", ["a-head-front-closeup"]), "is not neutral")
-    check(lambda mm: mm["presets"]["young"].__setitem__("extends", "m1-default"), "another character")
-    check(lambda mm: mm["identities"]["martien"].__setitem__("default_preset", "default"), "belongs to character lea-marchand")
+    check(lambda mm: mm["presets"]["m1-default"]["slots"]["appearance"].append("a1"), "belongs to character clara-mercier")
+    check(lambda mm: mm["elements"]["appearance"]["variants"]["f1"].__setitem__("images", V["a1"]["images"][:1]), "is not neutral")
+    check(lambda mm: mm["presets"]["fr"].__setitem__("extends", "m1-default"), "another character")
+    check(lambda mm: mm["identities"]["martien"].__setitem__("default_preset", "default"), "belongs to character clara-mercier")
     out = tmp_path / "martien"; e = extract_identity(src, out, "martien")
-    assert list(e["presets"]) == ["m1-default"] and e["rights"]["permissions"]["allowRedistribution"] is False and e["name"] == "Martien"
-    assert (out / "elements/appearance/env-shared/place.jpg").is_file()  # the shared file travels with the character
+    assert list(e["presets"]) == ["m1-default"] and e["rights"]["permissions"]["allowRedistribution"] is True and e["name"] == "Martien"
+    assert (out / "elements/appearance/e1/background.desktop.jpg").is_file()  # the shared file travels with the character
     r = Report(); validate_dir(out, r); assert r.ok, r.errors
 
 
@@ -658,13 +658,13 @@ def test_neutral_elements_may_share_files(tmp_path):
     assert neutrality("files", {"kind": "skill"}) == (True, True) and neutrality("files", {"kind": "memory"}) == (False, True)
     assert neutrality("appearance", {"kind": "environment"}) == (True, False) and neutrality("appearance", {"kind": "face"}) == (False, False)
     assert neutrality("volume3d", {"kind": "daz", "daz_category": "props"}) == (True, False) and not is_neutral("volume3d", {"kind": "daz", "daz_category": "characters"})
-    src = ROOT / "spec/examples/11-duo-lea-martien"
+    src = ROOT / "spec/examples/11-duo-clara-martien"
     d = tmp_path / "c"; shutil.copytree(src, d)
     m = json.loads((d / "manifest.json").read_text("utf-8"))
     (d / "elements/files/sk").mkdir(parents=True); (d / "elements/files/sk/SKILL.md").write_text("---\nname: x\ndescription: y\n---\nhi\n", "utf-8")
     m["assets"].append({"id": "a-sk", "path": "elements/files/sk/SKILL.md", "role": "skill-file", "mediaType": "text/markdown", "license": "CC0-1.0"})
     m["elements"]["files"] = {"variants": {
-        "sk-lea": {"kind": "skill", "identity": "lea-marchand", "files": ["a-sk"], "entry": "elements/files/sk/SKILL.md"},
+        "sk-lea": {"kind": "skill", "identity": "clara-mercier", "files": ["a-sk"], "entry": "elements/files/sk/SKILL.md"},
         "sk-mar": {"kind": "skill", "identity": "martien", "files": ["a-sk"], "entry": "elements/files/sk/SKILL.md"}}}
     m["presets"]["default"]["slots"]["files"] = ["sk-lea"]; m["presets"]["m1-default"]["slots"]["files"] = ["sk-mar"]
     from cof_cli.container import refresh_asset_index
