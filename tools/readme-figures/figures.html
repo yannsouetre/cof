@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>COF README figures</title>
+<style>
+@font-face{font-family:"Bricolage";src:url(../../clip/fonts/bricolage-grotesque-latin-700-normal.woff2) format("woff2");font-weight:700}
+@font-face{font-family:"Bricolage";src:url(../../clip/fonts/bricolage-grotesque-latin-500-normal.woff2) format("woff2");font-weight:500}
+@font-face{font-family:"Plex";src:url(../../clip/fonts/ibm-plex-sans-latin-400-normal.woff2) format("woff2");font-weight:400}
+@font-face{font-family:"Plex";src:url(../../clip/fonts/ibm-plex-sans-latin-500-normal.woff2) format("woff2");font-weight:500}
+@font-face{font-family:"PlexMono";src:url(../../clip/fonts/ibm-plex-mono-latin-500-normal.woff2) format("woff2");font-weight:500}
+:root{--bg:#0d1312;--panel:#18201f;--line:#2a3533;--ink:#eef3f1;--muted:#93a39e;--teal:#4cc2a8;--deep:#0f6b5c;--mint:#bfeee2;--violet:#a98ae8;--coral:#f07a72}
+html,body{margin:0;background:transparent}
+.fig{position:relative;width:1600px;overflow:hidden;border-radius:28px;background:radial-gradient(1000px 700px at 65% 45%,#13201d 0%,var(--bg) 70%);color:var(--ink);font-family:Plex,sans-serif;margin-bottom:40px}
+.fig h2{position:absolute;left:72px;top:56px;margin:0;font:700 60px/1 Bricolage,sans-serif;letter-spacing:-.02em}
+.fig .sub{position:absolute;left:74px;top:132px;font:400 26px Plex,sans-serif;color:var(--muted)}
+.card{position:absolute;width:390px;padding:20px 24px;border-radius:20px;background:var(--panel);border:1px solid var(--line);box-sizing:border-box}
+.card b{display:block;font:700 30px Bricolage,sans-serif;margin-bottom:6px}
+.card span{font:500 19px/1.4 PlexMono,monospace;color:var(--muted);white-space:nowrap}
+.card.violet b{color:var(--violet)}.card.teal b{color:var(--teal)}
+.file{position:absolute;width:230px;height:290px}
+.file .doc{position:absolute;inset:0;background:linear-gradient(160deg,var(--teal) 0%,var(--deep) 100%);border-radius:26px;clip-path:polygon(0 0,74% 0,100% 20%,100% 100%,0 100%);box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.file .fold{position:absolute;right:0;top:0;width:26%;height:20%;background:var(--mint);border-bottom-left-radius:16px;clip-path:polygon(0 0,100% 100%,0 100%)}
+.file .lbl{position:absolute;left:0;right:0;bottom:40px;text-align:center;font:700 72px Bricolage,sans-serif;color:#05201b}
+.file .who{position:absolute;left:0;right:0;top:96px;text-align:center;font:500 21px PlexMono,monospace;color:#05201b;opacity:.75}
+svg.wires{position:absolute;inset:0}
+.col{position:absolute;font:500 22px PlexMono,monospace;color:var(--teal);letter-spacing:.08em;text-transform:uppercase}
+.note{position:absolute;left:0;right:0;text-align:center;font:400 24px Plex,sans-serif;color:var(--muted)}
+.note b{color:var(--ink);font-weight:500}
+.pill{display:inline-block;padding:6px 18px;border-radius:999px;border:2px solid var(--line);color:var(--muted);font:500 20px Plex,sans-serif;margin:0 4px}
+.pill.on{background:var(--teal);border-color:var(--teal);color:#05201b}
+</style></head><body>
+
+<!-- 1. What's in a .cof -->
+<div class="fig" id="contents" style="height:900px">
+  <h2>What's in a .cof</h2>
+  <div class="sub">Everything that makes a character — and its rights — in one open file.</div>
+  <svg class="wires" viewBox="0 0 1600 900"></svg>
+  <div class="file" style="left:685px;top:345px"><div class="doc"></div><div class="fold"></div><div class="who">character</div><div class="lbl">.cof</div></div>
+  <div class="card" data-side="l" style="left:72px;top:220px"><b>Personality</b><span>card (.json) · text (.md)<br>two languages, ages</span></div>
+  <div class="card" data-side="l" style="left:72px;top:380px"><b>Looks</b><span>photos (.jpeg, .png)<br>sheets · outfits · places</span></div>
+  <div class="card" data-side="l" style="left:72px;top:540px"><b>Voice</b><span>samples (.wav, .mp3)<br>voice profile</span></div>
+  <div class="card" data-side="l" style="left:72px;top:700px"><b>Poses &amp; motion</b><span>pose photos<br>clips (.bvh)</span></div>
+  <div class="card violet" data-side="r" style="left:1138px;top:220px"><b>Identity weights</b><span>LoRA (.safetensors)<br>pre-encoded references</span></div>
+  <div class="card" data-side="r" style="left:1138px;top:380px"><b>3D</b><span>avatar (.vrm, .glb)<br>print (.3mf) · Daz (.duf)</span></div>
+  <div class="card" data-side="r" style="left:1138px;top:540px"><b>Agent</b><span>skills (.md) · memories</span></div>
+  <div class="card teal" data-side="r" style="left:1138px;top:700px"><b>Rights</b><span>permissions · consent<br>provenance · AI disclosure</span></div>
+  <div class="note" style="top:690px;left:560px;right:560px">Presets pick one combination:<br><span class="pill on">English</span><span class="pill">Français</span> <span class="pill on">29</span><span class="pill">65</span></div>
+</div>
+
+<!-- 2. Tools -->
+<div class="fig" id="tools" style="height:860px">
+  <h2>Make it once. Use it everywhere.</h2>
+  <div class="sub">Free tools, nothing leaves your machine. The rights travel with the file.</div>
+  <svg class="wires" viewBox="0 0 1600 860"></svg>
+  <div class="col" style="left:72px;top:212px">Create</div>
+  <div class="col" style="left:1108px;top:212px">Use</div>
+  <div class="card" data-side="l" style="left:72px;top:260px"><b>Builder</b><span>in your browser, offline</span></div>
+  <div class="card" data-side="l" style="left:72px;top:400px"><b>AI agent</b><span>with the cof-author skill</span></div>
+  <div class="card" data-side="l" style="left:72px;top:540px"><b>Import</b><span>PNG cards (CCv3) · SOUL.md</span></div>
+  <div class="file" style="left:685px;top:300px"><div class="doc"></div><div class="fold"></div><div class="who">character</div><div class="lbl">.cof</div></div>
+  <div class="card" data-side="r" style="left:1108px;top:250px;width:420px"><b>Explorer</b><span>look inside, read the rights</span></div>
+  <div class="card" data-side="r" style="left:1108px;top:380px;width:420px"><b>ComfyUI</b><span>images · LoRA · voice · poses</span></div>
+  <div class="card" data-side="r" style="left:1108px;top:510px;width:420px"><b>Chat apps</b><span>PNG card (CCv3)</span></div>
+  <div class="card" data-side="r" style="left:1108px;top:640px;width:420px"><b>Agents</b><span>SOUL.md · IDENTITY.md · skills</span></div>
+  <svg style="position:absolute;left:0;top:0" width="1600" height="860"><line x1="800" y1="600" x2="800" y2="666" stroke="#4cc2a8" stroke-opacity=".55" stroke-width="2.5" stroke-dasharray="6 6"/></svg><div class="card teal" style="left:560px;top:666px;width:480px;text-align:center"><b>cof validate</b><span>ages · rights · hashes · scripts</span></div>
+</div>
+
+<script>
+// connectors: from each card's inner edge to the file icon
+for (const fig of document.querySelectorAll(".fig")) {
+  const svg = fig.querySelector("svg.wires"), file = fig.querySelector(".file");
+  if (!svg || !file) continue;
+  const F = { l: file.offsetLeft, r: file.offsetLeft + file.offsetWidth, cy: file.offsetTop + file.offsetHeight / 2 };
+  for (const c of fig.querySelectorAll(".card[data-side]")) {
+    const y = c.offsetTop + c.offsetHeight / 2, side = c.dataset.side;
+    const x1 = side === "l" ? c.offsetLeft + c.offsetWidth : c.offsetLeft, x2 = side === "l" ? F.l - 10 : F.r + 10;
+    const ty = F.cy + (y - F.cy) * 0.35, mx = (x1 + x2) / 2;
+    const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    p.setAttribute("d", `M${x1} ${y} C${mx} ${y}, ${mx} ${ty}, ${x2} ${ty}`);
+    p.setAttribute("fill", "none"); p.setAttribute("stroke", "#4cc2a8"); p.setAttribute("stroke-opacity", ".55"); p.setAttribute("stroke-width", "2.5");
+    svg.appendChild(p);
+    const d = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    d.setAttribute("cx", x2); d.setAttribute("cy", ty); d.setAttribute("r", "5"); d.setAttribute("fill", "#4cc2a8");
+    svg.appendChild(d);
+  }
+}
+</script>
+</body></html>

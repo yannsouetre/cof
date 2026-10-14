@@ -4,27 +4,69 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>COF — Character Open File</title>
-<meta name="description" content="An open container for AI characters: personality, appearance, voice, 3D, motion, agent files and rights in one file.">
-<link rel="icon" type="image/svg+xml" href="builder/icon/cof-icon-light.svg">
+<meta name="description" content="One open file for an AI character: personality, appearance, voice, 3D, motion, agent files — with its rights and consent built in.">
+<meta property="og:title" content="COF — Character Open File">
+<meta property="og:description" content="One character = one file. Open, portable, consented.">
+<meta property="og:image" content="https://yannsouetre.github.io/cof/docs/img/cof-poster.jpg">
+<link rel="icon" type="image/svg+xml" href="builder/icon/cof-icon-dark.svg">
 <style>
-:root{--bg:#f6f5f2;--ink:#1c1b19;--muted:#6b6963;--line:#e2dfd8;--accent:#0f6b5c}
-@media (prefers-color-scheme:dark){:root{--bg:#15171a;--ink:#ebe8e1;--muted:#a09d95;--line:#2f3338;--accent:#3fb59a}}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-main{max-width:720px;margin:0 auto;padding:56px 20px}
-h1{font-size:30px;margin:12px 0 4px}p.lead{color:var(--muted);margin:0 0 28px}
-a.card{display:block;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:10px 0;color:inherit;text-decoration:none}
-a.card:hover{border-color:var(--accent)}a.card b{color:var(--accent)}a.card span{display:block;color:var(--muted);font-size:14px}
-svg{color:var(--ink)}footer{margin-top:40px;color:var(--muted);font-size:13px}
+@font-face{font-family:"Bricolage";src:url(clip/fonts/bricolage-grotesque-latin-700-normal.woff2) format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Plex";src:url(clip/fonts/ibm-plex-sans-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Plex";src:url(clip/fonts/ibm-plex-sans-latin-500-normal.woff2) format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"PlexMono";src:url(clip/fonts/ibm-plex-mono-latin-500-normal.woff2) format("woff2");font-weight:500;font-display:swap}
+:root{--bg:#0d1312;--panel:#18201f;--line:#2a3533;--ink:#eef3f1;--muted:#93a39e;--teal:#4cc2a8;--deep:#0f6b5c;--violet:#a98ae8}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(1200px 800px at 70% 0%,#13201d 0%,var(--bg) 60%) fixed,var(--bg);color:var(--ink);font:17px/1.6 Plex,system-ui,sans-serif}
+main{max-width:1080px;margin:0 auto;padding:56px 20px 40px}
+.top{display:flex;align-items:center;gap:14px;font:500 15px PlexMono,monospace;color:var(--muted)}
+.top img{width:40px;height:40px;border-radius:10px}
+h1{font:700 clamp(56px,11vw,128px)/.92 Bricolage,sans-serif;letter-spacing:-.04em;margin:28px 0 6px}
+.tag{font:700 clamp(22px,3.4vw,34px)/1.2 Bricolage,sans-serif;letter-spacing:-.01em;color:var(--muted);margin:0 0 18px}
+.lead{max-width:720px;color:var(--ink);margin:0 0 28px}
+.btns{display:flex;flex-wrap:wrap;gap:12px;margin:0 0 40px}
+.btn{display:inline-block;padding:12px 20px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);text-decoration:none;font-weight:500}
+.btn:hover{border-color:var(--teal)}
+.btn.main{background:var(--teal);border-color:var(--teal);color:#05201b}
+.btn.violet{color:var(--violet)}
+video,figure img{width:100%;display:block;border-radius:22px;border:1px solid var(--line);background:#000}
+figure{margin:0 0 44px}figcaption{color:var(--muted);font-size:15px;margin-top:10px}
+h2{font:700 clamp(28px,4vw,40px)/1.1 Bricolage,sans-serif;letter-spacing:-.02em;margin:56px 0 16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:24px}
+.card{display:block;padding:18px 20px;border-radius:18px;background:var(--panel);border:1px solid var(--line);color:inherit;text-decoration:none}
+.card:hover{border-color:var(--teal)}.card b{display:block;font:700 22px Bricolage,sans-serif;color:var(--teal);margin-bottom:4px}
+.card span{color:var(--muted);font-size:15px}
+code{font:500 .9em PlexMono,monospace;color:var(--teal)}
+footer{margin-top:48px;color:var(--muted);font-size:14px;border-top:1px solid var(--line);padding-top:18px}
+footer a{color:var(--muted)}
 </style>
 </head>
 <body><main>
-<svg viewBox="0 0 64 64" width="48" height="48" aria-hidden="true"><circle cx="32" cy="17.5" r="13" fill="currentColor"/><path d="M5.5 60a26.5 26 0 0 1 53 0Z" fill="currentColor"/><circle cx="32" cy="47" r="7" fill="var(--bg)"/></svg>
-<h1>COF — Character Open File</h1>
-<p class="lead">One open file for an AI character: personality, appearance, voice, 3D, motion, agent skills and memories — with rights and consent built in.</p>
-<a class="card" href="builder/"><b>Open the builder →</b><span>Create or edit a .cof in your browser. Offline, nothing is uploaded.</span></a>
-<a class="card" href="https://github.com/yannsouetre/cof/blob/main/spec/SPEC.md"><b>Specification</b><span>The normative text (English; French translation available).</span></a>
-<a class="card" href="https://github.com/yannsouetre/cof/blob/main/docs/IMPLEMENTING.md"><b>Implementing COF</b><span>Guide for platforms and tools: reading, writing, rights, security, conformance.</span></a>
-<a class="card" href="https://github.com/yannsouetre/cof/tree/main/spec/examples"><b>Examples</b><span>Ten conformant characters, from text-only to a six-preset flagship.</span></a>
-<a class="card" href="https://github.com/yannsouetre/cof"><b>Source on GitHub</b><span>Spec CC BY 4.0 · schemas and vocabularies CC0 · code MIT.</span></a>
-<footer>COF · Yann Souetre</footer>
+<div class="top"><img src="builder/icon/cof-icon-dark.svg" alt=""> github.com/yannsouetre/cof</div>
+<h1>COF</h1>
+<p class="tag">Character Open File — one character, one file.<br>Open, portable, consented.</p>
+<p class="lead">An open file format that bundles everything that defines an AI character — personality, looks, voice, 3D, motion, agent skills and memories — <b>with its rights and consent built in</b>. The same file opens in a chat app, an image generator, ComfyUI, a game engine or an agent.</p>
+<div class="btns">
+  <a class="btn main" href="viewer/">Explore a .cof →</a>
+  <a class="btn" href="builder/">Build one in your browser</a>
+  <a class="btn violet" href="https://github.com/yannsouetre/ComfyUI-COF">ComfyUI nodes</a>
+  <a class="btn" href="https://github.com/yannsouetre/cof">Source on GitHub</a>
+</div>
+
+<figure id="clip"><video src="docs/media/cof-clip.mp4" poster="docs/img/cof-poster.jpg" controls preload="metadata" playsinline></video>
+<figcaption>38 seconds, with sound. Clara Mercier and Martien are fictional COF example characters (AI-generated images).</figcaption></figure>
+
+<h2>What's in a .cof</h2>
+<figure><img src="docs/img/cof-contents.png" alt="A .cof holds personality, looks, voice, poses and motion, identity weights, 3D, agent files and rights" loading="lazy"></figure>
+
+<h2>Make it once. Use it everywhere.</h2>
+<figure><img src="docs/img/cof-tools.png" alt="Create with the builder, an AI agent or an import; use in the explorer, ComfyUI, chat apps and agents" loading="lazy"></figure>
+
+<h2>Read more</h2>
+<div class="grid">
+  <a class="card" href="https://github.com/yannsouetre/cof/blob/main/spec/SPEC.md"><b>Specification</b><span>The normative text, in English and French.</span></a>
+  <a class="card" href="https://github.com/yannsouetre/cof/blob/main/docs/IMPLEMENTING.md"><b>Implementing COF</b><span>Reading, writing, rights, security, conformance.</span></a>
+  <a class="card" href="https://github.com/yannsouetre/cof/tree/main/spec/examples"><b>Examples</b><span>Ten conformant characters, from text only to a twelve-preset flagship.</span></a>
+  <a class="card" href="https://github.com/yannsouetre/cof/blob/main/skills/cof-author/SKILL.md"><b>For AI agents</b><span>The <code>cof-author</code> skill: an agent builds and validates a .cof.</span></a>
+</div>
+<footer>COF — Character Open File, by Yann Souetre · Spec CC BY 4.0 · schemas and vocabularies CC0 · code MIT · <a href="https://github.com/yannsouetre/cof/blob/main/docs/brand.md">Visual identity</a></footer>
 </main></body></html>
