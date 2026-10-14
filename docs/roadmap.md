@@ -57,6 +57,16 @@ La structure 1.0 est **gelée le 14 octobre** (1.0.0rc3) après une relecture à
 - *Prompt de preset* : un texte qui guide l'IA d'inférence sur l'usage des éléments combinés (« la guitare se porte en bandoulière », « l'environnement sert d'arrière-plan, pas de décor à décrire ») et des variantes proposées. Distinct de la personnalité, qui dit *qui* est le personnage ; le prompt de preset dit *comment* utiliser ce preset.
 - ✅ *Consentement recommandé* (builder 0.11.4, 14 oct.) : fenêtre d'incitation quand une personne réelle est déclarée — recommander, jamais imposer (cf. point 1 ci-dessus).
 
+**Certification des fichiers (idée de Yann, 14 oct. — phase 2 ou 3, 2027)** — attester qu'un `.cof` a été contrôlé, surtout sur le contenu intime, la nudité et le consentement, et qu'il n'a pas été modifié depuis.
+- *Empreinte* : la certification porte sur l'empreinte du manifeste canonique (RFC 8785), qui contient déjà celle de chaque asset ; il faut d'abord l'index d'empreintes des sous-fichiers JSON prévu en 1.1 (relecture, F-15). Toute modification, même d'un octet, invalide le certificat.
+- *Signature* : le certificateur signe cette empreinte (JWS, champ `provenance.signatures` déjà prévu en 1.0, § 9.3), avec la date, la version du validateur et la liste des contrôles passés. La signature voyage dans le fichier ; n'importe quel outil la vérifie hors ligne.
+- *Deux niveaux* :
+  1. contrôle automatique : validateur et contrôle par IA, signés par la CI de la galerie ;
+  2. revue humaine par un **tiers indépendant** du projet : preuves de consentement, âges, contenu intime et nudité.
+- *Révocation* : liste publique des certificats révoqués, par exemple quand une personne retire son consentement (le champ `revocation_uri` existe déjà dans l'enregistrement de consentement).
+- *Ce que le certificat ne dit pas* : il atteste des contrôles faits à une date, pas la légalité du contenu dans tous les pays ; l'auteur reste responsable.
+- *Gouvernance* : le certificateur ne peut pas être l'auteur du format ; à confier à une structure neutre, avec la gouvernance prévue dès deux adoptants indépendants (GOVERNANCE.md).
+
 **Règle de pilotage** : si fin novembre aucune intégration tierce n'existe, le projet écrit lui-même l'extension SillyTavern et le nœud ComfyUI, puis les propose en PR. Si la galerie ne reçoit aucun personnage tiers fin mars, priorité à l'outillage de création (builder, pipeline) plutôt qu'à la communication.
 
 ---

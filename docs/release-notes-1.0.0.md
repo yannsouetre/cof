@@ -34,6 +34,7 @@ COF (Character Open File) is an open file format for AI characters: a `.cof` is 
 - `.rar` and `.7z` archives are not inspected by the validator (warning); prefer `.zip`.
 - Some consent scopes are warnings rather than errors in 1.0 (see the changelog).
 - `.charx` export and the `skeletons-1.0` mapping vocabulary are planned for 1.1.
+- Planned later (2027): **certification** of `.cof` files by an independent third party — a signature over the manifest's hash (which covers every asset), so that a certified file cannot be modified without breaking it, with a public revocation list.
 
 ## Licences
 
