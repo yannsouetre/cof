@@ -4,8 +4,8 @@ La structure 1.0 est **gelée le 14 octobre** (1.0.0rc3) après une relecture à
 
 | # | Question | Ce qui est fait | Recommandation |
 |---|---|---|---|
-| 1 | Personne réelle : les portées de consentement manquantes sont-elles des erreurs ou des avertissements ? | Erreur pour `intimate`, pour les mémoires et pour le clonage de voix ; avertissement pour l'image (`likeness-image`), la 3D, la voix, le mouvement et l'entraînement. | **Passer `likeness-image` et `voice-synthesis` en erreurs avant samedi** : ce sont les deux usages majeurs, et durcir après 1.0 n'est plus possible. Garder les autres en avertissement. |
-| 2 | Les clips de mouvement et les squelettes OpenPose restent-ils *toujours* neutres ? | Toujours neutres (tableau du 13 oct.). | OpenPose : oui (des points clés ne portent pas d'identité). **Clips : choix de l'auteur, par défaut neutre** — une capture de mouvement d'une personne réelle est une donnée personnelle (portée `motion-capture`). |
+| 1 | Personne réelle : les portées de consentement manquantes sont-elles des erreurs ou des avertissements ? | Erreur pour `intimate`, pour les mémoires et pour le clonage de voix ; avertissement pour l'image (`likeness-image`), la 3D, la voix, le mouvement et l'entraînement. | ✅ **Tranché (14 oct.) : avertissements conservés** — usage personnel, caricature de personnes publiques, etc. ne doivent pas être bloqués. À faire (1.0.x, builder) : une fenêtre qui **recommande** le consentement quand une personne réelle est déclarée, sans l'imposer. |
+| 2 | Les clips de mouvement et les squelettes OpenPose restent-ils *toujours* neutres ? | ✅ **Tranché (14 oct.)** : OpenPose reste toujours neutre ; les clips passent au **choix de l'auteur, neutres par défaut** (fait : spec, CLI, builder, skill). | — |
 | 3 | Un preset est désormais **obligatoire** (le « preset implicite » n'était pas déterministe). | Fait ; `cof migrate` ajoute `default`. Tous les outils en écrivaient déjà un. | Garder. |
 | 4 | Étiquettes automatiques d'âge (`child`, `teen`…) pour un robot ou un être non humain. | Calculées pour toutes les classes (le robot de l'exemple 05, « 3 ans », reçoit `child`). | Ne les calculer que pour les classes de forme humaine (correctif mineur, `tags.auto` est recalculé). |
 | 5 | Empreintes des sous-fichiers JSON (aujourd'hui seulement le CRC du ZIP). | Documenté. | Ajouter en 1.1 un index optionnel `subfiles` (chemin → sha256) — additif. |
@@ -49,6 +49,11 @@ La structure 1.0 est **gelée le 14 octobre** (1.0.0rc3) après une relecture à
 - **Phase 1, en premier** : le nœud **ComfyUI « COF Loader »** — pour un preset : images de référence, LoRA, RefMods présents (avec intensité), une sortie par personnage pour les scènes à plusieurs ; puis curseur entre deux presets (idée « Axis », p. ex. âges) et sélecteur à vignettes.
 - **Message de lancement** : « COF emballe vos LoRA et RefMods avec le personnage, ses droits et ses sources » — jamais une critique des bibliothèques tierces.
 - **Après le 17 octobre** : prise de contact avec les auteurs (Luisacaotica, FranckyB, malcolmrey) — message rédigé par Claude, envoyé par Yann.
+
+**Idées pour plus tard (Yann, 14 oct.)** — ajouts optionnels, par RFC, sans casser la 1.0 :
+- *Presets inter-personnages* (danses, duos, trios) : une **scène** liste des rôles (place, rôle, personnage choisi ou « au choix ») et ne porte que des éléments **neutres** — poses, mouvements, lieux, accessoires —, jamais un visage, un corps ni une voix : chaque rôle reprend le preset de son personnage. Les règles d'âge s'appliquent à la scène entière (le plus jeune des presets choisis).
+- *Prompt de preset* : un texte qui guide l'IA d'inférence sur l'usage des éléments combinés (« la guitare se porte en bandoulière », « l'environnement sert d'arrière-plan, pas de décor à décrire ») et des variantes proposées. Distinct de la personnalité, qui dit *qui* est le personnage ; le prompt de preset dit *comment* utiliser ce preset.
+- *Consentement recommandé* (builder) : fenêtre d'incitation quand une personne réelle est déclarée sans consentement — recommander, jamais imposer (cf. point 1 ci-dessus).
 
 **Règle de pilotage** : si fin novembre aucune intégration tierce n'existe, le projet écrit lui-même l'extension SillyTavern et le nœud ComfyUI, puis les propose en PR. Si la galerie ne reçoit aucun personnage tiers fin mars, priorité à l'outillage de création (builder, pipeline) plutôt qu'à la communication.
 
@@ -132,9 +137,9 @@ Et une **innovation à part** qui mérite sa propre visibilité : **COF-Vector**
 | 7 | Schémas des sous-fichiers : card, psyche, weights, voice profile, attitude, pose, skeleton, hair, body, consent, visemes — validés par la CLI | ✅ (11 schémas ; reste `outfit`, `voice.vec`, `face.mesh`) |
 | 8 | `voice measure` (mesures acoustiques → code vocal) | → 1.1 |
 | 9 | Pose depuis photo → OpenPose normalisé + rendu « bonhomme » | → 1.2 |
-| 10 | Builder (identités, 7 catégories typées, presets multi-emplacements, fusion, export de preset, version facile, interface FR/EN/DE/ES/ZH/JA) | ✅ (0.9.0, entièrement traduit) |
+| 10 | Builder (identités, 7 catégories typées, presets multi-emplacements, fusion, export de preset, version facile, interface FR/EN/DE/ES/ZH/JA) | ✅ (0.11.3 en ligne, entièrement traduit) |
 | 11 | Exemples : agent avec skills ✅, mixte adulte/mineur ✅ ; VRM + clips, entreprise, consentement complet → 1.1 | ⏳ |
-| 12 | Relecture croisée, **spec figée en 1.0** (gel de structure mer. 14 oct.), builder ⇄ CLI validés | ⏳ (numérotation 1.0 + corpus négatif faits le 12) |
+| 12 | Relecture croisée, **spec figée en 1.0** (gel de structure mer. 14 oct.), builder ⇄ CLI validés | ✅ (gel le 14 oct. en 1.0.0rc3 après deux passes de relecture à l'aveugle ; 38 fichiers négatifs) |
 
 ## Phases
 

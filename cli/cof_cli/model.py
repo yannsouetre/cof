@@ -225,10 +225,11 @@ LIKENESS_APPEARANCE = {"face", "body", "reference-set", "character-sheet", "hair
 # MAY be shared by several characters. Fixed by kind, or chosen by the author (`neutral`) where the kind is ambiguous.
 NEUTRAL_FIXED = {("appearance", "environment"): True, ("volume3d", "environment"): True,
                  ("posture", "openpose"): True, ("posture", "silhouette"): True, ("posture", "attitude"): True, ("posture", "description"): True,
-                 ("motion", "clips"): True, ("motion", "attitude"): True, ("motion", "description"): True}
+                 ("motion", "attitude"): True, ("motion", "description"): True}
 NEUTRAL_EDITABLE = {("appearance", "clothing"): True, ("appearance", "accessory"): True,        # default value
                     ("appearance", "hair"): False, ("appearance", "pilosity"): False, ("appearance", "feature"): False,
                     ("posture", "photo"): False, ("posture", "photos"): False, ("motion", "video"): False,
+                    ("motion", "clips"): True,          # author's choice: a motion capture of a real person is personal data
                     ("volume3d", "other"): False,
                     ("files", "skill"): True, ("files", "memory"): False, ("files", "document"): False, ("files", "other"): False}
 
