@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>COF — launch clip</title>
+<style>
+@font-face{font-family:"Bricolage";src:url(fonts/bricolage-grotesque-latin-700-normal.woff2) format("woff2");font-weight:700}
+@font-face{font-family:"Bricolage";src:url(fonts/bricolage-grotesque-latin-500-normal.woff2) format("woff2");font-weight:500}
+@font-face{font-family:"Plex";src:url(fonts/ibm-plex-sans-latin-400-normal.woff2) format("woff2");font-weight:400}
+@font-face{font-family:"Plex";src:url(fonts/ibm-plex-sans-latin-500-normal.woff2) format("woff2");font-weight:500}
+@font-face{font-family:"PlexMono";src:url(fonts/ibm-plex-mono-latin-500-normal.woff2) format("woff2");font-weight:500}
+:root{--bg:#0d1312;--ink:#eef3f1;--muted:#93a39e;--teal:#4cc2a8;--teal-deep:#0f6b5c;--violet:#a98ae8;--red:#f07a72;--card:#18201f;--line:#2a3533}
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1920px;height:1080px;background:radial-gradient(1200px 800px at 70% 40%,#13201d 0%,var(--bg) 70%);color:var(--ink);font-family:Plex,system-ui,sans-serif;overflow:hidden;transform-origin:0 0}
+.abs{position:absolute;will-change:transform,opacity}
+.head{left:120px;top:96px;width:1100px;font:700 84px/1.02 Bricolage,sans-serif;letter-spacing:-.02em}
+.sub{left:124px;top:300px;width:1000px;font:400 34px/1.35 Plex,sans-serif;color:var(--muted)}
+.chipf{padding:16px 24px;border-radius:14px;background:var(--card);border:1px solid var(--line);font:500 30px PlexMono,monospace;color:var(--ink);white-space:nowrap}
+.thumb{width:150px;height:200px;border-radius:14px;background:#fff center/contain no-repeat;border:1px solid var(--line)}
+#file{left:810px;top:330px;width:300px;height:380px}
+#file .doc{position:absolute;inset:0;background:linear-gradient(160deg,var(--teal) 0%,var(--teal-deep) 100%);border-radius:28px;clip-path:polygon(0 0,74% 0,100% 20%,100% 100%,0 100%)}
+#file .fold{position:absolute;right:0;top:0;width:26%;height:20%;background:#bfeee2;border-bottom-left-radius:18px;clip-path:polygon(0 0,100% 100%,0 100%)}
+#file .lbl{position:absolute;left:0;right:0;bottom:56px;text-align:center;font:700 92px Bricolage,sans-serif;color:#05201b}
+#file .who{position:absolute;left:0;right:0;top:120px;text-align:center;font:500 26px PlexMono,monospace;color:#05201b;opacity:.75}
+.portrait{border-radius:22px;background:#fff center/contain no-repeat;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.row{left:1040px;width:760px;display:flex;align-items:baseline;gap:22px;padding:16px 0;border-bottom:1px solid var(--line);font:500 36px Plex,sans-serif}
+.row b{font:700 40px Bricolage,sans-serif;min-width:330px}
+.row span{color:var(--muted);font-size:30px}
+.pcard{width:330px;height:560px;border-radius:22px;background:#fff center/contain no-repeat;box-shadow:0 24px 60px rgba(0,0,0,.4)}
+.pcap{width:330px;text-align:center;font:500 28px Plex,sans-serif;color:var(--ink)}
+.pill{padding:10px 26px;border-radius:999px;font:500 30px Plex,sans-serif;border:2px solid var(--line);color:var(--muted)}
+.pill.on{background:var(--teal);border-color:var(--teal);color:#05201b}
+#rights{left:560px;top:330px;width:800px;background:var(--card);border:1px solid var(--line);border-radius:26px;padding:34px 44px}
+#rights .r{display:flex;justify-content:space-between;font:500 38px Plex,sans-serif;padding:14px 0;border-bottom:1px solid var(--line)}
+#rights .r:last-child{border:none}
+.x{color:var(--red);font-family:PlexMono,monospace}.v{color:var(--teal);font-family:PlexMono,monospace}.n{color:var(--muted);font-family:PlexMono,monospace;font-size:32px}
+.name{font:700 44px Bricolage,sans-serif;text-align:center}
+.badge{font:500 26px PlexMono,monospace;color:var(--teal);text-align:center}
+#outro .w{font:700 230px/0.9 Bricolage,sans-serif;letter-spacing:-.04em}
+#outro .t{font:500 52px Bricolage,sans-serif;color:var(--muted);margin-top:16px}
+#outro .l{font:400 36px Plex,sans-serif;margin-top:46px}
+#outro .u{font:500 40px PlexMono,monospace;color:var(--teal);margin-top:20px}
+#credit{left:120px;bottom:48px;font:400 22px Plex,sans-serif;color:var(--muted)}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="h1" class="abs head"></div>
+  <div id="s1" class="abs sub"></div>
+
+  <div id="chips"></div>
+
+  <div id="file" class="abs"><div class="doc"></div><div class="fold"></div><div class="who">character</div><div class="lbl">.cof</div></div>
+
+  <div id="clara" class="abs portrait" style="left:300px;top:150px;width:420px;height:860px;background-image:url(img/clara-29.jpg)"></div>
+  <div id="rows"></div>
+
+  <div id="presets"></div>
+  <div id="pills" class="abs" style="left:120px;top:950px;display:flex;gap:16px"></div>
+
+  <div id="rights" class="abs">
+    <div class="r"><span>Voice cloning</span><span class="x">✗ no</span></div>
+    <div class="r"><span>Training on it</span><span class="x">✗ no</span></div>
+    <div class="r"><span>Redistribution</span><span class="x">✗ no</span></div>
+    <div class="r"><span>Commercial use</span><span class="n">personal, non-profit</span></div>
+    <div class="r"><span>Say it is an AI</span><span class="v">✓ yes</span></div>
+  </div>
+
+  <div id="cast"></div>
+
+  <div id="outro" class="abs" style="left:120px;top:250px">
+    <div class="w">COF</div><div class="t">Character Open File</div>
+    <div class="l">Open spec (CC BY) · free tools (MIT) · builder in your browser</div>
+    <div class="u">github.com/yannsouetre/cof</div>
+  </div>
+  <div id="credit" class="abs">Clara Mercier, Léa Marchand and Martien are fictional COF example characters (AI-generated images).</div>
+</div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const clamp=x=>Math.max(0,Math.min(1,x));
+const k=(t,a,b)=>clamp((t-a)/(b-a));
+const ease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const out=x=>1-Math.pow(1-x,3);
+const lerp=(a,b,x)=>a+(b-a)*x;
+function set(el,o,tx=0,ty=0,s=1,r=0){el.style.opacity=o;el.style.transform=`translate(${tx}px,${ty}px) scale(${s}) rotate(${r}deg)`}
+function win(t,a,b,fi=.6,fo=.6){return Math.min(k(t,a,a+fi),1-k(t,b-fo,b))}   // fade window
+
+// scene 1 — scattered pieces
+const CHIPS=[["card.png",180,430],["12 photos/",640,560],["lora.safetensors",1180,420],["voice.wav",1460,640],["avatar.vrm",300,760],["notes.txt",900,820],["poses.json",1370,860],["skills/",560,330]];
+const THUMBS=[["img/clara-29.jpg",1520,170],["img/clara-manga.jpg",1180,140],["img/clara-65.jpg",1700,420]];
+const chipsEl=$("chips");
+const pieces=[];
+for(const [txt,x,y] of CHIPS){const d=document.createElement("div");d.className="abs chipf";d.textContent=txt;d.style.left=x+"px";d.style.top=y+"px";chipsEl.appendChild(d);pieces.push({el:d,x,y,w:300,h:70})}
+for(const [src,x,y] of THUMBS){const d=document.createElement("div");d.className="abs thumb";d.style.backgroundImage=`url(${src})`;d.style.left=x+"px";d.style.top=y+"px";chipsEl.appendChild(d);pieces.push({el:d,x,y,w:150,h:200})}
+
+// scene 3 — contents
+const ROWS=[["Personality","10 variants · card, psyche, two languages"],["Looks","5 reference sets · 12 outfits · 3 accessories"],["Places","5 environments"],["Voice","10 voices · samples and profiles"],["Poses & motion","3 poses · 19 motion clips"],["Agent","1 skill · memories"],["Rights","permissions · provenance"]];
+const rowsEl=$("rows");const rows=ROWS.map(([a,b],i)=>{const d=document.createElement("div");d.className="abs row";d.innerHTML=`<b>${a}</b><span>${b}</span>`;d.style.top=(300+i*102)+"px";rowsEl.appendChild(d);return d});
+
+// scene 4 — presets
+const PRE=[["img/clara-29.jpg","Clara, 29"],["img/clara-manga.jpg","Clara, manga"],["img/clara-65.jpg","Clara at 65"],["img/clara-combat.jpg","Clara, near future"]];
+const presEl=$("presets");const pres=PRE.map(([src,cap],i)=>{const w=document.createElement("div");w.className="abs";w.style.left=(120+i*420)+"px";w.style.top="300px";w.innerHTML=`<div class="pcard" style="background-image:url(${src})"></div><div class="pcap" style="margin-top:18px">${cap}</div>`;presEl.appendChild(w);return w});
+const pills=["English","Français","29","65","photo","manga"].map(t=>{const p=document.createElement("div");p.className="pill";p.textContent=t;$("pills").appendChild(p);return p});
+
+// scene 6 — cast
+const castEl=$("cast");const cast=[["img/lea.jpg","Léa Marchand","her own rights"],["img/martien.jpg","Martien","his own rights"]].map(([src,n,b],i)=>{const w=document.createElement("div");w.className="abs";w.style.left=(1020+i*430)+"px";w.style.top="260px";w.innerHTML=`<div class="portrait" style="width:380px;height:600px;background-image:url(${src})"></div><div class="name" style="margin-top:20px">${n}</div><div class="badge">${b}</div>`;castEl.appendChild(w);return w});
+
+const TEXT=[[0,5,"An AI character today:","six formats, six tools — and nothing says what you may do with it."],[5.4,9,"One character.<br>One open file.",""],[9,16,"Everything that<br>makes Clara.",""],[16,23,"Every version,<br>one file.","Presets: switch the language or the age — the rest follows."],[23,28,"Its rights travel<br>with it.",""],[28,32.6,"Several characters,<br>one file.","Each keeps its own looks, voice and rights."]];
+const DUR=38;
+function render(t){
+  // headline + subline
+  const cur=TEXT.find(([a,b])=>t>=a&&t<b);
+  const h1=$("h1"),s1=$("s1");
+  if(cur){const [a,b,h,s]=cur;if(h1.dataset.v!==h){h1.innerHTML=h;h1.dataset.v=h}if(s1.dataset.v!==s){s1.innerHTML=s;s1.dataset.v=s}
+    const o=win(t,a,b,.7,.5);set(h1,o,0,(1-out(k(t,a,a+.9)))*30);set(s1,win(t,a+.5,b,.7,.5),0,(1-out(k(t,a+.5,a+1.4)))*20);
+    s1.style.top=(h.includes("<br>")?300:220)+"px"; s1.style.left="124px"; h1.style.left="120px"}
+  else{set(h1,0);set(s1,0)}
+  if(cur&&cur[0]===16){h1.style.top="90px";s1.style.top="1022px";s1.style.fontSize="30px";set(h1,win(t,16,23,.7,.5));h1.style.left="1840px";h1.style.transform="translateX(-100%)";h1.style.textAlign="right";h1.style.width="700px"}
+  else{h1.style.top="96px";s1.style.fontSize="";h1.style.textAlign="";h1.style.width="1100px"}
+  if(cur&&cur[0]===9){h1.style.top="96px"}
+  if(cur&&(cur[0]===28)){h1.style.width="900px"}
+  // scene 1–2: pieces drift, then converge into the file
+  const conv=ease(k(t,5,7.2));
+  pieces.forEach((p,i)=>{const dx=Math.sin(t*.7+i)*14,dy=Math.cos(t*.6+i*1.3)*12;const cx=960-p.w/2,cy=520-p.h/2;
+    set(p.el,Math.min(k(t,.2+i*.12,.8+i*.12),1-k(t,6.6,7.2)),lerp(dx,cx-p.x,conv),lerp(dy,cy-p.y,conv),lerp(1,.25,conv),lerp(Math.sin(i)*4,0,conv))});
+  // the file
+  const fIn=out(k(t,6.6,7.6)),fMove=ease(k(t,9,10.2)),fOut=k(t,15.4,16);
+  set($("file"),Math.min(fIn,1-fOut),lerp(0,-680,fMove),lerp(0,330,fMove),lerp(.6+.4*fIn,.42,fMove));
+  // scene 3: Clara + contents
+  const cIn=out(k(t,9.6,10.6));set($("clara"),Math.min(cIn,1-k(t,15.4,16)),lerp(-40,0,cIn),0,1);
+  $("clara").style.left="560px";$("clara").style.top="300px";$("clara").style.width="360px";$("clara").style.height="740px";
+  rows.forEach((r,i)=>{const a=10.4+i*.42;const o=Math.min(out(k(t,a,a+.5)),1-k(t,15.4,16));set(r,o,(1-out(k(t,a,a+.6)))*60,0)});
+  // scene 4: presets + facet pills
+  pres.forEach((w,i)=>{const a=16.3+i*.35;set(w,Math.min(out(k(t,a,a+.6)),1-k(t,22.4,23)),0,(1-out(k(t,a,a+.7)))*80)});
+  const lang=t<19.6?0:1,age=t<21?0:1;
+  pills.forEach((p,i)=>{p.classList.toggle("on",(i===lang)||(i===2+age)||(i===4));set(p,Math.min(k(t,17.4+i*.1,17.9+i*.1),1-k(t,22.4,23)))});
+  // pill-driven highlight of the matching preset card
+  pres.forEach((w,i)=>{const on=(age===0&&i===0)||(age===1&&i===2);w.firstChild.style.outline=t>17.6&&t<22.6&&on?"6px solid var(--teal)":"none";w.firstChild.style.outlineOffset="6px"});
+  // scene 5: rights
+  const rIn=out(k(t,23.4,24.2));set($("rights"),Math.min(rIn,1-k(t,27.4,28)),0,(1-rIn)*40);
+  [...$("rights").children].forEach((r,i)=>{r.style.opacity=k(t,23.9+i*.35,24.4+i*.35)});
+  $("rights").style.top="380px";
+  // scene 6: cast
+  cast.forEach((w,i)=>{const a=28.4+i*.45;set(w,Math.min(out(k(t,a,a+.6)),1-k(t,32,32.6)),(1-out(k(t,a,a+.7)))*80,0)});
+  // scene 7: outro
+  const oIn=out(k(t,32.8,33.8));set($("outro"),oIn,0,(1-oIn)*40);
+  [...$("outro").children].forEach((c,i)=>{c.style.opacity=k(t,33+i*.4,33.6+i*.4)});
+  set($("credit"),k(t,34.5,35.5)*.9);
+}
+window.render=render;window.DUR=DUR;
+function fit(){const s=Math.min(innerWidth/1920,innerHeight/1080);$("stage").style.transform=`scale(${s})`}
+if(!/[?&]render/.test(location.search)){fit();addEventListener("resize",fit);let t0=null;const loop=ts=>{if(t0===null)t0=ts;render(((ts-t0)/1000)%DUR);requestAnimationFrame(loop)};document.fonts.ready.then(()=>requestAnimationFrame(loop))}
+else render(0);
+</script>
+</body>
+</html>
