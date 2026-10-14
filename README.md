@@ -5,9 +5,9 @@
 <p align="center"><b>One character = one file. Open, portable, consented.</b></p>
 
 <p align="center">
-<a href="https://yannsouetre.github.io/cof/viewer/"><img alt="Explore a .cof" src="https://img.shields.io/badge/Explore-a%20.cof-4cc2a8?style=for-the-badge&labelColor=0d1312"></a>
-<a href="https://yannsouetre.github.io/cof/builder/"><img alt="Build one in your browser" src="https://img.shields.io/badge/Build-in%20your%20browser-4cc2a8?style=for-the-badge&labelColor=0d1312"></a>
-<a href="https://github.com/yannsouetre/ComfyUI-COF"><img alt="ComfyUI nodes" src="https://img.shields.io/badge/ComfyUI-nodes-a98ae8?style=for-the-badge&labelColor=0d1312"></a>
+<a href="https://yannsouetre.github.io/cof/viewer/"><img src="docs/img/btn-explore.png" alt="Explore a .cof" width="250"></a>&nbsp;&nbsp;&nbsp;
+<a href="https://yannsouetre.github.io/cof/builder/"><img src="docs/img/btn-build.png" alt="Build in your browser" width="250"></a>&nbsp;&nbsp;&nbsp;
+<a href="https://github.com/yannsouetre/ComfyUI-COF"><img src="docs/img/btn-comfyui.png" alt="ComfyUI nodes" width="250"></a>
 </p>
 
 <p align="center"><a href="https://yannsouetre.github.io/cof/#clip">▶ Watch the 38-second clip, with sound</a> · <a href="README.fr.md">Français</a></p>

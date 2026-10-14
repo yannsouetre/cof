@@ -22,6 +22,10 @@ async def main():
         await pg.goto(f"{BASE}/tools/readme-figures/figures.html"); await pg.evaluate("document.fonts.ready"); await pg.wait_for_timeout(400)
         for fid in ("contents", "tools"):
             await pg.locator(f"#{fid}").screenshot(path=str(OUT / f"cof-{fid}.png"), omit_background=True)
+        btn = await br.new_page(viewport={"width": 1700, "height": 1000}, device_scale_factor=2)
+        await btn.goto(f"{BASE}/tools/readme-figures/figures.html"); await btn.evaluate("document.fonts.ready"); await btn.wait_for_timeout(300)
+        for el in await btn.locator(".btnimg").all():
+            await el.screenshot(path=str(OUT / f"{await el.get_attribute('id')}.png"), omit_background=True)
         clip = await br.new_page(viewport={"width": 1920, "height": 1080})
         await clip.goto(f"{BASE}/clip/index.html?render"); await clip.evaluate("document.fonts.ready"); await clip.wait_for_timeout(500)
         for name, t in (("presets", 20.5), ("rights", 26.5), ("cast", 31.0)):

@@ -62,6 +62,13 @@ aside,main{min-width:0}
 .pcard span{display:block;min-width:0}
 .pcard .t{font-weight:600;font-size:.92rem;overflow-wrap:anywhere}
 .pcard .s{font-size:.78rem;color:var(--muted)}
+[hidden]{display:none!important}
+#main{position:relative}
+#btnClose{position:absolute;top:10px;right:10px;width:34px;height:34px;padding:0;border-radius:50%;font-size:1.25rem;line-height:1;display:flex;align-items:center;justify-content:center;z-index:2}
+.rsum{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0 4px}
+.rsum .rk{display:inline-flex;gap:5px;align-items:baseline;border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:.8rem;background:var(--panel)}
+.rsum .rk i{font-style:normal;font-family:var(--mono);font-size:.78rem}
+.rsum .more{border:0;background:none;color:var(--accent);font-size:.82rem;cursor:pointer;padding:2px 4px;text-decoration:underline;text-underline-offset:3px}
 .hero{display:grid;grid-template-columns:minmax(200px,340px) 1fr;gap:22px;align-items:start}
 @media (max-width:640px){.hero{grid-template-columns:1fr}}
 .hero img{width:100%;max-height:520px;object-fit:contain;border-radius:12px;background:var(--chip)}
@@ -104,6 +111,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
   <button id="btnOpen" class="primary" data-i="open">Open a .cof</button>
   <button id="btnClara" data-i="sample1">Example: Clara</button>
   <button id="btnDuo" data-i="sample2">Example: Clara &amp; Martien</button>
+  <button id="btnTheme" aria-label="Light / dark"></button>
   <button id="btnLang" aria-label="Language">FR</button>
   <input id="file" type="file" accept=".cof,application/zip" hidden>
 </header>
@@ -131,14 +139,18 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 <script>
 "use strict";
 /* ---------- i18n ---------- */
-const T={en:{},fr:{tagline:"Lecture seule. Votre fichier ne quitte pas votre navigateur.",open:"Ouvrir un .cof",sample1:"Exemple : Clara",sample2:"Exemple : Clara et Martien",dropTitle:"Déposez un fichier .cof ici",dropText:"Un .cof est un fichier ouvert qui contient tout un personnage IA — personnalité, apparence, voix, poses, compétences d'agent — et ses droits. Ouvrez-en un pour parcourir ses presets, changer de langue ou d'âge en un clic, et voir ce que son auteur autorise.",build:"Créer le vôtre avec le builder →",noValidate:"Cet explorateur lit les fichiers ; il ne les valide pas. Utilisez cof validate pour cela.",
+const T={en:{},fr:{rightsShort:"Droits",allRights:"Tous les droits ›",commercial:"usage commercial",redistrib:"redistribution",voiceClone:"clonage de voix",training:"entraînement",close:"Fermer ce fichier",nonProfit:"personnel, non lucratif",personalProfit:"personnel, lucratif",corporation:"autorisé",dark:"🌙 Sombre",light:"☀️ Clair",yesW:"oui",noW:"non",tagline:"Lecture seule. Votre fichier ne quitte pas votre navigateur.",open:"Ouvrir un .cof",sample1:"Exemple : Clara",sample2:"Exemple : Clara et Martien",dropTitle:"Déposez un fichier .cof ici",dropText:"Un .cof est un fichier ouvert qui contient tout un personnage IA — personnalité, apparence, voix, poses, compétences d'agent — et ses droits. Ouvrez-en un pour parcourir ses presets, changer de langue ou d'âge en un clic, et voir ce que son auteur autorise.",build:"Créer le vôtre avec le builder →",noValidate:"Cet explorateur lit les fichiers ; il ne les valide pas. Utilisez cof validate pour cela.",
 look:"Apparence",offered:"Proposé avec ce preset",personality:"Personnalité",voice:"Voix",poses:"Poses et mouvements",files:"Compétences et fichiers",rights:"Droits",about:"Fiche",presets:"Presets",age:"âge",noAge:"âge non déclaré",intimate:"Un élément intime existe pour ce preset ; l'explorateur ne l'affiche jamais.",switchTo:"Changer",none:"aucun",style:"style",completeness:"complétude",backstage:"Éléments en coulisses (cités par aucun preset)",yes:"oui",no:"non",characters:"Personnages",loading:"Lecture…",badFile:"Ce fichier n'est pas un .cof lisible : ",fictional:"fictif",real:"personne réelle",consent:"consentement enregistré",noConsent:"pas de consentement enregistré",download:"Le fichier d'exemple n'a pas pu être chargé (page ouverte hors ligne ?) — ouvrez un .cof avec le bouton ou glissez-le ici. Détail : ",
 perm:{avatarPermission:"Qui peut l'incarner",commercialUsage:"Usage commercial",modification:"Modification",allowRedistribution:"Redistribution",creditNotation:"Crédit",allowExcessivelyViolentUsage:"Violence excessive",allowSexualUsage:"Usage sexuel",allowPoliticalOrReligiousUsage:"Usage politique ou religieux",allowAntisocialOrHateUsage:"Usage haineux",allowVoiceCloning:"Clonage de la voix",allowTraining:"Entraînement",allowImpersonationOfRealPerson:"Usurper une personne réelle",aiDisclosure:"Signaler que c'est une IA",ageRating:"Classification",minUserAge:"Âge minimum de l'utilisateur"}}};
-const EN={look:"Look",offered:"Offered with this preset",personality:"Personality",voice:"Voice",poses:"Poses & motion",files:"Skills & files",rights:"Rights",about:"Card",presets:"Presets",age:"age",noAge:"age not declared",intimate:"An intimate element exists for this preset; the explorer never displays it.",switchTo:"Switch",none:"none",style:"style",completeness:"completeness",backstage:"Backstage elements (used by no preset)",yes:"yes",no:"no",characters:"Characters",loading:"Reading…",badFile:"This file is not a readable .cof: ",fictional:"fictional",real:"real person",consent:"consent recorded",noConsent:"no consent recorded",download:"The example file could not be loaded (page opened offline?) — open a .cof with the button or drop it here. Details: ",
+const EN={yesW:"yes",noW:"no",rightsShort:"Rights",allRights:"All rights ›",commercial:"commercial use",redistrib:"redistribution",voiceClone:"voice cloning",training:"training",close:"Close this file",nonProfit:"personal, non-profit",personalProfit:"personal, for profit",corporation:"allowed",dark:"🌙 Dark",light:"☀️ Light",look:"Look",offered:"Offered with this preset",personality:"Personality",voice:"Voice",poses:"Poses & motion",files:"Skills & files",rights:"Rights",about:"Card",presets:"Presets",age:"age",noAge:"age not declared",intimate:"An intimate element exists for this preset; the explorer never displays it.",switchTo:"Switch",none:"none",style:"style",completeness:"completeness",backstage:"Backstage elements (used by no preset)",yes:"yes",no:"no",characters:"Characters",loading:"Reading…",badFile:"This file is not a readable .cof: ",fictional:"fictional",real:"real person",consent:"consent recorded",noConsent:"no consent recorded",download:"The example file could not be loaded (page opened offline?) — open a .cof with the button or drop it here. Details: ",
 perm:{avatarPermission:"Who may embody it",commercialUsage:"Commercial use",modification:"Modification",allowRedistribution:"Redistribution",creditNotation:"Credit",allowExcessivelyViolentUsage:"Excessive violence",allowSexualUsage:"Sexual use",allowPoliticalOrReligiousUsage:"Political or religious use",allowAntisocialOrHateUsage:"Hateful use",allowVoiceCloning:"Voice cloning",allowTraining:"Training",allowImpersonationOfRealPerson:"Impersonate a real person",aiDisclosure:"Disclose it is an AI",ageRating:"Rating",minUserAge:"Minimum user age"}};
 let LANG="en";try{LANG=localStorage.getItem("cofv-lang")||((navigator.language||"").startsWith("fr")?"fr":"en")}catch(e){}
 const tr=k=>(LANG==="fr"?T.fr[k]:EN[k])??EN[k]??k;
-function applyLang(){document.documentElement.lang=LANG;document.querySelectorAll("[data-i]").forEach(el=>{const v=LANG==="fr"?T.fr[el.dataset.i]:null;if(!el.dataset.en)el.dataset.en=el.innerHTML;el.innerHTML=v??el.dataset.en});document.getElementById("btnLang").textContent=LANG==="fr"?"EN":"FR";if(M)render()}
+function applyLang(){document.documentElement.lang=LANG;document.querySelectorAll("[data-i]").forEach(el=>{const v=LANG==="fr"?T.fr[el.dataset.i]:null;if(!el.dataset.en)el.dataset.en=el.innerHTML;el.innerHTML=v??el.dataset.en});document.getElementById("btnLang").textContent=LANG==="fr"?"EN":"FR";window.paintTheme&&window.paintTheme();if(M)render()}
+(function(){const root=document.documentElement;let saved=null;try{saved=localStorage.getItem("cof-theme")}catch(e){}if(saved==="dark"||saved==="light")root.dataset.theme=saved;
+  const isDark=()=>root.dataset.theme==="dark"||(!root.dataset.theme&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches);
+  const b=document.getElementById("btnTheme");window.paintTheme=()=>{b.textContent=isDark()?tr("light"):tr("dark")};
+  b.onclick=()=>{root.dataset.theme=isDark()?"light":"dark";try{localStorage.setItem("cof-theme",root.dataset.theme)}catch(e){}window.paintTheme()};window.paintTheme()})();
 document.getElementById("btnLang").onclick=()=>{LANG=LANG==="fr"?"en":"fr";try{localStorage.setItem("cofv-lang",LANG)}catch(e){}applyLang()};
 
 /* ---------- ZIP (stored + deflate, via DecompressionStream) ---------- */
@@ -184,6 +196,22 @@ function defaultIdentity(){return M.default_identity||Object.keys(ids())[0]||nul
 function presetOwner(pid){return inherited(pid,"identity")||defaultIdentity()}
 function variantOwner(cat,vid){const v=resolveVariant(cat,vid);return (v&&v.identity)||defaultIdentity()}
 function identityOf(iid){const I=ids()[iid];return I?{...I}:{name:M.name,nickname:M.nickname,summary:M.summary,fictional:M.fictional,morphology:M.morphology,consent:(M.rights||{}).consent}}
+function rightsSummary(pm){
+  const yn=v=>v?`<i class="yes">✓ ${tr("yesW")}</i>`:`<i class="no">✗ ${tr("noW")}</i>`;
+  const cu={personalNonProfit:tr("nonProfit"),personalProfit:tr("personalProfit"),corporation:tr("corporation")}[pm.commercialUsage];
+  const tz=pm.allowTraining&&pm.allowTraining!=="none";
+  const items=[];
+  if(pm.commercialUsage)items.push(`<span class="rk">${tr("commercial")} <i class="${pm.commercialUsage==="corporation"?"yes":""}">${esc(cu||pm.commercialUsage)}</i></span>`);
+  if("allowRedistribution" in pm)items.push(`<span class="rk">${tr("redistrib")} ${yn(pm.allowRedistribution)}</span>`);
+  if("allowVoiceCloning" in pm)items.push(`<span class="rk">${tr("voiceClone")} ${yn(pm.allowVoiceCloning)}</span>`);
+  if("allowTraining" in pm)items.push(`<span class="rk">${tr("training")} ${tz?`<i class="yes">✓ ${esc(pm.allowTraining)}</i>`:yn(false)}</span>`);
+  return items.join("");
+}
+function closeFile(){
+  for(const u of urls.values())URL.revokeObjectURL(u);urls.clear();
+  M=null;Z=null;curPreset=null;document.getElementById("app").hidden=true;document.getElementById("drop").hidden=false;
+  document.getElementById("file").value="";window.scrollTo(0,0);
+}
 function permsOf(pid){const iid=presetOwner(pid);const r=(ids()[iid]||{}).rights||M.rights||{};return {...(r.permissions||{}),...(P()[pid].permissions_override||{})}}
 function primaryImage(pid){const NS=nudeSet();const e=inherited(pid,"primary_image");if(e&&A()[e]&&!NS.has(e))return e;const r=resolved(slots(pid));for(const k of ["face","reference-set","character-sheet","body"])for(const v of (r.appearance||[]).filter(x=>x.kind===k))for(const i of v.images||[])if(A()[i]&&!NS.has(i)&&String(A()[i].mediaType||"").startsWith("image/"))return i;return null}
 const tags=()=>M.preset_tags||[];
@@ -255,13 +283,15 @@ async function renderPreset(){
   const pimNude=pim&&nudeSet().has(pim);let h=`<div class="hero"><div>${pimU?(pimNude?`<span class="nudewrap"><img src="${pimU}" alt="${esc(p.label||pid)}" class="nude" data-reveal><span>${LANG==="fr"?"nudité — cliquer pour afficher":"nudity — click to show"}</span></span>`:`<img src="${pimU}" alt="${esc(p.label||pid)}" data-zoom>`):`<div class="ph" style="aspect-ratio:3/4;background:var(--chip);border-radius:12px"></div>`}</div><div>
     <h2>${esc(I.name||M.name)}</h2><div class="muted">${esc(p.label||pid)}</div>
     <div class="badges"><span class="badge">${age===null?tr("noAge"):tr("age")+" "+Math.floor(age)}</span>${p.style?`<span class="badge">${tr("style")} ${esc(p.style)}</span>`:""}<span class="badge">${I.fictional===false?tr("real"):tr("fictional")}</span>${I.fictional===false?`<span class="badge ${I.consent?"ok":"warn"}">${I.consent?tr("consent"):tr("noConsent")}</span>`:""}${typeof comp==="number"?`<span class="badge ok">${tr("completeness")} ${comp}/100</span>`:""}</div>
+    <div class="rsum"><b class="muted" style="font-size:.8rem">${tr("rightsShort")}</b>${rightsSummary(perms)}<button class="more" data-tab="rights">${tr("allRights")}</button></div>
     <p class="text">${esc(I.summary||M.summary||"")}</p>${sw.join("")}
     ${hasIntimate?`<p class="note">${tr("intimate")}</p>`:""}</div></div>`;
   const tabs=[["look",tr("look")],["personality",tr("personality")],["voice",tr("voice")],["poses",tr("poses")],["files",tr("files")],["rights",tr("rights")]];
   h+=`<div class="tabs" role="tablist">${tabs.map(([k,l])=>`<button role="tab" aria-selected="${k===tab}" data-tab="${k}">${l}</button>`).join("")}</div><div id="tabBody"></div>`;
-  main.innerHTML=h;
+  main.innerHTML=`<button id="btnClose" title="${tr("close")}" aria-label="${tr("close")}">×</button>`+h;
+  document.getElementById("btnClose").onclick=closeFile;
   main.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{curPreset=b.dataset.go;render()});
-  main.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{tab=b.dataset.tab;renderPreset()});
+  main.querySelectorAll("[data-tab]").forEach(b=>b.onclick=async()=>{const more=b.classList.contains("more");tab=b.dataset.tab;await renderPreset();if(more)document.querySelector("#main .tabs")?.scrollIntoView({behavior:"smooth",block:"start"})});
   const body=main.querySelector("#tabBody");let t="";
   const label=v=>esc(v.label||v.kind);
   if(tab==="look"){

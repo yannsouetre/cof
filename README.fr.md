@@ -5,9 +5,9 @@
 <p align="center"><b>Un personnage = un fichier. Ouvert, portable, consenti.</b></p>
 
 <p align="center">
-<a href="https://yannsouetre.github.io/cof/viewer/"><img alt="Explorer un .cof" src="https://img.shields.io/badge/Explorer-un%20.cof-4cc2a8?style=for-the-badge&labelColor=0d1312"></a>
-<a href="https://yannsouetre.github.io/cof/builder/"><img alt="En créer un dans le navigateur" src="https://img.shields.io/badge/Cr%C3%A9er-dans%20le%20navigateur-4cc2a8?style=for-the-badge&labelColor=0d1312"></a>
-<a href="https://github.com/yannsouetre/ComfyUI-COF"><img alt="Nœuds ComfyUI" src="https://img.shields.io/badge/ComfyUI-n%C5%93uds-a98ae8?style=for-the-badge&labelColor=0d1312"></a>
+<a href="https://yannsouetre.github.io/cof/viewer/"><img src="docs/img/btn-explore-fr.png" alt="Explorer un .cof" width="250"></a>&nbsp;&nbsp;&nbsp;
+<a href="https://yannsouetre.github.io/cof/builder/"><img src="docs/img/btn-build-fr.png" alt="Créer dans le navigateur" width="250"></a>&nbsp;&nbsp;&nbsp;
+<a href="https://github.com/yannsouetre/ComfyUI-COF"><img src="docs/img/btn-comfyui-fr.png" alt="Nœuds ComfyUI" width="250"></a>
 </p>
 
 <p align="center"><a href="https://yannsouetre.github.io/cof/#clip">▶ Voir le clip de 38 secondes, avec le son</a> · <a href="README.md">English</a></p>

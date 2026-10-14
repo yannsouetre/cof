@@ -26,6 +26,8 @@ svg.wires{position:absolute;inset:0}
 .note b{color:var(--ink);font-weight:500}
 .pill{display:inline-block;padding:6px 18px;border-radius:999px;border:2px solid var(--line);color:var(--muted);font:500 20px Plex,sans-serif;margin:0 4px}
 .pill.on{background:var(--teal);border-color:var(--teal);color:#05201b}
+.btnimg{display:inline-flex;align-items:center;justify-content:center;gap:12px;width:330px;height:64px;border-radius:16px;background:#0d1312;border:1.5px solid #2a3533;color:#eef3f1;font:500 22px Plex,sans-serif;margin:8px;box-sizing:border-box}
+.btnimg i{font-style:normal;color:#4cc2a8;font-weight:500}
 </style></head><body>
 
 <!-- 1. What's in a .cof -->
@@ -63,6 +65,14 @@ svg.wires{position:absolute;inset:0}
   <svg style="position:absolute;left:0;top:0" width="1600" height="860"><line x1="800" y1="600" x2="800" y2="666" stroke="#4cc2a8" stroke-opacity=".55" stroke-width="2.5" stroke-dasharray="6 6"/></svg><div class="card teal" style="left:560px;top:666px;width:480px;text-align:center"><b>cof validate</b><span>ages · rights · hashes · scripts</span></div>
 </div>
 
+<div id="buttons">
+<span class="btnimg" id="btn-explore">Explore a .cof <i>→</i></span>
+<span class="btnimg" id="btn-build">Build in your browser <i>→</i></span>
+<span class="btnimg" id="btn-comfyui">ComfyUI nodes <i>→</i></span>
+<span class="btnimg" id="btn-explore-fr">Explorer un .cof <i>→</i></span>
+<span class="btnimg" id="btn-build-fr">Créer dans le navigateur <i>→</i></span>
+<span class="btnimg" id="btn-comfyui-fr">Nœuds ComfyUI <i>→</i></span>
+</div>
 <script>
 // connectors: from each card's inner edge to the file icon
 for (const fig of document.querySelectorAll(".fig")) {
