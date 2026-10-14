@@ -143,15 +143,15 @@ Et une **innovation à part** qui mérite sa propre visibilité : **COF-Vector**
 | 1 | Dépôt, licences, gouvernance, RFC 0001 | ✅ |
 | 2 | Spécification + schémas + règles (complétude, tags) | ✅ (1.0 RC, schémas publiés sur GitHub Pages) |
 | 3 | `cof-cli` : validate / pack / unpack / tokens / completeness / import-export PNG / SOUL / migrate / merge / extract | ✅ |
-| 4 | Exemples 1–2 (texte seul ; apparence) | ✅ (7 exemples) |
+| 4 | Exemples 1–2 (texte seul ; apparence) | ✅ (10 exemples publics, Clara partout) |
 | 5 | Découpage de planches + post-traitements (Python de référence) | ✅ (dérivés optionnels) |
 | 6 | Vocabulaires : FDV (visage descriptif), HAIR, FACS↔ARKit, LMA, squelettes | → 1.1 (styles visuels fait) |
 | 7 | Schémas des sous-fichiers : card, psyche, weights, voice profile, attitude, pose, skeleton, hair, body, consent, visemes — validés par la CLI | ✅ (11 schémas ; reste `outfit`, `voice.vec`, `face.mesh`) |
 | 8 | `voice measure` (mesures acoustiques → code vocal) | → 1.1 |
 | 9 | Pose depuis photo → OpenPose normalisé + rendu « bonhomme » | → 1.2 |
-| 10 | Builder (identités, 7 catégories typées, presets multi-emplacements, fusion, export de preset, version facile, interface FR/EN/DE/ES/ZH/JA) | ✅ (0.11.3 en ligne, entièrement traduit) |
-| 11 | Exemples : agent avec skills ✅, mixte adulte/mineur ✅ ; VRM + clips, entreprise, consentement complet → 1.1 | ⏳ |
-| 12 | Relecture croisée, **spec figée en 1.0** (gel de structure mer. 14 oct.), builder ⇄ CLI validés | ✅ (gel le 14 oct. en 1.0.0rc3 après deux passes de relecture à l'aveugle ; 38 fichiers négatifs) |
+| 10 | Builder (identités, 7 catégories typées, presets multi-emplacements, fusion, export de preset, version facile, interface FR/EN/DE/ES/ZH/JA) | ✅ (0.11.6 en ligne, entièrement traduit, à la charte graphique) |
+| 11 | Exemples : agent avec skills ✅, plusieurs personnages ✅ ; mixte adulte/mineur gardé en fichier de test neutre (décision du 14 oct.) ; VRM + clips, entreprise, consentement complet → 1.1 | ⏳ |
+| 12 | Relecture croisée, **spec figée en 1.0** (gel de structure mer. 14 oct.), builder ⇄ CLI validés | ✅ (gel le 14 oct. en 1.0.0rc3 après deux passes de relecture à l'aveugle ; 46 fichiers négatifs) |
 
 ## Phases
 
