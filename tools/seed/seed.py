@@ -154,7 +154,9 @@ def ulid() -> str:
 
 
 def slug(name: str) -> str:
-    s = re.sub(r"[^a-z0-9]+", "-", name.lower().encode("ascii", "ignore").decode()).strip("-")
+    import unicodedata
+    plain = unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode().lower()
+    s = re.sub(r"[^a-z0-9]+", "-", plain).strip("-")
     return s or "character"
 
 
