@@ -30,4 +30,24 @@
 | F-22 | MAJOR | `files` and `x-` categories have no declared regime | 📝 `files` and `x-` categories are libraries |
 | F-23 | MAJOR | example 10 `ps1` is photos typed `openpose`; fixed-neutral clips / openpose vs motion-capture consent | ✅ Clara's pose photos are three `photo` variants (`use: pose-only`) · 🟨 should motion clips and OpenPose stay *fixed* neutral? |
 | F-24 | MAJOR | references to things that do not exist in 1.0 (`skeletons-1.0`, schema titles "v0.5") | 📝 `skeletons-1.0` marked 1.1, `skeleton.json` recommended for `rig: custom`, schema titles and README at 1.0 |
-| F-25…F-45 | MINOR / EDITORIAL | wording, duplicated truths, debris | see below |
+| F-25 | MINOR | `age_override` called a "floor" but applied as a minimum | 📝 defined as the age the preset declares for itself (it can only lower the age); name kept |
+| F-26 | MINOR | root copy of the identity: copied fields unlisted, root rights unsaid | 📝 listed (`name`, `nickname`, `summary`, `fictional`, `morphology`); root rights = default character's |
+| F-27 | MINOR | `languages` "computed union" vs examples declaring it | 📝 author MAY declare it, tools add (union, nothing removed) |
+| F-28 | MINOR | `coverage.elements` mixes categories and kinds; layer keys | 📝 layer keys named (`physique`…) · ⏭ `coverage` vocabulary (computed field) |
+| F-29 | MINOR | `body.estimated` in three places | ⏭ 1.1 (pick one, keep the others as aliases) |
+| F-30 | MINOR | duplicated truths (`weights.json` vs variant / asset) | 📝 `weights.json` is authoritative, the copies are indexes |
+| F-31 | MINOR | `outfit.json` `default: true` | ✅ removed from the spec and the examples |
+| F-32 | MINOR | `extends` / `derives_from` cycles | ✅ both are errors |
+| F-33 | MINOR | facet navigation: equality or inclusion? | 📝 set equality (as implemented) |
+| F-34 | MINOR | default primary image: kind order or slot order? | 📝 kind order, then slot order, then first image (as implemented) |
+| F-35 | MINOR | `permissions_override` may widen | 📝 it may, except `allowSexualUsage` under 18 |
+| F-36 | MINOR | merge key ignores `fictional` / `morphology` | ✅ key = `name` + `nickname` + `fictional` + `morphology.class` (CLI and spec) |
+| F-37 | MINOR | "all-audiences copy by deleting one folder" incomplete | ✅ procedure described; `cof extract --no-intimate` also drops a removed primary image and the `nudity` flag |
+| F-38 | MINOR | MUSTs a program cannot check | 📝 § 11.1: they bind the author, validators check what is checkable; "80 % duplicates" → SHOULD, metric free; mimetype rule reworded for writers |
+| F-39 | MINOR | robot (`mechanical`) with age 3 gets the auto tag `child` | 🟨 age buckets only for human-form classes? |
+| F-40 | EDITORIAL | § 2.3 example cites variants not defined in § 2.2 | 📝 commented |
+| F-41 | MINOR | `tags.content: ["none", "nudity"]`; `species: ""` | ✅ `none` is exclusive (error); empty species removed from example 10 · ⏭ `species` minLength (the builder writes `""` today) |
+| F-42 | EDITORIAL | IMPLEMENTING stale on signatures and on the spec language | 📝 fixed |
+| F-43 | MINOR | mimetype local header "no extra field" only in IMPLEMENTING | 📝 normative in § 1.1 |
+| F-44 | MINOR | a voice perceived as a child in a preset with intimate content | ✅ warning |
+| F-45 | EDITORIAL | debris: v0.3 headings, § 11.4 before § 11.3, `pt-unsafe-not-allowed` hack, stale `tags.auto`, adult dialogue in the 14-year-old card | ✅ headings renamed, sections reordered, `format: const safetensors`, `tags.auto` recomputed, childhood dialogue rewritten (examples 07 / 09; 09's childhood face aligned on its card: 14) |

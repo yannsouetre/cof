@@ -784,7 +784,7 @@ def test_freeze_rules_consent_exec_forward_compat(tmp_path):
     assert any("x.svg carries script" in e for e in rep.errors), rep.errors
     assert any("inside archive" in e and "tool.exe" in e for e in rep.errors) and any("pickle file refused inside archive" in e for e in rep.errors)
     d3 = tmp_path / "f"; shutil.copytree(ROOT / "spec/examples/01-lea-text-only", d3)
-    m = json.loads((d3 / "manifest.json").read_text("utf-8")); m["cof"] = "1.3"; m["tags"]["content"] = ["none", "future-flag"]
+    m = json.loads((d3 / "manifest.json").read_text("utf-8")); m["cof"] = "1.3"; m["tags"]["content"] = ["future-flag"]
     (d3 / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d3, rep, recompute=False)
     assert rep.ok, rep.errors

@@ -1,3 +1,16 @@
+# Points à trancher par Yann (gel du 14 oct.)
+
+La structure 1.0 est **gelée le 14 octobre** (1.0.0rc3) après une relecture à l'aveugle par un autre modèle : 45 remarques, dont 5 bloquantes (toutes sur l'âge), toutes traitées — suivi dans `docs/reviews/2026-10-14-blind-review.md`. Après le gel, seules des corrections sont admises ; ce qui suit est réversible jusqu'à samedi, puis seulement en 2.0 pour ce qui durcit une règle (un validateur 1.x plus strict rendrait invalides des fichiers 1.0 valides).
+
+| # | Question | Ce qui est fait | Recommandation |
+|---|---|---|---|
+| 1 | Personne réelle : les portées de consentement manquantes sont-elles des erreurs ou des avertissements ? | Erreur pour `intimate`, pour les mémoires et pour le clonage de voix ; avertissement pour l'image (`likeness-image`), la 3D, la voix, le mouvement et l'entraînement. | **Passer `likeness-image` et `voice-synthesis` en erreurs avant samedi** : ce sont les deux usages majeurs, et durcir après 1.0 n'est plus possible. Garder les autres en avertissement. |
+| 2 | Les clips de mouvement et les squelettes OpenPose restent-ils *toujours* neutres ? | Toujours neutres (tableau du 13 oct.). | OpenPose : oui (des points clés ne portent pas d'identité). **Clips : choix de l'auteur, par défaut neutre** — une capture de mouvement d'une personne réelle est une donnée personnelle (portée `motion-capture`). |
+| 3 | Un preset est désormais **obligatoire** (le « preset implicite » n'était pas déterministe). | Fait ; `cof migrate` ajoute `default`. Tous les outils en écrivaient déjà un. | Garder. |
+| 4 | Étiquettes automatiques d'âge (`child`, `teen`…) pour un robot ou un être non humain. | Calculées pour toutes les classes (le robot de l'exemple 05, « 3 ans », reçoit `child`). | Ne les calculer que pour les classes de forme humaine (correctif mineur, `tags.auto` est recalculé). |
+| 5 | Empreintes des sous-fichiers JSON (aujourd'hui seulement le CRC du ZIP). | Documenté. | Ajouter en 1.1 un index optionnel `subfiles` (chemin → sha256) — additif. |
+| 6 | Nom du champ `age_override`. | Gardé, défini (« l'âge que le preset déclare pour lui-même »). | Garder : renommer coûterait une migration pour un gain de lisibilité faible. |
+
 # Révision du 13 octobre 2026 — stratégie d'adoption et objectifs de réussite
 
 **Principe** : le but est l'**adoption**, pas la monétisation. Un format gagne s'il est **neutre** (aucun acteur, pas même son auteur, n'en tire un avantage exclusif), **utile dès le premier jour** (il s'ouvre dans des outils réels) et s'il y a **des personnages à ouvrir**. Tout ce qui suit sert ces trois conditions.

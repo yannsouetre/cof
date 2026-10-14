@@ -2,6 +2,8 @@
 
 ## 1.0.0rc3 — 2026-10-14 — structure freeze, blind review
 
+**Structure frozen on 14 October 2026.** From here to 1.0.0, only fixes; open decisions are listed at the top of `docs/roadmap.md`.
+
 A blind review by another model (45 findings) found ways around the age rules; all are closed. Report and triage: `docs/reviews/2026-10-14-blind-review.md`.
 
 - **Ages are compared in years** (`unit: months` is divided by 12 — 100 months used to pass as an adult). `unknown-adult` is removed from `age.unit` (undefined meaning, never written by the builder).
@@ -16,6 +18,7 @@ A blind review by another model (45 findings) found ways around the age rules; a
 - **Executable content defined**: a normative list of extensions (scripts and binaries) plus SVG / HTML carrying script; `.zip` archives are inspected one level deep (pickles refused, executables need the declaration — they used to be checked only inside Daz archives, as warnings); `.rar` / `.7z` warned.
 - **Consent follows the content** for a real person: an intimate variant without scope `intimate` and memories without `conversational-persona` are errors; likeness images and weights (`likeness-image`), 3D (`likeness-3d`), voices (`voice-synthesis`), motion (`motion-capture`) and `allowTraining` (`training`) are warned. The consent record has one home: inline `identities.<id>.consent` (root copy `rights.consent`); `rights/consent.json` is gone from the tree.
 - Schema / spec alignment: `use: pose-only` (posture photos) in the enum; asset roles, image subjects, derived methods, voice priorities and `morphology.class` (required, no default) aligned on the schema; `age.basis` defined; every ZIP entry is an asset or a named sub-file (sub-files have no hash in 1.0); `files` and `x-` categories are libraries; region overlaps are warnings everywhere; `single_per_kind: false` allowed; `skeletons-1.0` marked 1.1; schema titles at 1.0. `spec/examples/manifest.example.json` (a v0.2 file) removed; example 10's pose photos are three `photo` variants (`use: pose-only`).
+- Minor and editorial fixes: `derives_from` cycles are errors; `tags.content: none` is exclusive; a voice perceived as a minor in a preset with intimate content is warned; the merge key adds `fictional` and `morphology.class`; `weights.json` is authoritative over its copies; facet navigation uses set equality; the default primary image order is spelled out; requirements no program can check are declared as author obligations; `languages` may be declared and tools add to it; `outfit.json` loses `default`; v0.3 headings renamed; § 11.3 / § 11.4 in order; `weights.schema.json` `format` is `const: "safetensors"`; examples: `tags.auto` recomputed, empty species removed, the 14-year-old card no longer reuses the adult's dialogue.
 - Negative corpus: 36 files (+ `age-in-months`, `intimate-file-shared`, `same-file-minor-and-adult`, `intimate-age-any-morphology`, `extends-cycle`, `thumbnail-missing`).
 
 ## 1.0.0rc2 — 2026-10-12 — applied and offered elements, primary image

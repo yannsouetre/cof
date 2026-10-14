@@ -187,7 +187,11 @@ def _dup_ratio(a: str, b: str) -> float:
     return len(sa & sb) / min(len(sa), len(sb)) if sa and sb else 0.0
 
 
+_SRC_ROOT: list = []          # directory being validated (read by rules that open a sub-file)
+
+
 def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
+    _SRC_ROOT[:] = [src]
     mpath = src / "manifest.json"
     if not mpath.is_file():
         rep.errors.append("manifest.json not found")
@@ -282,6 +286,11 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
             where = f"elements.{etype}.{vid}"
             if v.get("derives_from") and v["derives_from"] not in e["variants"]:
                 rep.errors.append(f"{where}: unknown derives_from {v['derives_from']}")
+            seen_df, cur = set(), vid
+            while cur and cur in e["variants"]:
+                if cur in seen_df:
+                    rep.errors.append(f"{where}: derives_from cycle"); break
+                seen_df.add(cur); cur = (e["variants"][cur] or {}).get("derives_from")
             rv = resolve_variant(manifest, etype, vid) or {}
             if etype in KINDS and rv.get("kind") not in KINDS[etype]:
                 rep.errors.append(f"{where}: unknown kind '{rv.get('kind')}' for {etype} (expected: {', '.join(KINDS[etype])})")
@@ -395,6 +404,8 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
     # intimate ⇒ tags.content must flag it (opt-in element, never hidden)
     has_intimate = any((v or {}).get("kind") == "intimate" for v in ((elements.get("appearance") or {}).get("variants", {}) or {}).values())
     content = set(((manifest.get("tags") or {}).get("content") or []))
+    if "none" in content and len(content) > 1:
+        rep.errors.append(f"tags.content: 'none' excludes every other value (found {sorted(content)})")
     if has_intimate and not (content & {"nudity", "sexual"}):
         rep.errors.append("intimate variant present: tags.content must include 'nudity' or 'sexual'")
     if manifest.get("preset_groups") is not None:
@@ -872,6 +883,15 @@ def _age_rules(manifest: dict, pid: str | None, res: dict, perms_all: dict, rep:
     ages = sorted((x, f"{cat}.{v['_id']}") for cat in AGE_CATEGORIES for v in res.get(cat, []) if v.get("kind") not in AGELESS_KINDS for x in [_age_value(v.get("age"))] if x is not None)
     if ages and ages[-1][0] - ages[0][0] >= 10:
         rep.warnings.append(f"{label}: mixes representations of very different ages ({ages[0][1]}: {ages[0][0]:g}, {ages[-1][1]}: {ages[-1][0]:g}) — an inherited element (e.g. a LoRA through extends) may not belong to this preset")
+    if by_kind(res, "appearance", "intimate"):
+        for v in res.get("voice", []):
+            try:
+                prof = json.loads((_SRC_ROOT[0] / v["profile"]).read_text("utf-8")) if v.get("profile") and _SRC_ROOT else {}
+            except Exception:
+                prof = {}
+            ap = str(((prof.get("canonical") or {}).get("age_perceived")) or "")
+            if re.fullmatch(r"\d+(\.\d+)?", ap) and float(ap) < ADULT:
+                rep.warnings.append(f"{label}: voice.{v['_id']} is perceived as {ap} years old in a preset with intimate content — check the voice belongs to this preset")
     eff_perms = effective_permissions(manifest, pid) if pid else {**perms_all}
     if pa is not None and pa < ADULT:
         if by_kind(res, "appearance", "intimate"):

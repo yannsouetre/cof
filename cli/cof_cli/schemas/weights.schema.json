@@ -22,12 +22,42 @@
       "description": "reference-latent only: how the references were pre-encoded (e.g. MiniMax H3 RefMods). Tool-specific keys are allowed.",
       "additionalProperties": true,
       "properties": {
-        "method": { "type": "string", "description": "encoder / tool, e.g. minimax-h3-refmod" },
-        "mode": { "enum": ["full", "pooled"], "description": "full = identity (one latent per frame), pooled = concept (spatially averaged)" },
-        "pool": { "type": "array", "items": { "type": "integer", "minimum": 1 }, "minItems": 2, "maxItems": 2, "description": "[h, w] grid when mode is pooled" },
-        "frames": { "type": "integer", "minimum": 1 },
-        "resolution": { "type": "integer", "minimum": 1 },
-        "sources": { "type": "array", "items": { "type": "string" }, "description": "asset ids of the images / videos that were encoded — keeps the latent re-encodable for another model" }
+        "method": {
+          "type": "string",
+          "description": "encoder / tool, e.g. minimax-h3-refmod"
+        },
+        "mode": {
+          "enum": [
+            "full",
+            "pooled"
+          ],
+          "description": "full = identity (one latent per frame), pooled = concept (spatially averaged)"
+        },
+        "pool": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "[h, w] grid when mode is pooled"
+        },
+        "frames": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "resolution": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "asset ids of the images / videos that were encoded — keeps the latent re-encodable for another model"
+        }
       }
     },
     "base_model": {
@@ -58,12 +88,9 @@
       "pattern": "^[a-z0-9][a-z0-9.-]{0,63}$"
     },
     "format": {
-      "enum": [
-        "safetensors",
-        "pt-unsafe-not-allowed"
-      ],
+      "const": "safetensors",
       "default": "safetensors",
-      "description": "safetensors only (pickle forbidden by the container)"
+      "description": "safetensors only (pickle is forbidden by the container)"
     },
     "rank": {
       "type": "integer",
@@ -157,20 +184,5 @@
   "required": [
     "kind",
     "base_model"
-  ],
-  "allOf": [
-    {
-      "if": {
-        "properties": {
-          "format": {
-            "const": "pt-unsafe-not-allowed"
-          }
-        },
-        "required": [
-          "format"
-        ]
-      },
-      "then": false
-    }
   ]
 }

@@ -13,9 +13,12 @@ from .model import preset_alternatives, resolve_preset_slots
 NOW = lambda: datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def _ident_key(m: dict, ident: dict | None = None) -> tuple[str, str]:
+def _ident_key(m: dict, ident: dict | None = None) -> tuple:
+    """Same character = same name, nickname, fictional status and morphology class (a real and a fictional
+    homonym, or two unrelated 'Marc' of different natures, stay distinct)."""
     i = ident or m
-    return ((i.get("name") or "").strip().lower(), (i.get("nickname") or "").strip().lower())
+    return ((i.get("name") or "").strip().lower(), (i.get("nickname") or "").strip().lower(),
+            i.get("fictional") is not False, ((i.get("morphology") or {}).get("class") or "human"))
 
 
 def _slug(s: str) -> str:

@@ -14,9 +14,9 @@
   "tags": {
     "auto": [
       "child",
-      "humanoid",
-      "image-only",
-      "multi-view",
+      "fr",
+      "has-minor-preset",
+      "human",
       "style-photo-realistic"
     ],
     "manual": [

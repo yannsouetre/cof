@@ -15,12 +15,12 @@
   },
   "tags": {
     "auto": [
-      "human",
-      "adult",
-      "fr",
+      "age-unknown",
       "en",
+      "fr",
+      "has-memory",
       "has-skills",
-      "has-memory"
+      "human"
     ],
     "manual": [
       "agent",

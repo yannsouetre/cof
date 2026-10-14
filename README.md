@@ -4,7 +4,7 @@
 
 COF is an open file format (`.cof`, a ZIP container) that bundles everything that defines an AI character: personality, appearance (photos, vector code, description), voice, 3D body, motion — **and** its rights, consent and provenance. The same file opens in a chat app, an image or video generator, a game engine, Blender, or serves as the "soul" of an agent.
 
-> Status: **1.0 release candidate** — format 1.0 (structure frozen on 14 October 2026, release v1.0.0 on 17 October), reference tooling `cof-cli` 1.0.0rc2, builder 0.11. Feedback welcome through the [issues](https://github.com/yannsouetre/cof/issues).
+> Status: **1.0 release candidate** — format 1.0 (structure frozen on 14 October 2026, release v1.0.0 on 17 October), reference tooling `cof-cli` 1.0.0rc3, builder 0.11. Feedback welcome through the [issues](https://github.com/yannsouetre/cof/issues).
 
 ## Why
 - No more juggling PNGs, WAVs, VRMs, LoRAs and scattered notes.

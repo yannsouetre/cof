@@ -14,9 +14,8 @@
   "tags": {
     "auto": [
       "adult",
-      "humanoid",
-      "image-only",
-      "multi-view",
+      "fr",
+      "human",
       "style-photo-realistic"
     ],
     "manual": [

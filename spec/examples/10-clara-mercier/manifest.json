@@ -6,8 +6,7 @@
   "summary": "Clara Mercier, a designer from Lyon, depicted from age 12 to 65. / Designer lyonnaise, déclinée de 12 à 65 ans.",
   "fictional": true,
   "morphology": {
-    "class": "human",
-    "species": ""
+    "class": "human"
   },
   "languages": [
     "en",
@@ -20,21 +19,23 @@
       "summary": "Clara Mercier, a designer from Lyon, depicted from age 12 to 65. / Designer lyonnaise, déclinée de 12 à 65 ans.",
       "fictional": true,
       "morphology": {
-        "class": "human",
-        "species": ""
+        "class": "human"
       }
     }
   },
   "default_identity": "id1",
   "tags": {
     "auto": [
-      "human",
       "adult",
       "child",
       "elder",
+      "en",
       "fr",
       "has-minor-preset",
+      "has-motion",
+      "has-skills",
       "has-voice",
+      "human",
       "multi-preset",
       "style-photo-realistic"
     ],

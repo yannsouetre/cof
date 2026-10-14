@@ -15,13 +15,15 @@
   },
   "tags": {
     "auto": [
-      "humanoid",
       "adult",
-      "contemporary",
-      "fr",
       "en",
+      "fr",
+      "has-minor-preset",
+      "has-weights",
+      "human",
+      "multi-preset",
       "style-photo-realistic",
-      "multi-preset"
+      "teen"
     ],
     "manual": [
       "fiction",

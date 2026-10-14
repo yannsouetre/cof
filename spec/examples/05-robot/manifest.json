@@ -14,9 +14,9 @@
   "tags": {
     "auto": [
       "child",
-      "image-only",
+      "fr",
+      "has-minor-preset",
       "mechanical",
-      "multi-view",
       "style-3d-render"
     ],
     "manual": [
