@@ -30,7 +30,7 @@ COF est conçu pour être rédigé par des agents : donnez au vôtre la skill [`
 COF est volontairement souple : presque tout est facultatif, les clés inconnues sont conservées, et il existe des portes de sortie explicites — un fichier 3D sans ses textures (`self_contained: false`), des poids LoRA par lien plutôt qu'intégrés, des catégories `x-` personnalisées. Cette ouverture ne tient qu'avec une **discipline sur ce qu'on y met** : le validateur bloque ce qui est dangereux ou cassé (mineurs et contenu intime, empreintes manquantes, références non résolues, exécutables non déclarés…), avertit sur ce qui est risqué (liens qui peuvent disparaître, 3D sans texture, transcriptions absentes…), et chaque auteur — humain, outil ou agent IA — fait la revue de cohérence du [§ 11.4 de la spec](spec/SPEC.fr.md) avant de publier : âges, identité, style, voix, langue, droits, provenance.
 
 ## Englober, pas remplacer
-Un `.cof` contient une Character Card V3 valide et s'exporte en PNG `ccv3`, `.charx`, `SOUL.md`/`IDENTITY.md`, `.vrm`. Les outils existants n'ont rien à réécrire.
+Un `.cof` contient une Character Card V3 valide et s'exporte en carte PNG `ccv3`, en carte JSON, en `SOUL.md`/`IDENTITY.md` et en espace de travail d'agent ; un avatar VRM qu'il contient est un fichier ordinaire (`cof unpack`). L'export `.charx` est prévu. Les outils existants n'ont rien à réécrire.
 
 ## Licences
 Code MIT · Spécifications CC BY 4.0 · Vocabulaires CC0 — voir `LICENSES.md`.

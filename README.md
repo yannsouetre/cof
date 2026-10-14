@@ -57,13 +57,13 @@ COF is deliberately flexible: almost everything is optional, unknown keys surviv
 ## Key documents
 - [`spec/SPEC.md`](spec/SPEC.md) — the specification
 - [`docs/IMPLEMENTING.md`](docs/IMPLEMENTING.md) — how to read and write `.cof` files in your tool
-- [`spec/examples/`](spec/examples/) — 10 conformant example characters
+- [`spec/examples/`](spec/examples/) — 11 conformant example characters
 - [`skills/cof-author/SKILL.md`](skills/cof-author/SKILL.md) — the skill that teaches an AI agent to create and update `.cof` files
 - [`spec/schemas/`](spec/schemas/) — JSON Schemas (draft 2020-12)
 - [`CHANGELOG.md`](CHANGELOG.md), [`CONTRIBUTING.md`](CONTRIBUTING.md), [`GOVERNANCE.md`](GOVERNANCE.md), [`SECURITY.md`](SECURITY.md)
 
 ## Embrace, don't replace
-A `.cof` contains a valid Character Card V3 and exports to `ccv3` PNG, `.charx`, `SOUL.md`/`IDENTITY.md`, `.vrm`. Existing tools have nothing to rewrite.
+A `.cof` contains a valid Character Card V3 and exports to a `ccv3` PNG card, a card JSON, `SOUL.md`/`IDENTITY.md` and an agent workspace; a VRM avatar inside is a plain file (`cof unpack`). `.charx` export is planned. Existing tools have nothing to rewrite.
 
 ## License
 | Part | License |
