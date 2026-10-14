@@ -73,7 +73,7 @@ html,body{margin:0;background:#000;overflow:hidden}
     <div class="l">Open spec (CC BY) · free tools (MIT) · builder in your browser</div>
     <div class="u">github.com/yannsouetre/cof</div>
   </div>
-  <div id="credit" class="abs">Clara Mercier, Léa Marchand and Martien are fictional COF example characters (AI-generated images).</div>
+  <div id="credit" class="abs">Clara Mercier and Martien are fictional COF example characters (AI-generated images).</div>
 </div>
 <script>
 "use strict";
@@ -87,8 +87,8 @@ function set(el,o,tx=0,ty=0,s=1,r=0){el.style.opacity=o;el.style.transform=`tran
 function win(t,a,b,fi=.6,fo=.6){return Math.min(k(t,a,a+fi),1-k(t,b-fo,b))}   // fade window
 
 // scene 1 — scattered pieces
-const CHIPS=[["card.png",180,430],["12 photos/",640,560],["lora.safetensors",1180,420],["voice.wav",1460,640],["avatar.vrm",300,760],["notes.txt",900,820],["poses.json",1370,860],["skills/",560,330]];
-const THUMBS=[["img/clara-29.jpg",1520,170],["img/clara-manga.jpg",1180,140],["img/clara-65.jpg",1700,420]];
+const CHIPS=[["cards (.png)",160,420],["photos (.jpeg)",660,440],["LoRA (.safetensors)",1120,400],["skills (.md)",280,625],["voice (.wav)",830,645],["poses (.json)",1380,650],["avatar (.vrm)",150,840],["notes (.txt)",720,870],["3D (.3mf, .duf)",1300,890]];
+const THUMBS=[["img/clara-29.jpg",1520,150],["img/clara-combat.jpg",1240,130],["img/clara-65.jpg",1720,430]];
 const chipsEl=$("chips");
 const pieces=[];
 for(const [txt,x,y] of CHIPS){const d=document.createElement("div");d.className="abs chipf";d.textContent=txt;d.style.left=x+"px";d.style.top=y+"px";chipsEl.appendChild(d);pieces.push({el:d,x,y,w:300,h:70})}
@@ -104,9 +104,9 @@ const presEl=$("presets");const pres=PRE.map(([src,cap],i)=>{const w=document.cr
 const pills=["English","Français","29","65","photo","manga"].map(t=>{const p=document.createElement("div");p.className="pill";p.textContent=t;$("pills").appendChild(p);return p});
 
 // scene 6 — cast
-const castEl=$("cast");const cast=[["img/lea.jpg","Léa Marchand","her own rights"],["img/martien.jpg","Martien","his own rights"]].map(([src,n,b],i)=>{const w=document.createElement("div");w.className="abs";w.style.left=(1020+i*430)+"px";w.style.top="260px";w.innerHTML=`<div class="portrait" style="width:380px;height:600px;background-image:url(${src})"></div><div class="name" style="margin-top:20px">${n}</div><div class="badge">${b}</div>`;castEl.appendChild(w);return w});
+const castEl=$("cast");const cast=[["img/clara-29.jpg","Clara Mercier","her own rights"],["img/martien.jpg","Martien","his own rights"]].map(([src,n,b],i)=>{const w=document.createElement("div");w.className="abs";w.style.left=(1020+i*430)+"px";w.style.top="260px";w.innerHTML=`<div class="portrait" style="width:380px;height:600px;background-image:url(${src})"></div><div class="name" style="margin-top:20px">${n}</div><div class="badge">${b}</div>`;castEl.appendChild(w);return w});
 
-const TEXT=[[0,5,"An AI character today:","six formats, six tools — and nothing says what you may do with it."],[5.4,9,"One character.<br>One open file.",""],[9,16,"Everything that<br>makes Clara.",""],[16,23,"Every version,<br>one file.","Presets: switch the language or the age — the rest follows."],[23,28,"Its rights travel<br>with it.",""],[28,32.6,"Several characters,<br>one file.","Each keeps its own looks, voice and rights."]];
+const TEXT=[[0,5,"An AI character today:","Many formats, many files — and nothing says what you may do with it."],[5.4,9,"One character.<br>One open file.",""],[9,16,"Everything that<br>makes Clara.",""],[16,23,"Every version,<br>one file.","Presets: switch the language or the age — the rest follows."],[23,28,"Its rights travel<br>with it.",""],[28,32.6,"Several characters,<br>one file.","Each keeps its own looks, voice and rights."]];
 const DUR=38;
 function render(t){
   // headline + subline
