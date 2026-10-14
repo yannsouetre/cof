@@ -38,7 +38,7 @@ Other commands: `import` (PNG/JSON character card → folder), `export --format 
 ## 2. Rules the validator enforces (know them before writing)
 - **Age lives on the representation, never on the identity.** `face`, `body`, `character-sheet`, `reference-set` of a human-form character MUST carry `age: {value, unit: "years", basis: "canonical"|"apparent"}`. A preset's age = min(ages of its applied **and offered** variants, `age_override`).
 - **Age gate**: `cof validate` enforces the per-preset age rules of spec § 9.4 (and the content flags of § 4.5) on everything a preset applies **or** offers. They are not negotiable: never try to work around them.
-- **Rights**: `rights.permissions` (VRM-style: `avatarPermission`, `commercialUsage`, `modification`, `aiDisclosure` required; `allowVoiceCloning`, `allowTraining`…). A real person (`fictional: false`) requires `consent`.
+- **Rights**: `rights.permissions` (VRM-style: `avatarPermission`, `commercialUsage`, `modification`, `aiDisclosure` required; `allowVoiceCloning`, `allowTraining`…). A real person (`fictional: false`) should have a `consent` record (required in principle for a private person, recommended before sharing; the validator warns without it).
 - **3D = one self-contained file** per variant (VRM, GLB, USDZ, 3MF, SPZ/PLY/SPLAT) carrying meshes, textures and rig; OBJ and glTF with external files are refused — convert to GLB first.
 - **No executable content** unless declared: `.py/.sh/.js` need `container.executableContent: "scripts"`; pickles (`.pt`, `.ckpt`, `.bin`, `.pkl`) are always refused; weights are safetensors.
 - **Preserve what you do not understand**: unknown keys, `extensions`, `x-` categories round-trip unchanged.
@@ -81,7 +81,7 @@ The builder runs coherence heuristics; you do not have it, so check by looking (
 - **Age-appropriateness**: every element of a preset — outfit, pose, text, voice — suits the preset's age; if something does not, stop and tell the user instead of building the file.
 - **Identity**: same person across one identity's variants (except deliberate age / style changes). **Style**: a preset's variants share its style.
 - **Voice**: perceived age and gender presentation match; sample language = `language`; transcripts match the audio.
-- **Language**: text variants are in their declared language. **Rights**: licences and permissions are the real ones; real person ⇒ consent.
+- **Language**: text variants are in their declared language. **Rights**: licences and permissions are the real ones; real person ⇒ consent recorded, or say why not (personal use, public-figure caricature).
 - **Provenance**: AI media carry `digitalSourceType: trainedAlgorithmicMedia`. **Secrets**: no keys or personal data in skills, memories, documents.
 - **Escape hatches are explicit**: a 3D file without textures needs `self_contained: false`; weights by link are an asset with `uri` (add `sha256` to pin a version) — embedding is the default.
 

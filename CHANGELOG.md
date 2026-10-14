@@ -2,6 +2,7 @@
 
 ## 1.0.0rc3 — 2026-10-14 — structure freeze, blind review
 
+- **A real person without consent is a warning, never a refusal** (decided by Yann on 14 October): personal use, caricature or satire of a public figure where the law allows it remain possible; consent is required in principle for a private person and strongly recommended before public sharing or sale; the author is responsible (SPEC § 9.2). Two hard rules stay: minors, and **intimate content of a real person without consent scope `intimate`** (error). The schema no longer requires `rights.consent` when `fictional: false`; readers SHOULD warn (MAY refuse) before using a real person's voice or LoRA without consent. Builder 0.11.5: the warning window lists these cases. Negative case `real-person-without-consent` becomes `real-person-intimate-without-consent`.
 - **Builder 0.11.4**: declaring a real person opens a window that **recommends** recording consent (and leads to the consent form) without imposing it; the consent scope list gains `intimate`.
 - **COF Explorer** (`viewer/`, <https://yannsouetre.github.io/cof/viewer/>): read-only page that opens a `.cof` in the browser — characters, presets by facet with one-click switching (language, age, style), primary image, applied and offered elements, personality, voice samples, poses and motion, skills, effective rights. Intimate elements are never displayed. Two examples load with one click (Clara, Léa & Martien).
 

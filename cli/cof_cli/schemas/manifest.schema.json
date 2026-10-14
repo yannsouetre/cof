@@ -432,30 +432,6 @@
   "allOf": [
     {
       "if": {
-        "properties": {
-          "fictional": {
-            "const": false
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "rights": {
-            "required": [
-              "permissions",
-              "consent"
-            ],
-            "properties": {
-              "consent": {
-                "type": "object"
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "if": {
         "required": [
           "presets"
         ],

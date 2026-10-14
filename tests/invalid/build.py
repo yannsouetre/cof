@@ -104,7 +104,7 @@ def _(d): m = load(d); m["presets"]["young"]["permissions_override"] = {"allowSe
 @case("two-faces-in-preset", "one variant per kind in a preset (except stackable kinds)", "§ 2.3", "face")
 def _(d): m = load(d); V(m, "appearance")["f2"] = dict(V(m, "appearance")["f1"], label="second adult face"); m["presets"]["default"]["slots"]["appearance"].append("f2"); save(d, m)
 
-@case("real-person-without-consent", "a non-fictional character requires consent", "§ 9.2", "consent")
+@case("real-person-intimate-without-consent", "intimate content of a real person requires their explicit consent (scope intimate)", "§ 9.2", "consent scope 'intimate'")
 def _(d): m = load(d); m["fictional"] = False; m.get("rights", {}).pop("consent", None); [i.update(fictional=False) for i in (m.get("identities") or {}).values()]; save(d, m)
 
 @case("age-in-months", "ages are compared in years: 100 months is 8 years", "§ 2.2", "intimate variant combined")

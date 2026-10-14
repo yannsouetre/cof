@@ -98,10 +98,10 @@
       "expect": "face"
     },
     {
-      "file": "real-person-without-consent.cof",
-      "rule": "a non-fictional character requires consent",
+      "file": "real-person-intimate-without-consent.cof",
+      "rule": "intimate content of a real person requires their explicit consent (scope intimate)",
       "spec": "§ 9.2",
-      "expect": "consent"
+      "expect": "consent scope 'intimate'"
     },
     {
       "file": "age-in-months.cof",

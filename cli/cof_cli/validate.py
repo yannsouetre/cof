@@ -265,7 +265,7 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                     rep.errors.append(f"the root must mirror the default identity ({k} differs)")
             for iid, ident in ids.items():
                 if ident.get("fictional") is False and not ident.get("consent"):
-                    rep.errors.append(f"identities.{iid}: real person without consent")
+                    rep.warnings.append(f"identities.{iid}: real person without a consent record — fine for personal use; required in principle for a private person, and strongly recommended before sharing or selling the file (the author is responsible)")
                 dpi = ident.get("default_preset")
                 if dpi and dpi not in (manifest.get("presets") or {}):
                     rep.errors.append(f"identities.{iid}.default_preset: unknown preset {dpi}")
@@ -277,7 +277,7 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
             perms = identity_rights(manifest, iid).get("permissions") or {}
             scope = (((ident or {}).get("consent") or (manifest.get("rights") or {}).get("consent")) or {}).get("scope") or []
             if perms.get("allowVoiceCloning") and "voice-synthesis" not in scope:
-                rep.errors.append(f"{'identities.' + iid if iid else 'rights'}: allowVoiceCloning is true for a real person but the consent scope does not include 'voice-synthesis'")
+                rep.warnings.append(f"{'identities.' + iid if iid else 'rights'}: allowVoiceCloning is true for a real person but the consent scope does not include 'voice-synthesis' — record that consent before letting others clone the voice")
             who = 'identities.' + iid if iid else 'rights'
             need: dict[str, list[str]] = {}
             for cat, e in (manifest.get("elements") or {}).items():
@@ -296,7 +296,7 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                         need.setdefault(sc, []).append(f"{cat}.{vid}")
             for sc, where in need.items():
                 msg = f"{who}: real person — {', '.join(where[:3])}{'…' if len(where) > 3 else ''} need(s) consent scope '{sc}'"
-                (rep.errors if sc in ("intimate",) or (sc == "conversational-persona" and any(w.startswith("files.") for w in where)) else rep.warnings).append(msg)
+                (rep.errors if sc == "intimate" else rep.warnings).append(msg + (" — intimate content of a real person is never allowed without their explicit consent" if sc == "intimate" else ""))
             if (perms.get("allowTraining") or "none") != "none" and "training" not in scope:
                 rep.warnings.append(f"{who}: real person — allowTraining is {perms.get('allowTraining')} but the consent scope does not include 'training'")
 
@@ -487,7 +487,7 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
         if isinstance(cobj, dict):
             validate_subfile(cobj, "consent", rep, cwhere)
     if manifest.get("fictional") is False and not (manifest.get("rights", {}) or {}).get("consent"):
-        rep.errors.append("non-fictional character without rights.consent")
+        rep.warnings.append("non-fictional character without rights.consent — the author is responsible for the use of a real person's likeness; consent is required in principle for a private person and strongly recommended before any public or commercial sharing")
 
     for vid, v in ((elements.get("personality") or {}).get("variants") or {}).items():
         if v.get("kind") == "description" and not (v.get("text") or "").strip():

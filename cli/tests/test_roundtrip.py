@@ -66,7 +66,7 @@ def test_real_person_needs_consent(workdir):
     (workdir / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report()
     validate_dir(workdir, rep)
-    assert any("consent" in e for e in rep.errors)
+    assert rep.ok and any("consent" in w for w in rep.warnings)        # a real person without consent is warned, not refused
 
 
 def test_undeclared_script_is_rejected(workdir):
@@ -681,8 +681,8 @@ def test_neutral_elements_may_share_files(tmp_path):
 
 
 def test_export_agent_no_intimate_voice_consent_auto_tags(tmp_path):
-    """export --format agent builds a workspace; extract --no-intimate makes a safe slice; a real person's voice may only
-    be cloned with consent scope voice-synthesis; tags.auto is computed."""
+    """export --format agent builds a workspace; extract --no-intimate makes a safe slice; cloning a real person's voice
+    without consent scope voice-synthesis is warned; tags.auto is computed."""
     from cof_cli.convert import export_agent
     from cof_cli.ops import extract_presets, strip_intimate
     from cof_cli.validate import auto_tags
@@ -703,10 +703,10 @@ def test_export_agent_no_intimate_voice_consent_auto_tags(tmp_path):
     mm["rights"]["permissions"]["allowVoiceCloning"] = True
     (d / "manifest.json").write_text(json.dumps(mm), "utf-8")
     rep = Report(); validate_dir(d, rep, recompute=False)
-    assert any("voice-synthesis" in e for e in rep.errors), rep.errors
+    assert any("voice-synthesis" in w for w in rep.warnings), rep.warnings          # warned (decided 14 Oct): the author is responsible
     mm["rights"]["consent"]["scope"].append("voice-synthesis"); (d / "manifest.json").write_text(json.dumps(mm), "utf-8")
     rep = Report(); validate_dir(d, rep, recompute=False)
-    assert not any("voice-synthesis" in e for e in rep.errors), rep.errors
+    assert not any("allowVoiceCloning" in w for w in rep.warnings), rep.warnings
 
 
 def _safetensors(path, ok=True):

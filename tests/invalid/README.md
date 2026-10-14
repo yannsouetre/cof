@@ -25,7 +25,7 @@ validator's error (`expect`) — other implementations only need to reject the f
 | `minor-preset-with-intimate.cof` | a preset under 18 never contains intimate content |
 | `minor-preset-sexual-usage.cof` | a preset under 18 never has an effective `allowSexualUsage` |
 | `two-faces-in-preset.cof` | one variant per kind in a preset (except stackable kinds) |
-| `real-person-without-consent.cof` | a non-fictional character requires consent |
+| `real-person-intimate-without-consent.cof` | intimate content of a real person requires their explicit consent (scope `intimate`) |
 | `weights-without-base-model.cof` | identity weights declare their base model |
 | `pickle-file.cof` | pickles are always refused |
 | `invalid-safetensors.cof` | a `.safetensors` must have a readable header that fits the file (a renamed pickle is refused) |
