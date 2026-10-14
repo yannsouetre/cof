@@ -15,7 +15,8 @@ Il tourne **sur ton PC**. Il ne publie, n'envoie et ne partage **rien**.
 ```powershell
 # Python 3.10+ (ou : winget install astral-sh.uv, puis uv venv && .venv\Scripts\activate)
 pip install google-genai pillow
-pip install -e ..\..\cli              # cof-cli, depuis le dépôt
+pip install -e ..\..\cli              # cof-cli, depuis un clone du dépôt
+# sans clone : pip install "git+https://github.com/yannsouetre/cof#subdirectory=cli"
 ```
 
 ## La clé de l'API
