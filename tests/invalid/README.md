@@ -29,6 +29,12 @@ validator's error (`expect`) — other implementations only need to reject the f
 | `weights-without-base-model.cof` | identity weights declare their base model |
 | `pickle-file.cof` | pickles are always refused |
 | `invalid-safetensors.cof` | a `.safetensors` must have a readable header that fits the file (a renamed pickle is refused) |
+| `age-in-months.cof` | ages are compared in years — 100 months is 8 years |
+| `intimate-file-shared.cof` | an intimate variant's files are its own |
+| `same-file-minor-and-adult.cof` | one file never represents both a person under 18 and an adult |
+| `intimate-age-any-morphology.cof` | with an intimate element, every body representation of the preset carries an age, whatever the morphology class |
+| `extends-cycle.cof` | preset inheritance has no cycle |
+| `thumbnail-missing.cof` | `manifest.thumbnail` names an existing file |
 | `undeclared-script.cof` | scripts require `container.executableContent` |
 | `obj-not-self-contained.cof` | 3D variants are self-contained (unless `self_contained: false`) |
 | `tag-unknown-preset.cof` | a preset tag lists existing presets |

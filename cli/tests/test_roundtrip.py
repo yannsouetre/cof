@@ -744,3 +744,15 @@ def test_reference_latent_and_safetensors_header(tmp_path):
     (d / "elements/identity_weights/r1/clara.refmod.safetensors").write_bytes(b"\x80\x04K\x01.")   # a pickle renamed
     rep = Report(); validate_dir(d, rep)
     assert any("invalid safetensors" in e for e in rep.errors)
+
+
+def test_age_units_and_inheritance():
+    """Ages are compared in years; age_override is inherited through extends, permissions_override is not."""
+    from cof_cli.model import preset_age, effective_permissions, _age_value
+    assert _age_value({"value": 100, "unit": "months"}) == 100 / 12
+    m = {"presets": {"kid": {"slots": {}, "age_override": {"value": 12}}, "kid2": {"extends": "kid", "slots": {}},
+                     "adult": {"slots": {}, "age_override": {"value": 30}, "permissions_override": {"allowSexualUsage": True}},
+                     "child": {"extends": "adult", "slots": {}, "age_override": {"value": 10}}},
+         "rights": {"permissions": {"allowSexualUsage": False}}}
+    assert preset_age(m, "kid2") == 12 and preset_age(m, "child") == 10
+    assert effective_permissions(m, "child").get("allowSexualUsage") is False

@@ -195,7 +195,8 @@
         "personality": [
           "p2"
         ],
-        "appearance": []
+        "appearance": [],
+        "identity_weights": []
       },
       "age_override": {
         "value": 14,
@@ -459,5 +460,5 @@
     "variants": 6,
     "presets": 2
   },
-  "thumbnail": "elements/face/f1/head.front.closeup.jpg"
+  "thumbnail": "elements/appearance/f1/head.front.closeup.jpg"
 }

@@ -107,6 +107,28 @@ def _(d): m = load(d); V(m, "appearance")["f2"] = dict(V(m, "appearance")["f1"],
 @case("real-person-without-consent", "a non-fictional character requires consent", "§ 9.2", "consent")
 def _(d): m = load(d); m["fictional"] = False; m.get("rights", {}).pop("consent", None); [i.update(fictional=False) for i in (m.get("identities") or {}).values()]; save(d, m)
 
+@case("age-in-months", "ages are compared in years: 100 months is 8 years", "§ 2.2", "intimate variant combined")
+def _(d): m = load(d); V(m, "appearance")["f-young"]["age"] = {"value": 100, "unit": "months", "basis": "canonical"}; m["presets"]["young"]["slots"]["appearance"] = ["f-young", "i1"]; m["presets"]["young"]["age_override"] = None; m["presets"]["young"].pop("age_override"); save(d, m)
+
+@case("intimate-file-shared", "an intimate variant's files are its own (own folder, no other variant)", "§ 4.5", "files are its own")
+def _(d): m = load(d); V(m, "appearance")["f1"]["images"].append("a-i1-placeholder"); save(d, m)
+
+@case("same-file-minor-and-adult", "one file never represents both a person under 18 and an adult", "§ 9.4", "represents both a person under")
+def _(d): m = load(d); V(m, "appearance")["f-young"]["images"] = ["a-head-front-closeup"]; save(d, m)
+
+@case("intimate-age-any-morphology", "with an intimate element, every body representation of the preset carries an age, whatever the morphology", "§ 9.4", "whatever the morphology class")
+def _(d):
+    m = load(d); m["morphology"]["class"] = "other"
+    for i in (m.get("identities") or {}).values():
+        i.setdefault("morphology", {})["class"] = "other"
+    V(m, "appearance")["f-young"].pop("age"); m["presets"]["young"]["slots"]["appearance"] = ["f-young", "i1"]; m["presets"]["young"].pop("age_override", None); save(d, m)
+
+@case("extends-cycle", "preset inheritance has no cycle", "§ 2.3", "extends cycle")
+def _(d): m = load(d); m["presets"]["default"]["extends"] = "young"; save(d, m)
+
+@case("thumbnail-missing", "manifest.thumbnail names an existing file", "§ 1.1", "manifest.thumbnail")
+def _(d): m = load(d); m["thumbnail"] = "Thumbnails/missing.png"; save(d, m)
+
 @case("weights-without-base-model", "identity weights declare their base model", "§ 4.6", "base_model")
 def _(d):
     m = load(d)

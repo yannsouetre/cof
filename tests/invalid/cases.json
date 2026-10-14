@@ -104,6 +104,42 @@
       "expect": "consent"
     },
     {
+      "file": "age-in-months.cof",
+      "rule": "ages are compared in years: 100 months is 8 years",
+      "spec": "§ 2.2",
+      "expect": "intimate variant combined"
+    },
+    {
+      "file": "intimate-file-shared.cof",
+      "rule": "an intimate variant's files are its own (own folder, no other variant)",
+      "spec": "§ 4.5",
+      "expect": "files are its own"
+    },
+    {
+      "file": "same-file-minor-and-adult.cof",
+      "rule": "one file never represents both a person under 18 and an adult",
+      "spec": "§ 9.4",
+      "expect": "represents both a person under"
+    },
+    {
+      "file": "intimate-age-any-morphology.cof",
+      "rule": "with an intimate element, every body representation of the preset carries an age, whatever the morphology",
+      "spec": "§ 9.4",
+      "expect": "whatever the morphology class"
+    },
+    {
+      "file": "extends-cycle.cof",
+      "rule": "preset inheritance has no cycle",
+      "spec": "§ 2.3",
+      "expect": "extends cycle"
+    },
+    {
+      "file": "thumbnail-missing.cof",
+      "rule": "manifest.thumbnail names an existing file",
+      "spec": "§ 1.1",
+      "expect": "manifest.thumbnail"
+    },
+    {
       "file": "weights-without-base-model.cof",
       "rule": "identity weights declare their base model",
       "spec": "§ 4.6",

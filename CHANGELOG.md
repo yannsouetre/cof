@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.0.0rc3 — 2026-10-14 — structure freeze, blind review
+
+A blind review by another model (45 findings) found ways around the age rules; all are closed. Report and triage: `docs/reviews/2026-10-14-blind-review.md`.
+
+- **Ages are compared in years** (`unit: months` is divided by 12 — 100 months used to pass as an adult). `unknown-adult` is removed from `age.unit` (undefined meaning, never written by the builder).
+- **One file, one age side**: a file used by variants whose ages fall on both sides of 18 is an error; an `intimate` variant's files must live in its own folder and be used by no other variant (example 09 shared one image between the adult face, the intimate variant and the 12-year-old face).
+- **With an intimate element, every body representation carries an age, whatever the morphology class** (declaring `class: other` used to remove the requirement).
+- **`extends` inheritance is now listed**: inherited `slots`, `alternatives`, `primary_image`, `identity`, `age_override` (nearest wins — it can only lower an age); never inherited `label`, `style`, `style_tags`, `rules`, `defaults`, `permissions_override`, `completeness`, `coherence`. An `extends` cycle is an error.
+- § 4.5 now says what § 9.4 says (the age rule is per preset, not per file) and gates intimate loading on the **effective** `allowSexualUsage`. `cof extract --no-intimate` also drops a removed primary image and the `nudity` flag.
+- Validator: `manifest.thumbnail` must name an existing file (six examples pointed to a folder that no longer exists); warning when a preset mixes representations ≥ 10 years apart (examples 07 and 09 inherited the adult LoRA in the childhood preset — fixed with `"identity_weights": []`).
+- Builder 0.11.2: same age rules in the checks; months converted on load; `age_override` inherited.
+- Negative corpus: 36 files (+ `age-in-months`, `intimate-file-shared`, `same-file-minor-and-adult`, `intimate-age-any-morphology`, `extends-cycle`, `thumbnail-missing`).
+
 ## 1.0.0rc2 — 2026-10-12 — applied and offered elements, primary image
 
 - **Pre-encoded references** (13 Oct): new `identity_weights` kind `reference-latent` for references encoded once into a model's conditioning space (MiniMax H3 *RefMods*, cached IP-Adapter / reference latents), with optional `encoding` (`method`, `mode` full / pooled, `pool`, `frames`, `resolution`, `sources`). `encoding.sources` names the embedded images it was encoded from — the `.cof` keeps the sources, the latent is a model-specific cache; the validator warns without it. Additive: no 1.0 file changes meaning.

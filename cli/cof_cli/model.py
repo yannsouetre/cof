@@ -316,7 +316,33 @@ ADULT = 18
 
 
 def _age_value(a) -> float | None:
-    return a["value"] if isinstance(a, dict) and isinstance(a.get("value"), (int, float)) else None
+    """Age in YEARS (every comparison is made in years: `unit: months` is divided by 12)."""
+    if not (isinstance(a, dict) and isinstance(a.get("value"), (int, float)) and not isinstance(a.get("value"), bool)):
+        return None
+    return a["value"] / 12 if a.get("unit") == "months" else a["value"]
+
+
+def preset_age_override(manifest: dict, pid: str | None):
+    """age_override is inherited through extends (nearest declaration wins) — inheriting can only lower a child's age."""
+    presets = manifest.get("presets", {}) or {}
+    seen, q = set(), pid
+    while q and q in presets and q not in seen:
+        seen.add(q)
+        if presets[q].get("age_override") is not None:
+            return presets[q]["age_override"]
+        q = presets[q].get("extends")
+    return None
+
+
+def extends_cycle(manifest: dict, pid: str) -> bool:
+    presets = manifest.get("presets", {}) or {}
+    seen, q = set(), pid
+    while q and q in presets:
+        if q in seen:
+            return True
+        seen.add(q)
+        q = presets[q].get("extends")
+    return False
 
 
 def variant_ages(manifest: dict) -> list[float]:
@@ -346,8 +372,7 @@ def preset_age(manifest: dict, pid: str | None) -> float | None:
     """Age of a preset = min(ages of its applied AND offered morphological variants, age_override). None = no age known (e.g. text only)."""
     res = resolved_all(manifest, pid)
     va = [x for cat in AGE_CATEGORIES for v in res.get(cat, []) if v.get("kind") not in AGELESS_KINDS for x in [_age_value(v.get("age"))] if x is not None]
-    p = (manifest.get("presets", {}) or {}).get(pid or "", {}) or {}
-    x = _age_value(p.get("age_override"))
+    x = _age_value(preset_age_override(manifest, pid))
     if x is not None:
         va.append(x)
     return min(va) if va else None

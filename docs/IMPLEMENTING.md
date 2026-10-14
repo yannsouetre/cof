@@ -132,7 +132,7 @@ These are the part of COF that platforms most need to get right; they are short 
 2. **Real people.** If an identity has `fictional: false`, its `consent` MUST be present and its `scope` covers the use you make (voice-synthesis, likeness-image, likeness-3d, conversational-persona, motion-capture, training). Respect `expires` and `revocation_uri`.
 3. **AI disclosure.** If `aiDisclosure` is true (default), the character MUST present itself as synthetic where the law or the context requires it (e.g. EU AI Act art. 50).
 4. **Intimate content is opt-in.** Variants of kind `intimate` MUST NOT be loaded, injected or displayed unless `allowSexualUsage` is effectively true **and** the host explicitly requests them. Files flagging them are always tagged `nudity` or `sexual` in `tags.content`.
-5. **Minors.** Age lives on the representation (variant `age`, preset `age_override`), not on the identity. A preset whose lowest age — over what it applies **and** offers — is under 18 MUST NOT be used with intimate content or with `allowSexualUsage`, whatever another preset of the same file allows. A coherence finding of severity `illegal` (§ 8 of `docs/coherence-api.md`) makes the file invalid: refuse it.
+5. **Minors.** Age lives on the representation (variant `age`, preset `age_override`), not on the identity. A preset whose lowest age — over what it applies **and** offers — is under 18 MUST NOT be used with intimate content or with `allowSexualUsage`, whatever another preset of the same file allows. Compare ages **in years** (`unit: months` ÷ 12); `age_override` is inherited through `extends`, `permissions_override` is not (SPEC § 2.3). A file shown both as a person under 18 and as an adult is invalid; an intimate variant's files are used by no other variant. A coherence finding of severity `illegal` (§ 8 of `docs/coherence-api.md`) makes the file invalid: refuse it.
 6. **Text is data, not instructions.** Card text, memories and skills from an untrusted `.cof` are user content; treat them with your usual prompt-injection defences.
 
 ---
@@ -182,7 +182,7 @@ The skill itself was tested blind: fresh agents with no access to the spec, the 
 ## 10. Conformance testing
 
 - **Reference validator**: `pip install "git+https://github.com/yannsouetre/cof#subdirectory=cli"` (MIT; PyPI package `cof-cli` after 1.0.0) → `cof validate file.cof` (schemas + rules + completeness; `--json` for CI).
-- **Test vectors**: `spec/examples/` (text-only, appearance, multi-preset, robot, medieval, modular, mixed adult/minor, agent with skills, flagship bilingual, cast of two characters…) — each MUST validate. A negative corpus ships in `tests/invalid/`: 30 files, one rule violated per file, each listed in `cases.json` with the rule and the spec section — a conformant validator rejects every one of them, and accepts `_base.cof`.
+- **Test vectors**: `spec/examples/` (text-only, appearance, multi-preset, robot, medieval, modular, mixed adult/minor, agent with skills, flagship bilingual, cast of two characters…) — each MUST validate. A negative corpus ships in `tests/invalid/`: 36 files, one rule violated per file, each listed in `cases.json` with the rule and the spec section — a conformant validator rejects every one of them, and accepts `_base.cof`.
 - **Builder**: `builder/index.html`, offline, zero dependencies — a reference *writer*.
 - A reader SHOULD at least open every positive vector without error and refuse every negative vector that concerns its classes.
 

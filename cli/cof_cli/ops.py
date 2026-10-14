@@ -354,8 +354,15 @@ def strip_intimate(dst: Path) -> list[str]:
                 p[key]["appearance"] = [x for x in p[key]["appearance"] if x not in gone]
         if (p.get("permissions_override") or {}).get("allowSexualUsage"):
             p["permissions_override"]["allowSexualUsage"] = False
+        if p.get("primary_image") and p["primary_image"] in freed - still:
+            p.pop("primary_image")
     for r in [m.get("rights") or {}] + [(i or {}).get("rights") or {} for i in (m.get("identities") or {}).values()]:
         if "permissions" in r:
             r["permissions"]["allowSexualUsage"] = False
+    tc = (m.get("tags") or {}).get("content")
+    if gone and isinstance(tc, list) and "nudity" in tc:     # images gone; `sexual` stays when set (texts may still be concerned)
+        tc.remove("nudity")
+        if not tc:
+            tc.append("none")
     (dst / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
     return gone
