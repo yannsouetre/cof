@@ -272,12 +272,16 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                 elif dpi and preset_owner(manifest, dpi) != iid:
                     rep.errors.append(f"identities.{iid}.default_preset: preset {dpi} belongs to character {preset_owner(manifest, dpi)}")
     _character_rules(manifest, ids, rep)
+    if ids and (manifest.get("rights") or {}).get("consent") is not None:
+        did = manifest.get("default_identity") or next(iter(ids), None)
+        if (ids.get(did) or {}).get("consent") != manifest["rights"]["consent"] and len(ids) > 1:
+            rep.errors.append(f"rights.consent must be a copy of identities.{did}.consent (the default character's record) — in a cast each character's consent lives in identities.<id>.consent")
     for iid, ident in ({**ids} if ids else {None: {k: manifest.get(k) for k in ("fictional",)} | {"consent": (manifest.get("rights") or {}).get("consent")}}).items():
         if (ident or {}).get("fictional") is False:
             perms = identity_rights(manifest, iid).get("permissions") or {}
             own = (ident or {}).get("consent")
-            if own is None and (not ids or iid == (manifest.get("default_identity") or next(iter(ids), None))):
-                own = (manifest.get("rights") or {}).get("consent")      # the root copy belongs to the default character only
+            if own is None and (not ids or (len(ids) == 1 and iid == (manifest.get("default_identity") or next(iter(ids), None)))):
+                own = (manifest.get("rights") or {}).get("consent")      # single character: the root record is its record
             scope = (own or {}).get("scope") or []
             if perms.get("allowVoiceCloning") and "voice-synthesis" not in scope:
                 rep.warnings.append(f"{'identities.' + iid if iid else 'rights'}: allowVoiceCloning is true for a real person but the consent scope does not include 'voice-synthesis' — record that consent before letting others clone the voice")

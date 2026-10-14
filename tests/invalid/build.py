@@ -180,6 +180,11 @@ def _(d):
 @case("nude-thumbnail", "the file thumbnail (thumbnail_source, default primary image) never shows nudity or intimate content", "§ 1.1", "shows nudity or intimate content")
 def _(d): m = load(d); V(m, "appearance")["b1"]["nudity"] = True; V(m, "appearance")["o1"]["nudity"] = True; m["thumbnail_source"] = "a-body-front"; save(d, m)
 
+@case("cast-root-consent-mismatch", "in a cast, rights.consent is a copy of the default character's record", "§ 9.2", "must be a copy of identities")
+def _(d):
+    m = two_characters(load(d)); cons = {"subject_is_real_person": True, "scope": ["likeness-image", "nudity"], "granted": "2026-10-10", "jurisdictions": ["FR"], "proof": [{"type": "signed-document"}]}
+    m["identities"]["marc"].update(fictional=False, consent=cons); m["rights"]["consent"] = cons; save(d, m)
+
 @case("weights-without-base-model", "identity weights declare their base model", "§ 4.6", "base_model")
 def _(d):
     m = load(d)

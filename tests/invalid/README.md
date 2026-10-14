@@ -44,6 +44,7 @@ validator's error (`expect`) — other implementations only need to reject the f
 | `cast-nudity-borrowed-consent.cof` | in a cast, each real person's consent is their own |
 | `nudity-without-age.cof` | a preset applying a nude element has a known age (18 or over) |
 | `nude-thumbnail.cof` | the file thumbnail never shows nudity or intimate content |
+| `cast-root-consent-mismatch.cof` | in a cast, `rights.consent` is a copy of the default character's record |
 | `undeclared-script.cof` | scripts require `container.executableContent` |
 | `obj-not-self-contained.cof` | 3D variants are self-contained (unless `self_contained: false`) |
 | `tag-unknown-preset.cof` | a preset tag lists existing presets |

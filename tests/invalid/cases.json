@@ -194,6 +194,12 @@
       "expect": "shows nudity or intimate content"
     },
     {
+      "file": "cast-root-consent-mismatch.cof",
+      "rule": "in a cast, rights.consent is a copy of the default character's record",
+      "spec": "§ 9.2",
+      "expect": "must be a copy of identities"
+    },
+    {
       "file": "weights-without-base-model.cof",
       "rule": "identity weights declare their base model",
       "spec": "§ 4.6",
