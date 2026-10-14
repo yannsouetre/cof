@@ -37,6 +37,10 @@ validator's error (`expect`) — other implementations only need to reject the f
 | `thumbnail-missing.cof` | `manifest.thumbnail` names an existing file |
 | `age-unknown-unit.cof` | an age whose unit is not understood never counts as adult |
 | `nested-archive-pickle.cof` | archives are inspected with their nested archives |
+| `nudity-in-minor-preset.cof` | no nudity of any kind in a preset under 18 |
+| `nudity-without-content-flag.cof` | a variant marked `nudity` requires `tags.content` `nudity` |
+| `nude-file-reused-unmarked.cof` | a file showing nudity is used only by variants marked `nudity` (or intimate) |
+| `real-person-nudity-without-consent.cof` | nudity of a real person requires their explicit consent (scope `nudity` or `intimate`) |
 | `undeclared-script.cof` | scripts require `container.executableContent` |
 | `obj-not-self-contained.cof` | 3D variants are self-contained (unless `self_contained: false`) |
 | `tag-unknown-preset.cof` | a preset tag lists existing presets |

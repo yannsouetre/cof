@@ -294,9 +294,11 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                           "motion-capture" if cat == "motion" and k in ("clips", "video") and not is_neutral(cat, rv) else None)
                     if sc and sc not in scope:
                         need.setdefault(sc, []).append(f"{cat}.{vid}")
+                    if rv.get("nudity") is True and k != "intimate" and not ({"nudity", "intimate"} & set(scope)):
+                        need.setdefault("nudity", []).append(f"{cat}.{vid}")
             for sc, where in need.items():
                 msg = f"{who}: real person — {', '.join(where[:3])}{'…' if len(where) > 3 else ''} need(s) consent scope '{sc}'"
-                (rep.errors if sc == "intimate" else rep.warnings).append(msg + (" — intimate content of a real person is never allowed without their explicit consent" if sc == "intimate" else ""))
+                (rep.errors if sc in ("intimate", "nudity") else rep.warnings).append(msg + (" — nudity or intimate content of a real person (public or private) is never allowed without their explicit consent" if sc in ("intimate", "nudity") else ""))
             if (perms.get("allowTraining") or "none") != "none" and "training" not in scope:
                 rep.warnings.append(f"{who}: real person — allowTraining is {perms.get('allowTraining')} but the consent scope does not include 'training'")
 
@@ -448,6 +450,9 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
         rep.errors.append(f"tags.content: 'none' excludes every other value (found {sorted(content)})")
     if has_intimate and not (content & {"nudity", "sexual"}):
         rep.errors.append("intimate variant present: tags.content must include 'nudity' or 'sexual'")
+    nude = [f"{c}.{vid}" for c, e in elements.items() for vid in ((e or {}).get("variants") or {}) if (resolve_variant(manifest, c, vid) or {}).get("nudity") is True]
+    if nude and not (content & {"nudity", "sexual"}):
+        rep.errors.append(f"variant(s) marked nudity ({', '.join(nude[:3])}): tags.content must include 'nudity'")
     if manifest.get("preset_groups") is not None:
         rep.warnings.append("preset_groups is deprecated (builder 0.8.0): use preset_tags — `cof migrate` converts it")
     seen_t = set()
@@ -892,6 +897,10 @@ def _asset_age_rules(manifest: dict, A: dict, rep: "Report") -> None:
             pth = (A.get(aid) or {}).get("path") or ""
             if pth and not pth.startswith(f"elements/appearance/{vid}/"):
                 rep.errors.append(f"appearance.{vid} (intimate): asset {aid} must live in elements/appearance/{vid}/ (found {pth})")
+        if any(rv.get("nudity") is True for _, _, rv in us):
+            plain = [f"{c}.{v}" for c, v, rv in us if rv.get("nudity") is not True and rv.get("kind") != "intimate"]
+            if plain:
+                rep.errors.append(f"asset {aid} shows nudity and is also used by {', '.join(plain)}, not marked nudity — mark it, or use another file")
         ages = [(x, f"{c}.{v}") for c, v, rv in us if rv.get("kind") not in AGELESS_KINDS for x in [_age_value(rv.get("age"))] if x is not None]
         if ages and min(ages)[0] < ADULT <= max(ages)[0]:
             rep.errors.append(f"asset {aid} represents both a person under {ADULT} ({min(ages)[1]}: {min(ages)[0]:g}) and an adult ({max(ages)[1]}: {max(ages)[0]:g}) — use separate files")
@@ -909,14 +918,15 @@ def _age_rules(manifest: dict, pid: str | None, res: dict, perms_all: dict, rep:
                 continue
             if age_required(manifest, pid, v) and _age_value(v.get("age")) is None:
                 rep.errors.append(f"{label}: {cat}.{v['_id']} ({v['kind']}) must declare an age (basis 'apparent' if the canonical age is unknown)")
-    if by_kind(res, "appearance", "intimate"):
-        # an intimate element is applied or offered: every representation of the body carries an age, whatever the morphology class
+    nude_vs = [(cat, v) for cat in res for v in res.get(cat, []) if v.get("nudity") is True]
+    if by_kind(res, "appearance", "intimate") or nude_vs:
+        # an intimate or nude element is applied or offered: every representation of the body carries an age, whatever the morphology class
         for cat in AGE_CATEGORIES:
             for v in res.get(cat, []):
                 k = v.get("kind")
                 carries = (cat == "appearance" and k in AGE_REQUIRED_KINDS) or cat == "identity_weights" or (cat == "volume3d" and k not in ("environment", "other") and (k != "daz" or v.get("daz_category") == "characters"))
                 if carries and _age_value(v.get("age")) is None and not age_required(manifest, pid, v):
-                    rep.errors.append(f"{label}: {cat}.{v['_id']} ({k}) must declare an age — the preset applies or offers an intimate element, so the age is required whatever the morphology class")
+                    rep.errors.append(f"{label}: {cat}.{v['_id']} ({k}) must declare an age — the preset applies or offers an intimate or nude element, so the age is required whatever the morphology class")
     ages = sorted((x, f"{cat}.{v['_id']}") for cat in AGE_CATEGORIES for v in res.get(cat, []) if v.get("kind") not in AGELESS_KINDS for x in [_age_value(v.get("age"))] if x is not None)
     if ages and ages[-1][0] - ages[0][0] >= 10:
         rep.warnings.append(f"{label}: mixes representations of very different ages ({ages[0][1]}: {ages[0][0]:g}, {ages[-1][1]}: {ages[-1][0]:g}) — an inherited element (e.g. a LoRA through extends) may not belong to this preset")
@@ -933,6 +943,8 @@ def _age_rules(manifest: dict, pid: str | None, res: dict, perms_all: dict, rep:
     if pa is not None and pa < ADULT:
         if by_kind(res, "appearance", "intimate"):
             rep.errors.append(f"{label}: intimate variant combined with an element under {ADULT} (preset age {pa}) — forbidden")
+        for cat_, v in nude_vs:
+            rep.errors.append(f"{label}: {cat_}.{v['_id']} shows nudity in a preset under {ADULT} (preset age {pa:g}) — no nudity of any kind under {ADULT}")
         for b in by_kind(res, "appearance", "body"):
             if b.get("estimated"):
                 rep.errors.append(f"{label}: estimated morphology forbidden (age {pa})")

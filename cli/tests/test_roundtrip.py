@@ -792,3 +792,14 @@ def test_freeze_rules_consent_exec_forward_compat(tmp_path):
     m.pop("presets"); m.pop("default_preset"); m["cof"] = "1.0"; (d3 / "manifest.json").write_text(json.dumps(m), "utf-8")
     rep = Report(); validate_dir(d3, rep, recompute=False)
     assert any("at least one preset" in e for e in rep.errors), rep.errors
+
+
+def test_adult_fictional_nudity_is_allowed(tmp_path):
+    """Nudity without genitals (variant flag `nudity`) is fine for an adult fictional character once flagged."""
+    d = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/09-mixte-adulte-mineur", d)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    V = m["elements"]["appearance"]["variants"]
+    V["b1"]["nudity"] = True; V["o1"]["nudity"] = True
+    (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    rep = Report(); validate_dir(d, rep, recompute=False)
+    assert rep.ok, rep.errors

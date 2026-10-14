@@ -152,6 +152,30 @@
       "expect": "pickle file refused inside archive"
     },
     {
+      "file": "nudity-in-minor-preset.cof",
+      "rule": "no nudity of any kind in a preset under 18",
+      "spec": "§ 9.4",
+      "expect": "shows nudity in a preset under"
+    },
+    {
+      "file": "nudity-without-content-flag.cof",
+      "rule": "a variant marked nudity requires tags.content nudity",
+      "spec": "§ 4.5",
+      "expect": "tags.content must include 'nudity'"
+    },
+    {
+      "file": "nude-file-reused-unmarked.cof",
+      "rule": "a file showing nudity is used only by variants marked nudity (or intimate)",
+      "spec": "§ 4.5",
+      "expect": "shows nudity and is also used by"
+    },
+    {
+      "file": "real-person-nudity-without-consent.cof",
+      "rule": "nudity of a real person requires their explicit consent (scope nudity or intimate)",
+      "spec": "§ 9.2",
+      "expect": "consent scope 'nudity'"
+    },
+    {
       "file": "weights-without-base-model.cof",
       "rule": "identity weights declare their base model",
       "spec": "§ 4.6",

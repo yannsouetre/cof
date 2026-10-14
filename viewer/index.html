@@ -91,6 +91,9 @@ dialog{border:none;border-radius:12px;padding:0;background:var(--panel);max-widt
 dialog img{display:block;max-width:100%;max-height:86vh}
 dialog::backdrop{background:rgba(0,0,0,.6)}
 .err{color:var(--err)}
+.nude{filter:blur(28px);cursor:pointer}
+.nudewrap{position:relative;display:block}
+.nudewrap span{position:absolute;inset:auto 6px 6px 6px;font-size:.7rem;background:var(--panel);color:var(--ink);border-radius:6px;padding:2px 6px;text-align:center}
 @media (prefers-reduced-motion:no-preference){.pcard,.chip,button{transition:background .15s,border-color .15s}}
 </style>
 </head>
@@ -237,7 +240,8 @@ async function render(){
   await renderPreset();
 }
 
-async function gallery(aids,cap){const out=[];for(const aid of aids){const a=A()[aid];if(!a||!String(a.mediaType||"").startsWith("image/"))continue;const u=await urlOf(aid);if(u)out.push(`<figure><img src="${u}" alt="${esc(cap||"")}" data-zoom><figcaption>${esc([a.subject,a.angle].filter(Boolean).join(" · "))}</figcaption></figure>`)}return out.join("")}
+function nudeSet(){const n=new Set();for(const [cat,e] of Object.entries(M.elements||{}))for(const vid of Object.keys(e.variants||{})){const v=resolveVariant(cat,vid);if(v&&v.nudity===true)for(const k of ["images","derived"])for(const a of v[k]||[])n.add(a)}return n}
+async function gallery(aids,cap){const NS=nudeSet();const out=[];for(const aid of aids){const a=A()[aid];if(!a||!String(a.mediaType||"").startsWith("image/"))continue;const u=await urlOf(aid);if(u)out.push(`<figure>${NS.has(aid)?`<span class="nudewrap"><img src="${u}" alt="${esc(cap||"")}" class="nude" data-reveal><span>${LANG==="fr"?"nudité — cliquer pour afficher":"nudity — click to show"}</span></span>`:`<img src="${u}" alt="${esc(cap||"")}" data-zoom>`}<figcaption>${esc([a.subject,a.angle].filter(Boolean).join(" · "))}</figcaption></figure>`)}return out.join("")}
 
 async function renderPreset(){
   const main=document.getElementById("main");const pid=curPreset;if(!pid){main.innerHTML="";return}
@@ -249,7 +253,7 @@ async function renderPreset(){
   const sw=[];const myTags=tagsOf(pid);const byFacet={};for(const t of tags())if(t.facet)(byFacet[t.facet]=byFacet[t.facet]||[]).push(t);
   for(const [f,ts] of Object.entries(byFacet)){if(!myTags.some(t=>t.facet===f))continue;const opts=ts.map(t=>{const target=myTags.some(x=>x.id===t.id)?pid:facetSwitch(pid,t.id)[0];return target?`<button class="chip ${target===pid?"on":""}" data-go="${esc(target)}">${esc(t.label||t.id)}</button>`:""}).join("");if(opts)sw.push(`<div class="facet"><b>${esc(f)}</b><div class="row">${opts}</div></div>`)}
   const comp=(p.completeness||{}).score;
-  let h=`<div class="hero"><div>${pimU?`<img src="${pimU}" alt="${esc(p.label||pid)}" data-zoom>`:`<div class="ph" style="aspect-ratio:3/4;background:var(--chip);border-radius:12px"></div>`}</div><div>
+  const pimNude=pim&&nudeSet().has(pim);let h=`<div class="hero"><div>${pimU?(pimNude?`<span class="nudewrap"><img src="${pimU}" alt="${esc(p.label||pid)}" class="nude" data-reveal><span>${LANG==="fr"?"nudité — cliquer pour afficher":"nudity — click to show"}</span></span>`:`<img src="${pimU}" alt="${esc(p.label||pid)}" data-zoom>`):`<div class="ph" style="aspect-ratio:3/4;background:var(--chip);border-radius:12px"></div>`}</div><div>
     <h2>${esc(I.name||M.name)}</h2><div class="muted">${esc(p.label||pid)}</div>
     <div class="badges"><span class="badge">${age===null?tr("noAge"):tr("age")+" "+Math.floor(age)}</span>${p.style?`<span class="badge">${tr("style")} ${esc(p.style)}</span>`:""}<span class="badge">${I.fictional===false?tr("real"):tr("fictional")}</span>${I.fictional===false?`<span class="badge ${I.consent?"ok":"warn"}">${I.consent?tr("consent"):tr("noConsent")}</span>`:""}${typeof comp==="number"?`<span class="badge ok">${tr("completeness")} ${comp}/100</span>`:""}</div>
     <p class="text">${esc(I.summary||M.summary||"")}</p>${sw.join("")}
@@ -291,6 +295,7 @@ async function renderPreset(){
   }
   body.innerHTML=t;
   main.querySelectorAll("[data-zoom]").forEach(im=>im.onclick=()=>{document.getElementById("zoomImg").src=im.src;document.getElementById("zoom").showModal()});
+  main.querySelectorAll("[data-reveal]").forEach(im=>im.onclick=()=>{im.classList.remove("nude");im.removeAttribute("data-reveal");const l=im.nextElementSibling;if(l)l.remove();im.dataset.zoom="";im.onclick=()=>{document.getElementById("zoomImg").src=im.src;document.getElementById("zoom").showModal()}});
 }
 applyLang();
 if(location.hash==="#clara")sample("clara-mercier.cof");else if(location.hash==="#duo")sample("lea-martien.cof");

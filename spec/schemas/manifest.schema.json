@@ -815,6 +815,10 @@
               }
             }
           }
+        },
+        "nudity": {
+          "type": "boolean",
+          "description": "true when an image of this variant shows nudity WITHOUT visible genitals (bare chest, buttocks…). Visible genitals or sexual acts belong only in kind intimate. Forbidden in any preset under 18; for a real person, requires consent scope nudity or intimate."
         }
       },
       "required": [
@@ -1493,7 +1497,8 @@
               "conversational-persona",
               "motion-capture",
               "training",
-              "intimate"
+              "intimate",
+              "nudity"
             ]
           }
         },

@@ -144,6 +144,23 @@ def _(d):
     m["assets"].append({"id": "a-bundle", "path": "elements/files/x1/bundle.zip", "role": "archive", "mediaType": "application/zip", "license": "CC-BY-4.0"})
     m["elements"]["files"] = {"variants": {"x1": {"kind": "other", "files": ["a-bundle"]}}}; refresh_asset_index(d, m); save(d, m)
 
+@case("nudity-in-minor-preset", "no nudity of any kind in a preset under 18", "§ 9.4", "shows nudity in a preset under")
+def _(d): m = load(d); V(m, "appearance")["f-young"]["nudity"] = True; m["tags"]["content"] = ["nudity"]; save(d, m)
+
+@case("nudity-without-content-flag", "a variant marked nudity requires tags.content nudity", "§ 4.5", "tags.content must include 'nudity'")
+def _(d):
+    m = load(d); V(m, "appearance").pop("i1"); m["presets"]["default"]["slots"]["appearance"].remove("i1")
+    V(m, "appearance")["b1"]["nudity"] = True; V(m, "appearance")["o1"]["nudity"] = True; m["tags"]["content"] = ["none"]; save(d, m)
+
+@case("nude-file-reused-unmarked", "a file showing nudity is used only by variants marked nudity (or intimate)", "§ 4.5", "shows nudity and is also used by")
+def _(d): m = load(d); V(m, "appearance")["b1"]["nudity"] = True; save(d, m)
+
+@case("real-person-nudity-without-consent", "nudity of a real person requires their explicit consent (scope nudity or intimate)", "§ 9.2", "consent scope 'nudity'")
+def _(d):
+    m = load(d); m["fictional"] = False; [i.update(fictional=False) for i in (m.get("identities") or {}).values()]
+    V(m, "appearance").pop("i1"); m["presets"]["default"]["slots"]["appearance"].remove("i1"); m["elements"]["appearance"]["variants"]["b1"]["nudity"] = True; m["elements"]["appearance"]["variants"]["o1"]["nudity"] = True
+    m["rights"]["consent"] = {"subject_is_real_person": True, "scope": ["likeness-image"], "granted": "2026-10-10", "jurisdictions": ["FR"], "proof": [{"type": "signed-document"}]}; save(d, m)
+
 @case("weights-without-base-model", "identity weights declare their base model", "§ 4.6", "base_model")
 def _(d):
     m = load(d)
