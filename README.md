@@ -24,6 +24,9 @@ A `.cof` is a ZIP archive with a `mimetype` entry first and a `manifest.json` se
 See [`spec/SPEC.md`](spec/SPEC.md) for the full definition.
 
 ## Quick start
+**Explore a file** — open a `.cof` (or the Clara example) and browse its presets, looks, voices and rights:
+<https://yannsouetre.github.io/cof/viewer/>
+
 **Build a file in the browser** — no install, nothing leaves your machine:
 <https://yannsouetre.github.io/cof/builder/>
 
@@ -52,6 +55,7 @@ COF is deliberately flexible: almost everything is optional, unknown keys surviv
 | `docs/` | Implementer guide, state of the art, roadmap, completeness/tags/coherence rules |
 | `cli/` | Command-line tool (`validate`, `pack`, `import`, `export`, `migrate`…) |
 | `builder/` | The web builder (single HTML page) |
+| `viewer/` | The read-only explorer (single HTML page) |
 | `skills/` | Agent Skills for working with `.cof` files (`cof-author`) |
 
 ## Key documents

@@ -21,6 +21,7 @@ COF est un format de fichier ouvert (`.cof`, conteneur ZIP) qui réunit tout ce 
 | `docs/` | Guide d'implémentation, état de l'art, feuille de route |
 | `cli/` | Outil en ligne de commande (validate, pack, import, export, extract, merge…) |
 | `builder/` | Le builder web (une page HTML) — <https://yannsouetre.github.io/cof/builder/> |
+| `viewer/` | L'explorateur en lecture seule — <https://yannsouetre.github.io/cof/viewer/> |
 | `skills/` | Skills d'agent pour manipuler des `.cof` (`cof-author`) |
 
 ## Écrit par une IA

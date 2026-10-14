@@ -8,3 +8,5 @@ Thumbs.db
 *.cof
 !spec/examples/**/*.cof
 *.egg-info/
+.tmpdocs/
+!viewer/samples/*.cof

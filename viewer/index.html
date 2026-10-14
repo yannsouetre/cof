@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>COF Explorer</title>
+<meta name="description" content="Open a .cof character file in your browser and browse its presets, looks, voices and rights. Nothing leaves your machine.">
+<link rel="icon" href="../builder/icon/cof-icon-light.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a reading room — shelf of presets on the left, the selected preset laid out like a file card on the right. */
+:root{
+  --bg:#f3f4f2; --panel:#ffffff; --ink:#1a1e1d; --muted:#5f6764; --line:#dde1de; --chip:#e8ecea;
+  --accent:#0f6b5c; --accent-soft:#d9ece7; --offer:#6a45b8; --offer-soft:#ece6f8; --warn:#9a5b00; --err:#a8231d; --ok:#2d7a3a;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Consolas, monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121615; --panel:#1a1f1e; --ink:#e6ebe9; --muted:#9aa5a1; --line:#2c3432; --chip:#242b29;
+  --accent:#4cc2a8; --accent-soft:#16332d; --offer:#a98ae8; --offer-soft:#2a2340; --warn:#e0a54a; --err:#f07a72; --ok:#6cc47a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121615; --panel:#1a1f1e; --ink:#e6ebe9; --muted:#9aa5a1; --line:#2c3432; --chip:#242b29;
+  --accent:#4cc2a8; --accent-soft:#16332d; --offer:#a98ae8; --offer-soft:#2a2340; --warn:#e0a54a; --err:#f07a72; --ok:#6cc47a; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
+a{color:var(--accent)}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;padding:18px 0 14px;border-bottom:1px solid var(--line);margin-bottom:18px}
+h1{font:700 1.45rem/1.1 var(--display);margin:0;letter-spacing:-.01em}
+h1 small{font:500 .78rem var(--mono);color:var(--muted);letter-spacing:0;margin-left:8px}
+h2{font:700 1.7rem/1.15 var(--display);margin:0;text-wrap:balance}
+h3{font:600 .76rem var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:22px 0 8px}
+.spacer{flex:1}
+button,.btn{font:500 .9rem var(--body);border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:7px 12px;cursor:pointer}
+button:hover,.btn:hover{border-color:var(--accent)}
+button:focus-visible,.btn:focus-visible,.pcard:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.primary{background:var(--accent);color:var(--panel);border-color:var(--accent)}
+.muted{color:var(--muted)}
+.mono{font-family:var(--mono);font-size:.85em}
+#drop{border:2px dashed var(--line);border-radius:14px;padding:48px 20px;text-align:center;background:var(--panel)}
+#drop.over{border-color:var(--accent);background:var(--accent-soft)}
+#drop p{max-width:60ch;margin:8px auto}
+.layout{display:grid;grid-template-columns:minmax(240px,320px) 1fr;gap:22px;align-items:start}
+@media (max-width:820px){.layout{grid-template-columns:1fr}}
+aside,main{min-width:0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+.chars{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--chip);border-radius:999px;padding:3px 10px;font-size:.84rem;cursor:pointer;color:var(--ink)}
+.chip.on{background:var(--accent);border-color:var(--accent);color:var(--panel)}
+.chip.offer{background:var(--offer-soft);border:1px dashed var(--offer);color:var(--ink);cursor:default}
+.chip.static{cursor:default}
+.facet{margin-bottom:10px}
+.facet b{display:block;font:600 .72rem var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:5px}
+.facet .row{display:flex;flex-wrap:wrap;gap:5px}
+.plist{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.pcard{display:grid;grid-template-columns:52px 1fr;gap:10px;align-items:center;padding:6px;border-radius:10px;border:1px solid transparent;cursor:pointer;background:transparent;text-align:left;width:100%}
+.pcard:hover{border-color:var(--line)}
+.pcard.on{border-color:var(--accent);background:var(--accent-soft)}
+.pcard img,.pcard .ph{width:52px;height:52px;object-fit:cover;border-radius:8px;background:var(--chip);display:block}
+.pcard span{display:block;min-width:0}
+.pcard .t{font-weight:600;font-size:.92rem;overflow-wrap:anywhere}
+.pcard .s{font-size:.78rem;color:var(--muted)}
+.hero{display:grid;grid-template-columns:minmax(200px,340px) 1fr;gap:22px;align-items:start}
+@media (max-width:640px){.hero{grid-template-columns:1fr}}
+.hero img{width:100%;max-height:520px;object-fit:contain;border-radius:12px;background:var(--chip)}
+.badges{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.badge{font:500 .78rem var(--mono);border-radius:6px;padding:2px 8px;background:var(--chip);color:var(--ink)}
+.badge.ok{background:var(--accent-soft);color:var(--ink)}
+.badge.warn{color:var(--warn)}
+.gallery{display:flex;flex-wrap:wrap;gap:8px}
+.gallery figure{margin:0;width:118px}
+.gallery img{width:118px;height:118px;object-fit:cover;border-radius:8px;background:var(--chip);display:block;cursor:zoom-in}
+.gallery figcaption{font-size:.74rem;color:var(--muted);line-height:1.3;margin-top:3px;overflow-wrap:anywhere}
+.group{margin-bottom:12px}
+.group > div:first-child{font-weight:600;font-size:.9rem;margin-bottom:6px}
+.text{max-width:72ch;overflow-wrap:anywhere}
+.text h4{font:700 1rem var(--display);margin:14px 0 4px}
+.text ul{padding-left:20px;margin:4px 0}
+table.rights{border-collapse:collapse;width:100%;font-size:.88rem}
+table.rights td{border-bottom:1px solid var(--line);padding:5px 6px;vertical-align:top}
+table.rights td:last-child{font-family:var(--mono);font-size:.82rem;text-align:right;white-space:nowrap}
+.yes{color:var(--ok)} .no{color:var(--err)}
+.note{font-size:.85rem;color:var(--muted);border-left:3px solid var(--line);padding:4px 10px;margin:10px 0}
+audio,video{max-width:100%}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 4px}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+dialog{border:none;border-radius:12px;padding:0;background:var(--panel);max-width:min(92vw,900px)}
+dialog img{display:block;max-width:100%;max-height:86vh}
+dialog::backdrop{background:rgba(0,0,0,.6)}
+.err{color:var(--err)}
+@media (prefers-reduced-motion:no-preference){.pcard,.chip,button{transition:background .15s,border-color .15s}}
+</style>
+</head>
+<body>
+<header>
+  <h1>COF Explorer <small id="ver">viewer 1.0</small></h1>
+  <span class="muted" data-i="tagline">Read-only. Your file never leaves your browser.</span>
+  <span class="spacer"></span>
+  <button id="btnOpen" class="primary" data-i="open">Open a .cof</button>
+  <button id="btnClara" data-i="sample1">Example: Clara</button>
+  <button id="btnDuo" data-i="sample2">Example: Léa &amp; Martien</button>
+  <button id="btnLang" aria-label="Language">FR</button>
+  <input id="file" type="file" accept=".cof,application/zip" hidden>
+</header>
+
+<section id="drop">
+  <h2 data-i="dropTitle">Drop a .cof file here</h2>
+  <p class="muted" data-i="dropText">A .cof is an open file that holds a whole AI character — personality, looks, voice, poses, agent skills — and its rights. Open one to browse its presets, switch language or age with one click, and see what its author allows.</p>
+  <p><a href="../builder/" data-i="build">Make your own with the builder →</a></p>
+  <p id="loadErr" class="err" hidden></p>
+</section>
+
+<div id="app" class="layout" hidden>
+  <aside>
+    <div class="panel">
+      <div id="chars" class="chars"></div>
+      <div id="facets"></div>
+      <div id="plist" class="plist"></div>
+    </div>
+    <p class="note" data-i="noValidate">This explorer reads files; it does not validate them. Use <span class="mono">cof validate</span> for that.</p>
+  </aside>
+  <main class="panel" id="main"></main>
+</div>
+<dialog id="zoom"><img id="zoomImg" alt=""></dialog>
+
+<script>
+"use strict";
+/* ---------- i18n ---------- */
+const T={en:{},fr:{tagline:"Lecture seule. Votre fichier ne quitte pas votre navigateur.",open:"Ouvrir un .cof",sample1:"Exemple : Clara",sample2:"Exemple : Léa et Martien",dropTitle:"Déposez un fichier .cof ici",dropText:"Un .cof est un fichier ouvert qui contient tout un personnage IA — personnalité, apparence, voix, poses, compétences d'agent — et ses droits. Ouvrez-en un pour parcourir ses presets, changer de langue ou d'âge en un clic, et voir ce que son auteur autorise.",build:"Créer le vôtre avec le builder →",noValidate:"Cet explorateur lit les fichiers ; il ne les valide pas. Utilisez cof validate pour cela.",
+look:"Apparence",offered:"Proposé avec ce preset",personality:"Personnalité",voice:"Voix",poses:"Poses et mouvements",files:"Compétences et fichiers",rights:"Droits",about:"Fiche",presets:"Presets",age:"âge",noAge:"âge non déclaré",intimate:"Un élément intime existe pour ce preset ; l'explorateur ne l'affiche jamais.",switchTo:"Changer",none:"aucun",style:"style",completeness:"complétude",backstage:"Éléments en coulisses (cités par aucun preset)",yes:"oui",no:"non",characters:"Personnages",loading:"Lecture…",badFile:"Ce fichier n'est pas un .cof lisible : ",fictional:"fictif",real:"personne réelle",consent:"consentement enregistré",noConsent:"pas de consentement enregistré",download:"Le fichier d'exemple n'a pas pu être chargé : ",
+perm:{avatarPermission:"Qui peut l'incarner",commercialUsage:"Usage commercial",modification:"Modification",allowRedistribution:"Redistribution",creditNotation:"Crédit",allowExcessivelyViolentUsage:"Violence excessive",allowSexualUsage:"Usage sexuel",allowPoliticalOrReligiousUsage:"Usage politique ou religieux",allowAntisocialOrHateUsage:"Usage haineux",allowVoiceCloning:"Clonage de la voix",allowTraining:"Entraînement",allowImpersonationOfRealPerson:"Usurper une personne réelle",aiDisclosure:"Signaler que c'est une IA",ageRating:"Classification",minUserAge:"Âge minimum de l'utilisateur"}}};
+const EN={look:"Look",offered:"Offered with this preset",personality:"Personality",voice:"Voice",poses:"Poses & motion",files:"Skills & files",rights:"Rights",about:"Card",presets:"Presets",age:"age",noAge:"age not declared",intimate:"An intimate element exists for this preset; the explorer never displays it.",switchTo:"Switch",none:"none",style:"style",completeness:"completeness",backstage:"Backstage elements (used by no preset)",yes:"yes",no:"no",characters:"Characters",loading:"Reading…",badFile:"This file is not a readable .cof: ",fictional:"fictional",real:"real person",consent:"consent recorded",noConsent:"no consent recorded",download:"The example file could not be loaded: ",
+perm:{avatarPermission:"Who may embody it",commercialUsage:"Commercial use",modification:"Modification",allowRedistribution:"Redistribution",creditNotation:"Credit",allowExcessivelyViolentUsage:"Excessive violence",allowSexualUsage:"Sexual use",allowPoliticalOrReligiousUsage:"Political or religious use",allowAntisocialOrHateUsage:"Hateful use",allowVoiceCloning:"Voice cloning",allowTraining:"Training",allowImpersonationOfRealPerson:"Impersonate a real person",aiDisclosure:"Disclose it is an AI",ageRating:"Rating",minUserAge:"Minimum user age"}};
+let LANG="en";try{LANG=localStorage.getItem("cofv-lang")||((navigator.language||"").startsWith("fr")?"fr":"en")}catch(e){}
+const tr=k=>(LANG==="fr"?T.fr[k]:EN[k])??EN[k]??k;
+function applyLang(){document.documentElement.lang=LANG;document.querySelectorAll("[data-i]").forEach(el=>{const v=LANG==="fr"?T.fr[el.dataset.i]:null;if(!el.dataset.en)el.dataset.en=el.innerHTML;el.innerHTML=v??el.dataset.en});document.getElementById("btnLang").textContent=LANG==="fr"?"EN":"FR";if(M)render()}
+document.getElementById("btnLang").onclick=()=>{LANG=LANG==="fr"?"en":"fr";try{localStorage.setItem("cofv-lang",LANG)}catch(e){}applyLang()};
+
+/* ---------- ZIP (stored + deflate, via DecompressionStream) ---------- */
+const dec=new TextDecoder();
+async function inflateRaw(u8){const ds=new DecompressionStream("deflate-raw");const w=ds.writable.getWriter();w.write(u8);w.close();return new Uint8Array(await new Response(ds.readable).arrayBuffer())}
+async function zipRead(buf){
+  const u8=new Uint8Array(buf),dv=new DataView(buf);let eocd=-1;
+  for(let i=u8.length-22;i>=Math.max(0,u8.length-70000);i--){if(dv.getUint32(i,true)===0x06054b50){eocd=i;break}}
+  if(eocd<0)throw new Error("no ZIP directory");
+  const n=dv.getUint16(eocd+10,true),cdOff=dv.getUint32(eocd+16,true);const files=new Map();let p=cdOff;
+  for(let i=0;i<n;i++){
+    const method=dv.getUint16(p+10,true),csize=dv.getUint32(p+20,true),nlen=dv.getUint16(p+28,true),elen=dv.getUint16(p+30,true),clen=dv.getUint16(p+32,true),lho=dv.getUint32(p+42,true);
+    const name=dec.decode(u8.subarray(p+46,p+46+nlen));
+    const start=lho+30+dv.getUint16(lho+26,true)+dv.getUint16(lho+28,true);
+    files.set(name,{method,comp:u8.subarray(start,start+csize)});
+    p+=46+nlen+elen+clen;
+  }
+  return files;
+}
+let Z=null,M=null,urls=new Map();
+async function bytes(path){const f=Z.get(path);if(!f)return null;if(!f.u)f.u=f.method===0?f.comp:await inflateRaw(f.comp);return f.u}
+async function jsonAt(path){const b=await bytes(path);if(!b)return null;try{return JSON.parse(dec.decode(b))}catch(e){return null}}
+async function urlOf(aid){const a=A()[aid];if(!a||!a.path)return null;if(urls.has(a.path))return urls.get(a.path);const b=await bytes(a.path);if(!b)return null;const u=URL.createObjectURL(new Blob([b],{type:a.mediaType||"application/octet-stream"}));urls.set(a.path,u);return u}
+
+/* ---------- model (mirrors cof_cli/model.py) ---------- */
+const ADULT=18,HUMAN=new Set(["human","humanoid","anthropomorphic-animal"]);
+const AGE_CATS=new Set(["appearance","volume3d","identity_weights"]),AGELESS=new Set(["clothing","accessory","feature","description","environment"]);
+const COMBO=["personality","appearance","identity_weights","volume3d","voice"];
+let _A=null;const A=()=>_A||(_A=Object.fromEntries((M.assets||[]).map(a=>[a.id,a])));
+const P=()=>M.presets||{};
+const V=(cat)=>((M.elements||{})[cat]||{}).variants||{};
+function resolveVariant(cat,vid,seen=new Set()){const v=V(cat)[vid];if(!v)return null;if(seen.has(vid))return {...v,_id:vid};seen.add(vid);const par=v.derives_from?resolveVariant(cat,v.derives_from,seen):null;const o={...(par||{}),...v,_id:vid,_cat:cat};delete o.derives_from;return o}
+function chain(pid){const out=[],seen=new Set();let q=pid;while(q&&P()[q]&&!seen.has(q)){seen.add(q);out.push(q);q=P()[q].extends}return out}
+function resolveLists(pid,key){const c=chain(pid).reverse();const r={};for(const q of c)for(const [k,v] of Object.entries(P()[q][key]||{}))r[k]=[...v];return r}
+const slots=pid=>resolveLists(pid,"slots");
+function offered(pid){const s=slots(pid),a=resolveLists(pid,"alternatives"),o={};for(const [k,v] of Object.entries(a)){const x=v.filter(i=>!(s[k]||[]).includes(i));if(x.length)o[k]=x}return o}
+function inherited(pid,key){for(const q of chain(pid))if(P()[q][key]!==undefined&&P()[q][key]!==null)return P()[q][key];return undefined}
+function resolved(lists){const r={};for(const [cat,ids] of Object.entries(lists))r[cat]=ids.map(i=>resolveVariant(cat,i)).filter(Boolean);return r}
+function ageYears(a){if(!a||typeof a.value!=="number")return null;if(a.unit&&!["years","months"].includes(a.unit))return 0;return a.unit==="months"?a.value/12:a.value}
+function presetAge(pid){const all=[slots(pid),offered(pid)].flatMap(l=>Object.entries(resolved(l)));const ages=[];for(const [cat,vs] of all)if(AGE_CATS.has(cat))for(const v of vs)if(!AGELESS.has(v.kind)){const x=ageYears(v.age);if(x!==null)ages.push(x)}const ao=ageYears(inherited(pid,"age_override"));if(ao!==null)ages.push(ao);return ages.length?Math.min(...ages):null}
+const ids=()=>M.identities||{};
+function defaultIdentity(){return M.default_identity||Object.keys(ids())[0]||null}
+function presetOwner(pid){return inherited(pid,"identity")||defaultIdentity()}
+function variantOwner(cat,vid){const v=resolveVariant(cat,vid);return (v&&v.identity)||defaultIdentity()}
+function identityOf(iid){const I=ids()[iid];return I?{...I}:{name:M.name,nickname:M.nickname,summary:M.summary,fictional:M.fictional,morphology:M.morphology,consent:(M.rights||{}).consent}}
+function permsOf(pid){const iid=presetOwner(pid);const r=(ids()[iid]||{}).rights||M.rights||{};return {...(r.permissions||{}),...(P()[pid].permissions_override||{})}}
+function primaryImage(pid){const e=inherited(pid,"primary_image");if(e&&A()[e])return e;const r=resolved(slots(pid));for(const k of ["face","reference-set","character-sheet","body"])for(const v of (r.appearance||[]).filter(x=>x.kind===k))for(const i of v.images||[])if(A()[i]&&String(A()[i].mediaType||"").startsWith("image/"))return i;return null}
+const tags=()=>M.preset_tags||[];
+function tagsOf(pid){return tags().filter(t=>(t.presets||[]).includes(pid))}
+function facetOf(t){return t.facet||("tag:"+t.id)}
+function facetSwitch(pid,tagId){const t=tags().find(x=>x.id===tagId);if(!t)return[];const f=facetOf(t);const others=q=>tagsOf(q).filter(x=>facetOf(x)!==f).map(x=>x.id).sort().join("|");const ref=others(pid),me=presetOwner(pid);return (t.presets||[]).filter(q=>P()[q]&&others(q)===ref&&presetOwner(q)===me)}
+function backstage(){const used=new Set();for(const pid of Object.keys(P()))for(const l of [slots(pid),resolveLists(pid,"alternatives")])for(const [cat,vs] of Object.entries(l))for(const vid of vs){let c=vid;const seen=new Set();while(c&&!seen.has(c)){seen.add(c);used.add(cat+":"+c);c=(V(cat)[c]||{}).derives_from}}const out=[];for(const [cat,e] of Object.entries(M.elements||{}))for(const vid of Object.keys(e.variants||{}))if(!used.has(cat+":"+vid))out.push([cat,vid]);return out}
+
+/* ---------- state ---------- */
+let curChar=null,curPreset=null,filter={},tab="look";
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function md(s){const lines=esc(s).split(/\r?\n/);let out="",inList=false;for(let l of lines){l=l.replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/(^|[^*])\*([^*]+)\*/g,"$1<i>$2</i>");if(/^\s*[-*] /.test(l)){if(!inList){out+="<ul>";inList=true}out+="<li>"+l.replace(/^\s*[-*] /,"")+"</li>";continue}if(inList){out+="</ul>";inList=false}if(/^#{1,4} /.test(l))out+="<h4>"+l.replace(/^#{1,4} /,"")+"</h4>";else if(l.trim()==="---")out+="<hr>";else if(l.trim())out+="<p>"+l+"</p>"}if(inList)out+="</ul>";return out}
+function charIds(){const k=Object.keys(ids());return k.length?k:[null]}
+function presetsOf(iid){return Object.keys(P()).filter(p=>presetOwner(p)===(iid||defaultIdentity()))}
+function charDefault(iid){const d=(ids()[iid]||{}).default_preset;if(d&&P()[d])return d;if(M.default_preset&&presetOwner(M.default_preset)===(iid||defaultIdentity()))return M.default_preset;return presetsOf(iid)[0]}
+
+async function openBuffer(buf){
+  const err=document.getElementById("loadErr");err.hidden=true;
+  try{
+    Z=await zipRead(buf);const mf=await jsonAt("manifest.json");if(!mf)throw new Error("manifest.json missing");
+    for(const u of urls.values())URL.revokeObjectURL(u);urls.clear();
+    M=mf;_A=null;filter={};tab="look";curChar=charIds()[0];curPreset=charDefault(curChar);
+    document.getElementById("drop").hidden=true;document.getElementById("app").hidden=false;render();
+  }catch(e){err.textContent=tr("badFile")+e.message;err.hidden=false}
+}
+document.getElementById("btnOpen").onclick=()=>document.getElementById("file").click();
+document.getElementById("file").onchange=async e=>{const f=e.target.files[0];if(f)openBuffer(await f.arrayBuffer())};
+const drop=document.getElementById("drop");
+["dragover","dragenter"].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over")}));
+["dragleave","drop"].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("over")}));
+document.addEventListener("drop",async e=>{const f=e.dataTransfer.files[0];if(f)openBuffer(await f.arrayBuffer())});
+async function sample(name){try{const r=await fetch("samples/"+name);if(!r.ok)throw new Error(r.status);openBuffer(await r.arrayBuffer())}catch(e){const err=document.getElementById("loadErr");err.textContent=tr("download")+e.message;err.hidden=false}}
+document.getElementById("btnClara").onclick=()=>sample("clara-mercier.cof");
+document.getElementById("btnDuo").onclick=()=>sample("lea-martien.cof");
+document.getElementById("zoom").onclick=()=>document.getElementById("zoom").close();
+
+/* ---------- rendering ---------- */
+async function render(){
+  // characters
+  const cs=charIds();const chars=document.getElementById("chars");
+  chars.innerHTML=cs.length>1?`<b class="muted" style="width:100%;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em">${tr("characters")}</b>`+cs.map(c=>`<button class="chip ${c===curChar?"on":""}" data-char="${esc(c)}">${esc(identityOf(c).name||c)}</button>`).join(""):"";
+  chars.querySelectorAll("[data-char]").forEach(b=>b.onclick=()=>{curChar=b.dataset.char;filter={};curPreset=charDefault(curChar);render()});
+  // facets
+  const mine=presetsOf(curChar);const fs={};for(const t of tags())if((t.presets||[]).some(p=>mine.includes(p)))(fs[t.facet||"—"]=fs[t.facet||"—"]||[]).push(t);
+  const fx=document.getElementById("facets");
+  fx.innerHTML=Object.entries(fs).map(([f,ts])=>`<div class="facet"><b>${esc(f)}</b><div class="row">${ts.map(t=>`<button class="chip ${filter[f]===t.id?"on":""}" data-f="${esc(f)}" data-t="${esc(t.id)}">${esc(t.label||t.id)}</button>`).join("")}</div></div>`).join("");
+  fx.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{const f=b.dataset.f;filter[f]=filter[f]===b.dataset.t?undefined:b.dataset.t;render()});
+  const shown=mine.filter(p=>Object.values(filter).every(t=>!t||tagsOf(p).some(x=>x.id===t)));
+  const pl=document.getElementById("plist");
+  pl.innerHTML=shown.map(p=>{const a=presetAge(p);return `<button class="pcard ${p===curPreset?"on":""}" data-p="${esc(p)}"><span class="ph" data-img="${esc(primaryImage(p)||"")}"></span><span><span class="t">${esc(P()[p].label||p)}</span><span class="s">${a===null?tr("noAge"):tr("age")+" "+Math.floor(a)}${P()[p].style?" · "+esc(P()[p].style):""}</span></span></button>`}).join("")||`<p class="muted">${tr("none")}</p>`;
+  pl.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{curPreset=b.dataset.p;render()});
+  for(const ph of pl.querySelectorAll("[data-img]")){const aid=ph.dataset.img;if(!aid)continue;const u=await urlOf(aid);if(u){const im=new Image();im.src=u;im.alt="";ph.replaceWith(im)}}
+  await renderPreset();
+}
+
+async function gallery(aids,cap){const out=[];for(const aid of aids){const a=A()[aid];if(!a||!String(a.mediaType||"").startsWith("image/"))continue;const u=await urlOf(aid);if(u)out.push(`<figure><img src="${u}" alt="${esc(cap||"")}" data-zoom><figcaption>${esc([a.subject,a.angle].filter(Boolean).join(" · "))}</figcaption></figure>`)}return out.join("")}
+
+async function renderPreset(){
+  const main=document.getElementById("main");const pid=curPreset;if(!pid){main.innerHTML="";return}
+  const p=P()[pid],I=identityOf(presetOwner(pid)),age=presetAge(pid),perms=permsOf(pid);
+  const app=resolved(slots(pid)),off=resolved(offered(pid));
+  const hasIntimate=[...(app.appearance||[]),...(off.appearance||[])].some(v=>v.kind==="intimate");
+  const pim=primaryImage(pid);const pimU=pim?await urlOf(pim):null;
+  // facet switches
+  const sw=[];const myTags=tagsOf(pid);const byFacet={};for(const t of tags())if(t.facet)(byFacet[t.facet]=byFacet[t.facet]||[]).push(t);
+  for(const [f,ts] of Object.entries(byFacet)){if(!myTags.some(t=>t.facet===f))continue;const opts=ts.map(t=>{const target=myTags.some(x=>x.id===t.id)?pid:facetSwitch(pid,t.id)[0];return target?`<button class="chip ${target===pid?"on":""}" data-go="${esc(target)}">${esc(t.label||t.id)}</button>`:""}).join("");if(opts)sw.push(`<div class="facet"><b>${esc(f)}</b><div class="row">${opts}</div></div>`)}
+  const comp=(p.completeness||{}).score;
+  let h=`<div class="hero"><div>${pimU?`<img src="${pimU}" alt="${esc(p.label||pid)}" data-zoom>`:`<div class="ph" style="aspect-ratio:3/4;background:var(--chip);border-radius:12px"></div>`}</div><div>
+    <h2>${esc(I.name||M.name)}</h2><div class="muted">${esc(p.label||pid)}</div>
+    <div class="badges"><span class="badge">${age===null?tr("noAge"):tr("age")+" "+Math.floor(age)}</span>${p.style?`<span class="badge">${tr("style")} ${esc(p.style)}</span>`:""}<span class="badge">${I.fictional===false?tr("real"):tr("fictional")}</span>${I.fictional===false?`<span class="badge ${I.consent?"ok":"warn"}">${I.consent?tr("consent"):tr("noConsent")}</span>`:""}${typeof comp==="number"?`<span class="badge ok">${tr("completeness")} ${comp}/100</span>`:""}</div>
+    <p class="text">${esc(I.summary||M.summary||"")}</p>${sw.join("")}
+    ${hasIntimate?`<p class="note">${tr("intimate")}</p>`:""}</div></div>`;
+  const tabs=[["look",tr("look")],["personality",tr("personality")],["voice",tr("voice")],["poses",tr("poses")],["files",tr("files")],["rights",tr("rights")]];
+  h+=`<div class="tabs" role="tablist">${tabs.map(([k,l])=>`<button role="tab" aria-selected="${k===tab}" data-tab="${k}">${l}</button>`).join("")}</div><div id="tabBody"></div>`;
+  main.innerHTML=h;
+  main.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{curPreset=b.dataset.go;render()});
+  main.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{tab=b.dataset.tab;renderPreset()});
+  const body=main.querySelector("#tabBody");let t="";
+  const label=v=>esc(v.label||v.kind);
+  if(tab==="look"){
+    for(const v of (app.appearance||[]).filter(v=>v.kind!=="intimate"))t+=`<div class="group"><div>${label(v)} <span class="muted mono">${esc(v.kind)}</span></div><div class="gallery">${await gallery([...(v.images||[])],v.label)}</div>${v.text?`<div class="text">${md(v.text)}</div>`:""}</div>`;
+    for(const cat of ["volume3d","identity_weights"])for(const v of app[cat]||[])t+=`<div class="group"><div>${label(v)} <span class="muted mono">${esc(cat)} · ${esc(v.kind)}</span></div></div>`;
+    const offApp=(off.appearance||[]).filter(v=>v.kind!=="intimate");const offOther=COMBO.filter(c=>c!=="appearance").flatMap(c=>(off[c]||[]));
+    if(offApp.length||offOther.length){t+=`<h3>${tr("offered")}</h3>`;for(const v of offApp)t+=`<div class="group"><div><span class="chip offer">${label(v)}</span> <span class="muted mono">${esc(v.kind)}</span></div><div class="gallery">${await gallery(v.images||[],v.label)}</div></div>`;for(const v of offOther)t+=`<span class="chip offer">${label(v)}</span> `}
+    const bs=backstage().filter(([c,v])=>variantOwner(c,v)===(curChar||defaultIdentity()));if(bs.length)t+=`<h3>${tr("backstage")}</h3><div class="muted mono">${bs.map(([c,v])=>esc(c+"."+v)).join(", ")}</div>`;
+  }else if(tab==="personality"){
+    for(const v of app.personality||[]){t+=`<div class="group"><div>${label(v)}${v.language?` <span class="badge">${esc(v.language)}</span>`:""}</div>`;
+      if(v.kind==="card"&&v.card){const c=await jsonAt(v.card);const d=(c&&c.data)||{};t+=`<div class="text">${d.description?md(d.description):""}${d.personality?`<h4>${LANG==="fr"?"Caractère":"Personality"}</h4>${md(d.personality)}`:""}${d.first_mes?`<h4>${LANG==="fr"?"Premier message":"First message"}</h4>${md(d.first_mes)}`:""}</div>`}
+      else if(v.text)t+=`<div class="text">${md(v.text)}</div>`;t+=`</div>`}
+    if(!t)t=`<p class="muted">${tr("none")}</p>`;
+  }else if(tab==="voice"){
+    for(const v of [...(app.voice||[]),...(off.voice||[])]){t+=`<div class="group"><div>${label(v)}${v.language?` <span class="badge">${esc(v.language)}</span>`:""}${(off.voice||[]).includes(v)?` <span class="chip offer">${tr("offered")}</span>`:""}</div>`;
+      for(const aid of v.samples||[]){const u=await urlOf(aid);const a=A()[aid]||{};if(u)t+=`<audio controls preload="none" src="${u}"></audio>${a.transcript?"":""}<br>`}t+=`</div>`}
+    if(!t)t=`<p class="muted">${tr("none")}</p>`;
+  }else if(tab==="poses"){
+    for(const cat of ["posture","motion"])for(const v of app[cat]||[]){t+=`<div class="group"><div>${label(v)} <span class="muted mono">${esc(cat)} · ${esc(v.kind)}</span></div><div class="gallery">${await gallery(v.images||[],v.label)}</div>`;
+      for(const aid of [...(v.videos||[]),...(v.clips||[])]){const a=A()[aid]||{};if(String(a.mediaType||"").startsWith("video/")){const u=await urlOf(aid);if(u)t+=`<video controls preload="none" width="320" src="${u}"></video> `}else t+=`<span class="badge">${esc((a.path||aid).split("/").pop())}</span> `}t+=`</div>`}
+    if(!t)t=`<p class="muted">${tr("none")}</p>`;
+  }else if(tab==="files"){
+    for(const v of app.files||[])t+=`<div class="group"><div>${label(v)} <span class="muted mono">${esc(v.kind)}</span></div><div class="muted mono">${(v.files||[]).map(a=>esc(((A()[a]||{}).path||a).split("/").pop())).join(" · ")}</div></div>`;
+    if(!t)t=`<p class="muted">${tr("none")}</p>`;
+  }else if(tab==="rights"){
+    const PL=(LANG==="fr"?T.fr.perm:EN.perm);const fmt=v=>v===true?`<span class="yes">✓ ${tr("yes")}</span>`:v===false?`<span class="no">✗ ${tr("no")}</span>`:esc(v);
+    t+=`<table class="rights">${Object.keys(PL).filter(k=>perms[k]!==undefined).map(k=>`<tr><td>${esc(PL[k])}</td><td>${fmt(perms[k])}</td></tr>`).join("")}</table>`;
+    if(P()[pid].permissions_override)t+=`<p class="note">${LANG==="fr"?"Ce preset modifie certains droits du personnage.":"This preset overrides some of the character's rights."}</p>`;
+    const ct=((M.tags||{}).content||[]).join(", ");t+=`<p class="muted">${LANG==="fr"?"Contenu signalé":"Content flags"} : <span class="mono">${esc(ct||"—")}</span> · ${LANG==="fr"?"licence des fichiers dans le manifeste":"each file's licence is in the manifest"}</p>`;
+  }
+  body.innerHTML=t;
+  main.querySelectorAll("[data-zoom]").forEach(im=>im.onclick=()=>{document.getElementById("zoomImg").src=im.src;document.getElementById("zoom").showModal()});
+}
+applyLang();
+if(location.hash==="#clara")sample("clara-mercier.cof");else if(location.hash==="#duo")sample("lea-martien.cof");
+</script>
+</body>
+</html>
