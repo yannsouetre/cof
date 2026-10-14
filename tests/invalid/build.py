@@ -152,7 +152,7 @@ def _(d):
     m = load(d); V(m, "appearance").pop("i1"); m["presets"]["default"]["slots"]["appearance"].remove("i1")
     V(m, "appearance")["b1"]["nudity"] = True; V(m, "appearance")["o1"]["nudity"] = True; m["tags"]["content"] = ["none"]; save(d, m)
 
-@case("nude-file-reused-unmarked", "a file showing nudity is used only by variants marked nudity (or intimate)", "§ 4.5", "shows nudity and is also used by")
+@case("nude-file-reused-unmarked", "a file showing nudity is used only by variants marked nudity (or intimate)", "§ 4.5", "show(s) nudity or intimate content")
 def _(d): m = load(d); V(m, "appearance")["b1"]["nudity"] = True; save(d, m)
 
 @case("real-person-nudity-without-consent", "nudity of a real person requires their explicit consent (scope nudity or intimate)", "§ 9.2", "consent scope 'nudity'")
@@ -160,6 +160,25 @@ def _(d):
     m = load(d); m["fictional"] = False; [i.update(fictional=False) for i in (m.get("identities") or {}).values()]
     V(m, "appearance").pop("i1"); m["presets"]["default"]["slots"]["appearance"].remove("i1"); m["elements"]["appearance"]["variants"]["b1"]["nudity"] = True; m["elements"]["appearance"]["variants"]["o1"]["nudity"] = True
     m["rights"]["consent"] = {"subject_is_real_person": True, "scope": ["likeness-image"], "granted": "2026-10-10", "jurisdictions": ["FR"], "proof": [{"type": "signed-document"}]}; save(d, m)
+
+@case("cast-nudity-borrowed-consent", "in a cast, each real person's consent is their own (the root consent belongs to the default character)", "§ 9.2", "consent scope 'nudity'")
+def _(d):
+    from PIL import Image
+    m = two_characters(load(d)); cons = {"subject_is_real_person": True, "scope": ["likeness-image", "nudity"], "granted": "2026-10-10", "jurisdictions": ["FR"], "proof": [{"type": "signed-document"}]}
+    m["rights"]["consent"] = cons; m["fictional"] = False
+    m["identities"]["lea"].update(fictional=False, consent=cons); m["identities"]["marc"].update(fictional=False)
+    p = d / "elements/appearance/b-marc/body.front.jpg"; p.parent.mkdir(parents=True, exist_ok=True); Image.new("RGB", (32, 64), (120, 90, 60)).save(p, "JPEG")
+    m["assets"].append({"id": "a-marc-body", "path": "elements/appearance/b-marc/body.front.jpg", "role": "reference", "mediaType": "image/jpeg", "license": "CC0-1.0", "subject": "body", "angle": "front", "framing": "full"})
+    V(m, "appearance")["b-marc"] = {"kind": "body", "identity": "marc", "nudity": True, "images": ["a-marc-body"], "age": {"value": 40, "unit": "years", "basis": "declared"}}
+    m["presets"]["marc"]["slots"]["appearance"] = ["b-marc"]; refresh_asset_index(d, m); save(d, m)
+
+@case("nudity-without-age", "a preset applying a nude element has a known age (18 or over)", "§ 4.5", "has no known age")
+def _(d):
+    m = load(d); V(m, "appearance").pop("i1"); V(m, "appearance")["o1"]["nudity"] = True; V(m, "appearance")["b1"]["nudity"] = True
+    m["presets"]["default"]["slots"]["appearance"] = ["o1"]; m["presets"]["default"].pop("age_override", None); m["presets"]["default"]["slots"]["identity_weights"] = []; save(d, m)
+
+@case("nude-thumbnail", "the file thumbnail (thumbnail_source, default primary image) never shows nudity or intimate content", "§ 1.1", "shows nudity or intimate content")
+def _(d): m = load(d); V(m, "appearance")["b1"]["nudity"] = True; V(m, "appearance")["o1"]["nudity"] = True; m["thumbnail_source"] = "a-body-front"; save(d, m)
 
 @case("weights-without-base-model", "identity weights declare their base model", "§ 4.6", "base_model")
 def _(d):

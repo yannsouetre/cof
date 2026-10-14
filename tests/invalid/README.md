@@ -41,6 +41,9 @@ validator's error (`expect`) — other implementations only need to reject the f
 | `nudity-without-content-flag.cof` | a variant marked `nudity` requires `tags.content` `nudity` |
 | `nude-file-reused-unmarked.cof` | a file showing nudity is used only by variants marked `nudity` (or intimate) |
 | `real-person-nudity-without-consent.cof` | nudity of a real person requires their explicit consent (scope `nudity` or `intimate`) |
+| `cast-nudity-borrowed-consent.cof` | in a cast, each real person's consent is their own |
+| `nudity-without-age.cof` | a preset applying a nude element has a known age (18 or over) |
+| `nude-thumbnail.cof` | the file thumbnail never shows nudity or intimate content |
 | `undeclared-script.cof` | scripts require `container.executableContent` |
 | `obj-not-self-contained.cof` | 3D variants are self-contained (unless `self_contained: false`) |
 | `tag-unknown-preset.cof` | a preset tag lists existing presets |

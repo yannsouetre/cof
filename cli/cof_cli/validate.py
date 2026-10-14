@@ -275,7 +275,10 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
     for iid, ident in ({**ids} if ids else {None: {k: manifest.get(k) for k in ("fictional",)} | {"consent": (manifest.get("rights") or {}).get("consent")}}).items():
         if (ident or {}).get("fictional") is False:
             perms = identity_rights(manifest, iid).get("permissions") or {}
-            scope = (((ident or {}).get("consent") or (manifest.get("rights") or {}).get("consent")) or {}).get("scope") or []
+            own = (ident or {}).get("consent")
+            if own is None and (not ids or iid == (manifest.get("default_identity") or next(iter(ids), None))):
+                own = (manifest.get("rights") or {}).get("consent")      # the root copy belongs to the default character only
+            scope = (own or {}).get("scope") or []
             if perms.get("allowVoiceCloning") and "voice-synthesis" not in scope:
                 rep.warnings.append(f"{'identities.' + iid if iid else 'rights'}: allowVoiceCloning is true for a real person but the consent scope does not include 'voice-synthesis' — record that consent before letting others clone the voice")
             who = 'identities.' + iid if iid else 'rights'
@@ -451,7 +454,7 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
     if has_intimate and not (content & {"nudity", "sexual"}):
         rep.errors.append("intimate variant present: tags.content must include 'nudity' or 'sexual'")
     nude = [f"{c}.{vid}" for c, e in elements.items() for vid in ((e or {}).get("variants") or {}) if (resolve_variant(manifest, c, vid) or {}).get("nudity") is True]
-    if nude and not (content & {"nudity", "sexual"}):
+    if nude and "nudity" not in content:
         rep.errors.append(f"variant(s) marked nudity ({', '.join(nude[:3])}): tags.content must include 'nudity'")
     if manifest.get("preset_groups") is not None:
         rep.warnings.append("preset_groups is deprecated (builder 0.8.0): use preset_tags — `cof migrate` converts it")
@@ -690,7 +693,7 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
         r = resolved(manifest, dp)
         cand = []
         for k in ("face", "character-sheet", "reference-set", "body"):
-            for v in [x for x in r.get("appearance", []) if x.get("kind") == k]:
+            for v in [x for x in r.get("appearance", []) if x.get("kind") == k and x.get("nudity") is not True]:
                 cand += [A[i] for i in v.get("images", []) or [] if i in A and A[i].get("path")]
         best = next((a for a in cand if a.get("subject") == "head" and a.get("angle") == "front"), cand[0] if cand else None)
         pim = ((manifest.get("presets") or {}).get(dp or "") or {}).get("primary_image")
@@ -883,6 +886,31 @@ def _asset_age_rules(manifest: dict, A: dict, rep: "Report") -> None:
     """Bind ages to files: an intimate variant's files are its own (own folder, used by no other variant), and one
     file cannot represent both a person under 18 and an adult."""
     users: dict[str, list[tuple[str, str, dict]]] = {}
+    nude_ids: set[str] = set()
+    for cat, e in (manifest.get("elements") or {}).items():
+        for vid in ((e or {}).get("variants") or {}):
+            rv = resolve_variant(manifest, cat, vid) or {}
+            if rv.get("nudity") is True or rv.get("kind") == "intimate":
+                nude_ids |= variant_asset_ids(rv)
+    grew = True
+    while grew:                                     # derived maps of a nude image are nude too
+        grew = False
+        for a in manifest.get("assets") or []:
+            if a.get("id") not in nude_ids and a.get("role") == "derived" and a.get("source") in nude_ids:   # maps (lineart, depth…) keep the nudity; crops are judged on their own
+                nude_ids.add(a["id"]); grew = True
+    for cat, e in (manifest.get("elements") or {}).items():
+        for vid in ((e or {}).get("variants") or {}):
+            rv = resolve_variant(manifest, cat, vid) or {}
+            if rv.get("nudity") is not True and rv.get("kind") != "intimate":
+                bad = sorted(variant_asset_ids(rv) & nude_ids)
+                if bad:
+                    rep.errors.append(f"{cat}.{vid} uses {', '.join(bad[:3])}, which show(s) nudity or intimate content (or are maps derived from such an image) — mark the variant nudity, or use another file")
+    ts = manifest.get("thumbnail_source")
+    dp = default_preset_id(manifest)
+    pim = ((manifest.get("presets") or {}).get(dp or "") or {}).get("primary_image")
+    for where, aid in (("thumbnail_source", ts), (f"presets.{dp}.primary_image", pim)):
+        if aid and aid in nude_ids:
+            rep.errors.append(f"{where}: {aid} shows nudity or intimate content — the file thumbnail is shown by file managers without any content setting; choose another image")
     for cat, e in (manifest.get("elements") or {}).items():
         for vid in ((e or {}).get("variants") or {}):
             rv = resolve_variant(manifest, cat, vid) or {}
@@ -897,10 +925,6 @@ def _asset_age_rules(manifest: dict, A: dict, rep: "Report") -> None:
             pth = (A.get(aid) or {}).get("path") or ""
             if pth and not pth.startswith(f"elements/appearance/{vid}/"):
                 rep.errors.append(f"appearance.{vid} (intimate): asset {aid} must live in elements/appearance/{vid}/ (found {pth})")
-        if any(rv.get("nudity") is True for _, _, rv in us):
-            plain = [f"{c}.{v}" for c, v, rv in us if rv.get("nudity") is not True and rv.get("kind") != "intimate"]
-            if plain:
-                rep.errors.append(f"asset {aid} shows nudity and is also used by {', '.join(plain)}, not marked nudity — mark it, or use another file")
         ages = [(x, f"{c}.{v}") for c, v, rv in us if rv.get("kind") not in AGELESS_KINDS for x in [_age_value(rv.get("age"))] if x is not None]
         if ages and min(ages)[0] < ADULT <= max(ages)[0]:
             rep.errors.append(f"asset {aid} represents both a person under {ADULT} ({min(ages)[1]}: {min(ages)[0]:g}) and an adult ({max(ages)[1]}: {max(ages)[0]:g}) — use separate files")
@@ -919,6 +943,8 @@ def _age_rules(manifest: dict, pid: str | None, res: dict, perms_all: dict, rep:
             if age_required(manifest, pid, v) and _age_value(v.get("age")) is None:
                 rep.errors.append(f"{label}: {cat}.{v['_id']} ({v['kind']}) must declare an age (basis 'apparent' if the canonical age is unknown)")
     nude_vs = [(cat, v) for cat in res for v in res.get(cat, []) if v.get("nudity") is True]
+    if nude_vs and pa is None:
+        rep.errors.append(f"{label}: applies or offers a nude element ({nude_vs[0][0]}.{nude_vs[0][1]['_id']}) but has no known age — declare the ages of its body representations or an age_override (18 or over)")
     if by_kind(res, "appearance", "intimate") or nude_vs:
         # an intimate or nude element is applied or offered: every representation of the body carries an age, whatever the morphology class
         for cat in AGE_CATEGORIES:

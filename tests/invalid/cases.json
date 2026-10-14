@@ -167,13 +167,31 @@
       "file": "nude-file-reused-unmarked.cof",
       "rule": "a file showing nudity is used only by variants marked nudity (or intimate)",
       "spec": "§ 4.5",
-      "expect": "shows nudity and is also used by"
+      "expect": "show(s) nudity or intimate content"
     },
     {
       "file": "real-person-nudity-without-consent.cof",
       "rule": "nudity of a real person requires their explicit consent (scope nudity or intimate)",
       "spec": "§ 9.2",
       "expect": "consent scope 'nudity'"
+    },
+    {
+      "file": "cast-nudity-borrowed-consent.cof",
+      "rule": "in a cast, each real person's consent is their own (the root consent belongs to the default character)",
+      "spec": "§ 9.2",
+      "expect": "consent scope 'nudity'"
+    },
+    {
+      "file": "nudity-without-age.cof",
+      "rule": "a preset applying a nude element has a known age (18 or over)",
+      "spec": "§ 4.5",
+      "expect": "has no known age"
+    },
+    {
+      "file": "nude-thumbnail.cof",
+      "rule": "the file thumbnail (thumbnail_source, default primary image) never shows nudity or intimate content",
+      "spec": "§ 1.1",
+      "expect": "shows nudity or intimate content"
     },
     {
       "file": "weights-without-base-model.cof",

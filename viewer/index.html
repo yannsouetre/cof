@@ -186,7 +186,7 @@ function presetOwner(pid){return inherited(pid,"identity")||defaultIdentity()}
 function variantOwner(cat,vid){const v=resolveVariant(cat,vid);return (v&&v.identity)||defaultIdentity()}
 function identityOf(iid){const I=ids()[iid];return I?{...I}:{name:M.name,nickname:M.nickname,summary:M.summary,fictional:M.fictional,morphology:M.morphology,consent:(M.rights||{}).consent}}
 function permsOf(pid){const iid=presetOwner(pid);const r=(ids()[iid]||{}).rights||M.rights||{};return {...(r.permissions||{}),...(P()[pid].permissions_override||{})}}
-function primaryImage(pid){const e=inherited(pid,"primary_image");if(e&&A()[e])return e;const r=resolved(slots(pid));for(const k of ["face","reference-set","character-sheet","body"])for(const v of (r.appearance||[]).filter(x=>x.kind===k))for(const i of v.images||[])if(A()[i]&&String(A()[i].mediaType||"").startsWith("image/"))return i;return null}
+function primaryImage(pid){const NS=nudeSet();const e=inherited(pid,"primary_image");if(e&&A()[e]&&!NS.has(e))return e;const r=resolved(slots(pid));for(const k of ["face","reference-set","character-sheet","body"])for(const v of (r.appearance||[]).filter(x=>x.kind===k))for(const i of v.images||[])if(A()[i]&&!NS.has(i)&&String(A()[i].mediaType||"").startsWith("image/"))return i;return null}
 const tags=()=>M.preset_tags||[];
 function tagsOf(pid){return tags().filter(t=>(t.presets||[]).includes(pid))}
 function facetOf(t){return t.facet||("tag:"+t.id)}
@@ -240,7 +240,7 @@ async function render(){
   await renderPreset();
 }
 
-function nudeSet(){const n=new Set();for(const [cat,e] of Object.entries(M.elements||{}))for(const vid of Object.keys(e.variants||{})){const v=resolveVariant(cat,vid);if(v&&v.nudity===true)for(const k of ["images","derived"])for(const a of v[k]||[])n.add(a)}return n}
+function nudeSet(){const n=new Set();for(const [cat,e] of Object.entries(M.elements||{}))for(const vid of Object.keys(e.variants||{})){const v=resolveVariant(cat,vid);if(v&&(v.nudity===true||v.kind==="intimate"))for(const k of ["images","derived"])for(const a of v[k]||[])n.add(a)}return n}
 async function gallery(aids,cap){const NS=nudeSet();const out=[];for(const aid of aids){const a=A()[aid];if(!a||!String(a.mediaType||"").startsWith("image/"))continue;const u=await urlOf(aid);if(u)out.push(`<figure>${NS.has(aid)?`<span class="nudewrap"><img src="${u}" alt="${esc(cap||"")}" class="nude" data-reveal><span>${LANG==="fr"?"nudité — cliquer pour afficher":"nudity — click to show"}</span></span>`:`<img src="${u}" alt="${esc(cap||"")}" data-zoom>`}<figcaption>${esc([a.subject,a.angle].filter(Boolean).join(" · "))}</figcaption></figure>`)}return out.join("")}
 
 async function renderPreset(){

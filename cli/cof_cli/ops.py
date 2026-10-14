@@ -341,8 +341,18 @@ def strip_intimate(dst: Path) -> list[str]:
     from .model import variant_asset_ids
     m = json.loads((dst / "manifest.json").read_text("utf-8"))
     V = ((m.get("elements") or {}).get("appearance") or {}).get("variants") or {}
-    gone = [vid for vid, v in V.items() if v.get("kind") == "intimate"]
-    freed = set()
+    gone = [vid for vid, v in V.items() if v.get("kind") == "intimate" or v.get("nudity") is True]
+    extra_freed, extra_gone = set(), []
+    for cat, e in (m.get("elements") or {}).items():          # nude variants of other categories (posture photos…)
+        if cat == "appearance":
+            continue
+        for vid in [k for k, v in ((e or {}).get("variants") or {}).items() if (v or {}).get("nudity") is True]:
+            extra_freed |= variant_asset_ids(e["variants"].pop(vid)); extra_gone.append(f"{cat}.{vid}")
+            for p in (m.get("presets") or {}).values():
+                for key in ("slots", "alternatives"):
+                    if (p.get(key) or {}).get(cat):
+                        p[key][cat] = [x for x in p[key][cat] if x != vid]
+    freed = set(extra_freed)
     for vid in gone:
         freed |= variant_asset_ids(V.pop(vid))
     still = {aid for e in (m.get("elements") or {}).values() for v in (e.get("variants") or {}).values() for aid in variant_asset_ids(v)}
@@ -363,7 +373,7 @@ def strip_intimate(dst: Path) -> list[str]:
         if "permissions" in r:
             r["permissions"]["allowSexualUsage"] = False
     tc = (m.get("tags") or {}).get("content")
-    if gone and isinstance(tc, list) and "nudity" in tc:     # images gone; `sexual` stays when set (texts may still be concerned)
+    if (gone or extra_gone) and isinstance(tc, list) and "nudity" in tc:     # images gone; `sexual` stays when set (texts may still be concerned)
         tc.remove("nudity")
         if not tc:
             tc.append("none")
