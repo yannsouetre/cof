@@ -101,7 +101,7 @@ COF is deliberately flexible: almost everything is optional, unknown keys surviv
 ## Key documents
 - [`spec/SPEC.md`](spec/SPEC.md) — the specification
 - [`docs/IMPLEMENTING.md`](docs/IMPLEMENTING.md) — how to read and write `.cof` files in your tool
-- [`spec/examples/`](spec/examples/) — 10 conformant example characters
+- [`spec/examples/`](spec/examples/) — 9 conformant example characters
 - [`skills/cof-author/SKILL.md`](skills/cof-author/SKILL.md) — the skill that teaches an AI agent to create and update `.cof` files
 - [`spec/schemas/`](spec/schemas/) — JSON Schemas (draft 2020-12)
 - [`CHANGELOG.md`](CHANGELOG.md), [`CONTRIBUTING.md`](CONTRIBUTING.md), [`GOVERNANCE.md`](GOVERNANCE.md), [`SECURITY.md`](SECURITY.md)

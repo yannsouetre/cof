@@ -1,15 +1,15 @@
 {
   "cof": "1.0",
   "id": "01K72R1A2B3C4D5E6F7G8H9J3K",
-  "name": "Robot",
+  "name": "Test robot",
   "languages": [
     "fr"
   ],
-  "summary": "Robot humanoïde de style japonais, armure blanche, rouge et bleue, yeux verts lumineux.",
+  "summary": "Test fixture: a mechanical character declared 3 years old (no images). / Fixture de test : personnage mécanique déclaré de 3 ans (sans images).",
   "fictional": true,
   "morphology": {
     "class": "mechanical",
-    "species": "mecha (fictional)"
+    "species": "robot (fictional)"
   },
   "tags": {
     "auto": [
@@ -394,7 +394,7 @@
     "modified": "2026-10-09T20:30:00Z",
     "generator": "cof-vector/0.2 sheet_split + edges",
     "source": [
-      "https://github.com/yannsouetre/cof/tree/main/spec/examples/05-robot"
+      "https://github.com/yannsouetre/cof/tree/main/tests/fixtures/robot-age-3"
     ],
     "c2pa": null,
     "signatures": []
