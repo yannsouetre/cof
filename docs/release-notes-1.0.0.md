@@ -19,7 +19,7 @@ COF (Character Open File) is an open file format for AI characters: a `.cof` is 
 ## Tools
 
 - **Explorer** (browser, read-only): <https://yannsouetre.github.io/cof/viewer/> — opens any `.cof`: characters, presets by facet (language, age, style) with one-click switching, looks, voices, poses, skills, a rights summary and the full rights; light and dark themes.
-- **Builder** (browser, nothing leaves your machine): <https://yannsouetre.github.io/cof/builder/> — six interface languages, simple and advanced modes, guided deletion, character selector, preset import with rights check, a window that recommends recording consent for a real person.
+- **Builder** (browser, nothing leaves your machine except the optional AI check you configure): <https://yannsouetre.github.io/cof/builder/> — six interface languages, simple and advanced modes, a short built-in guide for the advanced mode, guided deletion, character selector, preset import with rights check, a window that recommends recording consent for a real person.
 - **ComfyUI nodes** ([ComfyUI-COF](https://github.com/yannsouetre/ComfyUI-COF), MIT): load a preset — primary image, reference views, prompt, LoRA, pre-encoded references, voice, persona text, poses, motion clips and 3D files — with the preset and character as dropdowns, and the file's rights and age rules enforced.
 - **`cof-cli` 1.0.0** (Python, MIT, `pip install cof-cli`): `validate`, `pack`, `unpack`, `info`, `import` (PNG / JSON cards), `export` (png, card, soul, agent), `merge`, `extract` (a preset, a character, a tag slice, `--no-intimate`), `migrate`.
 - **`cof-author` skill**: lets a coding agent create and update `.cof` files (in blind tests, Codex and Google Antigravity added presets with the skill alone and produced valid files).
