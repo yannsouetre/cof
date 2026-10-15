@@ -1,6 +1,6 @@
 # COF 1.0.0 — release notes (17 October 2026)
 
-**One character = one file. Open, portable, consented.**
+**Complete AI characters in one open file — portable, with their rights.**
 
 ▶ [Explore a .cof](https://yannsouetre.github.io/cof/viewer/) · [Build one](https://yannsouetre.github.io/cof/builder/) · [ComfyUI nodes](https://github.com/yannsouetre/ComfyUI-COF) · [38-second clip](https://yannsouetre.github.io/cof/#clip)
 

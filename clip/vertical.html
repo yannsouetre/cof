@@ -106,7 +106,7 @@ const pills=["English","Français","29","65","photo","manga"].map(t=>{const p=do
 // scene 6 — cast
 const castEl=$("cast");const cast=[["img/clara-29.jpg","Clara Mercier","her own rights"],["img/martien.jpg","Martien","his own rights"]].map(([src,n,b],i)=>{const w=document.createElement("div");w.className="abs";w.style.left=(90+i*480)+"px";w.style.top="560px";w.innerHTML=`<div class="portrait" style="width:420px;height:660px;background-image:url(${src})"></div><div class="name" style="margin-top:20px">${n}</div><div class="badge">${b}</div>`;castEl.appendChild(w);return w});
 
-const TEXT=[[0,5,"An AI character today:","Many formats, many files — and nothing says what you may do with it."],[5.4,9,"One character.<br>One open file.",""],[9,16,"Everything that<br>makes Clara.",""],[16,23,"Every version,<br>one file.","Presets: switch the language or the age — the rest follows."],[23,28,"Its rights travel<br>with it.",""],[28,32.6,"Several characters,<br>one file.","Each keeps its own looks, voice and rights."]];
+const TEXT=[[0,5,"An AI character today:","Many formats, many files — and nothing says what you may do with it."],[5.4,9,"The complete character.<br>In one open file.",""],[9,16,"Everything that<br>makes Clara.",""],[16,23,"Every version,<br>one file.","Presets: switch the language or the age — the rest follows."],[23,28,"Its rights travel<br>with it.",""],[28,32.6,"Several characters,<br>one file.","Each keeps its own looks, voice and rights."]];
 const DUR=38;
 function render(t){
   // headline + subline

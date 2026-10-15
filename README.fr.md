@@ -2,7 +2,7 @@
 
 <h1 align="center">COF — Character Open File</h1>
 
-<p align="center"><b>Un personnage = un fichier. Ouvert, portable, consenti.</b></p>
+<p align="center"><b>Des personnages IA complets dans un seul fichier ouvert — portables, avec leurs droits.</b></p>
 
 <p align="center">
 <a href="https://yannsouetre.github.io/cof/viewer/"><img src="docs/img/btn-explore-fr.png" alt="Explorer un .cof" width="250"></a>&nbsp;&nbsp;&nbsp;

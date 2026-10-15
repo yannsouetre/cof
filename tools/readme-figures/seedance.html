@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>COF — Seedance references</title>
+<style>
+@font-face{font-family:"Bricolage";src:url(../../clip/fonts/bricolage-grotesque-latin-700-normal.woff2) format("woff2");font-weight:700}
+@font-face{font-family:"Bricolage";src:url(../../clip/fonts/bricolage-grotesque-latin-500-normal.woff2) format("woff2");font-weight:500}
+@font-face{font-family:"Plex";src:url(../../clip/fonts/ibm-plex-sans-latin-400-normal.woff2) format("woff2");font-weight:400}
+@font-face{font-family:"PlexMono";src:url(../../clip/fonts/ibm-plex-mono-latin-500-normal.woff2) format("woff2");font-weight:500}
+html,body{margin:0;background:transparent}
+.bg{position:relative;overflow:hidden;background:radial-gradient(1200px 800px at 60% 45%,#13201d 0%,#0d1312 70%);margin-bottom:30px}
+.file{position:absolute}
+.file .doc{position:absolute;inset:0;background:linear-gradient(160deg,#4cc2a8 0%,#0f6b5c 100%);border-radius:9%;clip-path:polygon(0 0,74% 0,100% 20%,100% 100%,0 100%);box-shadow:0 40px 120px rgba(76,194,168,.25)}
+.file .fold{position:absolute;right:0;top:0;width:26%;height:20%;background:#bfeee2;border-bottom-left-radius:18%;clip-path:polygon(0 0,100% 100%,0 100%)}
+.file .lbl{position:absolute;left:0;right:0;text-align:center;font-family:Bricolage;font-weight:700;color:#05201b}
+.card{position:absolute;border-radius:22px;background:#fff center/contain no-repeat;box-shadow:0 24px 60px rgba(0,0,0,.45)}
+.chip{position:absolute;border-radius:14px;background:#18201f;border:1.5px solid #2a3533}
+.pill{position:absolute;border-radius:999px;border:3px solid #2a3533}
+.pill.on{background:#4cc2a8;border-color:#4cc2a8}
+.sw{position:absolute;width:150px;height:150px;border-radius:24px;border:1.5px solid #2a3533}
+.ov{position:relative;width:1920px;height:1080px;background:transparent;margin-bottom:30px}
+.ov .s{position:absolute;left:0;right:0;text-align:center;font:700 64px/1.15 Bricolage;letter-spacing:-.01em;color:#eef3f1;text-shadow:0 4px 30px rgba(0,0,0,.6)}
+.ov .u{position:absolute;left:0;right:0;text-align:center;font:500 34px PlexMono;color:#4cc2a8}
+</style></head><body>
+
+<!-- 1. the file icon, alone, centered: the end frame -->
+<div class="bg" id="icon" style="width:1920px;height:1080px">
+  <div class="file" style="left:780px;top:290px;width:360px;height:460px"><div class="doc"></div><div class="fold"></div><div class="lbl" style="bottom:70px;font-size:120px">.cof</div></div>
+</div>
+
+<!-- 2. style board, no words: palette, shapes, cards, pills, connectors -->
+<div class="bg" id="board" style="width:1920px;height:1080px">
+  <div class="sw" style="left:110px;top:110px;background:#0d1312"></div>
+  <div class="sw" style="left:290px;top:110px;background:#18201f"></div>
+  <div class="sw" style="left:470px;top:110px;background:#4cc2a8"></div>
+  <div class="sw" style="left:650px;top:110px;background:#0f6b5c"></div>
+  <div class="sw" style="left:830px;top:110px;background:#bfeee2"></div>
+  <div class="sw" style="left:1010px;top:110px;background:#a98ae8"></div>
+  <div class="sw" style="left:1190px;top:110px;background:#eef3f1"></div>
+  <div class="chip" style="left:110px;top:360px;width:300px;height:72px"></div>
+  <div class="chip" style="left:450px;top:420px;width:380px;height:72px;transform:rotate(-3deg)"></div>
+  <div class="chip" style="left:150px;top:500px;width:260px;height:72px;transform:rotate(2deg)"></div>
+  <div class="pill on" style="left:110px;top:660px;width:170px;height:60px"></div>
+  <div class="pill" style="left:300px;top:660px;width:170px;height:60px"></div>
+  <div class="pill on" style="left:490px;top:660px;width:110px;height:60px"></div>
+  <div class="pill" style="left:620px;top:660px;width:110px;height:60px"></div>
+  <svg style="position:absolute;left:0;top:0" width="1920" height="1080"><path d="M860 640 C1000 640,1000 560,1150 560" fill="none" stroke="#4cc2a8" stroke-opacity=".6" stroke-width="4"/><path d="M860 760 C1000 760,1000 700,1150 700" fill="none" stroke="#4cc2a8" stroke-opacity=".6" stroke-width="4"/><circle cx="1150" cy="560" r="8" fill="#4cc2a8"/><circle cx="1150" cy="700" r="8" fill="#4cc2a8"/></svg>
+  <div class="file" style="left:1180px;top:460px;width:240px;height:306px"><div class="doc"></div><div class="fold"></div><div class="lbl" style="bottom:46px;font-size:80px">.cof</div></div>
+  <div class="card" style="left:1500px;top:380px;width:200px;height:340px;transform:rotate(6deg);background-image:url(../../clip/img/clara-29.jpg)"></div>
+  <div class="card" style="left:110px;top:800px;width:120px;height:170px;background-image:url(../../clip/img/clara-65.jpg)"></div>
+  <div class="card" style="left:250px;top:800px;width:120px;height:170px;background-image:url(../../clip/img/clara-combat.jpg)"></div>
+  <div class="card" style="left:390px;top:800px;width:120px;height:170px;background-image:url(../../clip/img/martien.jpg)"></div>
+</div>
+
+<!-- 3. post-production overlay: slogan + address (transparent) -->
+<div class="ov" id="slogan">
+  <div class="s" style="top:820px">Finally, everything in one file —<br>with presets. Simple and portable.</div>
+</div>
+<div class="ov" id="endcard">
+  <div class="s" style="top:800px;font-size:58px">Complete AI characters in one open file.</div>
+  <div class="u" style="top:900px">github.com/yannsouetre/cof</div>
+</div>
+
+<!-- 4. human reference: the brand at a glance (NOT for Seedance: it has words) -->
+<div class="bg" id="brand" style="width:1920px;height:1080px">
+  <div style="position:absolute;left:110px;top:90px;font:700 150px/1 Bricolage;letter-spacing:-.04em;color:#eef3f1">COF</div>
+  <div style="position:absolute;left:116px;top:250px;font:500 40px Bricolage;color:#93a39e">Bricolage Grotesque — titles</div>
+  <div style="position:absolute;left:116px;top:320px;font:400 36px Plex;color:#eef3f1">IBM Plex Sans — text, labels, buttons</div>
+  <div style="position:absolute;left:116px;top:390px;font:500 32px PlexMono;color:#4cc2a8">IBM Plex Mono — photos (.jpeg) · LoRA (.safetensors)</div>
+  <div class="sw" style="left:110px;top:500px;background:#0d1312"></div><div class="sw" style="left:290px;top:500px;background:#18201f"></div><div class="sw" style="left:470px;top:500px;background:#4cc2a8"></div><div class="sw" style="left:650px;top:500px;background:#0f6b5c"></div><div class="sw" style="left:830px;top:500px;background:#bfeee2"></div><div class="sw" style="left:1010px;top:500px;background:#a98ae8"></div><div class="sw" style="left:1190px;top:500px;background:#f07a72"></div>
+  <div style="position:absolute;left:110px;top:670px;font:500 22px PlexMono;color:#93a39e;word-spacing:58px">#0d1312 #18201f #4cc2a8 #0f6b5c #bfeee2 #a98ae8 #f07a72</div>
+  <div class="file" style="left:1460px;top:420px;width:280px;height:356px"><div class="doc"></div><div class="fold"></div><div class="lbl" style="bottom:56px;font-size:92px">.cof</div></div>
+</div>
+</body></html>

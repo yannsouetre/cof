@@ -214,7 +214,7 @@ Et une **innovation à part** qui mérite sa propre visibilité : **COF-Vector**
 | Axe | Contenu |
 |---|---|
 | **Nom & identité** | COF — Character Open File ; `.cof` ; logo simple (une silhouette dans un dossier qui se referme) ; badge « COF-compatible » ; COF-Vector a son propre visuel (un visage en traits) |
-| **Message clé** | « Un personnage = un fichier. Ouvert, portable, consenti. » |
+| **Message clé** | « Des personnages IA complets dans un seul fichier ouvert — portables, avec leurs droits. » (révisé le 15 oct. : un fichier peut contenir plusieurs personnages) |
 | **Preuve avant parole** | Jamais d'annonce sans builder + viewer + intégration réelle + 5 exemples |
 | **Deux vagues** | 1) le conteneur (utilité, lock-in, conformité) ; 2) COF-Vector (innovation, démo visuelle) |
 | **Cibles prioritaires** | 1) roleplay / LLM local (SillyTavern, Risu, Chub) ; 2) VTubing / VRM ; 3) créateurs image/vidéo IA (ComfyUI, Kling, Runway) frustrés par le lock-in ; 4) auteurs d'agents (OpenClaw, GPTs, Claude, Grok) ; 5) entreprises / consultants — conformité |
