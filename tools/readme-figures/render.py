@@ -20,7 +20,7 @@ async def main():
         br = await p.chromium.launch()
         pg = await br.new_page(viewport={"width": 1700, "height": 1000}, device_scale_factor=1)
         await pg.goto(f"{BASE}/tools/readme-figures/figures.html"); await pg.evaluate("document.fonts.ready"); await pg.wait_for_timeout(400)
-        for fid in ("contents", "tools"):
+        for fid in ("contents", "tools", "comfy"):
             await pg.locator(f"#{fid}").screenshot(path=str(OUT / f"cof-{fid}.png"), omit_background=True)
         soc = await br.new_page(viewport={"width": 1400, "height": 1000}, device_scale_factor=1)
         await soc.goto(f"{BASE}/tools/readme-figures/figures.html"); await soc.evaluate("document.fonts.ready"); await soc.wait_for_timeout(500)

@@ -34,6 +34,16 @@ svg.wires{position:absolute;inset:0}
 .social .l{position:absolute;left:90px;top:400px;width:560px;font:400 27px/1.4 Plex,sans-serif;color:#eef3f1}
 .social .u{position:absolute;left:90px;bottom:62px;font:500 24px PlexMono,monospace;color:#4cc2a8}
 .social .pc{position:absolute;width:170px;height:290px;border-radius:18px;background:#fff center/contain no-repeat;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.node{position:absolute;width:360px;border-radius:14px;background:#232a29;border:1px solid #3a4644;box-shadow:0 20px 50px rgba(0,0,0,.45)}
+.node .nh{padding:12px 18px;border-bottom:1px solid #3a4644;font:500 22px Plex,sans-serif;display:flex;align-items:center;gap:10px}
+.node .nh:before{content:"";width:12px;height:12px;border-radius:50%;background:#4cc2a8}
+.node .o{display:flex;justify-content:flex-end;align-items:center;gap:10px;padding:7px 18px;font:500 18px PlexMono,monospace;color:#93a39e}
+.node .o:after{content:"";width:12px;height:12px;border-radius:50%;background:var(--c,#4cc2a8)}
+.node .wd{margin:6px 14px;padding:7px 12px;border-radius:9px;background:#151b1a;font:500 16px PlexMono,monospace;color:#93a39e;display:flex;justify-content:space-between}
+.node .wd b{color:#eef3f1;font-weight:500}
+.out{position:absolute;border-radius:16px;background:var(--panel);border:1px solid var(--line);padding:12px 14px;box-sizing:border-box}
+.out .k{font:500 15px PlexMono,monospace;color:var(--teal);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
+.out img{display:block;border-radius:10px;background:#fff}
 </style></head><body>
 
 <!-- 1. What's in a .cof -->
@@ -71,6 +81,36 @@ svg.wires{position:absolute;inset:0}
   <svg style="position:absolute;left:0;top:0" width="1600" height="860"><line x1="800" y1="600" x2="800" y2="666" stroke="#4cc2a8" stroke-opacity=".55" stroke-width="2.5" stroke-dasharray="6 6"/></svg><div class="card teal" style="left:560px;top:666px;width:480px;text-align:center"><b>cof validate</b><span>ages · rights · hashes · scripts</span></div>
 </div>
 
+<div class="fig" id="comfy" style="height:820px">
+  <h2>Your character, in ComfyUI.</h2>
+  <div class="sub">One node loads a preset: its images, a prompt, its LoRA, voice, poses — with its rights.</div>
+  <svg class="wires" viewBox="0 0 1600 820">
+    <path d="M290 456 C360 456,360 303,430 303" fill="none" stroke="#4cc2a8" stroke-opacity=".6" stroke-width="3"/>
+    <path d="M778 341 C850 341,860 335,930 335" fill="none" stroke="#4cc2a8" stroke-opacity=".7" stroke-width="3"/>
+    <path d="M778 378 C860 378,850 590,930 590" fill="none" stroke="#4cc2a8" stroke-opacity=".7" stroke-width="3"/>
+    <path d="M778 415 C860 415,860 476,930 476 L1196 476 C1216 476,1210 335,1230 335" fill="none" stroke="#a98ae8" stroke-opacity=".7" stroke-width="3"/>
+    <path d="M778 452 C850 452,860 484,930 484 L1196 484 C1216 484,1210 590,1230 590" fill="none" stroke="#eef3f1" stroke-opacity=".4" stroke-width="3"/>
+  </svg>
+  <div class="file" style="left:90px;top:330px;width:200px;height:252px"><div class="doc"></div><div class="fold"></div><div class="who" style="top:80px;font-size:18px">character</div><div class="lbl" style="font-size:62px;bottom:34px">.cof</div></div>
+  <div class="node" style="left:430px;top:230px">
+    <div class="nh">COF Load Character</div>
+    <div class="o" style="--c:#a98ae8">cof</div>
+    <div class="o">primary_image</div>
+    <div class="o">references</div>
+    <div class="o" style="--c:#a98ae8">prompt</div>
+    <div class="o" style="--c:#eef3f1">info</div>
+    <div class="wd"><span>cof_file</span><b>clara-mercier.cof</b></div>
+    <div class="wd"><span>preset</span><b>en-65 — Clara at 65</b></div>
+    <div class="wd"><span>character</span><b>(default)</b></div>
+  </div>
+  <div class="out" style="left:930px;top:200px;width:266px;height:270px;z-index:1"><div class="k">primary image</div><img src="../../clip/img/clara-65.jpg" style="width:240px;height:208px;object-fit:contain"></div>
+  <div class="out" style="left:930px;top:490px;width:266px;height:200px;z-index:1"><div class="k">references</div>
+    <div style="display:flex;gap:8px"><img src="../../clip/img/clara-65.jpg" style="width:76px;height:140px;object-fit:contain"><img src="../../clip/img/clara-29.jpg" style="width:76px;height:140px;object-fit:contain"><img src="../../clip/img/clara-combat.jpg" style="width:76px;height:140px;object-fit:contain"></div></div>
+  <div class="out" style="left:1230px;top:200px;width:300px;height:270px"><div class="k" style="color:#a98ae8">prompt</div><div style="font:500 17px/1.45 PlexMono,monospace;color:#eef3f1">Clara Mercier, a designer from Lyon, 65 years old, setting: Cosy living room, books and records, photo realistic style</div></div>
+  <div class="out" style="left:1230px;top:490px;width:300px;height:200px"><div class="k" style="color:#eef3f1">info · rights</div><div style="font:500 16px/1.6 PlexMono,monospace;color:#93a39e">age 65 · fictional<br>commercial use: non-profit<br>redistribution <span style="color:#f07a72">✗</span><br>voice cloning <span style="color:#f07a72">✗</span> · training <span style="color:#f07a72">✗</span></div></div>
+  <div class="note" style="top:728px">Advanced nodes: <b>Images</b> by kind and index · <b>Apply LoRA</b> · <b>RefMods</b> · <b>Voice</b> · <b>Persona text</b> · <b>Motion &amp; 3D files</b></div>
+</div>
+
 <div class="social" id="social">
   <div class="w">COF</div>
   <div class="t">Character Open File</div>
@@ -89,6 +129,8 @@ svg.wires{position:absolute;inset:0}
 <span class="btnimg" id="btn-explore-fr">Explorer un .cof <i>→</i></span>
 <span class="btnimg" id="btn-build-fr">Créer dans le navigateur <i>→</i></span>
 <span class="btnimg" id="btn-comfyui-fr">Nœuds ComfyUI <i>→</i></span>
+<span class="btnimg" id="btn-format">The COF format <i>→</i></span>
+<span class="btnimg" id="btn-clip">Watch the clip <i>▶</i></span>
 </div>
 <script>
 // connectors: from each card's inner edge to the file icon
