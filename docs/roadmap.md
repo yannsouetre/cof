@@ -145,7 +145,7 @@ Et une **innovation à part** qui mérite sa propre visibilité : **COF-Vector**
 | 1 | Dépôt, licences, gouvernance, RFC 0001 | ✅ |
 | 2 | Spécification + schémas + règles (complétude, tags) | ✅ (1.0 RC, schémas publiés sur GitHub Pages) |
 | 3 | `cof-cli` : validate / pack / unpack / tokens / completeness / import-export PNG / SOUL / migrate / merge / extract | ✅ |
-| 4 | Exemples 1–2 (texte seul ; apparence) | ✅ (10 exemples publics, Clara partout) |
+| 4 | Exemples 1–2 (texte seul ; apparence) | ✅ (9 exemples publics, Clara partout ; exemple 05 retiré le 15 oct.) |
 | 5 | Découpage de planches + post-traitements (Python de référence) | ✅ (dérivés optionnels) |
 | 6 | Vocabulaires : FDV (visage descriptif), HAIR, FACS↔ARKit, LMA, squelettes | → 1.1 (styles visuels fait) |
 | 7 | Schémas des sous-fichiers : card, psyche, weights, voice profile, attitude, pose, skeleton, hair, body, consent, visemes — validés par la CLI | ✅ (11 schémas ; reste `outfit`, `voice.vec`, `face.mesh`) |
