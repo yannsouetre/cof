@@ -27,7 +27,15 @@
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
 a{color:var(--accent)}
-header{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;padding:18px 0 14px;border-bottom:1px solid var(--line);margin-bottom:18px}
+header{display:flex;flex-wrap:wrap;row-gap:8px;align-items:center;gap:14px;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--accent-soft);position:sticky;top:0;z-index:5;margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px))) 18px}
+header .logo{flex:none;color:var(--ink)}
+header h1{font:700 19px var(--display);letter-spacing:-.01em}
+header h1 span{font:400 15px var(--body);color:var(--muted);letter-spacing:0}
+header button{padding:4px 9px;font-size:13px;white-space:nowrap}
+header .tagline{font-size:13px}
+header .brand{display:flex;align-items:center;gap:12px}
+@media (max-width:1400px){header .tagline{display:none}}
+@media (max-width:640px){header h1 span{display:none}}
 h1{font:700 1.45rem/1.1 var(--display);margin:0;letter-spacing:-.01em}
 h1 small{font:500 .78rem var(--mono);color:var(--muted);letter-spacing:0;margin-left:8px}
 h2{font:700 1.7rem/1.15 var(--display);margin:0;text-wrap:balance}
@@ -105,8 +113,9 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 </head>
 <body>
 <header>
-  <h1>COF Explorer <small id="ver">viewer 1.0</small></h1>
-  <span class="muted" data-i="tagline">Read-only. Your file never leaves your browser.</span>
+  <div class="brand"><svg class="logo" viewBox="0 0 64 64" width="30" height="30" aria-hidden="true"><circle cx="32" cy="17.5" r="13" fill="currentColor"/><path d="M5.5 60a26.5 26 0 0 1 53 0Z" fill="currentColor"/><circle cx="32" cy="47" r="7" fill="var(--accent-soft)"/></svg>
+  <h1>COF Explorer <span>· Character Open File 1.0 · <span id="ver">explorer 1.0</span></span></h1></div>
+  <span class="muted tagline" data-i="tagline">Read-only. Your file never leaves your browser.</span>
   <span class="spacer"></span>
   <button id="btnOpen" class="primary" data-i="open">Open a .cof</button>
   <button id="btnClara" data-i="sample1">Example: Clara</button>
