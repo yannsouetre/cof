@@ -2,7 +2,7 @@
 
 <h1 align="center">COF — Character Open File</h1>
 
-<p align="center"><b>One character = one file. Open, portable, consented.</b></p>
+<p align="center"><b>Complete AI characters in one open file — portable, with their rights.</b></p>
 
 <p align="center">
 <a href="https://yannsouetre.github.io/cof/viewer/"><img src="docs/img/btn-explore.png" alt="Explore a .cof" width="250"></a>&nbsp;&nbsp;&nbsp;

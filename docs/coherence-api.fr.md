@@ -19,7 +19,7 @@ Le builder peut déléguer le **contrôle de cohérence** d'un preset à une IA 
     "voice": { "canonical": { "gender_presentation": "feminine", "age_perceived": "30s", "accent": "fr-FR" }, "sample_languages": ["fr"] },
     "identity_weights": { "base_model": "FLUX.1-dev", "covers": ["face", "hair", "body"], "trigger_words": ["…"] }
   },
-  "checks_requested": ["gender", "age", "species", "style", "language", "weights-vs-images", "clothing", "age-legality", "nudity"]
+  "checks_requested": ["gender", "age", "species", "style", "language", "weights-vs-images", "clothing", "element-consistency", "age-legality", "nudity"]
 }
 ```
 
@@ -32,6 +32,9 @@ Le builder peut déléguer le **contrôle de cohérence** d'un preset à une IA 
 ```
 ### Contrôle `age-legality` (sévérité `illegal`)
 Si le dossier contient une déclinaison `intimate`, le contrôleur **doit** estimer l'âge apparent de chaque image de visage et de corps. Si une image paraît clairement mineure (< 18, avec marge) alors que l'âge déclaré est majeur, il renvoie `{ "severity": "illegal", "check": "age-legality", "elements": [...], "message": "..." }`. Le builder affiche cette issue en rouge comme **combinaison illégale** et refuse de construire le fichier tant qu'elle subsiste ; un lecteur qui reçoit un fichier portant une telle issue dans `presets.<p>.coherence` doit le traiter comme invalide. Les sévérités `info | minor | major` restent non bloquantes.
+
+### Contrôle `element-consistency`
+Chaque image est envoyée précédée d'un court texte qui nomme sa déclinaison (identifiant, type, libellé). Les images d'**une même déclinaison doivent montrer la même chose** : le même lieu pour `environment` (cadrages, angles ou heures du jour différents permis), le même vêtement ou accessoire pour `clothing` et `accessory`, la même personne pour `face`, `body`, `reference-set` et `character-sheet`. Sinon → sévérité `minor`, en nommant la déclinaison et en conseillant une déclinaison par lieu, vêtement ou personne. Un preset peut contenir plusieurs déclinaisons `environment`, `clothing`, `accessory`, `pilosity` et `feature` (SPEC § presets, `single_per_kind`) : plusieurs lieux vont dans plusieurs déclinaisons, pas dans une seule.
 
 ### Contrôle `nudity`
 Le contrôleur examine chaque image du preset. **Parties génitales visibles ou acte sexuel dans une déclinaison qui n'est pas `intimate`** → sévérité `illegal` (mauvais classement : ces images vont uniquement dans `intimate` ; le builder refuse de construire). **Nudité sans parties génitales dans une déclinaison non marquée `nudity`** → sévérité `major` : le builder demande à l'auteur de confirmer et de marquer la déclinaison (`nudity: true`, `tags.content` `nudity`). **Toute nudité sur une image d'apparence mineure**, ou dans un preset de moins de 18 ans → sévérité `illegal`. Ce qui compte comme nudité varie selon les pays ; le contrôleur signale, l'auteur décide dans le cadre de ces règles.

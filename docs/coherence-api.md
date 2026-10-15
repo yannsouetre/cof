@@ -21,7 +21,7 @@ The builder can delegate the **coherence check** of a preset to an AI chosen by 
     "voice": { "canonical": { "gender_presentation": "feminine", "age_perceived": "30s", "accent": "fr-FR" }, "sample_languages": ["fr"] },
     "identity_weights": { "base_model": "FLUX.1-dev", "covers": ["face", "hair", "body"], "trigger_words": ["…"] }
   },
-  "checks_requested": ["gender", "age", "species", "style", "language", "weights-vs-images", "clothing", "age-legality", "nudity"]
+  "checks_requested": ["gender", "age", "species", "style", "language", "weights-vs-images", "clothing", "element-consistency", "age-legality", "nudity"]
 }
 ```
 
@@ -34,6 +34,9 @@ The builder can delegate the **coherence check** of a preset to an AI chosen by 
 ```
 ### `age-legality` check (severity `illegal`)
 If the bundle contains an `intimate` variant, the checker **must** estimate the apparent age of every face and body image. If an image clearly looks underage (< 18, with a margin) while the declared age is adult, it returns `{ "severity": "illegal", "check": "age-legality", "elements": [...], "message": "..." }`. The builder displays this issue in red as an **illegal combination** and refuses to build the file as long as it remains; a reader that receives a file carrying such an issue in `presets.<p>.coherence` must treat it as invalid. Severities `info | minor | major` remain non-blocking.
+
+### `element-consistency` check
+Each image is sent preceded by a short text naming its variant (id, type, label). The images of **one variant must show the same thing**: the same place for `environment` (different framings, angles or times of day are fine), the same garment or accessory for `clothing` and `accessory`, the same person for `face`, `body`, `reference-set` and `character-sheet`. Otherwise → severity `minor`, naming the variant and advising one variant per place, garment or person. A preset may hold several `environment`, `clothing`, `accessory`, `pilosity` and `feature` variants (SPEC § presets, `single_per_kind`): several places go in several variants, not in one.
 
 ### `nudity` check
 The checker looks at every image of the preset. **Visible genitals or a sexual act in a variant that is not `intimate`** → severity `illegal` (misclassification: such images belong only in `intimate`; the builder refuses to build). **Nudity without genitals in a variant not marked `nudity`** → severity `major`: the builder asks the author to confirm and mark the variant (`nudity: true`, `tags.content` `nudity`). **Any nudity on an image that looks underage**, or in a preset under 18 → severity `illegal`. What counts as nudity differs between countries; the checker reports, the author decides within the rules above.
