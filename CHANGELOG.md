@@ -3,7 +3,7 @@
 ## 1.0.0 — 2026-10-17 — first stable release
 
 - **The format is 1.0**: same structure as 1.0.0rc3 (frozen on 14 October); a file written for rc3 is a valid 1.0 file. From now on, 1.x versions only add optional fields and enumeration values.
-- **Tools released together**: `cof-cli` 1.0.0 (now on PyPI: `pip install cof-cli`), builder 0.11, the COF Explorer, ComfyUI-COF 0.3.0 (separate repository).
+- **Tools released together**: `cof-cli` 1.0.0 (now on PyPI: `pip install cof-cli`), builder 0.11.7, the COF Explorer, ComfyUI-COF 0.4.0 (separate repository).
 - **Release notes**: `docs/release-notes-1.0.0.md`. The changes made between the freeze and the release (examples harmonised on Clara, the mixed adult/minor example turned into a test fixture, age tags for human-shaped characters only, the explorer's rights summary, the visual identity) are listed under rc3 below.
 
 ## 1.0.0rc3 — 2026-10-14 — structure freeze, blind review
