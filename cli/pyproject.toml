@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cof-cli"
-version = "1.0.0rc3"
+version = "1.0.0"
 description = "COF — Character Open File: validate, pack, unpack and convert .cof character containers"
 readme = "README.md"
 license = "MIT"

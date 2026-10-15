@@ -1,5 +1,5 @@
 # COF — Character Open File
-## Specification 1.0 (release candidate, October 12, 2026 — structure frozen October 14, release October 17)
+## Specification 1.0 (October 17, 2026 — structure frozen October 14)
 
 > Normative text. A French translation is available in [SPEC.fr.md](SPEC.fr.md).
 
