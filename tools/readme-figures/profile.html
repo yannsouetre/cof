@@ -1,0 +1,55 @@
+<!doctype html><html><head><meta charset="utf-8"><title>COF profile avatar and banner (X, YouTube, Discord, Hugging Face)</title>
+<style>
+@font-face{font-family:"Bricolage";src:url(../../clip/fonts/bricolage-grotesque-latin-700-normal.woff2) format("woff2");font-weight:700}
+@font-face{font-family:"Bricolage";src:url(../../clip/fonts/bricolage-grotesque-latin-500-normal.woff2) format("woff2");font-weight:500}
+@font-face{font-family:"Plex";src:url(../../clip/fonts/ibm-plex-sans-latin-400-normal.woff2) format("woff2");font-weight:400}
+@font-face{font-family:"PlexMono";src:url(../../clip/fonts/ibm-plex-mono-latin-500-normal.woff2) format("woff2");font-weight:500}
+:root{--teal:#4cc2a8;--deep:#0f6b5c;--mint:#bfeee2}
+html,body{margin:0;background:#222}
+.file{position:absolute}
+.file .doc{position:absolute;inset:0;background:linear-gradient(160deg,var(--teal) 0%,var(--deep) 100%);border-radius:9%;clip-path:polygon(0 0,74% 0,100% 20%,100% 100%,0 100%);filter:drop-shadow(0 30px 50px rgba(0,0,0,.45))}
+.file .fold{position:absolute;right:0;top:0;width:26%;height:20%;background:var(--mint);border-bottom-left-radius:18%;clip-path:polygon(0 0,100% 100%,0 100%)}
+.file .lbl{position:absolute;left:0;right:0;text-align:center;font-family:Bricolage,sans-serif;font-weight:700;color:#05201b}
+/* avatar 800×800 (X affiche 400×400, rond) */
+#avatar{position:relative;width:800px;height:800px;overflow:hidden;background:radial-gradient(520px 520px at 50% 45%,#16302a 0%,#0d1312 70%)}
+#avatar .file{left:235px;top:170px;width:330px;height:430px}
+#avatar .lbl{bottom:62px;font-size:112px}
+/* bannière X 1500×500 (zone sûre : 60 px en haut et en bas) */
+#banner{position:relative;width:1500px;height:500px;overflow:hidden;background:radial-gradient(1000px 520px at 76% 50%,#16302a 0%,#0d1312 68%);color:#eef3f1;font-family:Plex,sans-serif}
+#banner .w{position:absolute;left:96px;top:118px;font:700 150px/.9 Bricolage,sans-serif;letter-spacing:-.045em}
+#banner .t{position:absolute;left:100px;top:262px;font:500 34px Bricolage,sans-serif;color:#93a39e}
+#banner .l{position:absolute;left:100px;top:322px;width:620px;font:400 24px/1.4 Plex,sans-serif;color:#eef3f1}
+#banner .u{position:absolute;left:100px;bottom:48px;font:500 21px PlexMono,monospace;color:#4cc2a8}
+#banner .pc{position:absolute;width:150px;height:256px;border-radius:16px;background:#fff center/contain no-repeat;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+#banner .file{left:1110px;top:250px;width:160px;height:204px}
+#banner .lbl{bottom:26px;font-size:50px}
+/* miniature YouTube 1280×720 */
+#thumb{position:relative;width:1280px;height:720px;overflow:hidden;background:radial-gradient(900px 640px at 72% 50%,#16302a 0%,#0d1312 68%);color:#eef3f1;font-family:Plex,sans-serif}
+#thumb .w{position:absolute;left:84px;top:170px;font:700 200px/.9 Bricolage,sans-serif;letter-spacing:-.045em}
+#thumb .t{position:absolute;left:90px;top:365px;font:500 42px Bricolage,sans-serif;color:#93a39e}
+#thumb .l{position:absolute;left:90px;top:440px;width:560px;font:400 30px/1.4 Plex,sans-serif;color:#eef3f1}
+#thumb .pc{position:absolute;width:190px;height:324px;border-radius:18px;background:#fff center/contain no-repeat;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+#thumb .file{left:900px;top:380px;width:200px;height:254px}
+#thumb .lbl{bottom:32px;font-size:62px}
+</style></head><body>
+<div id="avatar"><div class="file"><div class="doc"></div><div class="fold"></div><div class="lbl">.cof</div></div></div>
+<div id="banner">
+  <div class="w">COF</div>
+  <div class="t">Character Open File</div>
+  <div class="l">Complete AI characters in one open file —<br>looks, voice, presets <b style="color:#4cc2a8;font-weight:500">and their rights</b>.</div>
+  <div class="u">github.com/yannsouetre/cof</div>
+  <div class="pc" style="left:990px;top:110px;transform:rotate(-8deg);background-image:url(../../clip/img/clara-65.jpg)"></div>
+  <div class="pc" style="left:1240px;top:110px;transform:rotate(8deg);background-image:url(../../clip/img/martien.jpg)"></div>
+  <div class="pc" style="left:1115px;top:70px;background-image:url(../../clip/img/clara-29.jpg)"></div>
+  <div class="file"><div class="doc"></div><div class="fold"></div><div class="lbl">.cof</div></div>
+</div>
+<div id="thumb">
+  <div class="w">COF</div>
+  <div class="t">Character Open File</div>
+  <div class="l">One open file for a whole<br>AI character <b style="color:#4cc2a8;font-weight:500">— and its rights</b>.</div>
+  <div class="pc" style="left:740px;top:170px;transform:rotate(-8deg);background-image:url(../../clip/img/clara-65.jpg)"></div>
+  <div class="pc" style="left:1060px;top:170px;transform:rotate(8deg);background-image:url(../../clip/img/martien.jpg)"></div>
+  <div class="pc" style="left:900px;top:110px;background-image:url(../../clip/img/clara-29.jpg)"></div>
+  <div class="file"><div class="doc"></div><div class="fold"></div><div class="lbl">.cof</div></div>
+</div>
+</body></html>
