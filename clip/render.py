@@ -4,7 +4,7 @@
     python clip/render.py OUTDIR [--music path.mp3]
 
 Produces, in OUTDIR: clip-16x9.mp4 (silent), clip-16x9-music.mp4, clip-9x16-music.mp4 (when --music is given),
-and hero.webp (the whole clip at 15 fps, 1280 px wide, for the README). 30 fps, 38 s."""
+and hero.webp (the whole clip at 15 fps, 1280 px wide, q85, for the README). 30 fps, 38 s."""
 import argparse, asyncio, shutil, subprocess, sys, tempfile
 from pathlib import Path
 from playwright.async_api import async_playwright
@@ -32,9 +32,13 @@ def encode(frames_dir: Path, out: Path, music: Path | None):
 
 
 def hero(frames_dir: Path, out: Path):
-    subprocess.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-framerate", str(FPS), "-i", str(frames_dir / "f%05d.png"),
-                    "-vf", "fps=15,scale=1280:-1:flags=lanczos", "-c:v", "libwebp_anim", "-lossless", "0", "-q:v", "62",
-                    "-compression_level", "6", "-loop", "0", str(out)], check=True)
+    """Animated WebP for the README: the whole clip at 15 fps, 1280 px wide, lossy q85 with a key frame at least every
+    10 frames (lossy sub-rectangle deltas otherwise leave ghost edges on the dark cards)."""
+    from PIL import Image
+    files = sorted(frames_dir.glob("f*.png"))[::FPS // 15]
+    frames = [Image.open(f).convert("RGB").resize((1280, 720), Image.LANCZOS) for f in files]
+    frames[0].save(out, save_all=True, append_images=frames[1:], duration=1000 // 15, loop=0, quality=85, method=6,
+                   kmin=3, kmax=10, allow_mixed=True)
 
 
 async def main():
