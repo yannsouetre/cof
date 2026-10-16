@@ -15,7 +15,9 @@ html,body{margin:0;background:#000;overflow:hidden}
 .abs{position:absolute;will-change:transform,opacity}
 .head{left:80px;top:150px;width:920px;font:700 82px/1.02 Bricolage,sans-serif;letter-spacing:-.02em}
 .sub{left:84px;top:380px;width:900px;font:400 38px/1.35 Plex,sans-serif;color:var(--muted)}
-.chipf{padding:16px 24px;border-radius:14px;background:var(--card);border:1px solid var(--line);font:500 30px PlexMono,monospace;color:var(--ink);white-space:nowrap}
+.chipf{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 28px 20px;border-radius:14px;background:var(--card);border:1px solid var(--line);font:500 30px PlexMono,monospace;color:var(--ink);white-space:nowrap}
+.chipf .ic{height:52px;line-height:52px;font-size:46px;font-family:"Noto Color Emoji","Apple Color Emoji","Segoe UI Emoji",sans-serif}
+.chipf img.ic{width:60px;height:52px;object-fit:contain;transform:scale(1.25)}
 .thumb{width:150px;height:200px;border-radius:14px;background:#fff center/contain no-repeat;border:1px solid var(--line)}
 #file{left:390px;top:780px;width:300px;height:380px}
 #file .doc{position:absolute;inset:0;background:linear-gradient(160deg,var(--teal) 0%,var(--teal-deep) 100%);border-radius:28px;clip-path:polygon(0 0,74% 0,100% 20%,100% 100%,0 100%)}
@@ -87,11 +89,12 @@ function set(el,o,tx=0,ty=0,s=1,r=0){el.style.opacity=o;el.style.transform=`tran
 function win(t,a,b,fi=.6,fo=.6){return Math.min(k(t,a,a+fi),1-k(t,b-fo,b))}   // fade window
 
 // scene 1 — scattered pieces
-const CHIPS=[["cards (.png)",80,640],["photos (.jpeg)",560,690],["LoRA (.safetensors)",110,860],["skills (.md)",640,930],["voice (.wav)",90,1080],["poses (.json)",580,1140],["avatar (.vrm)",130,1300],["notes (.txt)",640,1350],["3D (.3mf, .duf)",170,1500]];
-const THUMBS=[["img/clara-29.jpg",640,1560],["img/clara-combat.jpg",850,1500],["img/clara-65.jpg",430,1640]];
+const CHIPS=[["cards (.png)",80,580],["photos (.jpeg)",560,620],["LoRA (.safetensors)",110,770],["skills (.md)",640,820],["voice (.wav)",90,960],["poses (.json)",580,1010],["avatar (.vrm)",130,1150],["motion (.mp4)",620,1200],["3D (.3mf, .duf)",120,1350]];
+const THUMBS=[["img/clara-29.jpg",700,1420],["img/clara-combat.jpg",880,1500],["img/clara-65.jpg",520,1560]];
 const chipsEl=$("chips");
 const pieces=[];
-for(const [txt,x,y] of CHIPS){const d=document.createElement("div");d.className="abs chipf";d.textContent=txt;d.style.left=x+"px";d.style.top=y+"px";chipsEl.appendChild(d);pieces.push({el:d,x,y,w:300,h:70})}
+const CHIP_ICON={"cards":"📝","photos":"🖼️","LoRA":"img/lora.svg","skills":"📁","voice":"👄","poses":"🏃","avatar":"🧊","motion":"🎥","3D":"🧊"};   // the builder's category icons
+for(const [txt,x,y] of CHIPS){const d=document.createElement("div");d.className="abs chipf";const ic=CHIP_ICON[txt.split(" ")[0]];d.innerHTML=(ic.endsWith(".svg")?`<img class="ic" src="${ic}" alt="">`:`<span class="ic">${ic}</span>`)+`<span>${txt}</span>`;d.style.left=x+"px";d.style.top=y+"px";chipsEl.appendChild(d);pieces.push({el:d,x,y,w:300,h:140})}
 for(const [src,x,y] of THUMBS){const d=document.createElement("div");d.className="abs thumb";d.style.backgroundImage=`url(${src})`;d.style.left=x+"px";d.style.top=y+"px";chipsEl.appendChild(d);pieces.push({el:d,x,y,w:150,h:200})}
 
 // scene 3 — contents
