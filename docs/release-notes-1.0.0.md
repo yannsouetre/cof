@@ -28,7 +28,7 @@ COF (Character Open File) is an open file format for AI characters: a `.cof` is 
 
 - Specification: `spec/SPEC.md` (English) and `spec/SPEC.fr.md` (French), JSON Schemas (draft 2020-12) in `spec/schemas/`, published at `https://yannsouetre.github.io/cof/schemas/1.0/`.
 - `docs/IMPLEMENTING.md`: reader algorithm, simple and advanced reader profiles, per-category mappings.
-- Test vectors: 10 conformant examples in `spec/examples/` and 46 negative files in `tests/invalid/` (one rule violated per file, with the rule and the spec section).
+- Test vectors: 9 conformant examples in `spec/examples/` and 46 negative files in `tests/invalid/` (one rule violated per file, with the rule and the spec section).
 - Compatibility promise: 1.x versions only add optional fields and enumeration values; a 1.0 validator warns on what it does not know and never refuses a later 1.x file for it.
 
 ## Known limits of 1.0
