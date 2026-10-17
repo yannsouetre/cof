@@ -1,6 +1,6 @@
 # Implementing COF — Character Open File
 
-**Implementer's guide · format 1.0 (release candidate) · October 2026**
+**Implementer's guide · format 1.0 · October 2026**
 Audience: developers of companion and chat apps, image/video generators, TTS and voice-cloning services, game engines and VTubing tools, real-time avatar platforms, and agent runtimes. The normative text is `spec/SPEC.md` (English; French version `spec/SPEC.fr.md`, kept aligned section by section); this guide is the practical, English entry point.
 
 The key words MUST, MUST NOT, SHOULD, SHOULD NOT and MAY are to be read as in RFC 2119 / RFC 8174.

@@ -1,5 +1,5 @@
 # COF — Character Open File
-## Spécification 1.0 (version candidate, 12 octobre 2026 — structure gelée le 14 octobre, publication le 17 octobre)
+## Spécification 1.0 (17 octobre 2026 — structure gelée le 14 octobre)
 
 > Traduction française. Le texte normatif est la version anglaise : [SPEC.md](SPEC.md).
 
