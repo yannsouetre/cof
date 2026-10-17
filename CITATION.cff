@@ -16,5 +16,13 @@ keywords:
   - consent
   - provenance
   - ComfyUI
+doi: 10.5281/zenodo.23434045
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.23434045
+    description: "Concept DOI (all versions, resolves to the latest)"
+  - type: doi
+    value: 10.5281/zenodo.23434046
+    description: "Version 1.0.0"
 version: 1.0.0
 date-released: "2026-10-17"

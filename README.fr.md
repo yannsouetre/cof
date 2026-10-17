@@ -11,6 +11,7 @@
 </p>
 
 <p align="center"><a href="https://yannsouetre.github.io/cof/#clip">▶ Voir le clip de 38 secondes, avec le son</a> · <a href="README.md">English</a></p>
+<p align="center"><a href="https://doi.org/10.5281/zenodo.23434045"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.23434045.svg" alt="DOI"></a> <a href="https://pypi.org/project/cof-cli/"><img src="https://img.shields.io/pypi/v/cof-cli?label=cof-cli" alt="cof-cli on PyPI"></a> <a href="https://github.com/yannsouetre/cof/releases/latest"><img src="https://img.shields.io/github/v/release/yannsouetre/cof?label=release" alt="Latest release"></a> <a href="https://huggingface.co/spaces/yannsouetre/cof-explorer"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Space-cof--explorer-yellow" alt="Hugging Face Space"></a></p>
 
 COF est un format de fichier ouvert (`.cof`, conteneur ZIP) qui réunit tout ce qui définit un personnage IA : personnalité, apparence (photos, code vectoriel, descriptif), voix, corps 3D, mouvement — **et** ses droits, son consentement et sa provenance. Un même fichier s'ouvre dans un chat, un générateur d'images ou de vidéo, un moteur de jeu, Blender, ou sert d'« âme » à un agent.
 
@@ -77,6 +78,10 @@ COF est volontairement souple : presque tout est facultatif, les clés inconnues
 
 ## Englober, pas remplacer
 Un `.cof` contient une Character Card V3 valide et s'exporte en carte PNG `ccv3`, en carte JSON, en `SOUL.md`/`IDENTITY.md` et en espace de travail d'agent ; un avatar VRM qu'il contient est un fichier ordinaire (`cof unpack`). L'export `.charx` est prévu. Les outils existants n'ont rien à réécrire.
+
+## Citer
+
+Chaque version est archivée sur Zenodo. DOI de concept (toutes versions) : [10.5281/zenodo.23434045](https://doi.org/10.5281/zenodo.23434045) · version 1.0.0 : [10.5281/zenodo.23434046](https://doi.org/10.5281/zenodo.23434046). Métadonnées de citation : [`CITATION.cff`](CITATION.cff).
 
 ## Licences
 Code MIT · Spécifications CC BY 4.0 · Vocabulaires CC0 — voir `LICENSES.md`.
