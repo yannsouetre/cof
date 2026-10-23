@@ -6,6 +6,7 @@
 - **`x-` categories are libraries** in the validator too (SPEC § 2.3): two variants of one kind in an `x-` category of a preset no longer raise a `single_per_kind` error.
 - Spec (§ 2.3, § 12) and implementing guide (§ 8): one sentence each to state that every category a reader does not know is a library, left unchecked. No change to what a 1.0 file may contain.
 - Tests: three regression cases (later-minor category, `x-` category, unknown category in a 1.0 file).
+- **Builder 0.11.8 — what it does not know is written back as read.** A file carrying an element category the builder does not know (an `x-` category, or one added by a later 1.x minor) could not be rebuilt: the checks step reported a structure error, and removing the category to get past it lost the data; had the build gone through, each variant would have been rewritten from the builder's list of known fields and the category's sub-files dropped (SPEC § 1.2: unknown keys are preserved). The builder now keeps such categories raw — their variants with every field, their sub-files under `elements/<category>/`, their assets and their preset slots — never edits them, writes them back unchanged, keeps the file's minor version (`cof`) when they are present, and says so in the build log. Round-trip test in headless Chromium: `tests/builder/`.
 
 ## 1.0.0 — 2026-10-17 — first stable release
 
