@@ -5,8 +5,6 @@
 - Date: 2026-10-24 (draft)
 - Target: COF **1.1** — additive only; every 1.0 file stays valid and every 1.0 reader keeps working (§ 7)
 
-> **Résumé en français.** Cette RFC ajoute une neuvième catégorie d'éléments, `memories` : les souvenirs du personnage — des *moments* et des *périodes*, chacun avec un court texte obligatoire (le *gist*), des médias facultatifs (image, son, vidéo, texte), des axes facultatifs (quand, où, avec qui, ressenti d'alors et d'aujourd'hui), une clarté, et des liens typés vers d'autres nœuds. Elle définit en même temps le **mécanisme de graphe** (nœuds, liens qualifiés, axes, visibilités) que la RFC suivante réutilisera pour la Psyché (l'intérieur au présent). Les règles de sûreté de la 1.0 s'appliquent sans exception : mineurs, personnes réelles, nudité et contenu intime, cloisonnement par preset. Les souvenirs écrits par l'auteur (canon) voyagent avec le fichier ; ceux accumulés à l'usage avec un utilisateur sont ses données personnelles et ne se redistribuent pas par défaut. Tout est optionnel ; un fichier 1.0 n'a rien à changer.
-
 ## 1. Motivation
 
 A character today travels with its personality, its looks, its voice, its body and its rights, but not with its **past**. What a companion remembers of its life with a user lives on the platform's server, as text (`MEMORY.md`, dated notes, vectors): change the app, lose the story. And what an author writes as the character's backstory is a paragraph in a card, not something a reader can place in time, show, or reason about.
@@ -94,13 +92,15 @@ Each variant names its node file: `"memory": "elements/memories/<v>/memory.json"
 
 ### 4.2 `memory.json`
 
+Clara is bilingual, so her short texts carry two entries; a monolingual character carries one.
+
 ```jsonc
-{ "gist": { "fr": "L'été de mes huit ans : la maison de ma grand-mère à Oullins, l'odeur du tilleul, le dessin que j'ai fait du jardin.",
-            "en": "The summer I was eight: my grandmother's house in Oullins, the smell of the lime tree, the drawing I made of the garden." },
+{ "gist": { "en": "The summer I was eight: my grandmother's house in Oullins, the smell of the lime tree, the drawing I made of the garden.",
+            "fr": "L'été de mes huit ans : la maison de ma grand-mère à Oullins, l'odeur du tilleul, le dessin que j'ai fait du jardin." },
   "nature": ["experienced"],
-  "when":  { "age": { "value": 8, "unit": "years" }, "approx": true, "label": { "fr": "l'été de mes huit ans", "en": "the summer I was eight" } },
-  "where": { "label": { "fr": "la maison de ma grand-mère, à Oullins", "en": "my grandmother's house, in Oullins" } },
-  "who":   [ { "label": { "fr": "ma grand-mère", "en": "my grandmother" } } ],
+  "when":  { "age": { "value": 8, "unit": "years" }, "approx": true, "label": { "en": "the summer I was eight", "fr": "l'été de mes huit ans" } },
+  "where": { "label": { "en": "my grandmother's house, in Oullins", "fr": "la maison de ma grand-mère, à Oullins" } },
+  "who":   [ { "label": { "en": "my grandmother", "fr": "ma grand-mère" } } ],
   "media": ["a-m1-drawing"],
   "felt_then": { "category": { "set": "everyday", "value": "content" },  "pad": { "pleasure": 0.7, "arousal": 0.2 } },
   "felt_now":  { "category": { "set": "everyday", "value": "affectionate" }, "pad": { "pleasure": 0.6, "arousal": -0.2 } },
