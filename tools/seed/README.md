@@ -14,7 +14,7 @@ Il tourne **sur ton PC**. Il ne publie, n'envoie et ne partage **rien**.
 
 ```powershell
 # Python 3.10+ (ou : winget install astral-sh.uv, puis uv venv && .venv\Scripts\activate)
-pip install google-genai pillow
+pip install -U google-genai pillow
 pip install -e ..\..\cli              # cof-cli, depuis un clone du dépôt
 # sans clone : pip install "git+https://github.com/yannsouetre/cof#subdirectory=cli"
 ```
@@ -27,7 +27,7 @@ Dans une variable d'environnement, **jamais** dans un fichier, une fiche ou une 
 setx GEMINI_API_KEY "ta-clé"          # puis ouvrir un NOUVEAU terminal
 ```
 
-Le nom du modèle d'images change souvent. Vérifie le nom actuel dans la documentation de Google, puis passe-le avec `--model`, ou une fois pour toutes avec `setx COF_GEMINI_MODEL "nom-du-modèle"`. Par défaut, le script utilise `gemini-2.5-flash-image`.
+Le nom du modèle d'images change souvent. Vérifie le nom actuel dans la documentation de Google (page « Nano Banana »), puis passe-le avec `--model`, ou une fois pour toutes avec `setx COF_GEMINI_MODEL "nom-du-modèle"`. Par défaut, les scripts utilisent `gemini-nano-banana-2.1` (octobre 2026 ; `gemini-3-pro-image` pour les scènes complexes, `gemini-2.5-flash-image` est l'ancien modèle). Le palier **payant** de l'API est recommandé pour des images publiées sous CC-BY-4.0 (au palier gratuit, Google peut utiliser les données envoyées).
 
 ## Utilisation
 
@@ -63,3 +63,19 @@ Exemple complet : `sheets/example-aiko.json`.
 6. Les conditions de l'API d'images permettent de publier ces images sous la licence déclarée.
 
 C'est **Yann** qui valide et publie.
+
+## Souvenirs (`memories.py`, format 1.1 — RFC 0002)
+
+Le second script ajoute des **souvenirs** à un `.cof` existant (ou à un dossier COF) : une fiche de souvenirs → une image par souvenir (même API, même clé) → `elements/memories/` → `cof pack` → `cof validate` → `REVIEW.md`. Le fichier source n'est jamais modifié : le résultat est écrit dans `out\<nom>-memories.cof`.
+
+```powershell
+python memories.py sheets\clara.memories.json --prompts-only      # 1. relire les prompts
+python memories.py sheets\clara.memories.json --dry-run --out out  # 2. toute la chaîne sans API (images factices)
+python memories.py sheets\clara.memories.json --out out            # 3. pour de vrai (une image par souvenir illustré)
+```
+
+La fiche (`sheets/clara.memories.json`, exemple complet) : `source` (le `.cof` ou le dossier à étendre), `identity`, `language` (langue maîtresse écrite sur l'identité), `reference` (l'asset de ressemblance envoyé à l'API quand le personnage apparaît), `presets` (quels presets listent quels souvenirs ; les presets qui héritent d'un autre héritent aussi de ses souvenirs), et `memories[]` : `id`, `kind` (`moment` / `period`), `label`, `node` (le contenu de `memory.json` : `gist` obligatoire, en une ou plusieurs langues), `image` (facultatif : `prompt`, `shows_character`, `aspect`, `style`) et `age` (l'âge du personnage s'il est montré).
+
+Règles vérifiées avant tout appel : aucun souvenir `explicit`, aucune personne réelle, et une image qui montre le personnage exige un âge ≥ 18 — la galerie ne représente jamais de mineur ; un souvenir d'enfance montre un lieu ou un objet, pas l'enfant.
+
+Les deux scripts partagent `gen.py` (client, génération avec image de référence, images factices du mode `--dry-run`).

@@ -18,9 +18,7 @@ Options: --model NAME (or COF_GEMINI_MODEL), --views head,body (default), --paus
 from __future__ import annotations
 
 import argparse
-import base64
 import datetime as dt
-import io
 import json
 import os
 import random
@@ -31,12 +29,13 @@ import sys
 import time
 from pathlib import Path
 
-DEFAULT_MODEL = os.environ.get("COF_GEMINI_MODEL", "gemini-2.5-flash-image")   # check the current image model name in Google's docs
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from gen import DEFAULT_MODEL, IPTC_AI, gemini_client, generate, placeholder, to_jpeg  # noqa: E402  (shared with memories.py)
+
 HUMAN_FORM = {"human", "humanoid", "anthropomorphic-animal"}
 CLASSES = HUMAN_FORM | {"quadruped", "avian", "aquatic", "mechanical", "amorphous", "other"}
 STYLES = {"photo-realistic", "cinematic", "3d-render", "anime", "manga", "comic", "cartoon", "pixel-art", "lego", "clay",
           "watercolor", "oil-painting", "ink-sketch", "lineart", "low-poly", "voxel", "chibi"}
-IPTC_AI = "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
 
 # (variant, file name, subject, angle, framing, prompt fragment)
 VIEWS = {
@@ -89,59 +88,6 @@ def prompt_for(s: dict, view: str) -> str:
             "Plain light-grey studio background, even soft lighting, no text, no logo, no watermark, no other person. "
             "Fully clothed, everyday outfit as described. An original character that does not resemble any real person, "
             "celebrity or existing franchise character. Keep exactly the same face, hair, body and outfit as the reference image if one is given.")
-
-
-# ---------- image generation ----------
-
-def gemini_client():
-    key = os.environ.get("GEMINI_API_KEY")
-    if not key:
-        raise SystemExit("GEMINI_API_KEY is not set (put it in an environment variable, never in a file or a sheet)")
-    try:
-        from google import genai            # pip install google-genai
-    except ImportError:
-        raise SystemExit("missing package: pip install google-genai pillow")
-    return genai.Client(api_key=key)
-
-
-def generate(client, model: str, prompt: str, refs: list[bytes], pause: float, tries: int = 3) -> bytes:
-    from google.genai import types
-    parts = [types.Part.from_bytes(data=r, mime_type="image/jpeg") for r in refs] + [prompt]
-    last = None
-    for i in range(tries):
-        try:
-            resp = client.models.generate_content(model=model, contents=parts,
-                                                  config=types.GenerateContentConfig(response_modalities=["IMAGE"]))
-            for cand in resp.candidates or []:
-                for part in (cand.content.parts if cand.content else []) or []:
-                    data = getattr(part, "inline_data", None)
-                    if data and data.data:
-                        return data.data if isinstance(data.data, bytes) else base64.b64decode(data.data)
-            last = "no image in the answer (refused or filtered?)"
-        except Exception as ex:                         # quota, network, safety block…
-            last = f"{ex.__class__.__name__}: {ex}"
-        time.sleep(pause * (i + 1))
-    raise RuntimeError(f"image generation failed after {tries} tries — {last}")
-
-
-def placeholder(text: str, tall: bool) -> bytes:
-    from PIL import Image, ImageDraw
-    w, h = (512, 1024) if tall else (512, 512)
-    rnd = random.Random(text)
-    im = Image.new("RGB", (w, h), tuple(rnd.randint(20, 235) for _ in range(3)))
-    dr = ImageDraw.Draw(im)
-    for y in range(0, h, 24):
-        dr.line([(0, y), (w, y + rnd.randint(-20, 20))], fill=tuple(rnd.randint(90, 200) for _ in range(3)))
-    dr.text((16, h // 2), "DRY RUN — " + text[:40], fill=(255, 255, 255))
-    buf = io.BytesIO(); im.save(buf, "JPEG", quality=85); return buf.getvalue()
-
-
-def to_jpeg(data: bytes) -> tuple[bytes, int, int]:
-    from PIL import Image
-    with Image.open(io.BytesIO(data)) as im:
-        im = im.convert("RGB")
-        buf = io.BytesIO(); im.save(buf, "JPEG", quality=90)
-        return buf.getvalue(), im.width, im.height
 
 
 # ---------- COF folder ----------
