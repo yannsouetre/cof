@@ -1,0 +1,248 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yannsouetre.github.io/cof/schemas/1.1/attitude.schema.json",
+  "title": "elements/{posture|motion}/<v>/attitude.json — motion signature (LMA Effort), tempo, postures, gestures",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "notation": {
+      "const": "LMA-Effort-1.0"
+    },
+    "effort": {
+      "type": "object",
+      "properties": {
+        "space": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "weight": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "time": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "flow": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "dominant_action": {
+          "enum": [
+            "float",
+            "punch",
+            "glide",
+            "slash",
+            "dab",
+            "wring",
+            "flick",
+            "press"
+          ],
+          "description": "Laban's 8 effort actions"
+        }
+      },
+      "description": "axes −1…+1: space indirect→direct, weight light→strong, time sustained→sudden, flow free→bound"
+    },
+    "shape": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "rising",
+          "sinking",
+          "spreading",
+          "enclosing",
+          "advancing",
+          "retreating"
+        ]
+      }
+    },
+    "tempo": {
+      "type": "object",
+      "properties": {
+        "walk_speed": {
+          "enum": [
+            "very-slow",
+            "slow",
+            "medium",
+            "fast",
+            "very-fast"
+          ]
+        },
+        "gesture_rate": {
+          "enum": [
+            "very-slow",
+            "slow",
+            "medium",
+            "fast",
+            "very-fast"
+          ]
+        },
+        "stillness": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      }
+    },
+    "posture": {
+      "type": "object",
+      "properties": {
+        "default": {
+          "type": "string"
+        },
+        "seated": {
+          "type": "string"
+        },
+        "listening": {
+          "type": "string"
+        },
+        "speaking": {
+          "type": "string"
+        },
+        "bap": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Body Action and Posture codes (Dael et al.)"
+        }
+      }
+    },
+    "gestures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z]+:[A-Za-z0-9._-]+$",
+            "description": "referenceable identifier (trait:…, goal:…, fear:…, gesture:…)"
+          },
+          "lexeme": {
+            "type": "string",
+            "description": "BML lexeme (beat, iconic, deictic, metaphoric, emblem…) or free-form name"
+          },
+          "text": {
+            "type": "string"
+          },
+          "expresses": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z]+:[A-Za-z0-9._-]+$",
+              "description": "referenceable identifier (trait:…, goal:…, fear:…, gesture:…)"
+            }
+          },
+          "frequency": {
+            "enum": [
+              "rare",
+              "occasional",
+              "frequent",
+              "constant"
+            ]
+          },
+          "pose": {
+            "type": "string",
+            "pattern": "^(?!/)(?!.*\\.\\.)[A-Za-z0-9._/-]+$"
+          }
+        }
+      }
+    },
+    "gaze": {
+      "type": "object",
+      "properties": {
+        "contact": {
+          "enum": [
+            "avoidant",
+            "rare",
+            "regular",
+            "intense"
+          ]
+        },
+        "when_thinking": {
+          "type": "string"
+        }
+      }
+    },
+    "proxemics": {
+      "type": "object",
+      "properties": {
+        "preferred_distance_m": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "touch": {
+          "enum": [
+            "none",
+            "rare",
+            "warm",
+            "frequent"
+          ]
+        }
+      }
+    },
+    "gait": {
+      "type": "object",
+      "properties": {
+        "style": {
+          "type": "string"
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "100STYLE / BABEL / Mixamo labels"
+        }
+      }
+    },
+    "poses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "path"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string",
+            "pattern": "^(?!/)(?!.*\\.\\.)[A-Za-z0-9._/-]+$"
+          },
+          "render": {
+            "type": "string",
+            "pattern": "^(?!/)(?!.*\\.\\.)[A-Za-z0-9._/-]+$"
+          }
+        }
+      },
+      "description": "keypoint postures (pose.schema.json) with optional \"stick figure\" rendering"
+    },
+    "renderings": {
+      "type": "object",
+      "properties": {
+        "sentence": {
+          "type": "string"
+        },
+        "prompt_fragment": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "required": [
+    "notation"
+  ]
+}

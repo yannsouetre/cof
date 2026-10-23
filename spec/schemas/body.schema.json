@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://yannsouetre.github.io/cof/schemas/1.0/body.schema.json",
+  "$id": "https://yannsouetre.github.io/cof/schemas/1.1/body.schema.json",
   "title": "elements/appearance/<v>/body.json — body parameters (measurements, phenotypes, description)",
   "type": "object",
   "additionalProperties": true,

@@ -1,0 +1,206 @@
+# RFC 0002 — `memories`: the character's past, as a graph of nodes
+
+- Status: draft (private until opened; then 14 days of comments from the opening of the PR)
+- Author: Yann Souetre (with Claude)
+- Date: 2026-10-24 (draft)
+- Target: COF **1.1** — additive only; every 1.0 file stays valid and every 1.0 reader keeps working (§ 7)
+
+> **Résumé en français.** Cette RFC ajoute une neuvième catégorie d'éléments, `memories` : les souvenirs du personnage — des *moments* et des *périodes*, chacun avec un court texte obligatoire (le *gist*), des médias facultatifs (image, son, vidéo, texte), des axes facultatifs (quand, où, avec qui, ressenti d'alors et d'aujourd'hui), une clarté, et des liens typés vers d'autres nœuds. Elle définit en même temps le **mécanisme de graphe** (nœuds, liens qualifiés, axes, visibilités) que la RFC suivante réutilisera pour la Psyché (l'intérieur au présent). Les règles de sûreté de la 1.0 s'appliquent sans exception : mineurs, personnes réelles, nudité et contenu intime, cloisonnement par preset. Les souvenirs écrits par l'auteur (canon) voyagent avec le fichier ; ceux accumulés à l'usage avec un utilisateur sont ses données personnelles et ne se redistribuent pas par défaut. Tout est optionnel ; un fichier 1.0 n'a rien à changer.
+
+## 1. Motivation
+
+A character today travels with its personality, its looks, its voice, its body and its rights, but not with its **past**. What a companion remembers of its life with a user lives on the platform's server, as text (`MEMORY.md`, dated notes, vectors): change the app, lose the story. And what an author writes as the character's backstory is a paragraph in a card, not something a reader can place in time, show, or reason about.
+
+A person's memories are not paragraphs. They are images, sounds, places, people, feelings, situated in time, some vivid and some faded, some told freely and some never. If synthetic characters are to come closer to people in depth, they must carry those memories **with them, in the file** — as media and structured text, next to the identity, with the rights that go with them.
+
+What is new here is not episodic memory for agents (Generative Agents, 2023; MemGPT/Letta; lorebooks; companion apps all have one). It is an **open, portable container** for it: multimodal, dated, situated, per character, with consent and provenance, readable by any tool. This RFC calls it *the missing piece*, not a revolution; use will tell.
+
+## 2. What already exists, and the boundary
+
+- **`files` / `kind: memory`** (1.0, § 7 bis) carries an agent's memory file **in the host's own format** (`MEMORY.md`, dated notes): opaque, copied as-is by `cof export --agent`. It stays. The new category is the **structured, portable** form; a file may hold both. The agent export combines them (§ 6.4).
+- **`personality/psyche.json`** (typed traits, goals, fears, values) describes the character *now*. It is untouched. A later RFC ("psyche graph") will add the inner life as nodes of the same mechanism; this RFC defines the mechanism so that the two categories link to each other.
+- **`appearance` / `volume3d` `environment`** are the places a character is tied to. A memory points to one (§ 4.6); it does not define places. A hierarchy of places (room ⊂ house ⊂ town) is world knowledge, left to a future "world" category built on the same mechanism (§ 9).
+- The emotion structure of `psyche.json` (`baseline_emotion`: an EmotionML category and PAD dimensions) is reused as-is for feelings (§ 4.8). No new vocabulary.
+
+## 3. The graph mechanism (normative, shared with later categories)
+
+A **node** is a variant of a category that declares this RFC's node fields. Every node has:
+
+| Field | Required | Meaning |
+|---|---|---|
+| `gist` | **yes** | A short text, as a map of language → string (BCP 47 keys, at least one entry). The trace a reader always loads. |
+| `media[]` | no | Asset ids (image, audio, video, text, `other`). The verbatim trace, opened on demand. |
+| `media_from` | no | Id of another node whose `media` this node reuses (§ 4.5). Exclusive with `media`. |
+| `when`, `where`, `who` | no | The axes (§ 4.6). |
+| `felt_then`, `felt_now` | no | Feelings (§ 4.8). |
+| `links[]` | no | Typed, directed references to other nodes (§ 3.2). |
+| `tags[]` | no | Free strings (objects, events, public figures…) — the axes a reader indexes on, with `when` / `where` / `who`. |
+| `origin`, `visibility`, `disclosure` | no | The three policy axes (§ 3.3). |
+
+**Short texts attached to a node are multilingual inside the node** (`gist`, the `label` of `when`, `where`, `who`): a memory is one node whatever the languages, so that links and presets refer to one thing. Long texts stay per-language variants, as in 1.0. Choosing an entry: the language of the personality variant the preset applies → the identity's primary language (`identities.<id>.language`, new, optional, § 7) → the only entry; with several entries and no primary language, the first one, and a validator warns.
+
+**A node has a "when"; a media never does.** A lone image is a moment with one media. The same asset may be referenced by several nodes of the same character.
+
+### 3.1 Node references
+
+A reference to a node is **always qualified**: `"<category>/<variant id>"` (`memories/m3`; tomorrow `psyche/n2`). One grammar for every category; no short form. An unresolved reference is a validation error, like every broken reference in 1.0.
+
+### 3.2 Links
+
+`links: [ { "to": "<category>/<id>", "type": <type>, "label"?: { lang: string } } ]`. Five types, each stored in **one direction** (the reader computes the inverse):
+
+| Type | From → to | Use |
+|---|---|---|
+| `after` | later → earlier | Order when `when` does not settle it (undated nodes). Contradicting `when` on both sides: warning. |
+| `part-of` | moment → period | Membership when dates do not settle it (undated, unbounded, or deliberately out of range). Membership by dates is computed; the link is for exceptions. Contradiction: a coherence finding, never an error. Never a list on the period. |
+| `about` | node → node | This node is about that one (a dream about an event; a memory of a film about a period). |
+| `because` | node → node | This node exists because of that one (a move because of a meeting; an opinion because of a memory — the psyche RFC's main link). |
+| `same-event` | node ↔ node | Two characters' memories of one event (§ 4.5). Symmetric: either or both may carry it; readers merge. |
+
+No free type. New types come by RFC, sparingly. Everything an axis says (same place, same person, same period by dates) is **not** a link: readers derive it.
+
+### 3.3 Policy axes
+
+| Field | Values | Default | Meaning |
+|---|---|---|---|
+| `origin` | `authored` \| `lived` | `authored` | Written by the character's author (ships with the file) / written by a tool during use with a user. |
+| `visibility` | `canon` \| `personal` | `canon` | Part of the character, travels with the file / **a user's personal data**: stays in that user's copy. |
+| `disclosure` | `open` \| `guarded` \| `secret` | `open` | The character tells it freely / only when asked or trusted / never — but it shapes behaviour. A reader never quotes a `secret` node in a reply; it uses it as context. |
+
+The three are independent: a `lived` memory a user wants to share with their version of the character is `lived` + `canon`; an author's buried wound is `authored` + `canon` + `secret`. Validators are **silent** on an absent field (the default applies); builders write the three explicitly and show the default before saving.
+
+**Canon is read-only for tools.** A tool MUST NOT modify an `authored` node. Everything that happens in use is a layer of `lived` nodes: when a feeling about a canon memory changes in use, the tool creates a `lived` + `personal` node linked `about` the canon one. A tool MAY rewrite the gist and `felt_now` of its own `lived` nodes at each recall, keeping the previous versions in `revisions[]` (`{ date, gist, felt_now?, by }`, text only, bounded — ten is a reasonable cap). A media transformed at inference time is a new asset, declared like any generated media (`digitalSourceType`, `generator`), and **replaces** the previous one on that node; it does not accumulate.
+
+## 4. The `memories` category
+
+### 4.1 Regime, kinds, files
+
+`memories` is a **library** category (§ 2.3 of the spec): a preset lists the memories available to it (`slots.memories`), inherited through `extends` like every slot; nothing is loaded by a reader that is not interested. Two kinds:
+
+- `moment` — a point in the character's life (an afternoon, a meeting, a dream). `when` is a point.
+- `period` — a span (the student years). `when` has `from` / `to`. Same schema; a period MAY carry media, but SHOULD stay light (a gist and a dominant feeling); large sets of media belong to a period rather than to each moment, and COF is not a photo album.
+
+Each variant names its node file: `"memory": "elements/memories/<v>/memory.json"` (schema `memory.schema.json`, § 7). Media are assets with the new role **`memory-media`** (an image of a memory is not a `view` of the character).
+
+```jsonc
+"memories": { "variants": {
+  "m1": { "kind": "moment", "label": "Grandmother's house",   "memory": "elements/memories/m1/memory.json" },
+  "p1": { "kind": "period", "label": "The student years",     "memory": "elements/memories/p1/memory.json" },
+  "m2": { "kind": "moment", "label": "The office, rue de la Ré", "memory": "elements/memories/m2/memory.json" },
+  "m3": { "kind": "moment", "label": "Meeting the Martian",   "memory": "elements/memories/m3/memory.json" },
+  "m4": { "kind": "moment", "label": "The electric-sheep dream", "memory": "elements/memories/m4/memory.json" } } }
+// presets.default.slots.memories = ["m1", "p1", "m2", "m3", "m4"]; presets.fr-12.slots.memories = ["m1"]
+```
+
+### 4.2 `memory.json`
+
+```jsonc
+{ "gist": { "fr": "L'été de mes huit ans : la maison de ma grand-mère à Oullins, l'odeur du tilleul, le dessin que j'ai fait du jardin.",
+            "en": "The summer I was eight: my grandmother's house in Oullins, the smell of the lime tree, the drawing I made of the garden." },
+  "nature": ["experienced"],
+  "when":  { "age": { "value": 8, "unit": "years" }, "approx": true, "label": { "fr": "l'été de mes huit ans", "en": "the summer I was eight" } },
+  "where": { "label": { "fr": "la maison de ma grand-mère, à Oullins", "en": "my grandmother's house, in Oullins" } },
+  "who":   [ { "label": { "fr": "ma grand-mère", "en": "my grandmother" } } ],
+  "media": ["a-m1-drawing"],
+  "felt_then": { "category": { "set": "everyday", "value": "content" },  "pad": { "pleasure": 0.7, "arousal": 0.2 } },
+  "felt_now":  { "category": { "set": "everyday", "value": "affectionate" }, "pad": { "pleasure": 0.6, "arousal": -0.2 } },
+  "salience": 70, "fidelity": "faded",
+  "origin": "authored", "visibility": "canon", "disclosure": "open",
+  "tags": ["childhood", "house", "garden"],
+  "links": [] }
+```
+
+Fields, all optional unless stated:
+
+- **`gist`** (required) — map of language → text. SHOULD stay under 1,000 characters per language (warning above).
+- **`nature`** — list, one or more of `experienced` (the character was an actor), `learned` (a film, a book, a place, a context — third-party media follow `tags.ip` and the rights rules), `witnessed` (told by others; vicarious memory), `imagined` (a dream, a fantasy, a plan). Default `["experienced"]`. It is what says whether the character was there; there is no `present` field.
+- **`when`** — for a moment: a point `{ age?, date?, approx?, label? }`; for a period: `{ from?: point, to?: point, approx?, label? }`. `age` is the 1.0 age structure (`{ value, unit }`) — the character's age at the time; `date` is a partial ISO date (`YYYY`, `YYYY-MM`, `YYYY-MM-DD`; precision is read from its shape). Age and date combine. No `when` means "I no longer know when" (allowed). A dream is placed at the age it was dreamt.
+- **`where`** — `{ label?, environment?, geo? }`: `environment` is a qualified reference to an `environment` variant of the **same character** (`appearance/e1`, `volume3d/env1`); `geo` is `{ lat, lon }` in decimal degrees (EXIF convention), for real places. No place hierarchy here (§ 9).
+- **`who`** — list of `{ identity: "self" | <cast id> }` or `{ label }`, each with optional `shown` (appears in a media; absent = only in the story), `age` (that person's age then — the character's own is `when.age`), `real: true` (a real person who is not modelled as an identity; for an `identity` entry the identity's `fictional` decides). The character is listed only when `shown`.
+- **`felt_then`, `felt_now`** — the `baseline_emotion` structure of `psyche.json` (`category: { set, value }`, `pad`). "Now" is the character's canonical present (the default preset); `felt_now.as_of` (a point) MAY say when. Authors write both on `authored` nodes; tools write them on `lived` nodes only (§ 3.3).
+- **`salience`** — 0–100, how much the memory matters. Absent: readers MAY derive it from the intensity of `felt_then`.
+- **`fidelity`** — `vivid` | `clear` | `faded` | `fragment`; default `clear`. What the character remembers, per node, never per media. Tools that need a number use 1.0 / 0.7 / 0.4 / 0.15. A renderer MAY degrade a media (blur, desaturate, downscale) according to fidelity, and MUST NOT "upgrade" one; a text agent lets fidelity colour how the character speaks of it. The per-asset flag **`as_remembered: true`** (new, on `memory-media` assets) says the file already looks the way the memory does — do not degrade it. Fidelity is never set to fix rendering.
+- **`factual`** — `true` | `false`, meaningful **only for a real-person identity** (`fictional: false`): did this really happen in that person's life. Absent = unknown; a validator warns for every memory of a real person without it (never blocks). A reader playing a real person never presents a memory as a fact unless `factual: true`. A real person's dream: `nature: ["imagined"]`, `factual: true`. Ignored for fictional identities.
+- **`explicit`** — `nudity` | `intimate` (§ 5). Absent = all audiences.
+- **`origin`, `visibility`, `disclosure`, `links`, `tags`, `media`, `media_from`, `revisions`** — § 3.
+
+### 4.3 Order and timeline
+
+A reader orders nodes by age, else by date, else by links, else "undated" (shown apart). A node with both an age and a date implies a birth year; two nodes implying different birth years are a coherence finding (§ 6.2), and a reader MAY derive the age of a node that has only a date. No birth date on the identity: age is a property of representations and presets in 1.0, and the memories reveal it.
+
+### 4.4 Memories and presets
+
+Each node belongs to one character (`variant.identity`, as every element). A preset lists its memories in `slots.memories`; through `extends`, a file with many presets lists them once (Clara's `default`) and redeclares the subset where it differs (`fr-12`: childhood only). A preset younger than a memory it lists (Clara at 12 listing her memory at 30) is a **coherence finding**, never an error: incoherent characters are the author's right. A variant listed by no preset is backstage, as in 1.0.
+
+### 4.5 Shared media, not shared memories
+
+A memory is subjective: Clara and the Martian remember the same meeting with different gists, feelings and fidelity. So **one node per character**, linked `same-event`. The **media** may be shared: this RFC makes one narrow exception to the 1.0 rule that only neutral elements share files — a `memory-media` asset that shows several cast members MAY be referenced by one memory node of each character shown, either by listing it in `media` or with **`media_from: "<node>"`** ("my media are that node's": transitive, a cycle is an error, exclusive with `media`, inherits nothing else — the node still declares its own `who`). The exception exists only through this field, so it is easy to find and to check.
+
+Guard at extraction: when a character is extracted (`cof extract --identity`), the other characters' consent records do not travel with it; memory media that show **another real person** are therefore dropped from the extracted file (gist kept, warning); media showing other fictional characters are kept.
+
+### 4.6 Agent reading
+
+A reader that plays the character loads the gists of the memories the preset lists (ordered by § 4.3), honours `disclosure`, and opens media on demand — never an `explicit` media without the gate of § 5. One agent reads a hundred gists for the price of one image: that is the point of the gist.
+
+## 5. Safety and rights (normative)
+
+The 1.0 rules apply unchanged; this section says how they read on memories.
+
+1. **What is shown decides, not what is told.** A childhood memory in text, or illustrated by a house or a child's drawing, shows no minor and carries no age. A memory whose media show a person is a representation of that person **at that age**.
+2. **A node with media showing the character carries an age** (`when.age`), and that age **enters the preset's lowest age** like every morphological variant (SPEC § 2.2, § 9.4). A preset that lists a memory showing a minor is a minor preset: no `intimate`, no `nudity`, no effective `allowSexualUsage` anywhere in it. The partition stays **the preset**, as in 1.0 — not the file; an author who wants both makes an adult preset that lists only adult memories.
+3. **Explicit memories.** `explicit: nudity` (nudity without visible genitals) or `explicit: intimate` (visible genitals or a sexual act) marks a node whose media show it; the node **also** carries the 1.0 flag `nudity: true` and the file carries `tags.content` (`nudity`, and `sexual` for `intimate`), so that 1.0 tools — `cof extract --no-intimate`, readers that hide nude assets — already do the right thing without knowing this category. The three consequences of the 1.0 opt-in (§ 4.5) extend to memory media: never loaded by default (the preset's effective `allowSexualUsage` **and** an explicit request of the host), isolated in the node's own folder, flagged. A text agent reads the gist; the media stays closed. The gist itself is text and falls under `tags.content` like a card.
+4. **Every person shown in an explicit memory must have a known age ≥ 18**: the character through `when.age`, others through `who[].age`. An absent age is unknown, and an unknown age never counts as adult (1.0 rule): the file is invalid.
+5. **Real persons.** A real person shown nude or in an intimate scene must be an identity of the cast whose consent record carries `nudity` or `intimate` — each for their own body; several consenting real identities of one file may share memories of a scene. A real person shown nude who is not such an identity: error. A clothed real person who is not modelled (`who[].real: true`): warning, and the author's discipline of § 11.4. A memory about a real person requires that identity's consent scope `conversational-persona` (1.0 § 7 bis.4), and `factual` (§ 4.2).
+6. **The AI age check** (§ 9.4.5) applies to memory media: a person who looks underage in an explicit node is `illegal`; undeclared nudity is `major`.
+7. **Personal data.** `visibility: personal` nodes are a user's data. `cof pack` warns when a file holds any; `cof extract`, `cof export` and any sharing path drop them unless asked to keep them (`--keep-personal`); a builder's build keeps them only on an explicit option, unchecked by default; a platform whose governance refuses them drops them at import. Independent of the all-audiences purge.
+8. **All-audiences purge.** `cof extract --all-audiences` (alias of `--no-intimate`) also drops the media of `explicit` nodes (gist kept). A builder offers it at build time; an importing platform MAY apply it at reception (implementing guide).
+
+## 6. Tooling
+
+### 6.1 Validator (`cof validate`, 1.1)
+Errors: node file missing or invalid against `memory.schema.json`; `gist` absent or empty; unresolved `links[].to`, `media`, `media_from`, `where.environment`, `who[].identity`; `media_from` cycle, or `media` and `media_from` together; `where.environment` or `media_from` across characters other than the § 4.5 exception; a period with a point `when` or a moment with `from`/`to`; an explicit node without `nudity: true` or without the matching `tags.content`; an explicit node in a preset under 18; an explicit node with any shown person of unknown age or under 18; a real person shown nude without being a consenting identity; a `lived` node with `revisions` carrying media.
+Warnings: gist over 1,000 characters; `after` contradicting dates; gist without an entry in the identity's primary language; several gist languages with no primary language; a memory of a real person without `factual`; `who[].real` without an identity; `personal` nodes present at pack; media over the `motion` video cap (20 MB unless `max_bytes_ack`); a video without a thumbnail.
+Coherence findings (via the coherence API, never blocking): a preset younger than a memory it lists; `part-of` contradicting dates; nodes implying different birth years; a memory "at 8" in a place the character never declared.
+
+### 6.2 Coherence API
+The preset bundle gains the gists (ordered) and the thumbnails of memory media, labelled by node; the checks `age-legality`, `nudity`, `element-consistency` run on memory media too; a new check `memory-timeline` returns the findings above.
+
+### 6.3 Completeness
+Memories do not enter the completeness score in 1.1 (a new layer would change every 1.0 score). They appear in `coverage`, and in the automatic tag `has-memories`.
+
+### 6.4 Exports
+- `cof export --agent`: `MEMORY.md` = the host memory file of `files/memory` when present, followed by a section "Memories" listing the canon gists in timeline order with their age/date, `disclosure` and fidelity as markers; a `memories/<id>/` folder with the media of non-explicit nodes. `personal` nodes are not exported unless `--keep-personal`.
+- `cof extract`: § 4.5 and § 5.7–5.8.
+- The explorer shows a timeline by age (undated apart), the gist in the preset's language, media on click (explicit never; nude only on opt-in on an adult preset).
+
+### 6.5 Builder
+A "Memories" tab (0.12): the timeline as the editor (a click adds a moment, a drag adds a period), node picker for links (no one types `memories/m3`), radio buttons with the defaults pre-selected and written explicitly, a four-notch fidelity slider, "same media as…" filling `media_from`, an import pop-up when the three policy axes were absent, an info line in the checks step until reviewed, and two build options: "All audiences" and "Keep personal memories" (unchecked).
+
+## 7. Impact on existing files and compatibility
+
+- **1.0 files**: unchanged, nothing to migrate. The category is optional and additive.
+- **1.0 readers**: ignore the category (`cof-cli` 1.0.1 and builder 0.11.8 preserve it and read it as a library; earlier 1.0.0 tools refused it — see CHANGELOG 1.0.1). Explicit memories are visible to 1.0 purges through `nudity: true` and `tags.content` (§ 5.3).
+- **Schemas**: `schemas/1.1/` adds `memories` to the category pattern, the kinds `moment` / `period`, the variant field `memory`, the asset role `memory-media`, the asset flag `as_remembered`, and `identities.<id>.language`; `memory.schema.json` is the node file's schema. `$id`s under `https://yannsouetre.github.io/cof/schemas/1.1/`.
+- **A file declares the lowest minor that defines everything it uses**: a file with memories declares `cof: "1.1"`.
+- **Example**: `spec/examples/10-clara-mercier` becomes the first 1.1 file, with four memories (grandmother's house — the house and a child's drawing, never the child; the meeting with the Martian; the office; the electric-sheep dream). The eight other examples stay 1.0.
+- Negative corpus: one case per error of § 6.1.
+
+## 8. Alternatives considered
+
+- *One node per language* (the 1.0 convention for text): doubles the graph and every link at each language, and leaves the psyche no single node to point to. Rejected for short texts (§ 3).
+- *A graph database in the file* (adjacency, indexes): the index is the reader's business; the file carries nodes, five link types and axes. Rejected.
+- *Sharing memories between characters*: a memory is subjective; sharing the media is enough (§ 4.5). Rejected.
+- *A `truth` field*: for a fictional character everything is fictional; "did not really happen" is `nature: imagined`; references to real works are a media/rights matter; what remains is `factual`, for real persons only. Rejected.
+- *A `breadth` / surface field, a `present` field, weather, typology, ambiance fields*: derivable (from media, from `nature`) or prose (the gist, `tags`). Not added; `breadth` is reserved as an open question, not as a field.
+- *An `x-memories` category*: `x-` is for private extensions; renaming later would be a migration. Rejected; the 1.0.1 validator fix makes the official name safe.
+- *Memory weights* (embeddings or LoRA compressing memories): phase 3 at the earliest; sources stay the reference.
+
+## 9. Open questions (for the comment period)
+
+- **Surface (`breadth`)**: a memory spans from a detail to a panorama; useful at inference, derivable from media. A candidate scale exists (an eight-degree gradient from a face to the cosmos). Added by a later minor when a reader needs it.
+- **Intensity of feelings** vs `salience`; the psyche RFC will need an importance for values and opinions.
+- **Places as nodes** (room ⊂ house ⊂ town), in a "world" category on the same mechanism; `where.environment` would then accept such a node.
+- **Media in `revisions`** (a chain of transformed media), if file size stops mattering: an optional field on a revision, later.
+- **Carrying another real person's consent** at extraction, instead of dropping the media.
+- **Per-media fidelity**, if authors ask for it.
+- **Audio memories**: nothing special in the schema (an asset is an asset); examples will follow the image prototype.

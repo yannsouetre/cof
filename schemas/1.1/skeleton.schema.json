@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yannsouetre.github.io/cof/schemas/1.1/skeleton.schema.json",
+  "title": "Skeleton definition (entry of vocabularies/skeletons-1.0.json) and mapping table to the COF canonical skeleton",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "label": {
+      "type": "string"
+    },
+    "family": {
+      "enum": [
+        "2d-keypoints",
+        "3d-rig",
+        "parametric-body"
+      ]
+    },
+    "joints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "parent": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "canonical": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "COF canonical joint name (hips, spine, chest, neck, head, l_shoulder, l_elbow, l_wrist, r_…, l_hip, l_knee, l_ankle, l_foot, …) or null if there is no equivalent"
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "up_axis": {
+      "enum": [
+        "Y",
+        "Z"
+      ]
+    },
+    "forward_axis": {
+      "enum": [
+        "Z",
+        "-Z",
+        "X",
+        "-X"
+      ]
+    },
+    "units": {
+      "enum": [
+        "m",
+        "cm",
+        "normalized"
+      ]
+    },
+    "rest_pose": {
+      "enum": [
+        "t-pose",
+        "a-pose",
+        "none"
+      ]
+    },
+    "spec_url": {
+      "type": "string",
+      "format": "uri"
+    }
+  },
+  "required": [
+    "id",
+    "family",
+    "joints"
+  ]
+}

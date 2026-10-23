@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://yannsouetre.github.io/cof/schemas/1.0/manifest.schema.json",
+  "$id": "https://yannsouetre.github.io/cof/schemas/1.1/manifest.schema.json",
   "title": "COF manifest.json (1.0)",
   "type": "object",
   "required": [
@@ -22,7 +22,7 @@
     "cof": {
       "type": "string",
       "pattern": "^1\\.[0-9]+$",
-      "description": "format version: 1.0; readers accept any 1.x (later minors only add optional fields)"
+      "description": "format version: 1.0 or 1.1; readers accept any 1.x (later minors only add optional fields). A file declares the lowest minor that defines everything it uses."
     },
     "id": {
       "type": "string",
@@ -151,7 +151,7 @@
       "type": "object",
       "description": "Categories (by media nature) → variants; each variant declares its `kind`.",
       "propertyNames": {
-        "pattern": "^(personality|appearance|identity_weights|volume3d|voice|posture|motion|files|x-[a-z0-9-]+)$"
+        "pattern": "^(personality|appearance|identity_weights|volume3d|voice|posture|motion|files|memories|x-[a-z0-9-]+)$"
       },
       "additionalProperties": {
         "type": "object",
@@ -819,6 +819,10 @@
         "nudity": {
           "type": "boolean",
           "description": "true when an image of this variant shows nudity WITHOUT visible genitals (bare chest, buttocks…). Visible genitals or sexual acts belong only in kind intimate. Forbidden in any preset under 18; for a real person, requires consent scope nudity or intimate."
+        },
+        "memory": {
+          "$ref": "#/$defs/path",
+          "description": "memories: the node file elements/memories/<v>/memory.json (RFC 0002)"
         }
       },
       "required": [
@@ -844,7 +848,7 @@
         "slots": {
           "type": "object",
           "propertyNames": {
-            "pattern": "^(personality|appearance|identity_weights|volume3d|voice|posture|motion|files|x-[a-z0-9-]+)$"
+            "pattern": "^(personality|appearance|identity_weights|volume3d|voice|posture|motion|files|memories|x-[a-z0-9-]+)$"
           },
           "additionalProperties": {
             "type": "array",
@@ -1168,7 +1172,8 @@
             "skill-file",
             "memory",
             "file",
-            "archive"
+            "archive",
+            "memory-media"
           ]
         },
         "mediaType": {
@@ -1350,6 +1355,10 @@
         },
         "language": {
           "type": "string"
+        },
+        "as_remembered": {
+          "type": "boolean",
+          "description": "memory-media: the file already looks the way the memory does — renderers do not degrade it by fidelity (RFC 0002)"
         }
       },
       "allOf": [
@@ -1686,6 +1695,11 @@
         "default_preset": {
           "$ref": "#/$defs/vid",
           "description": "The default preset of this character (must belong to it). The root default_preset is the default character's."
+        },
+        "language": {
+          "type": "string",
+          "pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$",
+          "description": "Primary language of the character (BCP 47): the deterministic fallback for language-keyed short texts (RFC 0002 § 3); not a constraint on the texts."
         }
       }
     },
@@ -1751,6 +1765,10 @@
         "memory",
         "document",
         "other"
+      ],
+      "memories": [
+        "moment",
+        "period"
       ]
     }
   }

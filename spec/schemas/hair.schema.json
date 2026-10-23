@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://yannsouetre.github.io/cof/schemas/1.0/hair.schema.json",
+  "$id": "https://yannsouetre.github.io/cof/schemas/1.1/hair.schema.json",
   "title": "elements/appearance/<v>/hair.json — COF-HAIR-1 code",
   "type": "object",
   "additionalProperties": true,
