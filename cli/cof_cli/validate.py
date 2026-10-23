@@ -180,10 +180,21 @@ def validate_manifest(manifest: dict, rep: Report, newer: bool = False) -> None:
         loc = "/".join(str(p) for p in e.path) or "(root)"
         if newer and (e.validator == "enum" or (e.validator == "additionalProperties")):
             rep.warnings.append(f"manifest.json [{loc}]: {_schema_msg(e)} (value or field from a later 1.x version — kept, not checked)")
+        elif newer and _later_category(e):
+            rep.warnings.append(f"manifest.json [{loc}]: category '{e.instance}' comes from a later 1.x version — kept as a library, its variants are not checked")
         elif e.validator == "required" and "'presets'" in e.message:
             rep.errors.append(f"manifest.json [{loc}]: {_schema_msg(e)} — a file declares at least one preset (`cof migrate` adds 'default')")
         else:
             rep.errors.append(f"manifest.json [{loc}]: {_schema_msg(e)}")
+
+
+def _later_category(e) -> bool:
+    """A key of `elements`, or of a preset's `slots` / `alternatives`, that the 1.0 schema's category pattern rejects:
+    in a later-minor file it is a category this validator does not know (SPEC § 12: warn, never refuse)."""
+    path = [str(p) for p in e.path]
+    if e.validator != "pattern" or not isinstance(e.instance, str):
+        return False
+    return path == ["elements"] or (len(path) == 3 and path[0] == "presets" and path[2] in ("slots", "alternatives"))
 
 
 def validate_card(card: dict, rep: Report, lang: str, where: str) -> dict:

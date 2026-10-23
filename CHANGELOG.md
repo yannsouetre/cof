@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.1 — 2026-10-23 — forward compatibility of the validator
+
+- **`cof-cli` 1.0.1**: a file that declares a later 1.x minor and uses an element category this validator does not know was **refused** (schema error on the category name, in `elements` and in the presets' `slots` / `alternatives`), against SPEC § 12. It is now a warning: the category is preserved, read as a library, and its variants are not checked. A file that declares `cof: "1.0"` still cannot use a category the 1.0 schema does not define.
+- **`x-` categories are libraries** in the validator too (SPEC § 2.3): two variants of one kind in an `x-` category of a preset no longer raise a `single_per_kind` error.
+- Spec (§ 2.3, § 12) and implementing guide (§ 8): one sentence each to state that every category a reader does not know is a library, left unchecked. No change to what a 1.0 file may contain.
+- Tests: three regression cases (later-minor category, `x-` category, unknown category in a 1.0 file).
+
 ## 1.0.0 — 2026-10-17 — first stable release
 
 - **The format is 1.0**: same structure as 1.0.0rc3 (frozen on 14 October); a file written for rc3 is a valid 1.0 file. From now on, 1.x versions only add optional fields and enumeration values.

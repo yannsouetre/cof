@@ -1,5 +1,5 @@
 """cof-cli — reference tooling for COF (Character Open File)."""
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 MIMETYPE = "application/vnd.cof.character+zip"
 SPEC_VERSION = "1.0"

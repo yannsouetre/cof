@@ -17,6 +17,12 @@ KINDS = {
 }
 # categories that are LIBRARIES in a preset: several variants of any kind, none mandatory at inference
 LIBRARY_CATEGORIES = {"posture", "motion", "files"}
+
+
+def is_library(cat: str) -> bool:
+    """Library regime (SPEC § 2.3): posture, motion, files — and every category this version does not know
+    (`x-` categories, and categories added by a later 1.x minor), which are libraries unless an RFC says otherwise."""
+    return cat in LIBRARY_CATEGORIES or cat not in CATEGORIES
 # kinds that may appear several times in one preset (subject to region rules)
 MULTI_KINDS = {"clothing", "accessory", "pilosity", "feature", "environment"}
 
@@ -452,7 +458,7 @@ def region_conflicts(res: dict[str, list[dict]]) -> list[str]:
 def single_kind_violations(res: dict[str, list[dict]]) -> list[str]:
     out = []
     for cat, lst in res.items():
-        if cat in LIBRARY_CATEGORIES:
+        if is_library(cat):
             continue
         seen = {}
         for v in lst:

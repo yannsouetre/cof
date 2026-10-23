@@ -160,7 +160,7 @@ The skill itself was tested blind: fresh agents with no access to the spec, the 
 
 ## 8. Versioning and extension
 
-- `manifest.cof` is `major.minor`. Minor versions only add optional things; readers of 1.x read every 1.y. A new major version is a breaking change and comes with `cof migrate`.
+- `manifest.cof` is `major.minor`. Minor versions only add optional things; readers of 1.x read every 1.y: an unknown field, enum value or element category in a later-minor file is a warning, never a reason to refuse it (an unknown category is read as a library and its variants are left unchecked; an unknown `kind` in a known category stays an error). A new major version is a breaking change and comes with `cof migrate`.
 - Extension points, from lightest to heaviest: `extensions` object (namespaced keys) → `x-` element categories → new variant `kind` values proposed by RFC → new vocabularies (CC0) in `vocabularies/`.
 - Planned 1.x additions are descriptive codes (face/hair/body vocabularies, LMA, skeletons, acoustic voice measures, pose extraction); a 1.0 reader keeps working with them.
 

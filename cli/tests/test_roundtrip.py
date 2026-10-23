@@ -812,3 +812,43 @@ def test_age_tags_only_for_human_shapes():
     assert "child" not in t and "has-minor-preset" not in t and "mechanical" in t
     t2 = auto_tags(json.loads((ROOT / "spec/examples/02-ecoliere/manifest.json").read_text("utf-8")))
     assert "child" in t2
+
+
+def _with_later_category(m: dict, cat: str) -> dict:
+    """Add a category this validator does not know, with two variants of one kind, listed by the default preset."""
+    m["elements"][cat] = {"variants": {"n1": {"kind": "note", "label": "One"}, "n2": {"kind": "note", "label": "Two"}}}
+    m["presets"]["default"].setdefault("slots", {})[cat] = ["n1", "n2"]
+    return m
+
+
+def test_later_minor_category_is_a_warning_and_a_library(workdir):
+    """SPEC § 12: a validator of an earlier minor treats what a later 1.x adds as a warning, never a reason to refuse;
+    SPEC § 2.3: categories it does not know are libraries (several variants of one kind are allowed)."""
+    mp = workdir / "manifest.json"
+    m = _with_later_category(json.loads(mp.read_text("utf-8")), "sketches")
+    m["cof"] = "1.9"
+    mp.write_text(json.dumps(m), "utf-8")
+    rep = Report()
+    validate_dir(workdir, rep, recompute=False)
+    assert rep.ok, rep.errors
+    assert any("sketches" in w and "later 1.x" in w for w in rep.warnings), rep.warnings
+
+
+def test_x_category_is_a_library(workdir):
+    """`x-` categories are accepted by the 1.0 schema and are libraries unless an RFC says otherwise (SPEC § 2.3)."""
+    mp = workdir / "manifest.json"
+    m = _with_later_category(json.loads(mp.read_text("utf-8")), "x-notes")
+    mp.write_text(json.dumps(m), "utf-8")
+    rep = Report()
+    validate_dir(workdir, rep, recompute=False)
+    assert rep.ok, rep.errors
+
+
+def test_unknown_category_in_a_1_0_file_is_an_error(workdir):
+    """A file that declares 1.0 cannot use a category the 1.0 schema does not define."""
+    mp = workdir / "manifest.json"
+    m = _with_later_category(json.loads(mp.read_text("utf-8")), "sketches")
+    mp.write_text(json.dumps(m), "utf-8")
+    rep = Report()
+    validate_dir(workdir, rep, recompute=False)
+    assert not rep.ok and any("sketches" in e for e in rep.errors)
