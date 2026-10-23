@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://yannsouetre.github.io/cof/schemas/1.1/memory.schema.json",
   "title": "COF memory node (elements/memories/<v>/memory.json)",
-  "description": "A moment or a period of the character's past — RFC 0002. One node per character; the gist is the only required field. Node references are always qualified (\"<category>/<variant id>\").",
+  "description": "A moment or a period of the character's past — RFC 0002. The node file holds the content; the manifest variant holds what tools read without opening it (`memory`, `media[]`, `media_from`, `age`, `nudity`). Node references are always qualified (\"<category>/<variant id>\").",
   "type": "object",
   "required": [
     "gist"
@@ -123,17 +123,6 @@
           }
         ]
       }
-    },
-    "media": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/aid"
-      },
-      "description": "Asset ids (role memory-media). Exclusive with media_from."
-    },
-    "media_from": {
-      "$ref": "#/$defs/ref",
-      "description": "Node whose media this node reuses (RFC 0002 § 4.5); inherits nothing else."
     },
     "felt_then": {
       "$ref": "#/$defs/emotion"
@@ -261,16 +250,6 @@
       }
     }
   },
-  "allOf": [
-    {
-      "not": {
-        "required": [
-          "media",
-          "media_from"
-        ]
-      }
-    }
-  ],
   "$defs": {
     "text": {
       "type": "object",
@@ -282,10 +261,6 @@
         "type": "string"
       },
       "description": "Language-keyed text (BCP 47)."
-    },
-    "aid": {
-      "type": "string",
-      "pattern": "^[a-z0-9][a-z0-9._-]*$"
     },
     "ref": {
       "type": "string",

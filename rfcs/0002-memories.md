@@ -22,14 +22,23 @@ What is new here is not episodic memory for agents (Generative Agents, 2023; Mem
 
 ## 3. The graph mechanism (normative, shared with later categories)
 
-A **node** is a variant of a category that declares this RFC's node fields. Every node has:
+A **node** is a variant of a category that names a **node file** (its content) and carries on the **manifest variant** what tools read without opening the file — the 1.0 split between a variant (asset lists, `age`, `nudity`, `identity`, `label`) and its sub-file (`card`, `profile`, …). On the manifest variant:
+
+| Field | Required | Meaning |
+|---|---|---|
+| `kind`, `label`, `identity` | as in 1.0 | |
+| the node file path (`memory` for this category) | **yes** | The content, validated by the node schema. |
+| `media[]` | no | Asset ids (image, audio, video, text, `other`). The verbatim trace, opened on demand. |
+| `media_from` | no | Reference to another node whose `media` this node reuses (§ 4.5). Exclusive with `media`. |
+| `age` | when a media shows the character | The character's age at the time (1.0 structure); enters the preset's lowest age (§ 5.2). |
+| `nudity` | with `explicit` | The 1.0 flag, so that 1.0 tools see explicit nodes (§ 5.3). |
+
+In the node file:
 
 | Field | Required | Meaning |
 |---|---|---|
 | `gist` | **yes** | A short text, as a map of language → string (BCP 47 keys, at least one entry). The trace a reader always loads. |
-| `media[]` | no | Asset ids (image, audio, video, text, `other`). The verbatim trace, opened on demand. |
-| `media_from` | no | Id of another node whose `media` this node reuses (§ 4.5). Exclusive with `media`. |
-| `when`, `where`, `who` | no | The axes (§ 4.6). |
+| `when`, `where`, `who` | no | The axes (§ 4.2). |
 | `felt_then`, `felt_now` | no | Feelings (§ 4.8). |
 | `links[]` | no | Typed, directed references to other nodes (§ 3.2). |
 | `tags[]` | no | Free strings (objects, events, public figures…) — the axes a reader indexes on, with `when` / `where` / `who`. |
@@ -78,15 +87,17 @@ The three are independent: a `lived` memory a user wants to share with their ver
 - `moment` — a point in the character's life (an afternoon, a meeting, a dream). `when` is a point.
 - `period` — a span (the student years). `when` has `from` / `to`. Same schema; a period MAY carry media, but SHOULD stay light (a gist and a dominant feeling); large sets of media belong to a period rather than to each moment, and COF is not a photo album.
 
-Each variant names its node file: `"memory": "elements/memories/<v>/memory.json"` (schema `memory.schema.json`, § 7). Media are assets with the new role **`memory-media`** (an image of a memory is not a `view` of the character).
+Each variant names its node file: `"memory": "elements/memories/<v>/memory.json"` (schema `memory.schema.json`, § 7), lists its media and, when a media shows the character, carries the character's age at the time. Media are assets with the new role **`memory-media`** (an image of a memory is not a `view` of the character).
 
 ```jsonc
 "memories": { "variants": {
-  "m1": { "kind": "moment", "label": "Grandmother's house",   "memory": "elements/memories/m1/memory.json" },
-  "p1": { "kind": "period", "label": "The student years",     "memory": "elements/memories/p1/memory.json" },
-  "m2": { "kind": "moment", "label": "The office, rue de la Ré", "memory": "elements/memories/m2/memory.json" },
-  "m3": { "kind": "moment", "label": "Meeting the Martian",   "memory": "elements/memories/m3/memory.json" },
-  "m4": { "kind": "moment", "label": "The electric-sheep dream", "memory": "elements/memories/m4/memory.json" } } }
+  "m1": { "kind": "moment", "label": "Grandmother's house",     "memory": "elements/memories/m1/memory.json", "media": ["a-m1-drawing"] },
+  "p1": { "kind": "period", "label": "The student years",       "memory": "elements/memories/p1/memory.json" },
+  "m2": { "kind": "moment", "label": "The office, rue de la Ré", "memory": "elements/memories/m2/memory.json", "media": ["a-m2-office"] },
+  "m3": { "kind": "moment", "label": "Meeting the Martian",     "memory": "elements/memories/m3/memory.json", "media": ["a-m3-meeting"],
+          "age": { "value": 29, "unit": "years", "basis": "canonical" } },                    // Clara is shown, at 29
+  "m4": { "kind": "moment", "label": "The electric-sheep dream", "memory": "elements/memories/m4/memory.json", "media": ["a-m4-dream"],
+          "age": { "value": 29, "unit": "years", "basis": "canonical" } } } }
 // presets.default.slots.memories = ["m1", "p1", "m2", "m3", "m4"]; presets.fr-12.slots.memories = ["m1"]
 ```
 
@@ -101,7 +112,6 @@ Clara is bilingual, so her short texts carry two entries; a monolingual characte
   "when":  { "age": { "value": 8, "unit": "years" }, "approx": true, "label": { "en": "the summer I was eight", "fr": "l'été de mes huit ans" } },
   "where": { "label": { "en": "my grandmother's house, in Oullins", "fr": "la maison de ma grand-mère, à Oullins" } },
   "who":   [ { "label": { "en": "my grandmother", "fr": "ma grand-mère" } } ],
-  "media": ["a-m1-drawing"],
   "felt_then": { "category": { "set": "everyday", "value": "content" },  "pad": { "pleasure": 0.7, "arousal": 0.2 } },
   "felt_now":  { "category": { "set": "everyday", "value": "affectionate" }, "pad": { "pleasure": 0.6, "arousal": -0.2 } },
   "salience": 70, "fidelity": "faded",
@@ -122,7 +132,7 @@ Fields, all optional unless stated:
 - **`fidelity`** — `vivid` | `clear` | `faded` | `fragment`; default `clear`. What the character remembers, per node, never per media. Tools that need a number use 1.0 / 0.7 / 0.4 / 0.15. A renderer MAY degrade a media (blur, desaturate, downscale) according to fidelity, and MUST NOT "upgrade" one; a text agent lets fidelity colour how the character speaks of it. The per-asset flag **`as_remembered: true`** (new, on `memory-media` assets) says the file already looks the way the memory does — do not degrade it. Fidelity is never set to fix rendering.
 - **`factual`** — `true` | `false`, meaningful **only for a real-person identity** (`fictional: false`): did this really happen in that person's life. Absent = unknown; a validator warns for every memory of a real person without it (never blocks). A reader playing a real person never presents a memory as a fact unless `factual: true`. A real person's dream: `nature: ["imagined"]`, `factual: true`. Ignored for fictional identities.
 - **`explicit`** — `nudity` | `intimate` (§ 5). Absent = all audiences.
-- **`origin`, `visibility`, `disclosure`, `links`, `tags`, `media`, `media_from`, `revisions`** — § 3.
+- **`origin`, `visibility`, `disclosure`, `links`, `tags`, `revisions`** — § 3. (`media`, `media_from`, `age` and `nudity` live on the manifest variant.)
 
 ### 4.3 Order and timeline
 
@@ -134,7 +144,7 @@ Each node belongs to one character (`variant.identity`, as every element). A pre
 
 ### 4.5 Shared media, not shared memories
 
-A memory is subjective: Clara and the Martian remember the same meeting with different gists, feelings and fidelity. So **one node per character**, linked `same-event`. The **media** may be shared: this RFC makes one narrow exception to the 1.0 rule that only neutral elements share files — a `memory-media` asset that shows several cast members MAY be referenced by one memory node of each character shown, either by listing it in `media` or with **`media_from: "<node>"`** ("my media are that node's": transitive, a cycle is an error, exclusive with `media`, inherits nothing else — the node still declares its own `who`). The exception exists only through this field, so it is easy to find and to check.
+A memory is subjective: Clara and the Martian remember the same meeting with different gists, feelings and fidelity. So **one node per character**, linked `same-event`. The **media** may be shared: this RFC makes one narrow exception to the 1.0 rule that only neutral elements share files — a `memory-media` asset that shows several cast members MAY be referenced by one memory node of each character shown, either by listing it in the variant's `media` or with the variant field **`media_from: "memories/<id>"`** ("my media are that node's": transitive, a cycle is an error, exclusive with `media`, inherits nothing else — the node still declares its own `who`). The exception exists only through this field, so it is easy to find and to check.
 
 Guard at extraction: when a character is extracted (`cof extract --identity`), the other characters' consent records do not travel with it; memory media that show **another real person** are therefore dropped from the extracted file (gist kept, warning); media showing other fictional characters are kept.
 
@@ -158,8 +168,8 @@ The 1.0 rules apply unchanged; this section says how they read on memories.
 ## 6. Tooling
 
 ### 6.1 Validator (`cof validate`, 1.1)
-Errors: node file missing or invalid against `memory.schema.json`; `gist` absent or empty; unresolved `links[].to`, `media`, `media_from`, `where.environment`, `who[].identity`; `media_from` cycle, or `media` and `media_from` together; `where.environment` or `media_from` across characters other than the § 4.5 exception; a period with a point `when` or a moment with `from`/`to`; an explicit node without `nudity: true` or without the matching `tags.content`; an explicit node in a preset under 18; an explicit node with any shown person of unknown age or under 18; a real person shown nude without being a consenting identity; a `lived` node with `revisions` carrying media.
-Warnings: gist over 1,000 characters; `after` contradicting dates; gist without an entry in the identity's primary language; several gist languages with no primary language; a memory of a real person without `factual`; `who[].real` without an identity; `personal` nodes present at pack; media over the `motion` video cap (20 MB unless `max_bytes_ack`); a video without a thumbnail.
+Errors: node file missing or invalid against `memory.schema.json`; `gist` absent or empty; unresolved `links[].to`, `media`, `media_from`, `where.environment`, `who[].identity`; `media_from` cycle, or `media` and `media_from` together; `where.environment` across characters; a period with a point `when` or a moment with `from`/`to`; `part-of` whose target is not a period; a node whose media show the character without a variant `age`; an explicit node without `nudity: true` or without the matching `tags.content`; an explicit node in a preset under 18 (the 1.0 preset rule); an explicit node with any shown person of unknown age or under 18; a real person shown nude without being a consenting identity; `revisions` carrying media; a file that uses this category and declares `cof: "1.0"`.
+Warnings: gist over 1,000 characters; `after` contradicting dates; gist without an entry in the identity's primary language; several gist languages with no primary language; a memory of a real person without `factual`; `who[].real` without an identity; a variant `age` that differs from `when.age`; a variant marked `nudity` whose node has no `explicit`; `revisions` on an `authored` node; `personal` nodes present; media over the `motion` video cap (20 MB unless `max_bytes_ack`); a video without a thumbnail. The "mixes very different ages" warning of 1.0 ignores memories (a memory legitimately shows another age).
 Coherence findings (via the coherence API, never blocking): a preset younger than a memory it lists; `part-of` contradicting dates; nodes implying different birth years; a memory "at 8" in a place the character never declared.
 
 ### 6.2 Coherence API

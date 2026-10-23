@@ -1,0 +1,28 @@
+{
+  "gist": {
+    "fr": "La rencontre avec le Martien.",
+    "en": "Meeting the Martian."
+  },
+  "when": {
+    "age": {
+      "value": 29
+    },
+    "date": "2019-03"
+  },
+  "who": [
+    {
+      "identity": "self",
+      "shown": true
+    }
+  ],
+  "nature": [
+    "experienced"
+  ],
+  "links": [
+    {
+      "to": "memories/p1",
+      "type": "after"
+    }
+  ],
+  "disclosure": "guarded"
+}

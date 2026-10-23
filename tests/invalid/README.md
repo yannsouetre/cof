@@ -55,5 +55,17 @@ validator's error (`expect`) — other implementations only need to reject the f
 | `path-traversal.cof` | no `..` or absolute paths |
 | `hash-mismatch.cof` | assets match their declared `sha256` |
 | `asset-missing.cof` | declared assets are present |
+| `memory-in-a-1.0-file.cof` | a file declares the lowest minor that defines what it uses: memories need cof 1.1 |
+| `memory-without-node-file.cof` | a memory variant names its node file |
+| `memory-without-gist.cof` | the gist is the only required field of a node |
+| `memory-link-unresolved.cof` | a link points to an existing node, qualified <category>/<id> |
+| `memory-period-with-point-when.cof` | a period's when has from / to, a moment's is a point |
+| `memory-explicit-without-nudity-flag.cof` | an explicit node also carries the 1.0 flag nudity: true and the file tags.content |
+| `memory-explicit-shows-minor.cof` | every person shown in an explicit node has a known age of 18 or more |
+| `memory-explicit-shown-unknown-age.cof` | an unknown age never counts as adult: an explicit node needs every shown person's age |
+| `memory-explicit-real-third-party.cof` | a real person shown nude must be a consenting identity of the file |
+| `memory-shows-self-without-age.cof` | a node whose media show the character carries the character's age at the time |
+| `memory-media-and-media-from.cof` | media and media_from are exclusive |
+| `memory-showing-minor-with-intimate-preset.cof` | a memory showing the character under 18 makes the preset a minor preset: no intimate content there |
 
 Regenerate with `python tests/invalid/build.py` (it also checks every case against the reference validator).

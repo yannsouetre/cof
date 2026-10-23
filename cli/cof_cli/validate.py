@@ -113,7 +113,7 @@ def _npy_has_objects(data: bytes) -> bool:
     hl = int.from_bytes(data[8:10], "little") if major == 1 else int.from_bytes(data[8:12], "little")
     header = data[10 if major == 1 else 12:(10 if major == 1 else 12) + hl].decode("latin1")
     return "'|O'" in header or "'O'" in header or "object" in header
-PATH_FIELDS = ("card", "psyche", "story", "lorebook", "params", "code", "spec", "profile", "vec", "visemes", "path", "skeleton")
+PATH_FIELDS = ("card", "psyche", "story", "lorebook", "params", "code", "spec", "profile", "vec", "visemes", "path", "skeleton", "memory")
 
 
 @dataclass
@@ -148,7 +148,7 @@ SUBFILE_SCHEMAS = {
     ("identity_weights", None, "spec"): "weights", ("voice", None, "profile"): "voice-profile",
     ("posture", "attitude", "spec"): "attitude", ("motion", "attitude", "spec"): "attitude",
     ("posture", None, "pose"): "pose", ("appearance", "hair", "code"): "hair", ("appearance", "body", "params"): "body",
-    ("motion", None, "visemes"): "visemes",
+    ("motion", None, "visemes"): "visemes", ("memories", None, "memory"): "memory",
 }
 
 
@@ -260,6 +260,16 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
     if rep.errors:
         return manifest
 
+    if str(manifest.get("cof")) == "1.0":
+        used = []
+        if (manifest.get("elements") or {}).get("memories"):
+            used.append("elements.memories")
+        if any((i or {}).get("language") for i in (manifest.get("identities") or {}).values()):
+            used.append("identities.<id>.language")
+        if any(a.get("role") == "memory-media" or a.get("as_remembered") is not None for a in manifest.get("assets") or []):
+            used.append("assets memory-media / as_remembered")
+        if used:
+            rep.errors.append(f"cof 1.0 declared but the file uses 1.1 additions ({', '.join(used)}): declare cof \"1.1\" — a file declares the lowest minor that defines everything it uses (SPEC § 12)")
     lang = (manifest.get("languages") or ["en"])[0]
     A = asset_index(manifest)
     elements = manifest.get("elements", {}) or {}
@@ -308,7 +318,7 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                           "likeness-image" if cat == "identity_weights" or (cat == "appearance" and k in ("face", "body", "character-sheet", "reference-set", "hair")) else
                           "likeness-3d" if cat == "volume3d" and k not in ("environment", "other") and not is_neutral(cat, rv) else
                           "voice-synthesis" if cat == "voice" and k in ("samples", "embedding") else
-                          "conversational-persona" if cat == "personality" or (cat == "files" and k == "memory") else
+                          "conversational-persona" if cat in ("personality", "memories") or (cat == "files" and k == "memory") else
                           "motion-capture" if cat == "motion" and k in ("clips", "video") and not is_neutral(cat, rv) else None)
                     if sc and sc not in scope:
                         need.setdefault(sc, []).append(f"{cat}.{vid}")
@@ -599,6 +609,9 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
             elif v.get("kind") == "environment" and ext not in ("glb", "usdz", "spz", "ply", "splat", "gltf"):
                 rep.warnings.append(f"{where3}: unexpected format for a 3D environment (.{ext}) — expected: GLB, USDZ, splats (SPZ/PLY/SPLAT)")
 
+    # memories (RFC 0002, 1.1): node files, references, explicit nodes, real persons, personal nodes
+    _memory_rules(manifest, src, rep)
+
     # a coherence finding of severity `illegal` (e.g. sexualised content in a minor preset) invalidates the file
     for pid_, p_ in (manifest.get("presets") or {}).items():
         for iss in ((p_.get("coherence") or {}).get("issues") or []):
@@ -826,6 +839,8 @@ def auto_tags(manifest: dict) -> list[str]:
         at.add("has-skills")
     if "memory" in kinds:
         at.add("has-memory")
+    if ((E.get("memories") or {}).get("variants")):
+        at.add("has-memories")
     if len(P) > 1:
         at.add("multi-preset")
     if len(ids) > 1:
@@ -971,7 +986,7 @@ def _age_rules(manifest: dict, pid: str | None, res: dict, perms_all: dict, rep:
                 carries = (cat == "appearance" and k in AGE_REQUIRED_KINDS) or cat == "identity_weights" or (cat == "volume3d" and k not in ("environment", "other") and (k != "daz" or v.get("daz_category") == "characters"))
                 if carries and _age_value(v.get("age")) is None and not age_required(manifest, pid, v):
                     rep.errors.append(f"{label}: {cat}.{v['_id']} ({k}) must declare an age — the preset applies or offers an intimate or nude element, so the age is required whatever the morphology class")
-    ages = sorted((x, f"{cat}.{v['_id']}") for cat in AGE_CATEGORIES for v in res.get(cat, []) if v.get("kind") not in AGELESS_KINDS for x in [_age_value(v.get("age"))] if x is not None)
+    ages = sorted((x, f"{cat}.{v['_id']}") for cat in AGE_CATEGORIES - {"memories"} for v in res.get(cat, []) if v.get("kind") not in AGELESS_KINDS for x in [_age_value(v.get("age"))] if x is not None)   # a memory legitimately shows another age
     if ages and ages[-1][0] - ages[0][0] >= 10:
         rep.warnings.append(f"{label}: mixes representations of very different ages ({ages[0][1]}: {ages[0][0]:g}, {ages[-1][1]}: {ages[-1][0]:g}) — an inherited element (e.g. a LoRA through extends) may not belong to this preset")
     if by_kind(res, "appearance", "intimate"):
@@ -994,3 +1009,168 @@ def _age_rules(manifest: dict, pid: str | None, res: dict, perms_all: dict, rep:
                 rep.errors.append(f"{label}: estimated morphology forbidden (age {pa})")
         if eff_perms.get("allowSexualUsage"):
             rep.errors.append(f"{label}: effective allowSexualUsage forbidden (preset age {pa}) — set it to false at file level or in permissions_override")
+
+
+# ---------------------------------------------------------------- memories (RFC 0002) ----------------------------------------------------------------
+
+_LANG_RE = re.compile(r"^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$")
+
+
+def _memory_rules(manifest: dict, src: Path, rep: "Report") -> None:
+    """RFC 0002 § 5 and § 6.1. The node file is validated against memory.schema.json by the sub-file mechanism;
+    this function holds the semantic rules: references, explicit nodes and ages, real persons, personal nodes."""
+    E = manifest.get("elements") or {}
+    mem = (E.get("memories") or {}).get("variants") or {}
+    if not mem:
+        return
+    ids = manifest.get("identities") or {}
+    content = set((manifest.get("tags") or {}).get("content") or [])
+    A = asset_index(manifest)
+    nodes: dict[str, dict] = {}
+    for vid, v in mem.items():
+        where = f"memories.{vid}"
+        rv = resolve_variant(manifest, "memories", vid) or {}
+        rel = rv.get("memory")
+        if not rel:
+            rep.errors.append(f"{where}: a memory variant names its node file (`memory`: elements/memories/<v>/memory.json)")
+            continue
+        try:
+            node = json.loads((src / rel).read_text("utf-8"))
+        except Exception as e:
+            rep.errors.append(f"{where}: node file {rel} unreadable ({e})")
+            continue
+        if not isinstance(node, dict):
+            rep.errors.append(f"{where}: node file {rel} must hold a JSON object")
+            continue
+        nodes[vid] = node
+    if not nodes:
+        return
+    owner = lambda vid: variant_owner(manifest, "memories", vid)
+
+    def primary_lang(iid):
+        return ((ids.get(iid) or {}).get("language") or "").lower()
+
+    for vid, node in nodes.items():
+        where = f"memories.{vid}"
+        rv = resolve_variant(manifest, "memories", vid) or {}
+        kind = rv.get("kind")
+        me = owner(vid)
+        # kind vs when shape
+        w = node.get("when") or {}
+        if kind == "moment" and ("from" in w or "to" in w):
+            rep.errors.append(f"{where}: a moment's `when` is a point (age / date), not from / to")
+        if kind == "period" and ("age" in w or "date" in w):
+            rep.errors.append(f"{where}: a period's `when` has from / to, not a point")
+        # gist: length and languages
+        gist = node.get("gist") or {}
+        for lg, txt in gist.items():
+            if isinstance(txt, str) and len(txt) > 1000:
+                rep.warnings.append(f"{where}: gist ({lg}) is {len(txt)} characters — keep a gist under 1,000 characters per language (the media are the long form)")
+        pl = primary_lang(me) if me else ""
+        langs = {k.lower() for k in gist}
+        if pl and langs and pl not in langs:
+            rep.warnings.append(f"{where}: gist has no entry in the character's primary language ({pl})")
+        if not pl and len(langs) > 1:
+            rep.warnings.append(f"{where}: gist in several languages and no primary language on the identity (identities.<id>.language) — readers fall back to the first entry")
+        # media: manifest variant lists assets; the node's media field is not the manifest's (RFC: media on the variant)
+        if node.get("media") or node.get("media_from"):
+            rep.warnings.append(f"{where}: `media` / `media_from` belong to the manifest variant, not to memory.json (ignored here)")
+        mf = rv.get("media_from")
+        if mf:
+            if rv.get("media"):
+                rep.errors.append(f"{where}: `media` and `media_from` are exclusive")
+            cat_, _, tgt = mf.partition("/")
+            if cat_ != "memories" or tgt not in mem:
+                rep.errors.append(f"{where}: media_from {mf}: unknown memory node")
+            else:
+                seen, cur = {vid}, tgt
+                while cur:
+                    if cur in seen:
+                        rep.errors.append(f"{where}: media_from cycle through {cur}"); break
+                    seen.add(cur); cur = (resolve_variant(manifest, "memories", cur) or {}).get("media_from", "").partition("/")[2]
+        for aid in rv.get("media") or []:
+            a = A.get(aid)
+            if not a:
+                rep.errors.append(f"{where}: media: unknown asset {aid}")
+            elif a.get("role") != "memory-media":
+                rep.warnings.append(f"{where}: media {aid} has role '{a.get('role')}' — memory media use role memory-media")
+        # links
+        for ln in node.get("links") or []:
+            to = str(ln.get("to", ""))
+            cat_, _, tgt = to.partition("/")
+            if not (cat_ and tgt and tgt in (((E.get(cat_) or {}).get("variants") or {}))):
+                rep.errors.append(f"{where}: link to {to}: unknown node")
+            elif ln.get("type") == "part-of" and (cat_ != "memories" or (resolve_variant(manifest, "memories", tgt) or {}).get("kind") != "period"):
+                rep.errors.append(f"{where}: part-of points to a period ({to} is not one)")
+            elif ln.get("type") == "part-of" and kind != "moment":
+                rep.errors.append(f"{where}: only a moment is part-of a period")
+        # where.environment: an environment variant of the same character
+        env = (node.get("where") or {}).get("environment")
+        if env:
+            cat_, _, tgt = env.partition("/")
+            tv = resolve_variant(manifest, cat_, tgt) if cat_ and tgt else None
+            if not tv or tv.get("kind") != "environment":
+                rep.errors.append(f"{where}: where.environment {env}: not an environment variant")
+            elif ids and variant_owner(manifest, cat_, tgt) != me:
+                rep.errors.append(f"{where}: where.environment {env} belongs to another character")
+        # who: identities exist; shown persons; real third parties
+        shown_unknown, shown_minor, real_third = [], [], []
+        self_shown = False
+        for w_ in node.get("who") or []:
+            iid = w_.get("identity")
+            if iid is not None and iid != "self" and ids and iid not in ids:
+                rep.errors.append(f"{where}: who: unknown identity {iid}")
+            if iid == "self":
+                self_shown = self_shown or bool(w_.get("shown"))
+                continue
+            if w_.get("shown"):
+                x = _age_value(w_.get("age"))
+                label = iid or next(iter((w_.get("label") or {}).values()), "?")
+                if x is None:
+                    shown_unknown.append(label)
+                elif x < ADULT:
+                    shown_minor.append(label)
+            if w_.get("real") and not iid:
+                real_third.append(next(iter((w_.get("label") or {}).values()), "?"))
+        if real_third:
+            rep.warnings.append(f"{where}: shows or names a real person who is not an identity of the file ({', '.join(real_third[:3])}) — no consent can be recorded for them (SPEC § 11.4)")
+        # self shown: the variant carries an age equal to when.age
+        va = _age_value(rv.get("age"))
+        wa = _age_value(w.get("age")) if kind == "moment" else None
+        if self_shown and va is None:
+            rep.errors.append(f"{where}: a media shows the character — the variant must carry `age` (the character's age at the time, RFC 0002 § 5)")
+        if va is not None and wa is not None and abs(va - wa) > 0.5:
+            rep.warnings.append(f"{where}: variant age {va:g} differs from when.age {wa:g}")
+        # explicit nodes
+        ex = node.get("explicit")
+        if ex:
+            if rv.get("nudity") is not True:
+                rep.errors.append(f"{where}: explicit node ({ex}) — the variant must also carry nudity: true (1.0 tools read that flag)")
+            needed = {"nudity", "sexual"} if ex == "intimate" else {"nudity"}
+            if not needed <= content:
+                rep.errors.append(f"{where}: explicit node ({ex}) — tags.content must include {', '.join(sorted(needed))}")
+            if self_shown and (va is None or va < ADULT):
+                rep.errors.append(f"{where}: explicit node shows the character at an unknown age or under {ADULT} — forbidden")
+            if shown_unknown or shown_minor:
+                rep.errors.append(f"{where}: explicit node — every person shown must have a known age of {ADULT} or more (unknown: {', '.join(shown_unknown[:3]) or '—'}; under {ADULT}: {', '.join(shown_minor[:3]) or '—'})")
+            # real persons shown: must be consenting identities
+            for w_ in node.get("who") or []:
+                if not w_.get("shown"):
+                    continue
+                iid = me if w_.get("identity") == "self" else w_.get("identity")
+                if iid and ids:
+                    I = ids.get(iid) or {}
+                    if I.get("fictional") is False and not ({"nudity", "intimate"} & set(((I.get("consent") or {}).get("scope")) or [])):
+                        rep.errors.append(f"{where}: explicit node shows the real person '{iid}' without consent scope nudity / intimate")
+                elif w_.get("real"):
+                    rep.errors.append(f"{where}: explicit node shows a real person who is not an identity of the file — never allowed")
+        elif rv.get("nudity") is True:
+            rep.warnings.append(f"{where}: variant marked nudity but the node has no `explicit` value — set explicit: nudity or intimate")
+        # real person's memory: factual
+        if me and (ids.get(me) or {}).get("fictional") is False and node.get("factual") is None:
+            rep.warnings.append(f"{where}: memory of a real person without `factual` — a reader will not present it as a fact")
+        # personal nodes
+        if node.get("visibility") == "personal":
+            rep.warnings.append(f"{where}: personal memory (a user's data) — dropped by extract / export unless --keep-personal; do not share this file as is")
+        if node.get("origin") == "authored" and node.get("revisions"):
+            rep.warnings.append(f"{where}: revisions on an authored node — tools only rewrite lived nodes")

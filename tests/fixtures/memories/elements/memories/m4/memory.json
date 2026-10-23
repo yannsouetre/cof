@@ -1,0 +1,26 @@
+{
+  "gist": {
+    "fr": "Le rêve des moutons électriques.",
+    "en": "The electric-sheep dream."
+  },
+  "when": {
+    "age": {
+      "value": 29
+    },
+    "approx": true
+  },
+  "nature": [
+    "imagined"
+  ],
+  "links": [
+    {
+      "to": "memories/m3",
+      "type": "about",
+      "label": {
+        "fr": "le rêve est venu la nuit suivante",
+        "en": "the dream came the following night"
+      }
+    }
+  ],
+  "fidelity": "fragment"
+}

@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — 1.1 (RFC 0002, memories)
+
+- **New element category `memories`** (additive; every 1.0 file stays valid): the character's past as nodes — `moment` and `period` — with a required multilingual `gist`, optional media (asset role `memory-media`, flag `as_remembered`), axes (`when`, `where`, `who`), feelings then and now, `salience`, `fidelity`, `nature`, `factual` (real persons), `explicit`, the policy axes `origin` / `visibility` / `disclosure`, qualified typed `links` and `tags`; `identities.<id>.language` as the fallback language for short multilingual texts. Rules in `rfcs/0002-memories.md`; schemas under `schemas/1.1/` (`memory.schema.json` new).
+- **`cof-cli` 1.1.0**: validates the category (node files, references, explicit nodes and ages, real persons, personal nodes), reads 1.1 files as current; a file that uses 1.1 additions must declare `cof: "1.1"`; auto tag `has-memories`; the "mixes very different ages" warning ignores memories. Fixture `tests/fixtures/memories`; 12 new negative cases (58 in all).
+
 ## 1.0.1 — 2026-10-23 — forward compatibility of the validator
 
 - **`cof-cli` 1.0.1**: a file that declares a later 1.x minor and uses an element category this validator does not know was **refused** (schema error on the category name, in `elements` and in the presets' `slots` / `alternatives`), against SPEC § 12. It is now a warning: the category is preserved, read as a library, and its variants are not checked. A file that declares `cof: "1.0"` still cannot use a category the 1.0 schema does not define.

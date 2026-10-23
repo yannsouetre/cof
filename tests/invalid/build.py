@@ -218,6 +218,60 @@ def _(d): m = load(d); m["preset_tags"] = [{"id": "x", "label": "X", "presets": 
 @case("illegal-coherence-finding", "a coherence finding of severity `illegal` makes the file invalid", "§ 11.2 / § 9.4", "illegal")
 def _(d): m = load(d); m["presets"]["young"]["coherence"] = {"score": 0, "method": "human", "computed_by": "negative-corpus", "issues": [{"severity": "illegal", "message": "suggestive pose in a preset under 18 (test case, no image involved)"}]}; save(d, m)
 
+
+# ---------- memories (RFC 0002, 1.1): the base gains one memory node, then one rule is violated per file ----------
+def with_memory(d, node=None, variant=None):
+    """Add a memory node `m1` to the base (cof 1.1); the default adult preset lists it."""
+    m = load(d); m["cof"] = "1.1"
+    nd = {"gist": {"en": "The summer I was eight: the house and the garden."}, "when": {"age": {"value": 8}}, "fidelity": "faded"}
+    if node:
+        nd.update(node)
+    (d / "elements/memories/m1").mkdir(parents=True, exist_ok=True)
+    (d / "elements/memories/m1/memory.json").write_text(json.dumps(nd), "utf-8")
+    v = {"kind": "moment", "label": "Grandmother's house", "memory": "elements/memories/m1/memory.json"}
+    if variant:
+        v.update(variant)
+    m["elements"]["memories"] = {"variants": {"m1": v}}
+    m["presets"]["default"]["slots"]["memories"] = ["m1"]
+    save(d, m); return m
+
+@case("memory-in-a-1.0-file", "a file declares the lowest minor that defines what it uses: memories need cof 1.1", "RFC 0002 § 7", "declare cof")
+def _(d): m = with_memory(d); m["cof"] = "1.0"; save(d, m)
+
+@case("memory-without-node-file", "a memory variant names its node file", "RFC 0002 § 4.1", "node file")
+def _(d): m = with_memory(d); V(m, "memories")["m1"].pop("memory"); save(d, m)
+
+@case("memory-without-gist", "the gist is the only required field of a node", "RFC 0002 § 3", "gist")
+def _(d): with_memory(d); (d / "elements/memories/m1/memory.json").write_text(json.dumps({"when": {"age": {"value": 8}}}), "utf-8")
+
+@case("memory-link-unresolved", "a link points to an existing node, qualified <category>/<id>", "RFC 0002 § 3.1", "unknown node")
+def _(d): with_memory(d, node={"links": [{"to": "memories/zz", "type": "about"}]})
+
+@case("memory-period-with-point-when", "a period's when has from / to, a moment's is a point", "RFC 0002 § 4.2", "period's `when`")
+def _(d): with_memory(d, variant={"kind": "period"})
+
+@case("memory-explicit-without-nudity-flag", "an explicit node also carries the 1.0 flag nudity: true and the file tags.content", "RFC 0002 § 5.3", "nudity: true")
+def _(d): with_memory(d, node={"explicit": "nudity", "who": [{"identity": "self", "shown": True}]}, variant={"age": {"value": 34, "unit": "years"}})
+
+@case("memory-explicit-shows-minor", "every person shown in an explicit node has a known age of 18 or more", "RFC 0002 § 5.4", "under 18")
+def _(d): with_memory(d, node={"explicit": "nudity", "who": [{"identity": "self", "shown": True}]}, variant={"age": {"value": 8, "unit": "years"}, "nudity": True})
+
+@case("memory-explicit-shown-unknown-age", "an unknown age never counts as adult: an explicit node needs every shown person's age", "RFC 0002 § 5.4", "known age of 18")
+def _(d): with_memory(d, node={"explicit": "nudity", "who": [{"identity": "self", "shown": True}, {"label": {"en": "a friend"}, "shown": True}]}, variant={"age": {"value": 34, "unit": "years"}, "nudity": True})
+
+@case("memory-explicit-real-third-party", "a real person shown nude must be a consenting identity of the file", "RFC 0002 § 5.5", "real person")
+def _(d): with_memory(d, node={"explicit": "nudity", "who": [{"identity": "self", "shown": True}, {"label": {"en": "my ex"}, "real": True, "shown": True, "age": {"value": 40}}]}, variant={"age": {"value": 34, "unit": "years"}, "nudity": True})
+
+@case("memory-shows-self-without-age", "a node whose media show the character carries the character's age at the time", "RFC 0002 § 5.2", "must carry `age`")
+def _(d): with_memory(d, node={"who": [{"identity": "self", "shown": True}]})
+
+@case("memory-media-and-media-from", "media and media_from are exclusive", "RFC 0002 § 4.5", "exclusive")
+def _(d):
+    m = with_memory(d); V(m, "memories")["m2"] = {"kind": "moment", "label": "Two", "memory": "elements/memories/m1/memory.json", "media": ["a-head-front"], "media_from": "memories/m1"}; save(d, m)
+
+@case("memory-showing-minor-with-intimate-preset", "a memory showing the character under 18 makes the preset a minor preset: no intimate content there", "RFC 0002 § 5.2", "intimate")
+def _(d): with_memory(d, node={"who": [{"identity": "self", "shown": True}]}, variant={"age": {"value": 8, "unit": "years", "basis": "canonical"}})
+
 # ---------- archive-level cases (pack the valid base, then tamper) ----------
 def rewrite(src: Path, dst: Path, entries):
     with zipfile.ZipFile(dst, "w") as z:

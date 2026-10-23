@@ -1,0 +1,46 @@
+{
+  "gist": {
+    "fr": "L'été de mes huit ans : la maison de ma grand-mère à Oullins.",
+    "en": "The summer I was eight: my grandmother's house in Oullins."
+  },
+  "when": {
+    "age": {
+      "value": 8,
+      "unit": "years"
+    },
+    "approx": true,
+    "label": {
+      "fr": "l'été de mes huit ans",
+      "en": "the summer I was eight"
+    }
+  },
+  "where": {
+    "label": {
+      "fr": "la maison de ma grand-mère",
+      "en": "my grandmother's house"
+    }
+  },
+  "who": [
+    {
+      "label": {
+        "fr": "ma grand-mère",
+        "en": "my grandmother"
+      }
+    }
+  ],
+  "felt_then": {
+    "category": {
+      "set": "everyday",
+      "value": "content"
+    },
+    "pad": {
+      "pleasure": 0.7,
+      "arousal": 0.2
+    }
+  },
+  "salience": 70,
+  "fidelity": "faded",
+  "tags": [
+    "childhood"
+  ]
+}

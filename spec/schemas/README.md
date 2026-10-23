@@ -1,4 +1,6 @@
-# JSON Schemas (draft 2020-12) — COF 1.0
+# JSON Schemas (draft 2020-12) — COF 1.1
+
+1.1 adds to 1.0, by addition only (RFC 0002): the `memories` category (kinds `moment`, `period`), the variant fields `memory`, `media`, `media_from`, the asset role `memory-media` and flag `as_remembered`, `identities.<id>.language`, and `memory.schema.json`. The 1.0 schemas stay published under `schemas/1.0/`.
 
 | Schema | File validated | Referenced by | Notes |
 |---|---|---|---|
@@ -13,6 +15,7 @@
 | `hair.schema.json` | `elements/appearance/<v>/hair.json` | `variant.code` (kind `hair`) | COF-HAIR-1: length / curl / density 0–9, hex colors, gray %, hairstyle, part, bangs |
 | `body.schema.json` | `elements/appearance/<v>/body.json` | `variant.params` (kind `body`) | height, build, ISO 7250 measurements, Anny phenotypes, SMPL-X β, skin tone (Monk / Fitzpatrick), `estimated` + `confidence` |
 | `consent.schema.json` | `rights/consent.json`, `identities.<id>.consent` | — | real person: `scope[]` (including `intimate`), dates, jurisdictions, proofs (sha256 required if a file is attached), subject age ≥ 18 |
+| `memory.schema.json` | `elements/memories/<v>/memory.json` | `variant.memory` | a node of the character's past (RFC 0002): multilingual `gist` (required), `nature`, `when` / `where` / `who`, feelings (same structure as the psyche's baseline emotion), `salience`, `fidelity`, `factual`, `explicit`, `origin` / `visibility` / `disclosure`, qualified `links`, `tags`, `revisions` |
 | `visemes.schema.json` | `elements/motion/<v>/visemes.json` | `variant.visemes` | viseme vocabulary of the clips (ARKit-52, Oculus-15, Preston Blair, Unified Expressions, custom + mapping) |
 
 Rule: `cof validate` validates every sub-file referenced by a variant against its schema (error, not warning: these files are produced by the builder or the CLI). Sub-files not listed (e.g. `outfit.json`, `voice.vec.json`, `face.mesh`) are not schematized yet — see `docs/design-notes-phase0.md`.

@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 from importlib import resources
 
-CATEGORIES = ["personality", "appearance", "identity_weights", "volume3d", "voice", "posture", "motion", "files"]
+CATEGORIES = ["personality", "appearance", "identity_weights", "volume3d", "voice", "posture", "motion", "files", "memories"]
 KINDS = {
     "personality": ["card", "description"],
     "appearance": ["reference-set", "character-sheet", "face", "body", "hair", "clothing", "accessory", "intimate", "pilosity", "feature", "environment", "description"],
@@ -14,9 +14,10 @@ KINDS = {
     "posture": ["photo", "photos", "openpose", "silhouette", "attitude", "description"],
     "motion": ["clips", "video", "attitude", "description"],   # 'attitude' (movement signature) is allowed here AND in posture
     "files": ["skill", "memory", "document", "other"],          # free files: agent skills, memories, documents — library
+    "memories": ["moment", "period"],                           # the character's past (RFC 0002, 1.1) — library
 }
 # categories that are LIBRARIES in a preset: several variants of any kind, none mandatory at inference
-LIBRARY_CATEGORIES = {"posture", "motion", "files"}
+LIBRARY_CATEGORIES = {"posture", "motion", "files", "memories"}
 
 
 def is_library(cat: str) -> bool:
@@ -305,7 +306,7 @@ def effective_permissions(manifest: dict, pid: str | None) -> dict:
 
 def variant_asset_ids(v: dict) -> set[str]:
     ids = set()
-    for k in ("images", "derived", "samples", "clips", "videos", "files"):
+    for k in ("images", "derived", "samples", "clips", "videos", "files", "media"):
         ids |= set(v.get(k) or [])
     if isinstance(v.get("mesh"), dict):
         ids |= set(v["mesh"].get("textures") or [])
@@ -315,7 +316,7 @@ def variant_asset_ids(v: dict) -> set[str]:
 
 
 # Age is a property of the REPRESENTATION, never of the identity (v0.5).
-AGE_CATEGORIES = {"appearance", "volume3d", "identity_weights"}       # variants that MAY carry `age`
+AGE_CATEGORIES = {"appearance", "volume3d", "identity_weights", "memories"}       # variants that MAY carry `age` (memories: when a media shows the character, RFC 0002 § 5)
 AGELESS_KINDS = {"clothing", "accessory", "feature", "description", "environment"}    # variants that never do
 AGE_REQUIRED_KINDS = {"face", "body", "character-sheet", "reference-set"}   # MUST carry `age` for human-form morphologies
 HUMAN_FORM = {"human", "humanoid", "anthropomorphic-animal"}

@@ -1,0 +1,19 @@
+{
+  "gist": {
+    "fr": "Les années d'études à Lyon.",
+    "en": "The student years in Lyon."
+  },
+  "when": {
+    "from": {
+      "age": {
+        "value": 18
+      }
+    },
+    "to": {
+      "age": {
+        "value": 23
+      }
+    }
+  },
+  "fidelity": "clear"
+}

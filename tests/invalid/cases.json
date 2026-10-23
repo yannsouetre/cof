@@ -242,6 +242,78 @@
       "expect": "illegal"
     },
     {
+      "file": "memory-in-a-1.0-file.cof",
+      "rule": "a file declares the lowest minor that defines what it uses: memories need cof 1.1",
+      "spec": "RFC 0002 § 7",
+      "expect": "declare cof"
+    },
+    {
+      "file": "memory-without-node-file.cof",
+      "rule": "a memory variant names its node file",
+      "spec": "RFC 0002 § 4.1",
+      "expect": "node file"
+    },
+    {
+      "file": "memory-without-gist.cof",
+      "rule": "the gist is the only required field of a node",
+      "spec": "RFC 0002 § 3",
+      "expect": "gist"
+    },
+    {
+      "file": "memory-link-unresolved.cof",
+      "rule": "a link points to an existing node, qualified <category>/<id>",
+      "spec": "RFC 0002 § 3.1",
+      "expect": "unknown node"
+    },
+    {
+      "file": "memory-period-with-point-when.cof",
+      "rule": "a period's when has from / to, a moment's is a point",
+      "spec": "RFC 0002 § 4.2",
+      "expect": "period's `when`"
+    },
+    {
+      "file": "memory-explicit-without-nudity-flag.cof",
+      "rule": "an explicit node also carries the 1.0 flag nudity: true and the file tags.content",
+      "spec": "RFC 0002 § 5.3",
+      "expect": "nudity: true"
+    },
+    {
+      "file": "memory-explicit-shows-minor.cof",
+      "rule": "every person shown in an explicit node has a known age of 18 or more",
+      "spec": "RFC 0002 § 5.4",
+      "expect": "under 18"
+    },
+    {
+      "file": "memory-explicit-shown-unknown-age.cof",
+      "rule": "an unknown age never counts as adult: an explicit node needs every shown person's age",
+      "spec": "RFC 0002 § 5.4",
+      "expect": "known age of 18"
+    },
+    {
+      "file": "memory-explicit-real-third-party.cof",
+      "rule": "a real person shown nude must be a consenting identity of the file",
+      "spec": "RFC 0002 § 5.5",
+      "expect": "real person"
+    },
+    {
+      "file": "memory-shows-self-without-age.cof",
+      "rule": "a node whose media show the character carries the character's age at the time",
+      "spec": "RFC 0002 § 5.2",
+      "expect": "must carry `age`"
+    },
+    {
+      "file": "memory-media-and-media-from.cof",
+      "rule": "media and media_from are exclusive",
+      "spec": "RFC 0002 § 4.5",
+      "expect": "exclusive"
+    },
+    {
+      "file": "memory-showing-minor-with-intimate-preset.cof",
+      "rule": "a memory showing the character under 18 makes the preset a minor preset: no intimate content there",
+      "spec": "RFC 0002 § 5.2",
+      "expect": "intimate"
+    },
+    {
       "file": "mimetype-not-first.cof",
       "rule": "`mimetype` is the first entry",
       "spec": "§ 1.1",

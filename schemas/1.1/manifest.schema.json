@@ -823,6 +823,18 @@
         "memory": {
           "$ref": "#/$defs/path",
           "description": "memories: the node file elements/memories/<v>/memory.json (RFC 0002)"
+        },
+        "media": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/aid"
+          },
+          "description": "memories: the node's assets (role memory-media). Exclusive with media_from (RFC 0002)."
+        },
+        "media_from": {
+          "type": "string",
+          "pattern": "^memories/[a-z0-9][a-z0-9.-]*$",
+          "description": "memories: the node whose media this node reuses — inherits nothing else (RFC 0002 § 4.5)."
         }
       },
       "required": [

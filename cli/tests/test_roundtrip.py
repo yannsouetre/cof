@@ -8,6 +8,7 @@ import pytest
 from cof_cli.container import ContainerError, pack, read_manifest, unpack
 from cof_cli.convert import card_to_cof_dir, read_card_from_png, write_card_to_png
 from cof_cli.validate import Report, validate_cof, validate_dir
+from cof_cli import SPEC_VERSION
 
 ROOT = Path(__file__).resolve().parents[2]
 EXAMPLE = ROOT / "spec" / "examples" / "01-clara-text-only"
@@ -495,12 +496,12 @@ def test_version_gate_1_0(tmp_path):
 
 
 def test_published_schemas_match_spec():
-    """schemas/1.0 (served by GitHub Pages at the $id URLs) and the CLI copies equal spec/schemas."""
+    """schemas/<current minor> (served by GitHub Pages at the $id URLs) and the CLI copies equal spec/schemas."""
     for f in (ROOT / "spec/schemas").glob("*.json"):
-        assert (ROOT / "schemas/1.0" / f.name).read_bytes() == f.read_bytes(), f.name
+        assert (ROOT / "schemas" / SPEC_VERSION / f.name).read_bytes() == f.read_bytes(), f.name
         assert (ROOT / "cli/cof_cli/schemas" / f.name).read_bytes() == f.read_bytes(), f.name
         sid = json.loads(f.read_text("utf-8")).get("$id")
-        assert sid is None or sid == f"https://yannsouetre.github.io/cof/schemas/1.0/{f.name}"
+        assert sid is None or sid == f"https://yannsouetre.github.io/cof/schemas/{SPEC_VERSION}/{f.name}"
 
 
 def test_negative_corpus():
@@ -852,3 +853,98 @@ def test_unknown_category_in_a_1_0_file_is_an_error(workdir):
     rep = Report()
     validate_dir(workdir, rep, recompute=False)
     assert not rep.ok and any("sketches" in e for e in rep.errors)
+
+
+MEM = ROOT / "tests" / "fixtures" / "memories"
+
+
+def _mem_copy(tmp_path):
+    d = tmp_path / "mem"
+    shutil.copytree(MEM, d)
+    return d, json.loads((d / "manifest.json").read_text("utf-8"))
+
+
+def _node(d, vid):
+    return json.loads((d / f"elements/memories/{vid}/memory.json").read_text("utf-8"))
+
+
+def _write(d, m=None, vid=None, node=None):
+    if m is not None:
+        (d / "manifest.json").write_text(json.dumps(m), "utf-8")
+    if vid is not None:
+        (d / f"elements/memories/{vid}/memory.json").write_text(json.dumps(node), "utf-8")
+
+
+def _val(d):
+    rep = Report()
+    rep.manifest = validate_dir(d, rep, recompute=True)
+    return rep
+
+
+def test_memories_fixture_is_valid_and_tagged(tmp_path):
+    d, _ = _mem_copy(tmp_path)
+    rep = _val(d)
+    assert rep.ok, rep.errors
+    m = rep.manifest
+    assert "has-memories" in m["tags"]["auto"] and "memories" in m["coverage"]["elements"]
+
+
+def test_memories_need_cof_1_1(tmp_path):
+    d, m = _mem_copy(tmp_path)
+    m["cof"] = "1.0"; _write(d, m)
+    rep = _val(d)
+    assert any("declare cof" in e for e in rep.errors), rep.errors
+
+
+def test_memory_link_must_resolve_and_part_of_targets_a_period(tmp_path):
+    d, _ = _mem_copy(tmp_path)
+    n = _node(d, "m4"); n["links"] = [{"to": "memories/zz", "type": "about"}]; _write(d, vid="m4", node=n)
+    assert any("unknown node" in e for e in _val(d).errors)
+    n["links"] = [{"to": "memories/m3", "type": "part-of"}]; _write(d, vid="m4", node=n)
+    assert any("part-of points to a period" in e for e in _val(d).errors)
+
+
+def test_memory_when_shape_follows_kind(tmp_path):
+    d, _ = _mem_copy(tmp_path)
+    n = _node(d, "p1"); n["when"] = {"age": {"value": 20}}; _write(d, vid="p1", node=n)
+    assert any("period's `when`" in e for e in _val(d).errors)
+
+
+def test_explicit_memory_rules(tmp_path):
+    d, m = _mem_copy(tmp_path)
+    n = _node(d, "m3"); n["explicit"] = "nudity"; _write(d, vid="m3", node=n)
+    errs = _val(d).errors
+    assert any("nudity: true" in e for e in errs) and any("tags.content" in e for e in errs), errs
+    m["elements"]["memories"]["variants"]["m3"]["nudity"] = True; m["tags"]["content"] = ["nudity"]; _write(d, m)
+    rep = _val(d)
+    assert rep.ok, rep.errors                       # adult (29), shown, flagged: allowed
+    m["elements"]["memories"]["variants"]["m3"]["age"] = {"value": 16, "unit": "years"}; _write(d, m)
+    errs = _val(d).errors
+    assert any("under 18" in e for e in errs), errs   # the node rule and the preset rule both fire
+    n["who"].append({"label": {"en": "a friend"}, "shown": True}); _write(d, vid="m3", node=n)
+    m["elements"]["memories"]["variants"]["m3"]["age"] = {"value": 29, "unit": "years"}; _write(d, m)
+    assert any("known age of 18" in e for e in _val(d).errors)
+
+
+def test_memory_showing_a_minor_makes_the_preset_a_minor_preset(tmp_path):
+    """RFC 0002 § 5.2: a memory whose media show the character carries an age that enters the preset's lowest age."""
+    d, m = _mem_copy(tmp_path)
+    m["elements"]["memories"]["variants"]["m3"]["age"] = {"value": 9, "unit": "years", "basis": "canonical"}; _write(d, m)
+    rep = _val(d)
+    assert rep.ok, rep.errors
+    assert "has-minor-preset" in rep.manifest["tags"]["auto"]
+
+
+def test_media_from_cycle_and_exclusivity(tmp_path):
+    d, m = _mem_copy(tmp_path)
+    m["elements"]["memories"]["variants"]["m3"]["media_from"] = "memories/m4"; _write(d, m)
+    errs = _val(d).errors
+    assert any("exclusive" in e for e in errs) or any("cycle" in e for e in errs), errs
+
+
+def test_real_person_memory_warns_without_factual(tmp_path):
+    d, m = _mem_copy(tmp_path)
+    m["identities"]["id1"]["fictional"] = False; m["fictional"] = False; _write(d, m)
+    rep = _val(d)
+    assert any("factual" in w for w in rep.warnings), rep.warnings
+    assert any("conversational-persona" in w for w in rep.warnings + rep.errors)
