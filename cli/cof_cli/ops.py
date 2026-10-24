@@ -221,6 +221,9 @@ def extract_identity(src: Path, dst: Path, iid: str, notes: list[str] | None = N
         pids.remove(dp); pids.insert(0, dp)
     out = extract_presets(src, dst, pids)
     out["default_preset"] = pids[0]
+    from .cast import drop_foreign_relations
+    for line in drop_foreign_relations(out):                      # RFC 0003 § 6: a relation to a character that leaves the file
+        (notes if notes is not None else []).append(f"{line}: relation dropped (the other character is not in this file)")
     (dst / "manifest.json").write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", "utf-8")
     for vid in strip_foreign_real_media(dst, {iid}, m.get("identities") or {}):
         (notes if notes is not None else []).append(f"memories.{vid}: media showing another real person left behind (gist kept)")

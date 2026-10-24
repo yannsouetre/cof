@@ -271,6 +271,8 @@ def export_soul(src: Path, preset: str | None = None) -> tuple[str, str]:
     from .model import asset_index, default_preset_id, effective_permissions, first, preset_identity, preset_primary_image, resolved
     manifest = json.loads((src / "manifest.json").read_text("utf-8"))
     pid = preset or default_preset_id(manifest)
+    def preset_identity_id(m, q):
+        return ((m.get("presets") or {}).get(q) or {}).get("identity") or m.get("default_identity") or next(iter(m.get("identities") or {}), None)
     r = resolved(manifest, pid)
     ident = preset_identity(manifest, pid) or {}
     name = ident.get("name") or manifest.get("name")
@@ -293,6 +295,15 @@ def export_soul(src: Path, preset: str | None = None) -> tuple[str, str]:
         lines += ["## Goals", *[f"- {g.get('text')}" for g in psyche["goals"]], ""]
     if psyche.get("fears"):
         lines += ["## Fears", *[f"- {f.get('text')}" for f in psyche["fears"]], ""]
+    from .cast import identity_lines, psyche_lines
+    lang = (manifest.get("languages") or ["en"])[0]
+    pl = psyche_lines(psyche, p.get("language") or lang)
+    if pl:
+        lines += ["## Archetype & role", *[f"- {x}" for x in pl], ""]
+    il = identity_lines(manifest, preset_identity_id(manifest, pid), pid, p.get("language") or lang)
+    rel = [x for x in il if x.startswith("Relations")]
+    if rel:
+        lines += ["## Relations", *[f"- {x}" for x in rel[0].split(": ", 1)[1].split(" · ")], ""]
     if data.get("system_prompt"):
         lines += ["## Boundaries", data["system_prompt"].strip(), ""]
     perms = effective_permissions(manifest, pid)
@@ -304,6 +315,7 @@ def export_soul(src: Path, preset: str | None = None) -> tuple[str, str]:
     avatar = pim.get("path") or manifest.get("thumbnail") or next((A[i]["path"] for i in (first(r, "appearance", "face") or {}).get("images", []) if i in A and A[i].get("subject") == "head"), "")
     identity = "\n".join([
         f"- Name: {name}",
+        *[f"- {x}" for x in il if not x.startswith("Relations")],
         f"- Creature: {(ident.get('morphology') or manifest.get('morphology') or {}).get('species') or 'human'}",
         f"- Vibe: {(ident.get('summary') or manifest.get('summary') or '').strip()}",
         f"- Emoji: {manifest.get('extensions', {}).get('emoji', '🙂')}",

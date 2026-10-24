@@ -268,6 +268,8 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
             used.append("identities.<id>.language")
         if any(a.get("role") == "memory-media" or a.get("as_remembered") is not None for a in manifest.get("assets") or []):
             used.append("assets memory-media / as_remembered")
+        from .cast import uses_1_1_fields
+        used += uses_1_1_fields(manifest, src)
         if used:
             rep.errors.append(f"cof 1.0 declared but the file uses 1.1 additions ({', '.join(used)}): declare cof \"1.1\" — a file declares the lowest minor that defines everything it uses (SPEC § 12)")
     lang = (manifest.get("languages") or ["en"])[0]
@@ -611,6 +613,9 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
 
     # memories (RFC 0002, 1.1): node files, references, explicit nodes, real persons, personal nodes
     _memory_rules(manifest, src, rep)
+    # cast (RFC 0003, 1.1): relations between characters, gender vs voice (coherence)
+    from .cast import cast_rules
+    cast_rules(manifest, src, rep)
 
     # a coherence finding of severity `illegal` (e.g. sexualised content in a minor preset) invalidates the file
     for pid_, p_ in (manifest.get("presets") or {}).items():

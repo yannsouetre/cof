@@ -21,6 +21,11 @@
       "morphology": {
         "class": "human"
       },
+      "gender": "female",
+      "pronouns": {
+        "fr": "elle",
+        "en": "she/her"
+      },
       "language": "fr"
     }
   },
@@ -847,7 +852,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T20:58:49Z"
+        "computed_at": "2026-10-24T22:18:42Z"
       }
     },
     "en-manga": {
@@ -906,7 +911,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T20:58:49Z"
+        "computed_at": "2026-10-24T22:18:42Z"
       }
     },
     "en-12": {
@@ -967,7 +972,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T20:58:49Z"
+        "computed_at": "2026-10-24T22:18:42Z"
       }
     },
     "en-65": {
@@ -1036,7 +1041,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T20:58:49Z"
+        "computed_at": "2026-10-24T22:18:42Z"
       }
     },
     "en-future": {
@@ -1099,7 +1104,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T20:58:49Z"
+        "computed_at": "2026-10-24T22:18:42Z"
       }
     },
     "en-agent": {
@@ -1142,7 +1147,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T20:58:49Z"
+        "computed_at": "2026-10-24T22:18:42Z"
       }
     },
     "fr": {
@@ -1184,7 +1189,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T20:58:49Z"
+        "computed_at": "2026-10-24T22:18:42Z"
       }
     },
     "fr-manga": {
@@ -1243,7 +1248,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T20:58:49Z"
+        "computed_at": "2026-10-24T22:18:42Z"
       }
     },
     "fr-12": {
@@ -1304,7 +1309,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T20:58:49Z"
+        "computed_at": "2026-10-24T22:18:42Z"
       }
     },
     "fr-65": {
@@ -1373,7 +1378,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T20:58:49Z"
+        "computed_at": "2026-10-24T22:18:42Z"
       }
     },
     "fr-futur": {
@@ -1436,7 +1441,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T20:58:49Z"
+        "computed_at": "2026-10-24T22:18:42Z"
       }
     },
     "fr-agent": {
@@ -1479,7 +1484,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T20:58:49Z"
+        "computed_at": "2026-10-24T22:18:42Z"
       }
     }
   },
@@ -3041,7 +3046,7 @@
   },
   "provenance": {
     "created": "2026-10-11T10:32:23Z",
-    "modified": "2026-10-24T20:58:49Z",
+    "modified": "2026-10-24T22:18:42Z",
     "generator": "cof-builder/0.7.1",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/10-clara-mercier",
@@ -3190,7 +3195,7 @@
       "archive"
     ],
     "computed_by": "cof-cli/1.1.0",
-    "computed_at": "2026-10-24T20:58:49Z"
+    "computed_at": "2026-10-24T22:18:42Z"
   },
   "coverage": {
     "elements": [

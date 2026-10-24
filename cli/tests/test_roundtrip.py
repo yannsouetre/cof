@@ -1049,3 +1049,76 @@ def test_extract_identity_leaves_other_real_persons_media_behind(tmp_path):
     assert V2["x1"].get("media") == ["a-m3-meeting"] and "media_from" not in V2["x1"] and "m3" not in V2   # flattened
     assert (tmp_path / "marc/elements/memories/m3/meeting.jpg").is_file()
     rep = Report(); validate_dir(tmp_path / "marc", rep); assert not [e for e in rep.errors if "x1" in e], rep.errors
+
+
+# ---- RFC 0003: gender, pronouns, archetype, role, relations ----------------------------------------------------
+
+def _cast(tmp_path):
+    """The memories fixture with a second (fictional) character and a relation between the two."""
+    d, m = _mem_copy(tmp_path)
+    m["identities"]["id1"]["gender"] = "female"; m["identities"]["id1"]["pronouns"] = {"fr": "elle", "en": "she/her"}
+    m["identities"]["id2"] = {"name": "Léo", "fictional": True, "morphology": {"class": "human"}, "gender": "male", "default_preset": "leo",
+                              "relations": [{"to": "id1", "type": "child", "label": {"fr": "sa mère"}}]}
+    m["presets"]["leo"] = {"label": "Léo", "identity": "id2", "slots": {}, "age_override": {"value": 20, "unit": "years", "basis": "declared"}}
+    m["identities"]["id1"]["relations"] = [{"to": "id2", "type": "parent", "since": {"age": {"value": 36, "unit": "years"}}}]
+    _write(d, m)
+    return d, m
+
+
+def test_cast_fixture_valid_and_inverse_relations(tmp_path):
+    from cof_cli.cast import relations_of, preset_gender
+    d, m = _cast(tmp_path)
+    rep = _val(d); assert rep.ok, rep.errors
+    assert not [w for w in rep.warnings if "disagree" in w], rep.warnings
+    m["identities"]["id2"].pop("relations"); _write(d, m)                    # stored once, the inverse is computed
+    assert [r["type"] for r in relations_of(m, "id2")] == ["child"]
+    m["presets"]["swap"] = {"label": "swap", "identity": "id1", "slots": {}, "gender_override": "male", "extends": "default"}
+    assert preset_gender(m, "swap") == "male" and preset_gender(m, "default") == "female"
+
+
+def test_cast_rules(tmp_path):
+    d, m = _cast(tmp_path)
+    m["identities"]["id1"]["relations"] = [{"to": "id1", "type": "friend"}, {"to": "nobody", "type": "friend"}, {"to": "id2", "type": "other"}]
+    m["identities"]["id2"]["relations"] = [{"to": "id1", "type": "friend"}]
+    m["identities"]["id1"]["gender"] = "other"
+    _write(d, m)
+    rep = _val(d)
+    assert any("to oneself" in e for e in rep.errors) and any("unknown identity" in e for e in rep.errors) and any("needs a label" in e for e in rep.errors), rep.errors
+    assert any("without gender_label" in w for w in rep.warnings), rep.warnings
+    m["identities"]["id1"]["relations"] = [{"to": "id2", "type": "parent"}]; m["identities"]["id1"]["gender"] = "female"; _write(d, m)
+    rep = _val(d); assert rep.ok, rep.errors
+    assert any("disagree" in w for w in rep.warnings), rep.warnings                    # parent on one side, friend on the other
+    m["identities"]["id1"]["gender"] = "cat"; _write(d, m)
+    rep = _val(d); assert not rep.ok                                                   # schema vocabulary
+    m["identities"]["id1"]["gender"] = "female"; m["cof"] = "1.0"; m["elements"].pop("memories"); m["assets"] = [a for a in m["assets"] if a.get("role") != "memory-media"]
+    for p in m["presets"].values():
+        p.get("slots", {}).pop("memories", None)
+    m["identities"]["id1"].pop("language", None); _write(d, m)
+    rep = _val(d); assert any("declare cof" in e and "gender" in e for e in rep.errors), rep.errors
+
+
+def test_archetype_role_and_exports(tmp_path):
+    from cof_cli.convert import export_soul
+    from cof_cli.ops import extract_identity
+    d, m = _cast(tmp_path)
+    pv = m["elements"]["personality"]["variants"]
+    vid = next(k for k, v in pv.items() if v.get("psyche")) if any(v.get("psyche") for v in pv.values()) else None
+    if vid is None:                                                                     # give the first personality a psyche file
+        vid = next(iter(pv)); (d / f"elements/personality/{vid}").mkdir(parents=True, exist_ok=True)
+        pv[vid]["psyche"] = f"elements/personality/{vid}/psyche.json"
+        (d / pv[vid]["psyche"]).write_text(json.dumps({"model": "cof-psyche/0.1"}), "utf-8")
+    ps = json.loads((d / pv[vid]["psyche"]).read_text("utf-8"))
+    ps["archetype"] = {"model": "pearson-12", "value": "creator", "secondary": ["explorer"]}; ps["role"] = "protagonist"
+    (d / pv[vid]["psyche"]).write_text(json.dumps(ps), "utf-8"); _write(d, m)
+    rep = _val(d); assert rep.ok, rep.errors
+    ps["archetype"]["value"] = "wizard"; (d / pv[vid]["psyche"]).write_text(json.dumps(ps), "utf-8")
+    rep = _val(d); assert not rep.ok and any("psyche" in e for e in rep.errors), rep.errors
+    ps["archetype"] = {"model": "free", "value": "wizard"}; (d / pv[vid]["psyche"]).write_text(json.dumps(ps), "utf-8")
+    rep = _val(d); assert rep.ok, rep.errors
+    pid = next(p for p, P in m["presets"].items() if vid in (P.get("slots", {}).get("personality") or [])) if any(vid in (P.get("slots", {}).get("personality") or []) for P in m["presets"].values()) else "default"
+    soul, ident = export_soul(d, pid)
+    assert "Gender: female" in ident or "Genre: féminin" in ident
+    assert "Relations" in soul and "Léo" in soul
+    assert ("wizard" in soul) == (vid in (m["presets"][pid].get("slots", {}).get("personality") or []))
+    notes = []; out = extract_identity(d, tmp_path / "clara", "id1", notes)
+    assert "relations" not in out["identities"]["id1"] and any("relation dropped" in n for n in notes), notes

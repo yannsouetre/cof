@@ -244,6 +244,109 @@
           "type": "string"
         }
       }
+    },
+    "archetype": {
+      "type": "object",
+      "required": [
+        "model",
+        "value"
+      ],
+      "description": "RFC 0003 § 5: the pattern the character embodies; pearson-12 = Mark & Pearson's twelve archetypes (The Hero and the Outlaw, 2001)",
+      "properties": {
+        "model": {
+          "enum": [
+            "pearson-12",
+            "free"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1
+        },
+        "secondary": {
+          "type": "array",
+          "maxItems": 2,
+          "items": {
+            "type": "string"
+          }
+        },
+        "label": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "propertyNames": {
+            "pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "pearson-12"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "enum": [
+                  "innocent",
+                  "everyman",
+                  "hero",
+                  "caregiver",
+                  "explorer",
+                  "rebel",
+                  "lover",
+                  "creator",
+                  "jester",
+                  "sage",
+                  "magician",
+                  "ruler"
+                ]
+              },
+              "secondary": {
+                "items": {
+                  "enum": [
+                    "innocent",
+                    "everyman",
+                    "hero",
+                    "caregiver",
+                    "explorer",
+                    "rebel",
+                    "lover",
+                    "creator",
+                    "jester",
+                    "sage",
+                    "magician",
+                    "ruler"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "role": {
+      "enum": [
+        "protagonist",
+        "antagonist",
+        "mentor",
+        "ally",
+        "sidekick",
+        "foil",
+        "love-interest",
+        "narrator",
+        "ensemble",
+        "other"
+      ],
+      "description": "RFC 0003 § 5: what the character does in a story; independent of the archetype"
     }
   },
   "required": [

@@ -1,5 +1,5 @@
 {
-  "cof": "1.0",
+  "cof": "1.1",
   "id": "01M4XT93AQEZDZ2GBFZ16QTF44",
   "name": "Clara Mercier",
   "nickname": "Clacla",
@@ -21,7 +21,28 @@
       "morphology": {
         "class": "human"
       },
-      "default_preset": "default"
+      "default_preset": "default",
+      "gender": "female",
+      "pronouns": {
+        "fr": "elle",
+        "en": "she/her"
+      },
+      "relations": [
+        {
+          "to": "martien",
+          "type": "friend",
+          "label": {
+            "fr": "rencontré un soir de mars sur le quai de Saône ; une heure de marche à parler d'écrans trop lourds",
+            "en": "met on a March evening on the Saône embankment; an hour's walk talking about screens that are too heavy"
+          },
+          "since": {
+            "age": {
+              "value": 29,
+              "unit": "years"
+            }
+          }
+        }
+      ]
     },
     "martien": {
       "name": "Martien",
@@ -50,7 +71,16 @@
           "aiDisclosure": true
         }
       },
-      "default_preset": "m1-default"
+      "default_preset": "m1-default",
+      "gender": "none",
+      "gender_label": {
+        "fr": "les Martiens n'ont pas de genre",
+        "en": "Martians have no gender"
+      },
+      "pronouns": {
+        "fr": "il",
+        "en": "it / they"
+      }
     }
   },
   "default_identity": "clara-mercier",
@@ -357,8 +387,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc3",
-        "computed_at": "2026-10-14T20:46:25Z"
+        "computed_by": "cof-cli/1.1.0",
+        "computed_at": "2026-10-24T22:18:41Z"
       }
     },
     "fr": {
@@ -399,8 +429,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc3",
-        "computed_at": "2026-10-14T20:46:25Z"
+        "computed_by": "cof-cli/1.1.0",
+        "computed_at": "2026-10-24T22:18:41Z"
       }
     },
     "m1-default": {
@@ -430,8 +460,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc3",
-        "computed_at": "2026-10-14T20:46:25Z"
+        "computed_by": "cof-cli/1.1.0",
+        "computed_at": "2026-10-24T22:18:41Z"
       },
       "age_override": {
         "value": 40,
@@ -1053,7 +1083,7 @@
   },
   "provenance": {
     "created": "2026-10-11T10:32:23Z",
-    "modified": "2026-10-14T20:46:25Z",
+    "modified": "2026-10-24T22:18:41Z",
     "generator": "cof-cli merge (example 11)",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/10-clara-mercier",
@@ -1131,8 +1161,8 @@
       "image-video-gen",
       "archive"
     ],
-    "computed_by": "cof-cli/1.0.0rc3",
-    "computed_at": "2026-10-14T20:46:25Z"
+    "computed_by": "cof-cli/1.1.0",
+    "computed_at": "2026-10-24T22:18:41Z"
   },
   "coverage": {
     "elements": [

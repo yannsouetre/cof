@@ -1009,6 +1009,16 @@
           "additionalProperties": {
             "$ref": "#/$defs/vid"
           }
+        },
+        "gender_override": {
+          "enum": [
+            "female",
+            "male",
+            "non-binary",
+            "none",
+            "other"
+          ],
+          "description": "RFC 0003 § 4: the character is presented with this gender in this preset (gender-swapped version, disguise); inherited through extends like age_override; the identity is unchanged"
         }
       }
     },
@@ -1712,6 +1722,102 @@
           "type": "string",
           "pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$",
           "description": "Primary language of the character (BCP 47): the deterministic fallback for language-keyed short texts (RFC 0002 § 3); not a constraint on the texts."
+        },
+        "gender": {
+          "enum": [
+            "female",
+            "male",
+            "non-binary",
+            "none",
+            "other"
+          ],
+          "description": "RFC 0003 § 3: the character's gender; none = a robot, an entity; other = see gender_label. Absent = not stated. A real person's gender is personal data: optional, never required."
+        },
+        "gender_label": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "propertyNames": {
+            "pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
+          },
+          "description": "RFC 0003 § 3: free wording of the gender (when other) or a nuance, per language (BCP 47)"
+        },
+        "pronouns": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "propertyNames": {
+            "pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
+          },
+          "description": "RFC 0003 § 3: pronouns per language (\"elle\", \"she/her\", \"they/them\"); absent = the language's default for `gender`"
+        },
+        "relations": {
+          "type": "array",
+          "description": "RFC 0003 § 3: relations to OTHER identities of the same file, directed from this character; symmetric types stored once, inverses computed",
+          "items": {
+            "type": "object",
+            "required": [
+              "to",
+              "type"
+            ],
+            "properties": {
+              "to": {
+                "$ref": "#/$defs/vid",
+                "description": "id of another identity of the file (never self)"
+              },
+              "type": {
+                "enum": [
+                  "parent",
+                  "child",
+                  "sibling",
+                  "partner",
+                  "ex-partner",
+                  "spouse",
+                  "friend",
+                  "colleague",
+                  "mentor",
+                  "student",
+                  "rival",
+                  "enemy",
+                  "acquaintance",
+                  "creator",
+                  "creation",
+                  "owner",
+                  "pet",
+                  "other"
+                ]
+              },
+              "label": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "propertyNames": {
+                  "pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
+                }
+              },
+              "since": {
+                "type": "object",
+                "properties": {
+                  "age": {
+                    "$ref": "#/$defs/age"
+                  },
+                  "date": {
+                    "type": "string",
+                    "pattern": "^-?\\d{1,4}(-\\d{2}(-\\d{2})?)?$"
+                  },
+                  "approx": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "mutual": {
+                "type": "boolean"
+              }
+            }
+          }
         }
       }
     },

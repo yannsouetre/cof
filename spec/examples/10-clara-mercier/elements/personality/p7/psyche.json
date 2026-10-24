@@ -47,5 +47,18 @@
   ],
   "renderings": {
     "sentence": "You are a character with high openness, high conscientiousness, moderate extraversion, high agreeableness and low neuroticism."
-  }
+  },
+  "archetype": {
+    "model": "pearson-12",
+    "value": "creator",
+    "secondary": [
+      "explorer"
+    ],
+    "label": {
+      "fr": "la créatrice",
+      "en": "the creator"
+    },
+    "notes": "Makes things that are lighter and kinder than what she found; curious about what others build (the explorer)."
+  },
+  "role": "protagonist"
 }
