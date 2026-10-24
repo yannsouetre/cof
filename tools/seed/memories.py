@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""COF memories pipeline - a memories sheet (JSON) -> one image per memory (Gemini API) -> `elements/memories/` in an
+"""COF memories pipeline - a memories sheet (JSON) -> one to three images per memory (Gemini API) -> `elements/memories/` in an
 existing `.cof` (or COF folder) -> `cof pack` -> `cof validate` -> REVIEW.md.  RFC 0002, format 1.1.
 
 Runs on the author's own computer; never uploads, posts or shares anything. The API key is read from GEMINI_API_KEY
@@ -19,8 +19,12 @@ The sheet:
     "presets": { "default": ["m1", "m3"], "fr-12": ["m1"] },      which presets list which memories (default: every preset lists all)
     "memories": [ { "id": "m1", "kind": "moment", "label": "…",
                     "node": { …memory.json content: gist (required), when, where, who, felt_then, felt_now, fidelity, … },
-                    "image": { "prompt": "…", "shows_character": false, "aspect": "3:2", "style": "photo-realistic" },   optional
+                    "images": [ { "prompt": "…", "shows_character": false, "shows_person": false, "aspect": "3:2", "style": "photo-realistic",
+                                  "refs": ["path.jpg"],                 optional extra reference images (relative to the sheet)
+                                  "base": "path.jpg",                   optional: an existing image to EDIT (sent first; the prompt says what changes)
+                                  "keep": "path.jpg" } ],               optional: reuse this already-reviewed image, no API call
                     "age": 29 } ] }                               the character's age when shown (required if shows_character)
+  (`image: {…}` is accepted as a one-element `images`.)  For the example, one image for a fleeting memory, up to three in general.
 
 Safety rules enforced before any API call: no `explicit` memory in a seed sheet; a memory whose image shows the character
 needs an age ≥ 18 (the gallery never depicts minors); `who[].real` is refused (no real person in the seed gallery).
@@ -72,28 +76,43 @@ def load_sheet(path: Path) -> dict:
             raise SheetError(f"{path}: {mem['id']}: no explicit memory in a seed sheet")
         if any(w.get("real") for w in node.get("who") or []):
             raise SheetError(f"{path}: {mem['id']}: no real person in a seed sheet")
-        img = mem.get("image")
-        if img:
-            if not img.get("prompt"):
-                raise SheetError(f"{path}: {mem['id']}: image.prompt is required")
+        imgs = mem.get("images")
+        if imgs is None:
+            imgs = [mem["image"]] if mem.get("image") else []
+        if not isinstance(imgs, list) or len(imgs) > 3:
+            raise SheetError(f"{path}: {mem['id']}: images is a list of at most 3 entries (1 for a fleeting memory, 3 in general)")
+        mem["images"] = imgs
+        for n, img in enumerate(imgs, 1):
+            if not img.get("prompt") and not img.get("keep"):
+                raise SheetError(f"{path}: {mem['id']}#{n}: image.prompt is required (unless keep)")
             if img.get("shows_character"):
                 if mem.get("age") is None or mem["age"] < 18:
                     raise SheetError(f"{path}: {mem['id']}: an image showing the character needs age ≥ 18 (the gallery never depicts minors)")
             if img.get("aspect", "3:2") not in ASPECT_PX:
-                raise SheetError(f"{path}: {mem['id']}: aspect must be one of {', '.join(ASPECT_PX)}")
+                raise SheetError(f"{path}: {mem['id']}#{n}: aspect must be one of {', '.join(ASPECT_PX)}")
+            for k in ("base", "keep", *(img.get("refs") or [])):
+                rel = img.get(k) if k in ("base", "keep") else k
+                if rel and not (path.parent / rel).is_file():
+                    raise SheetError(f"{path}: {mem['id']}#{n}: file not found: {rel}")
     return s
 
 
-def prompt_for(mem: dict, style: str | None) -> str:
-    img = mem["image"]
+def prompt_for(mem: dict, img: dict, style: str | None) -> str:
     st = (img.get("style") or style or "photo-realistic").replace("-", " ")
+    if img.get("base"):                                   # an edit: the first image is the one to change
+        base = (f"Edit the first image, a photograph. {img['prompt']} Keep everything else exactly as it is: same framing, "
+                f"same poses, same lighting, same background, same people. Style: {st}. "
+                "No text, no watermark, no logo, no recognizable real person, celebrity, brand or franchise character.")
+        return base
     base = (f"A memory, seen as a photograph the character keeps. {img['prompt']} Style: {st}. "
             "Original scene, no text, no watermark, no logo, no recognizable real person, celebrity, brand or franchise character.")
     if img.get("shows_character"):
-        base += (" The person shown is the character in the reference image: keep exactly the same face and hair, adult, fully clothed, "
+        base += (" The person shown is the character in the first reference image: keep exactly the same face and hair, adult, fully clothed, "
                  f"aged about {mem['age']}.")
+    elif img.get("shows_person"):                        # someone else (never the character, never a child)
+        base += " Every person shown is clearly an adult; no child anywhere in the image."
     else:
-        base += " No person's face is visible."
+        base += " No person's face is visible, no child anywhere in the image."
     return base
 
 
@@ -138,7 +157,8 @@ def find_reference(m: dict, d: Path, ref: str | None, pid: str) -> bytes | None:
 
 # ---------- writing ----------
 
-def add_memories(d: Path, m: dict, s: dict, images: dict[str, tuple[bytes, int, int]], model: str, dry: bool) -> dict:
+def add_memories(d: Path, m: dict, s: dict, images: dict[str, list[tuple[bytes, int, int, str]]], model: str, dry: bool) -> dict:
+    """`images[vid]` = [(jpeg, w, h, generator), …] in sheet order; earlier memory assets of the same node are replaced."""
     iid = s.get("identity") or default_identity(m)
     multi = bool(m.get("identities"))
     if multi and iid not in m["identities"]:
@@ -157,18 +177,23 @@ def add_memories(d: Path, m: dict, s: dict, images: dict[str, tuple[bytes, int, 
         v = {"kind": mem["kind"], "label": mem["label"], "memory": f"{rel_dir}/memory.json"}
         if multi:
             v["identity"] = iid
-        if vid in images:
-            data, w, h = images[vid]
-            fname = f"{vid}.jpg"
-            (d / rel_dir / fname).write_bytes(data)
-            aid = f"a-mem-{vid}"
-            m["assets"] = [a for a in m.get("assets", []) if a.get("id") != aid]
-            m["assets"].append({"id": aid, "path": f"{rel_dir}/{fname}", "role": "memory-media", "mediaType": "image/jpeg",
-                                "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(), "license": lic,
-                                "width": w, "height": h, "style": (mem.get("image") or {}).get("style") or s.get("style") or "photo-realistic",
-                                "digitalSourceType": IPTC_AI, "generator": "placeholder (dry run)" if dry else f"Google Gemini ({model})"})
-            v["media"] = [aid]
-            if (mem.get("image") or {}).get("shows_character"):
+        # earlier media of this node (a previous run, a single `<vid>.jpg`) are replaced
+        m["assets"] = [a for a in m.get("assets", []) if not (a.get("id") == f"a-mem-{vid}" or a.get("id", "").startswith(f"a-mem-{vid}-"))]
+        for old in (d / rel_dir).glob("*.jpg"):
+            old.unlink()
+        if images.get(vid):
+            v["media"] = []
+            for n, (data, w, h, generator) in enumerate(images[vid], 1):
+                fname = f"{vid}-{n}.jpg" if len(images[vid]) > 1 else f"{vid}.jpg"
+                (d / rel_dir / fname).write_bytes(data)
+                aid = f"a-mem-{vid}-{n}" if len(images[vid]) > 1 else f"a-mem-{vid}"
+                img = mem["images"][n - 1]
+                m["assets"].append({"id": aid, "path": f"{rel_dir}/{fname}", "role": "memory-media", "mediaType": "image/jpeg",
+                                    "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(), "license": lic,
+                                    "width": w, "height": h, "style": img.get("style") or s.get("style") or "photo-realistic",
+                                    "digitalSourceType": IPTC_AI, "generator": generator})
+                v["media"].append(aid)
+            if any(img.get("shows_character") for img in mem["images"]):
                 v["age"] = {"value": mem["age"], "unit": "years", "basis": "canonical"}
                 who = node.setdefault("who", [])
                 if not any(w.get("identity") == "self" for w in who):
@@ -247,7 +272,8 @@ def main(argv=None) -> int:
     except SheetError as ex:
         print(f"SHEET ERROR {ex}"); return 1
     style = s.get("style")
-    prompts = {mem["id"]: prompt_for(mem, style) for mem in s["memories"] if mem.get("image")}
+    prompts = {f"{mem['id']}#{n}": prompt_for(mem, img, style) for mem in s["memories"] for n, img in enumerate(mem["images"], 1) if not img.get("keep")}
+    sheet_dir = a.sheet.resolve().parent
     if a.prompts_only:
         for k, p in prompts.items():
             print(f"{k}: {p}\n")
@@ -263,29 +289,39 @@ def main(argv=None) -> int:
         m = json.loads((d / "manifest.json").read_text("utf-8"))
         pid = m.get("default_preset") or next(iter(m.get("presets") or {}), "default")
         ref = find_reference(m, d, s.get("reference"), pid)
-        if any((mem.get("image") or {}).get("shows_character") for mem in s["memories"]) and ref is None:
+        if any(img.get("shows_character") and not img.get("base") and not img.get("keep") for mem in s["memories"] for img in mem["images"]) and ref is None:
             print("no likeness reference found (set 'reference' to an asset id of a face view)"); return 1
-        images = {}
+        images: dict[str, list] = {}
         keep_dir = a.out / "images"; keep_dir.mkdir(exist_ok=True)
-        say(f"== memories of {src.name} ({len(prompts)} images, {'dry run' if a.dry_run else a.model})")
+        say(f"== memories of {src.name} ({len(prompts)} images to generate, {'dry run' if a.dry_run else a.model})")
         for mem in s["memories"]:
-            img = mem.get("image")
-            if not img:
-                continue
-            aspect = img.get("aspect", "3:2")
-            try:
-                raw = (placeholder(mem["label"], size=ASPECT_PX[aspect]) if a.dry_run
-                       else generate(client, a.model, prompts[mem["id"]], [ref] if img.get("shows_character") and ref else [], a.pause,
-                                     aspect=aspect, size=a.size, log=say, api=a.api))
-            except RuntimeError as ex:
-                say(f"FAIL {mem['id']}: {ex}"); return 1
-            jpg, w, h = to_jpeg(raw, 1024 if aspect in ("1:1", "2:3") else 1536)
-            images[mem["id"]] = (jpg, w, h)
-            if not a.dry_run:
-                (keep_dir / f"{mem['id']}.jpg").write_bytes(jpg)       # each image is saved as soon as it exists
-            say(f"   ok {mem['id']} {w}x{h}")
-            if not a.dry_run:
-                time.sleep(a.pause)
+            for n, img in enumerate(mem["images"], 1):
+                key = f"{mem['id']}#{n}"
+                aspect = img.get("aspect", "3:2")
+                if img.get("keep"):                                   # an image already generated and reviewed: reused as is
+                    data = (sheet_dir / img["keep"]).read_bytes()
+                    jpg, w, h = to_jpeg(data, None)
+                    images.setdefault(mem["id"], []).append((jpg, w, h, f"kept from {img['keep']}"))
+                    say(f"   keep {key} {w}x{h} ({img['keep']})"); continue
+                refs = []
+                if img.get("base"):
+                    refs.append(to_jpeg((sheet_dir / img["base"]).read_bytes(), 1536)[0])
+                elif img.get("shows_character") and ref:
+                    refs.append(ref)
+                for r in img.get("refs") or []:
+                    refs.append(to_jpeg((sheet_dir / r).read_bytes(), 1024)[0])
+                try:
+                    raw = (placeholder(mem["label"], size=ASPECT_PX[aspect]) if a.dry_run
+                           else generate(client, a.model, prompts[key], refs, a.pause, aspect=aspect, size=a.size, log=say, api=a.api))
+                except RuntimeError as ex:
+                    say(f"FAIL {key}: {ex}"); return 1
+                jpg, w, h = to_jpeg(raw, 1024 if aspect in ("1:1", "2:3") else 1536)
+                images.setdefault(mem["id"], []).append((jpg, w, h, "placeholder (dry run)" if a.dry_run else f"Google Gemini ({a.model})"))
+                if not a.dry_run:
+                    (keep_dir / f"{mem['id']}-{n}.jpg").write_bytes(jpg)       # each image is saved as soon as it exists
+                say(f"   ok {key} {w}x{h}")
+                if not a.dry_run:
+                    time.sleep(a.pause)
         try:
             m = add_memories(d, m, s, images, a.model, a.dry_run)
         except SheetError as ex:

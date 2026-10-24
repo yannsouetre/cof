@@ -6,112 +6,429 @@
   "reference": "a-appearance-a1-clara-mercier-0-face-unge",
   "style": "photo-realistic",
   "license": "CC-BY-4.0",
-  "presets": { "default": ["m1", "p1", "m2", "m3", "m4"], "en-12": ["m1"], "fr-12": ["m1"] },
+  "presets": {
+    "default": [
+      "m1",
+      "p1",
+      "m2",
+      "m3",
+      "m4"
+    ],
+    "en-12": [
+      "m1"
+    ],
+    "fr-12": [
+      "m1"
+    ]
+  },
   "memories": [
     {
-      "id": "m1", "kind": "moment", "label": "La maison de ma grand-mère / My grandmother's house",
+      "id": "m1",
+      "kind": "moment",
+      "label": "La maison de ma grand-mère / My grandmother's house",
       "node": {
         "gist": {
           "fr": "L'été de mes huit ans, la maison de ma grand-mère dans un village au pied des Alpes : la table sous le tilleul, le carnet où je dessinais des plans de cabanes, le bruit de la rivière le soir.",
           "en": "The summer I was eight, my grandmother's house in a village at the foot of the Alps: the table under the lime tree, the notebook where I drew plans of huts, the sound of the river at night."
         },
-        "nature": ["experienced"],
-        "when": { "age": { "value": 8, "unit": "years" }, "approx": true, "label": { "fr": "l'été de mes huit ans", "en": "the summer I was eight" } },
-        "where": { "label": { "fr": "la maison de ma grand-mère, au pied des Alpes", "en": "my grandmother's house, at the foot of the Alps" } },
-        "who": [ { "label": { "fr": "ma grand-mère", "en": "my grandmother" } } ],
-        "felt_then": { "category": { "set": "everyday", "value": "content" }, "pad": { "pleasure": 0.8, "arousal": 0.1 } },
-        "felt_now": { "category": { "set": "everyday", "value": "affectionate" }, "pad": { "pleasure": 0.6, "arousal": -0.2 } },
-        "salience": 75, "fidelity": "faded",
-        "origin": "authored", "visibility": "canon", "disclosure": "open",
-        "tags": ["childhood", "alps", "house", "drawing"]
+        "nature": [
+          "experienced"
+        ],
+        "when": {
+          "age": {
+            "value": 8,
+            "unit": "years"
+          },
+          "approx": true,
+          "label": {
+            "fr": "l'été de mes huit ans",
+            "en": "the summer I was eight"
+          }
+        },
+        "where": {
+          "label": {
+            "fr": "la maison de ma grand-mère, au pied des Alpes",
+            "en": "my grandmother's house, at the foot of the Alps"
+          }
+        },
+        "who": [
+          {
+            "label": {
+              "fr": "ma grand-mère",
+              "en": "my grandmother"
+            }
+          }
+        ],
+        "felt_then": {
+          "category": {
+            "set": "everyday",
+            "value": "content"
+          },
+          "pad": {
+            "pleasure": 0.8,
+            "arousal": 0.1
+          }
+        },
+        "felt_now": {
+          "category": {
+            "set": "everyday",
+            "value": "affectionate"
+          },
+          "pad": {
+            "pleasure": 0.6,
+            "arousal": -0.2
+          }
+        },
+        "salience": 75,
+        "fidelity": "faded",
+        "origin": "authored",
+        "visibility": "canon",
+        "disclosure": "open",
+        "tags": [
+          "childhood",
+          "alps",
+          "house",
+          "drawing"
+        ]
       },
-      "image": {
-        "prompt": "An old family photograph, slightly faded colours of a 2000s print: a stone village house at the foot of the Alps in summer, a wooden table under a lime tree with a child's notebook open on it showing a pencil drawing of a hut, mountains in the background, late afternoon light. No people.",
-        "shows_character": false, "aspect": "3:2"
-      }
+      "images": [
+        {
+          "keep": "../../../spec/examples/10-clara-mercier/elements/memories/m1/m1.jpg",
+          "shows_character": false,
+          "aspect": "3:2"
+        },
+        {
+          "prompt": "The child's bedroom in the grandmother's stone house, empty of people: a small wooden bed with a worn plush rabbit on the pillow, a few wooden toys on the floor, and on the bedside table the open notebook with the pencil drawing of a hut seen close and clearly, summer light through a small window. Style of an old family photograph, slightly faded colours of a 2000s print, soft grain, warm cast.",
+          "shows_character": false,
+          "aspect": "3:2"
+        },
+        {
+          "prompt": "The grandmother, a kind woman in her seventies in a flowered apron, laughing as she sets a plate of fruit on the wooden table under the lime tree in front of the stone house, mountains behind, late afternoon; no child, no other person. Style of an old family photograph, slightly faded colours of a 2000s print, soft grain, warm cast.",
+          "shows_character": false,
+          "aspect": "3:2",
+          "shows_person": true
+        }
+      ]
     },
     {
-      "id": "p1", "kind": "period", "label": "Les années d'agence / The agency years",
+      "id": "p1",
+      "kind": "period",
+      "label": "Les années d'agence / The agency years",
       "node": {
         "gist": {
           "fr": "Quatre ans dans une agence digitale à Lyon, de 24 à 28 ans : des interfaces lourdes livrées trop vite, des nuits de recette, et la conviction, lentement, que le web pouvait être plus léger.",
           "en": "Four years at a digital agency in Lyon, from 24 to 28: heavy interfaces shipped too fast, late nights of testing, and the slow conviction that the web could be lighter."
         },
-        "nature": ["experienced"],
-        "when": { "from": { "age": { "value": 24, "unit": "years" } }, "to": { "age": { "value": 28, "unit": "years" } }, "label": { "fr": "les années d'agence", "en": "the agency years" } },
-        "where": { "label": { "fr": "Lyon", "en": "Lyon" } },
-        "felt_then": { "category": { "set": "everyday", "value": "stressed" }, "pad": { "pleasure": -0.2, "arousal": 0.6 } },
-        "felt_now": { "category": { "set": "everyday", "value": "relieved" }, "pad": { "pleasure": 0.3, "arousal": -0.3 } },
-        "salience": 60, "fidelity": "clear",
-        "tags": ["work", "lyon", "agency"]
+        "nature": [
+          "experienced"
+        ],
+        "when": {
+          "from": {
+            "age": {
+              "value": 24,
+              "unit": "years"
+            }
+          },
+          "to": {
+            "age": {
+              "value": 28,
+              "unit": "years"
+            }
+          },
+          "label": {
+            "fr": "les années d'agence",
+            "en": "the agency years"
+          }
+        },
+        "where": {
+          "label": {
+            "fr": "Lyon",
+            "en": "Lyon"
+          }
+        },
+        "felt_then": {
+          "category": {
+            "set": "everyday",
+            "value": "stressed"
+          },
+          "pad": {
+            "pleasure": -0.2,
+            "arousal": 0.6
+          }
+        },
+        "felt_now": {
+          "category": {
+            "set": "everyday",
+            "value": "relieved"
+          },
+          "pad": {
+            "pleasure": 0.3,
+            "arousal": -0.3
+          }
+        },
+        "salience": 60,
+        "fidelity": "clear",
+        "tags": [
+          "work",
+          "lyon",
+          "agency"
+        ]
       }
     },
     {
-      "id": "m2", "kind": "moment", "label": "Le premier matin dans l'atelier / The first morning in the studio",
+      "id": "m2",
+      "kind": "moment",
+      "label": "Le premier matin dans l'atelier / The first morning in the studio",
       "node": {
         "gist": {
           "fr": "Le premier matin dans mon atelier face au parc, à 28 ans : la lumière sur le bureau vide, le carton de l'agence pas encore ouvert, le silence après quatre ans d'open space.",
           "en": "The first morning in my studio facing the park, at 28: light on the empty desk, the box from the agency still unopened, the silence after four years of open-plan offices."
         },
-        "nature": ["experienced"],
-        "when": { "age": { "value": 28, "unit": "years" }, "label": { "fr": "le premier matin dans l'atelier", "en": "the first morning in the studio" } },
-        "where": { "label": { "fr": "mon atelier face au parc, Lyon", "en": "my studio facing the park, Lyon" }, "environment": "appearance/e1" },
-        "felt_then": { "category": { "set": "everyday", "value": "hopeful" }, "pad": { "pleasure": 0.7, "arousal": 0.4 } },
-        "felt_now": { "category": { "set": "everyday", "value": "proud" }, "pad": { "pleasure": 0.7, "arousal": 0.1 } },
-        "salience": 80, "fidelity": "vivid",
-        "links": [ { "to": "memories/p1", "type": "after", "label": { "fr": "le lendemain de mon dernier jour à l'agence", "en": "the day after my last day at the agency" } } ],
-        "tags": ["work", "studio", "freelance"]
+        "nature": [
+          "experienced"
+        ],
+        "when": {
+          "age": {
+            "value": 28,
+            "unit": "years"
+          },
+          "label": {
+            "fr": "le premier matin dans l'atelier",
+            "en": "the first morning in the studio"
+          }
+        },
+        "where": {
+          "label": {
+            "fr": "mon atelier face au parc, Lyon",
+            "en": "my studio facing the park, Lyon"
+          },
+          "environment": "appearance/e1"
+        },
+        "felt_then": {
+          "category": {
+            "set": "everyday",
+            "value": "hopeful"
+          },
+          "pad": {
+            "pleasure": 0.7,
+            "arousal": 0.4
+          }
+        },
+        "felt_now": {
+          "category": {
+            "set": "everyday",
+            "value": "proud"
+          },
+          "pad": {
+            "pleasure": 0.7,
+            "arousal": 0.1
+          }
+        },
+        "salience": 80,
+        "fidelity": "vivid",
+        "links": [
+          {
+            "to": "memories/p1",
+            "type": "after",
+            "label": {
+              "fr": "le lendemain de mon dernier jour à l'agence",
+              "en": "the day after my last day at the agency"
+            }
+          }
+        ],
+        "tags": [
+          "work",
+          "studio",
+          "freelance"
+        ]
       },
-      "image": {
-        "prompt": "A photograph taken with a phone on a quiet morning: a bright, nearly empty designer's studio with a large window overlooking a park, soft morning light across a clean wooden desk with a closed laptop, a single unopened cardboard moving box on the floor, plants by the window. No people.",
-        "shows_character": false, "aspect": "3:2"
-      }
+      "images": [
+        {
+          "keep": "../../../spec/examples/10-clara-mercier/elements/memories/m2/m2.jpg",
+          "shows_character": false,
+          "aspect": "3:2"
+        },
+        {
+          "prompt": "Taken with a phone on that first quiet morning: the view from the studio's large window on the park, trees in soft morning light, the corner of the clean wooden desk and a steaming cup of coffee in the foreground, out of focus. No people.",
+          "shows_character": false,
+          "aspect": "3:2"
+        }
+      ]
     },
     {
-      "id": "m3", "kind": "moment", "label": "La rencontre avec le Martien / Meeting the Martian",
+      "id": "m3",
+      "kind": "moment",
+      "label": "La rencontre avec le Martien / Meeting the Martian",
       "node": {
         "gist": {
           "fr": "Un soir de mars, à 29 ans, sur le quai de Saône : un Martien, grand, calme, qui m'a demandé le chemin du musée des Confluences comme si c'était la chose la plus normale du monde. On a marché une heure. Il voulait comprendre pourquoi nos écrans sont si lourds.",
           "en": "A March evening, at 29, on the Saône embankment: a Martian, tall and calm, who asked me the way to the Confluences museum as if it were the most ordinary thing in the world. We walked for an hour. He wanted to understand why our screens are so heavy."
         },
-        "nature": ["experienced"],
-        "when": { "age": { "value": 29, "unit": "years" }, "date": "2026-03", "label": { "fr": "un soir de mars", "en": "a March evening" } },
-        "where": { "label": { "fr": "le quai de Saône, Lyon", "en": "the Saône embankment, Lyon" } },
-        "who": [ { "identity": "self", "shown": true }, { "label": { "fr": "le Martien", "en": "the Martian" }, "shown": true } ],
-        "felt_then": { "category": { "set": "everyday", "value": "amazed" }, "pad": { "pleasure": 0.6, "arousal": 0.8 } },
-        "felt_now": { "category": { "set": "everyday", "value": "amused" }, "pad": { "pleasure": 0.7, "arousal": 0.2 } },
-        "salience": 95, "fidelity": "vivid",
+        "nature": [
+          "experienced"
+        ],
+        "when": {
+          "age": {
+            "value": 29,
+            "unit": "years"
+          },
+          "date": "2026-03",
+          "label": {
+            "fr": "un soir de mars",
+            "en": "a March evening"
+          }
+        },
+        "where": {
+          "label": {
+            "fr": "le quai de Saône, Lyon",
+            "en": "the Saône embankment, Lyon"
+          }
+        },
+        "who": [
+          {
+            "identity": "self",
+            "shown": true
+          },
+          {
+            "label": {
+              "fr": "le Martien",
+              "en": "the Martian"
+            },
+            "shown": true
+          }
+        ],
+        "felt_then": {
+          "category": {
+            "set": "everyday",
+            "value": "amazed"
+          },
+          "pad": {
+            "pleasure": 0.6,
+            "arousal": 0.8
+          }
+        },
+        "felt_now": {
+          "category": {
+            "set": "everyday",
+            "value": "amused"
+          },
+          "pad": {
+            "pleasure": 0.7,
+            "arousal": 0.2
+          }
+        },
+        "salience": 95,
+        "fidelity": "vivid",
         "disclosure": "guarded",
-        "tags": ["martian", "lyon", "encounter"]
+        "tags": [
+          "martian",
+          "lyon",
+          "encounter"
+        ]
       },
-      "image": {
-        "prompt": "A candid evening photograph on a river embankment in Lyon, France, blue hour, old facades lit across the water: a young woman (the character) in a light jacket walking and talking with a tall, slender, calm humanoid alien with smooth pale green skin and large dark eyes, both seen from the side at a few metres, the alien gesturing at a glowing phone screen. Friendly, ordinary, slightly surreal.",
-        "shows_character": true, "aspect": "3:2"
-      },
-      "age": 29
+      "age": 29,
+      "images": [
+        {
+          "prompt": "Replace the alien in the first image by the Martian shown in the second and third images (the same character: smooth green skin, large black almond eyes, pointed ears, hairless head, wearing his silver jacket, silver trousers and dark boots), in exactly the same pose, at the same place and the same height, holding the glowing phone the same way. The woman, the embankment, the river and the buildings stay exactly as they are.",
+          "base": "../../../spec/examples/10-clara-mercier/elements/memories/m3/m3.jpg",
+          "refs": [
+            "../../../spec/examples/11-duo-clara-martien/elements/appearance/f1/head.front.jpg",
+            "../../../spec/examples/11-duo-clara-martien/elements/appearance/b1/body.front.jpg"
+          ],
+          "shows_character": true,
+          "aspect": "3:2"
+        }
+      ]
     },
     {
-      "id": "m4", "kind": "moment", "label": "Le rêve des moutons électriques / The electric-sheep dream",
+      "id": "m4",
+      "kind": "moment",
+      "label": "Le rêve des moutons électriques / The electric-sheep dream",
       "node": {
         "gist": {
           "fr": "La nuit qui a suivi la rencontre, un rêve : un pré au-dessus de Lyon, des moutons dont la laine clignotait doucement comme des diodes en veille, et moi qui essayais de les compter sans jamais arriver au même nombre.",
           "en": "The night after the encounter, a dream: a meadow above Lyon, sheep whose wool blinked softly like standby LEDs, and me trying to count them without ever reaching the same number twice."
         },
-        "nature": ["imagined"],
-        "when": { "age": { "value": 29, "unit": "years" }, "approx": true, "label": { "fr": "la nuit après la rencontre", "en": "the night after the encounter" } },
-        "who": [ { "identity": "self", "shown": true } ],
-        "felt_then": { "category": { "set": "everyday", "value": "serene" }, "pad": { "pleasure": 0.5, "arousal": -0.4 } },
-        "felt_now": { "category": { "set": "everyday", "value": "wistful" }, "pad": { "pleasure": 0.3, "arousal": -0.3 } },
-        "salience": 70, "fidelity": "fragment",
+        "nature": [
+          "imagined"
+        ],
+        "when": {
+          "age": {
+            "value": 29,
+            "unit": "years"
+          },
+          "approx": true,
+          "label": {
+            "fr": "la nuit après la rencontre",
+            "en": "the night after the encounter"
+          }
+        },
+        "who": [
+          {
+            "identity": "self",
+            "shown": true
+          }
+        ],
+        "felt_then": {
+          "category": {
+            "set": "everyday",
+            "value": "serene"
+          },
+          "pad": {
+            "pleasure": 0.5,
+            "arousal": -0.4
+          }
+        },
+        "felt_now": {
+          "category": {
+            "set": "everyday",
+            "value": "wistful"
+          },
+          "pad": {
+            "pleasure": 0.3,
+            "arousal": -0.3
+          }
+        },
+        "salience": 70,
+        "fidelity": "fragment",
         "disclosure": "guarded",
-        "links": [ { "to": "memories/m3", "type": "about", "label": { "fr": "le rêve est venu la nuit suivante", "en": "the dream came the following night" } } ],
-        "tags": ["dream", "sheep", "night"]
+        "links": [
+          {
+            "to": "memories/m3",
+            "type": "about",
+            "label": {
+              "fr": "le rêve est venu la nuit suivante",
+              "en": "the dream came the following night"
+            }
+          }
+        ],
+        "tags": [
+          "dream",
+          "sheep",
+          "night"
+        ]
       },
-      "image": {
-        "prompt": "A dreamlike, soft-focus night scene: a grassy hillside meadow above the lights of a city, a flock of sheep whose wool glows and blinks faintly in pale blue and amber like small standby LEDs, a young woman (the character) standing among them in a long cardigan, seen from behind and slightly to the side, looking at the sheep, stars above. Painterly, hazy edges, muted colours.",
-        "shows_character": true, "aspect": "3:2", "style": "cinematic"
-      },
-      "age": 29
+      "age": 29,
+      "images": [
+        {
+          "keep": "../../../spec/examples/10-clara-mercier/elements/memories/m4/m4.jpg",
+          "shows_character": true,
+          "aspect": "3:2",
+          "style": "cinematic"
+        },
+        {
+          "prompt": "The same dream: on the grassy hillside above the city lights at night, the young woman (the character) in a long cardigan kneels and gently strokes the glowing wool of a sheep, seen from the side, her face calm and visible in the faint blue and amber light of the wool; other sheep blinking softly in the background. Painterly, hazy edges, muted colours, dreamlike soft focus, night.",
+          "shows_character": true,
+          "aspect": "3:2",
+          "style": "cinematic"
+        },
+        {
+          "prompt": "The same dream, close-up: the face of one sheep looking at the viewer, ordinary and gentle, except for a few discreet signs that it is electric — a faint circuit-like glow under the skin of its muzzle, a soft LED pinpoint in each pupil, a thin seam along the ear; its wool blinking faintly in pale blue and amber; city lights blurred far below. Painterly, hazy edges, muted colours, dreamlike soft focus, night.",
+          "shows_character": false,
+          "aspect": "3:2",
+          "style": "cinematic"
+        }
+      ]
     }
   ]
 }
