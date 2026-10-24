@@ -1037,22 +1037,10 @@
       },
       "images": [
         {
-          "prompt": "In the first image, remove the SECOND holographic table — the glowing blue-and-red table-screen standing in the background behind the two figures, under the vertical screen — and replace it with the plain dark hangar floor and machinery. Keep the vertical screen on the back wall, the foreground holographic table, the two figures, the lighting, the colours and the framing exactly identical.",
-          "base": "clara.memories/wb1.jpg",
-          "aspect": "3:2",
-          "style": "cinematic",
-          "regen": true,
+          "keep": "clara.memories/wb1.jpg",
           "shows_character": true,
-          "reference": "a-appearance-a4-gemini-generated-image-fwe-ms1p"
-        },
-        {
-          "prompt": "Edit the first image: the background holds two holographic tables; delete the one in the background (the glowing table-screen far behind the two figures) so that only the foreground table remains, filling its place with dark hangar floor and machinery. Do not touch the vertical wall screen, the foreground table, the two figures, the lighting or the framing.",
-          "base": "clara.memories/wb1.jpg",
           "aspect": "3:2",
-          "style": "cinematic",
-          "regen": true,
-          "shows_character": true,
-          "reference": "a-appearance-a4-gemini-generated-image-fwe-ms1p"
+          "style": "cinematic"
         }
       ]
     },
@@ -1135,13 +1123,9 @@
       },
       "images": [
         {
-          "prompt": "A cinematic night action still on an elevated expressway through a futuristic city of towers and neon, rain-wet asphalt: the armoured motorbike of the reference image — exactly that bike, with its full enclosed outer shell, cockpit canopy and lights as on the sheet — races towards the camera, seen from a dynamic three-quarter front angle, low, slightly from the left, leaning into a bend; its rider hidden inside the closed cockpit; a small recon drone flies just above it; behind it, in the distance, three sleek driverless pursuit cars with white headlights, losing ground. Exhilarating, nobody is hurt, no weapons, no crash.",
-          "refs": [
-            "../../../spec/examples/10-clara-mercier/elements/appearance/x3/accessory.front.jpg"
-          ],
+          "keep": "clara.memories/wc1.jpg",
           "aspect": "3:2",
-          "style": "cinematic",
-          "regen": true
+          "style": "cinematic"
         }
       ]
     },

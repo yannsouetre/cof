@@ -51,7 +51,7 @@ In the node file:
 
 ### 3.1 Node references
 
-A reference to a node is **always qualified**: `"<category>/<variant id>"` (`memories/m3`; tomorrow `psyche/n2`). One grammar for every category; no short form. An unresolved reference is a validation error, like every broken reference in 1.0.
+A reference to a node is **always qualified**: `"<category>/<variant id>"` (`memories/ev3`; tomorrow `psyche/n2`). One grammar for every category; no short form. An unresolved reference is a validation error, like every broken reference in 1.0.
 
 ### 3.2 Links
 
@@ -88,18 +88,18 @@ The three are independent: a `lived` memory a user wants to share with their ver
 - `moment` — a point in the character's life (an afternoon, a meeting, a dream). `when` is a point.
 - `period` — a span (the student years). `when` has `from` / `to`. Same schema; a period MAY carry media, but SHOULD stay light (a gist and a dominant feeling); large sets of media belong to a period rather than to each moment, and COF is not a photo album.
 
-Each variant names its node file: `"memory": "elements/memories/<v>/memory.json"` (schema `memory.schema.json`, § 7), lists its media and, when a media shows the character, carries the character's age at the time. Media are assets with the new role **`memory-media`** (an image of a memory is not a `view` of the character). A media is an image, an audio clip, a short video, or a **short text** (a few remembered lines of a conversation, `text/markdown` or `text/plain`): text and speech media carry `language`; a video SHOULD travel with a poster image (an image media `derived_from` it, `method: "thumbnail"`) so that readers show something before playing; the 1.0 cap of `motion` videos (20 MB unless `max_bytes_ack`) applies. A text media is the memory's own words, not a transcript of an audio media (that is `assets[].transcript`).
+Variant ids are free, as everywhere in COF; the builder names moments `ev<n>` and periods `ep<n>` (prefixes no other category uses, so a code is readable on its own and never clashes with `p1` of a personality or `m1` of a mesh). Each variant names its node file: `"memory": "elements/memories/<v>/memory.json"` (schema `memory.schema.json`, § 7), lists its media and, when a media shows the character, carries the character's age at the time. Media are assets with the new role **`memory-media`** (an image of a memory is not a `view` of the character). A media is an image, an audio clip, a short video, or a **short text** (a few remembered lines of a conversation, `text/markdown` or `text/plain`): text and speech media carry `language`; a video SHOULD travel with a poster image (an image media `derived_from` it, `method: "thumbnail"`) so that readers show something before playing; the 1.0 cap of `motion` videos (20 MB unless `max_bytes_ack`) applies. A text media is the memory's own words, not a transcript of an audio media (that is `assets[].transcript`).
 
 ```jsonc
 "memories": { "variants": {
-  "m1": { "kind": "moment", "label": "Grandmother's house",     "memory": "elements/memories/m1/memory.json", "media": ["a-m1-drawing"] },
-  "p1": { "kind": "period", "label": "The student years",       "memory": "elements/memories/p1/memory.json" },
-  "m2": { "kind": "moment", "label": "The office, rue de la Ré", "memory": "elements/memories/m2/memory.json", "media": ["a-m2-office"] },
-  "m3": { "kind": "moment", "label": "Meeting the Martian",     "memory": "elements/memories/m3/memory.json", "media": ["a-m3-meeting"],
+  "ev1": { "kind": "moment", "label": "Grandmother's house",     "memory": "elements/memories/ev1/memory.json", "media": ["a-ev1-drawing"] },
+  "ep1": { "kind": "period", "label": "The student years",       "memory": "elements/memories/ep1/memory.json" },
+  "ev2": { "kind": "moment", "label": "The office, rue de la Ré", "memory": "elements/memories/ev2/memory.json", "media": ["a-ev2-office"] },
+  "ev3": { "kind": "moment", "label": "Meeting the Martian",     "memory": "elements/memories/ev3/memory.json", "media": ["a-ev3-meeting"],
           "age": { "value": 29, "unit": "years", "basis": "canonical" } },                    // Clara is shown, at 29
-  "m4": { "kind": "moment", "label": "The electric-sheep dream", "memory": "elements/memories/m4/memory.json", "media": ["a-m4-dream"],
+  "ev4": { "kind": "moment", "label": "The electric-sheep dream", "memory": "elements/memories/ev4/memory.json", "media": ["a-ev4-dream"],
           "age": { "value": 29, "unit": "years", "basis": "canonical" } } } }
-// presets.default.slots.memories = ["m1", "p1", "m2", "m3", "m4"]; presets.fr-12.slots.memories = ["m1"]
+// presets.default.slots.memories = ["ev1", "ep1", "ev2", "ev3", "ev4"]; presets.fr-12.slots.memories = ["ev1"]
 ```
 
 ### 4.2 `memory.json`
