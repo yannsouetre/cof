@@ -23,6 +23,9 @@ The sheet:
                                   "refs": ["path.jpg"],                 optional extra reference images (relative to the sheet)
                                   "base": "path.jpg",                   optional: an existing image to EDIT (sent first; the prompt says what changes)
                                   "keep": "path.jpg" } ],               optional: reuse this already-reviewed image, no API call
+                    "media_files": [ { "file": "clara.memories/m1.riviere.mp3", "mediaType": "audio/mpeg", "duration_s": 10,
+                                       "language": "fr", "generator": "…", "source_type": "algorithmicMedia",
+                                       "poster": "clara.memories/m4.reve.poster.jpg" } ],   other media made elsewhere (audio, video + poster, short texts)
                     "age": 29 } ] }                               the character's age when shown (required if shows_character)
   (`image: {…}` is accepted as a one-element `images`.)  For the example, one image for a fleeting memory, up to three in general.
 
@@ -94,6 +97,13 @@ def load_sheet(path: Path) -> dict:
                 rel = img.get(k) if k in ("base", "keep") else k
                 if rel and not (path.parent / rel).is_file():
                     raise SheetError(f"{path}: {mem['id']}#{n}: file not found: {rel}")
+        for mf in mem.get("media_files") or []:
+            for k in ("file", "mediaType"):
+                if not mf.get(k):
+                    raise SheetError(f"{path}: {mem['id']}: media_files entries need '{k}'")
+            for rel in (mf["file"], mf.get("poster")):
+                if rel and not (path.parent / rel).is_file():
+                    raise SheetError(f"{path}: {mem['id']}: file not found: {rel}")
     return s
 
 
@@ -157,7 +167,7 @@ def find_reference(m: dict, d: Path, ref: str | None, pid: str) -> bytes | None:
 
 # ---------- writing ----------
 
-def add_memories(d: Path, m: dict, s: dict, images: dict[str, list[tuple[bytes, int, int, str]]], model: str, dry: bool) -> dict:
+def add_memories(d: Path, m: dict, s: dict, images: dict[str, list[tuple[bytes, int, int, str]]], model: str, dry: bool, sheet_dir: Path = Path(".")) -> dict:
     """`images[vid]` = [(jpeg, w, h, generator), …] in sheet order; earlier memory assets of the same node are replaced."""
     iid = s.get("identity") or default_identity(m)
     multi = bool(m.get("identities"))
@@ -179,8 +189,9 @@ def add_memories(d: Path, m: dict, s: dict, images: dict[str, list[tuple[bytes, 
             v["identity"] = iid
         # earlier media of this node (a previous run, a single `<vid>.jpg`) are replaced
         m["assets"] = [a for a in m.get("assets", []) if not (a.get("id") == f"a-mem-{vid}" or a.get("id", "").startswith(f"a-mem-{vid}-"))]
-        for old in (d / rel_dir).glob("*.jpg"):
-            old.unlink()
+        for old in (d / rel_dir).iterdir():
+            if old.is_file() and old.name != "memory.json":
+                old.unlink()
         if images.get(vid):
             v["media"] = []
             for n, (data, w, h, generator) in enumerate(images[vid], 1):
@@ -193,6 +204,30 @@ def add_memories(d: Path, m: dict, s: dict, images: dict[str, list[tuple[bytes, 
                                     "width": w, "height": h, "style": img.get("style") or s.get("style") or "photo-realistic",
                                     "digitalSourceType": IPTC_AI, "generator": generator})
                 v["media"].append(aid)
+        for mf in mem.get("media_files") or []:
+            data = (sheet_dir / mf["file"]).read_bytes()
+            fname = Path(mf["file"]).name
+            (d / rel_dir / fname).write_bytes(data)
+            slug = Path(fname).stem.split(".", 1)[-1].replace(".", "-") if "." in Path(fname).stem else Path(fname).stem
+            aid = f"a-mem-{vid}-{slug}"
+            src_type = "http://cv.iptc.org/newscodes/digitalsourcetype/" + (mf.get("source_type") or "trainedAlgorithmicMedia")
+            a = {"id": aid, "path": f"{rel_dir}/{fname}", "role": "memory-media", "mediaType": mf["mediaType"], "bytes": len(data),
+                 "sha256": hashlib.sha256(data).hexdigest(), "license": lic, "digitalSourceType": src_type}
+            for k in ("language", "duration_s", "width", "height", "fps", "generator", "style", "as_remembered"):
+                if mf.get(k) is not None:
+                    a[k] = mf[k]
+            m["assets"].append(a)
+            v.setdefault("media", []).append(aid)
+            if mf.get("poster"):                                   # a video travels with its poster image (RFC 0002 § 4.1)
+                pdata = (sheet_dir / mf["poster"]).read_bytes()
+                pname = Path(mf["poster"]).name
+                (d / rel_dir / pname).write_bytes(pdata)
+                pj, pw, ph = to_jpeg(pdata, None)
+                m["assets"].append({"id": aid + "-poster", "path": f"{rel_dir}/{pname}", "role": "memory-media", "mediaType": "image/jpeg",
+                                    "bytes": len(pdata), "sha256": hashlib.sha256(pdata).hexdigest(), "license": lic, "width": pw, "height": ph,
+                                    "derived_from": aid, "method": "thumbnail", "digitalSourceType": src_type})
+                v["media"].append(aid + "-poster")
+        if images.get(vid) or mem.get("media_files"):
             if any(img.get("shows_character") for img in mem["images"]):
                 v["age"] = {"value": mem["age"], "unit": "years", "basis": "canonical"}
                 who = node.setdefault("who", [])
@@ -323,7 +358,7 @@ def main(argv=None) -> int:
                 if not a.dry_run:
                     time.sleep(a.pause)
         try:
-            m = add_memories(d, m, s, images, a.model, a.dry_run)
+            m = add_memories(d, m, s, images, a.model, a.dry_run, sheet_dir)
         except SheetError as ex:
             print(f"SHEET ERROR {ex}"); return 1
         (d / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")

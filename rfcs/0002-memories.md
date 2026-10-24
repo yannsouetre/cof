@@ -87,7 +87,7 @@ The three are independent: a `lived` memory a user wants to share with their ver
 - `moment` — a point in the character's life (an afternoon, a meeting, a dream). `when` is a point.
 - `period` — a span (the student years). `when` has `from` / `to`. Same schema; a period MAY carry media, but SHOULD stay light (a gist and a dominant feeling); large sets of media belong to a period rather than to each moment, and COF is not a photo album.
 
-Each variant names its node file: `"memory": "elements/memories/<v>/memory.json"` (schema `memory.schema.json`, § 7), lists its media and, when a media shows the character, carries the character's age at the time. Media are assets with the new role **`memory-media`** (an image of a memory is not a `view` of the character).
+Each variant names its node file: `"memory": "elements/memories/<v>/memory.json"` (schema `memory.schema.json`, § 7), lists its media and, when a media shows the character, carries the character's age at the time. Media are assets with the new role **`memory-media`** (an image of a memory is not a `view` of the character). A media is an image, an audio clip, a short video, or a **short text** (a few remembered lines of a conversation, `text/markdown` or `text/plain`): text and speech media carry `language`; a video SHOULD travel with a poster image (an image media `derived_from` it, `method: "thumbnail"`) so that readers show something before playing; the 1.0 cap of `motion` videos (20 MB unless `max_bytes_ack`) applies. A text media is the memory's own words, not a transcript of an audio media (that is `assets[].transcript`).
 
 ```jsonc
 "memories": { "variants": {

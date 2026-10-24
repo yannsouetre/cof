@@ -1088,12 +1088,22 @@ def _memory_rules(manifest: dict, src: Path, rep: "Report") -> None:
                     if cur in seen:
                         rep.errors.append(f"{where}: media_from cycle through {cur}"); break
                     seen.add(cur); cur = (resolve_variant(manifest, "memories", cur) or {}).get("media_from", "").partition("/")[2]
+        med = [A[aid] for aid in rv.get("media") or [] if aid in A]
         for aid in rv.get("media") or []:
             a = A.get(aid)
             if not a:
                 rep.errors.append(f"{where}: media: unknown asset {aid}")
-            elif a.get("role") != "memory-media":
+                continue
+            if a.get("role") != "memory-media":
                 rep.warnings.append(f"{where}: media {aid} has role '{a.get('role')}' — memory media use role memory-media")
+            mt = str(a.get("mediaType") or "")
+            if mt.startswith("video/"):
+                if not any(x.get("derived_from") == aid and str(x.get("mediaType", "")).startswith("image/") for x in med):
+                    rep.warnings.append(f"{where}: video {aid} has no poster image (an image media derived_from it, method thumbnail)")
+                if (a.get("bytes") or 0) > 20_000_000 and not manifest.get("max_bytes_ack"):
+                    rep.warnings.append(f"{where}: video {aid} > 20 MB without `max_bytes_ack` (portability)")
+            if mt.startswith("text/") and not a.get("language"):
+                rep.warnings.append(f"{where}: text media {aid} has no `language`")
         # links
         for ln in node.get("links") or []:
             to = str(ln.get("to", ""))

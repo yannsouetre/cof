@@ -94,19 +94,38 @@
       "images": [
         {
           "keep": "../../../spec/examples/10-clara-mercier/elements/memories/m1/m1.jpg",
-          "shows_character": false,
           "aspect": "3:2"
         },
         {
-          "prompt": "The child's bedroom in the grandmother's stone house, empty of people: a small wooden bed with a worn plush rabbit on the pillow, a few wooden toys on the floor, and on the bedside table the open notebook with the pencil drawing of a hut seen close and clearly, summer light through a small window. Style of an old family photograph, slightly faded colours of a 2000s print, soft grain, warm cast.",
-          "shows_character": false,
+          "prompt": "A small, simple child's bedroom in the grandmother's house, empty of people: plain pale wallpaper, a narrow single bed neatly made with a light cotton cover, a small worn plush rabbit (the size of a hand) on the pillow, a small bedside table with a closed lamp and an ordinary A5 spiral notebook lying open on it showing a pencil drawing of a hut on stilts; no toys on the floor; summer light through thin curtains. Same photographic style as the reference image: an old family photograph, slightly faded colours of a 2000s print, soft grain, warm cast.",
+          "refs": [
+            "../../../spec/examples/10-clara-mercier/elements/memories/m1/m1.jpg"
+          ],
           "aspect": "3:2"
         },
         {
-          "prompt": "The grandmother, a kind woman in her seventies in a flowered apron, laughing as she sets a plate of fruit on the wooden table under the lime tree in front of the stone house, mountains behind, late afternoon; no child, no other person. Style of an old family photograph, slightly faded colours of a 2000s print, soft grain, warm cast.",
-          "shows_character": false,
-          "aspect": "3:2",
-          "shows_person": true
+          "keep": "clara.memories/m1.grand-mere.jpg",
+          "shows_person": true,
+          "aspect": "3:2"
+        }
+      ],
+      "media_files": [
+        {
+          "file": "clara.memories/m1.riviere.mp3",
+          "mediaType": "audio/mpeg",
+          "duration_s": 10,
+          "generator": "procedural ambience (numpy + ffmpeg): running water and crickets",
+          "source_type": "algorithmicMedia"
+        },
+        {
+          "file": "clara.memories/m1.dialogue.fr.md",
+          "mediaType": "text/markdown",
+          "language": "fr"
+        },
+        {
+          "file": "clara.memories/m1.dialogue.en.md",
+          "mediaType": "text/markdown",
+          "language": "en"
         }
       ]
     },
@@ -245,12 +264,10 @@
       "images": [
         {
           "keep": "../../../spec/examples/10-clara-mercier/elements/memories/m2/m2.jpg",
-          "shows_character": false,
           "aspect": "3:2"
         },
         {
-          "prompt": "Taken with a phone on that first quiet morning: the view from the studio's large window on the park, trees in soft morning light, the corner of the clean wooden desk and a steaming cup of coffee in the foreground, out of focus. No people.",
-          "shows_character": false,
+          "keep": "clara.memories/m2.fenetre.jpg",
           "aspect": "3:2"
         }
       ]
@@ -329,7 +346,7 @@
       "age": 29,
       "images": [
         {
-          "prompt": "Replace the alien in the first image by the Martian shown in the second and third images (the same character: smooth green skin, large black almond eyes, pointed ears, hairless head, wearing his silver jacket, silver trousers and dark boots), in exactly the same pose, at the same place and the same height, holding the glowing phone the same way. The woman, the embankment, the river and the buildings stay exactly as they are.",
+          "prompt": "Change ONLY the alien character in the first image. His new look is the Martian of the second (face) and third (full body, outfit) images: smooth bright green skin, a large bald head, big black almond-shaped eyes, pointed ears, a small nose and mouth; he wears a fitted silver jacket with a high collar, silver trousers and dark boots, instead of the dark robe. He keeps exactly the same pose, position, height and gesture with the glowing phone. The woman, her clothes and pose, the river, the embankment, the buildings and the lighting stay identical.",
           "base": "../../../spec/examples/10-clara-mercier/elements/memories/m3/m3.jpg",
           "refs": [
             "../../../spec/examples/11-duo-clara-martien/elements/appearance/f1/head.front.jpg",
@@ -337,6 +354,27 @@
           ],
           "shows_character": true,
           "aspect": "3:2"
+        },
+        {
+          "prompt": "A candid evening photograph on the Saône embankment in Lyon, France, blue hour, old facades lit across the water: the young woman of the first reference image (a light cream jacket, jeans) stands talking with the Martian of the second and third reference images — tall and slender, smooth bright green skin, large bald head, big black almond eyes, pointed ears, a fitted silver jacket with a high collar, silver trousers, dark boots — both seen from the side at a few metres, the Martian holding a glowing phone and showing it to her. Friendly, ordinary, slightly surreal.",
+          "refs": [
+            "../../../spec/examples/11-duo-clara-martien/elements/appearance/f1/head.front.jpg",
+            "../../../spec/examples/11-duo-clara-martien/elements/appearance/b1/body.front.jpg"
+          ],
+          "shows_character": true,
+          "aspect": "3:2"
+        }
+      ],
+      "media_files": [
+        {
+          "file": "clara.memories/m3.dialogue.fr.md",
+          "mediaType": "text/markdown",
+          "language": "fr"
+        },
+        {
+          "file": "clara.memories/m3.dialogue.en.md",
+          "mediaType": "text/markdown",
+          "language": "en"
         }
       ]
     },
@@ -417,16 +455,31 @@
           "style": "cinematic"
         },
         {
-          "prompt": "The same dream: on the grassy hillside above the city lights at night, the young woman (the character) in a long cardigan kneels and gently strokes the glowing wool of a sheep, seen from the side, her face calm and visible in the faint blue and amber light of the wool; other sheep blinking softly in the background. Painterly, hazy edges, muted colours, dreamlike soft focus, night.",
+          "keep": "clara.memories/m4.caresse.jpg",
           "shows_character": true,
           "aspect": "3:2",
           "style": "cinematic"
         },
         {
-          "prompt": "The same dream, close-up: the face of one sheep looking at the viewer, ordinary and gentle, except for a few discreet signs that it is electric — a faint circuit-like glow under the skin of its muzzle, a soft LED pinpoint in each pupil, a thin seam along the ear; its wool blinking faintly in pale blue and amber; city lights blurred far below. Painterly, hazy edges, muted colours, dreamlike soft focus, night.",
-          "shows_character": false,
+          "prompt": "Close-up of the face of one of the sheep of the reference image, on the same grassy hillside above the blurred city lights at night: an ordinary, gentle sheep's face looking at the viewer, with a few discreet signs that it is electric — a faint circuit-like glow under the skin of its muzzle, a soft LED pinpoint in each pupil, a thin seam along one ear — its wool blinking faintly in pale blue and amber like the other sheep behind it. Same scene, same night, same painterly dreamlike style as the reference image: hazy edges, muted colours, soft focus.",
+          "refs": [
+            "../../../spec/examples/10-clara-mercier/elements/memories/m4/m4.jpg"
+          ],
           "aspect": "3:2",
           "style": "cinematic"
+        }
+      ],
+      "media_files": [
+        {
+          "file": "clara.memories/m4.reve.mp4",
+          "mediaType": "video/mp4",
+          "duration_s": 6,
+          "width": 640,
+          "height": 426,
+          "fps": 24,
+          "generator": "slow push-in on the dream image with blinking wool and a synthetic hum (numpy + ffmpeg)",
+          "poster": "clara.memories/m4.reve.poster.jpg",
+          "as_remembered": true
         }
       ]
     }
