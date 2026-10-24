@@ -26,7 +26,8 @@ def gemini_client():
         from google import genai            # pip install -U google-genai
     except ImportError:
         raise SystemExit("missing package: pip install -U google-genai pillow")
-    return genai.Client(api_key=key)
+    # a hard HTTP timeout: a stuck connection must fail and retry, never hang the whole run
+    return genai.Client(api_key=key, http_options={"timeout": 180_000})
 
 
 def _b64(data) -> bytes:
@@ -68,10 +69,13 @@ def _via_generate_content(client, model: str, prompt: str, refs: list[bytes]):
 
 
 def generate(client, model: str, prompt: str, refs: list[bytes], pause: float = 2.0, tries: int = 3,
-             aspect: str | None = None, size: str | None = "1K") -> bytes:
-    """One image. `refs` are JPEG bytes sent before the prompt (likeness references). Raises after `tries` failures."""
+             aspect: str | None = None, size: str | None = "1K", log=None) -> bytes:
+    """One image. `refs` are JPEG bytes sent before the prompt (likeness references). Raises after `tries` failures.
+    `log(msg)` receives one line per attempt, so a stalled run can be diagnosed from the log."""
     last = None
+    say = log or (lambda m: None)
     for i in range(tries):
+        say(f"      attempt {i + 1}/{tries} ({model}, {len(refs)} reference(s), {aspect or 'default'} {size or ''})")
         try:
             out = None
             if hasattr(client, "interactions"):
@@ -83,10 +87,12 @@ def generate(client, model: str, prompt: str, refs: list[bytes], pause: float = 
             if out is None:
                 out = _via_generate_content(client, model, prompt + (f" Aspect ratio {aspect}." if aspect else ""), refs)
             if out:
+                say(f"      ok ({len(out)} bytes)")
                 return out
             last = "no image in the answer (refused or filtered?)"
         except Exception as ex:                         # quota, network, safety block…
-            last = f"{ex.__class__.__name__}: {ex}"
+            last = f"{ex.__class__.__name__}: {str(ex)[:300]}"
+        say(f"      failed: {last}")
         time.sleep(pause * (i + 1))
     raise RuntimeError(f"image generation failed after {tries} tries — {last}")
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""COF seed pipeline — character sheet (JSON) → reference images (Gemini API) → COF folder → `cof pack` → `cof validate`.
+"""COF seed pipeline - character sheet (JSON) -> reference images (Gemini API) -> COF folder -> `cof pack` -> `cof validate`.
 
 Runs on the author's own computer. Every character it produces waits for a human review (REVIEW.md) before anything
 is published; this script never uploads, posts or shares anything.
@@ -119,7 +119,7 @@ def build_folder(s: dict, images: dict, out: Path, model: str, dry: bool) -> Pat
     card = {"spec": "chara_card_v3", "spec_version": "3.0", "data": {
         "name": s["name"], "nickname": s.get("nickname", ""), "description": c.get("description", s["summary"]),
         "personality": c.get("personality", ""), "scenario": c.get("scenario", ""), "first_mes": c.get("first_mes", ""),
-        "mes_example": c.get("mes_example", ""), "creator_notes": "COF seed gallery — original fictional character. Images generated with "
+        "mes_example": c.get("mes_example", ""), "creator_notes": "COF seed gallery - original fictional character. Images generated with "
         + ("placeholders (dry run)" if dry else f"Google Gemini ({model})") + "; reviewed by a human before publication.",
         "system_prompt": "", "post_history_instructions": "", "alternate_greetings": c.get("alternate_greetings", []),
         "tags": s.get("tags", []), "creator": s.get("creator", "Yann Souetre"), "character_version": "1.0.0",
@@ -167,7 +167,7 @@ def build_folder(s: dict, images: dict, out: Path, model: str, dry: bool) -> Pat
 
 
 def review_file(s: dict, d: Path, cof: Path, report: str, prompts: dict) -> None:
-    lines = [f"# Review — {s['name']}", "", "Status: **waiting for human review** — do not publish before every box is ticked.", "",
+    lines = [f"# Review - {s['name']}", "", "Status: **waiting for human review** - do not publish before every box is ticked.", "",
              "- [ ] Every image shows the same character (face, hair, body, outfit).",
              "- [ ] The character looks like the declared age" + (f" ({s['age']})" if s.get("age") is not None else "") + " and is clearly an adult (or non-human).",
              "- [ ] No resemblance to a real person, a celebrity or a franchise character (reverse image search on the front views).",
@@ -180,8 +180,12 @@ def review_file(s: dict, d: Path, cof: Path, report: str, prompts: dict) -> None
 
 
 def cof_cmd() -> list[str]:
+    """The cof-cli of the interpreter running this script, if installed (never an older `cof` found on PATH)."""
+    import importlib.util
+    if importlib.util.find_spec("cof_cli"):
+        return [sys.executable, "-c", "import sys; from cof_cli.cli import main; sys.exit(main())"]
     exe = shutil.which("cof")
-    return [exe] if exe else [sys.executable, "-c", "import sys; from cof_cli.cli import main; sys.exit(main())"]
+    return [exe] if exe else [sys.executable, "-m", "cof_cli.cli"]
 
 
 def main(argv=None) -> int:
@@ -228,7 +232,7 @@ def main(argv=None) -> int:
         report = (r2.stdout + r2.stderr)
         review_file(s, d, cof, report, prompts)
         ok = r2.returncode == 0 and report.strip().endswith("OK")
-        print(f"   {'VALID' if ok else 'INVALID'} → {cof}  (review: {d.name}.REVIEW.md)")
+        print(f"   {'VALID' if ok else 'INVALID'} -> {cof}  (review: {d.name}.REVIEW.md)")
         failures += 0 if ok else 1
     return 1 if failures else 0
 

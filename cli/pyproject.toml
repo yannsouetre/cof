@@ -9,7 +9,7 @@ description = "COF — Character Open File: validate, pack, unpack and convert .
 readme = "README.md"
 license = "MIT"
 authors = [{ name = "Yann Souetre" }]
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 dependencies = ["jsonschema>=4.20"]
 
 [project.optional-dependencies]

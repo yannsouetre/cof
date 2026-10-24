@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""COF memories pipeline — a memories sheet (JSON) → one image per memory (Gemini API) → `elements/memories/` in an
-existing `.cof` (or COF folder) → `cof pack` → `cof validate` → REVIEW.md.  RFC 0002, format 1.1.
+"""COF memories pipeline - a memories sheet (JSON) -> one image per memory (Gemini API) -> `elements/memories/` in an
+existing `.cof` (or COF folder) -> `cof pack` -> `cof validate` -> REVIEW.md.  RFC 0002, format 1.1.
 
 Runs on the author's own computer; never uploads, posts or shares anything. The API key is read from GEMINI_API_KEY
 and never written anywhere.
@@ -66,7 +66,7 @@ def load_sheet(path: Path) -> dict:
             raise SheetError(f"{path}: {mem['id']}: kind must be moment or period")
         node = mem["node"]
         if not isinstance(node.get("gist"), dict) or not node["gist"]:
-            raise SheetError(f"{path}: {mem['id']}: node.gist is required (a map language → text)")
+            raise SheetError(f"{path}: {mem['id']}: node.gist is required (a map language -> text)")
         if node.get("explicit"):
             raise SheetError(f"{path}: {mem['id']}: no explicit memory in a seed sheet")
         if any(w.get("real") for w in node.get("who") or []):
@@ -199,7 +199,7 @@ def add_memories(d: Path, m: dict, s: dict, images: dict[str, tuple[bytes, int, 
 
 
 def review_file(s: dict, out: Path, cof: Path, report: str, prompts: dict) -> None:
-    lines = [f"# Review — memories of {s.get('name') or cof.stem}", "", "Status: **waiting for human review** — do not publish before every box is ticked.", "",
+    lines = [f"# Review - memories of {s.get('name') or cof.stem}", "", "Status: **waiting for human review** - do not publish before every box is ticked.", "",
              "- [ ] No image shows a child or a person who could look under 18 (the childhood memory shows a place or an object, never the character as a child).",
              "- [ ] Images that show the character show the same person as the file's face views, at the declared age, fully clothed.",
              "- [ ] No real person, celebrity, brand, franchise character or third-party work in any image (reverse image search).",
@@ -212,11 +212,24 @@ def review_file(s: dict, out: Path, cof: Path, report: str, prompts: dict) -> No
 
 
 def cof_cmd() -> list[str]:
+    """The cof-cli of the interpreter running this script, if installed (never an older `cof` found on PATH)."""
+    import importlib.util
+    if importlib.util.find_spec("cof_cli"):
+        return [sys.executable, "-c", "import sys; from cof_cli.cli import main; sys.exit(main())"]
     exe = shutil.which("cof")
-    return [exe] if exe else [sys.executable, "-c", "import sys; from cof_cli.cli import main; sys.exit(main())"]
+    return [exe] if exe else [sys.executable, "-m", "cof_cli.cli"]
+
+
+def say(msg: str) -> None:
+    print(msg, flush=True)
 
 
 def main(argv=None) -> int:
+    for stream in (sys.stdout, sys.stderr):           # Windows consoles default to cp1252: never crash on a non-ASCII character
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("sheet", type=Path)
     ap.add_argument("--out", type=Path, default=Path("out"))
@@ -251,7 +264,8 @@ def main(argv=None) -> int:
         if any((mem.get("image") or {}).get("shows_character") for mem in s["memories"]) and ref is None:
             print("no likeness reference found (set 'reference' to an asset id of a face view)"); return 1
         images = {}
-        print(f"== memories of {src.name} ({len(prompts)} images, {'dry run' if a.dry_run else a.model})")
+        keep_dir = a.out / "images"; keep_dir.mkdir(exist_ok=True)
+        say(f"== memories of {src.name} ({len(prompts)} images, {'dry run' if a.dry_run else a.model})")
         for mem in s["memories"]:
             img = mem.get("image")
             if not img:
@@ -260,12 +274,14 @@ def main(argv=None) -> int:
             try:
                 raw = (placeholder(mem["label"], size=ASPECT_PX[aspect]) if a.dry_run
                        else generate(client, a.model, prompts[mem["id"]], [ref] if img.get("shows_character") and ref else [], a.pause,
-                                     aspect=aspect, size=a.size))
+                                     aspect=aspect, size=a.size, log=say))
             except RuntimeError as ex:
-                print(f"FAIL {mem['id']}: {ex}"); return 1
+                say(f"FAIL {mem['id']}: {ex}"); return 1
             jpg, w, h = to_jpeg(raw, 1024 if aspect in ("1:1", "2:3") else 1536)
             images[mem["id"]] = (jpg, w, h)
-            print(f"   ok {mem['id']} {w}x{h}")
+            if not a.dry_run:
+                (keep_dir / f"{mem['id']}.jpg").write_bytes(jpg)       # each image is saved as soon as it exists
+            say(f"   ok {mem['id']} {w}x{h}")
             if not a.dry_run:
                 time.sleep(a.pause)
         try:
@@ -284,9 +300,9 @@ def main(argv=None) -> int:
                 shutil.rmtree(keep)
             shutil.copytree(d, keep)
         ok = r2.returncode == 0 and report.strip().endswith("OK")
-        print(f"   {'VALID' if ok else 'INVALID'} → {cof}  (review: {cof.stem}.memories.REVIEW.md)")
+        say(f"   {'VALID' if ok else 'INVALID'} -> {cof}  (review: {cof.stem}.memories.REVIEW.md)")
         if not ok:
-            print(report)
+            say(report)
         return 0 if ok else 1
 
 
