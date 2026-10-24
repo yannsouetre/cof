@@ -343,9 +343,9 @@
       "age": 29,
       "images": [
         {
-          "prompt": "Among the reference images: a portrait of the woman, a blue-hour photograph of the scene (the woman and a tall alien on a river embankment in Lyon), and two character-sheet views of a Martian (face, and full body in a silver outfit). Recreate the scene photograph as faithfully as possible — same framing, same two figures in the same poses at the same places, same embankment, same soft warm lights on the water and the facades, same quiet, touching mood — with one change: the tall alien is the Martian of the character sheets, with that exact head (smooth bright green, rounder bald head, big black almond-shaped eyes, pointed ears, small nose and mouth), his fitted silver jacket with a high collar, silver trousers and dark boots. He holds the glowing phone the same way and the woman looks at him the same way.",
+          "prompt": "Reference images: a portrait of the woman; a photograph of her standing on a river embankment in Lyon at blue hour (this sets the place, the framing, the soft warm lights of the facades reflected on the water, and the quiet, touching mood — reproduce them exactly); and two character-sheet views of a Martian (face, and full body in a silver outfit). Compose the full scene in landscape: the woman exactly as in the embankment photograph, standing at the right, looking up kindly; at her left, facing her at one metre, the Martian of the character sheets — tall and slender, that exact head (smooth bright green, rounder bald head, big black almond-shaped eyes, pointed ears, small nose and mouth), his fitted silver jacket with a high collar, silver trousers, dark boots — holding a glowing phone between them and showing it to her, both seen from the side at a few metres, same blue-hour light on both faces.",
           "refs": [
-            "clara.memories/m3.retouche-1.jpg",
+            "clara.memories/m3.scene-sans-alien.jpg",
             "../../../spec/examples/11-duo-clara-martien/elements/appearance/f1/head.front.jpg",
             "../../../spec/examples/11-duo-clara-martien/elements/appearance/b1/body.front.jpg"
           ],
@@ -449,10 +449,7 @@
           "style": "cinematic"
         },
         {
-          "prompt": "Close-up of the face of one of the sheep of the reference image, on the same grassy hillside above the blurred city lights at night, the other sheep softly glowing behind it exactly as in the reference: an ordinary, gentle sheep's face looking at the viewer. It is electric only in a subtle way: faint halos of light glow from INSIDE its flesh and wool, as if small electric organs shone through the skin — a soft diffuse pale-blue and amber bloom under the cheeks and inside the ears, a quiet inner light in the eyes. No dots, no LEDs, no garlands, no circuit lines, nothing stuck on the skin. Same painterly dreamlike style, hazy edges, muted colours, soft focus.",
-          "refs": [
-            "../../../spec/examples/10-clara-mercier/elements/memories/m4/m4.jpg"
-          ],
+          "keep": "clara.memories/m4.mouton-halos.jpg",
           "aspect": "3:2",
           "style": "cinematic"
         }
