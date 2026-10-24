@@ -181,6 +181,15 @@ def add_memories(d: Path, m: dict, s: dict, images: dict[str, list[tuple[bytes, 
     m["cof"] = "1.1"
     lic = s.get("license", "CC-BY-4.0")
     mem_el = m["elements"].setdefault("memories", {"variants": {}})
+    # the sheet is the whole truth for this character's memories: nodes it no longer lists leave with their files
+    sheet_ids = {mem["id"] for mem in s["memories"]}
+    for vid in [v for v, var in list(mem_el["variants"].items()) if v not in sheet_ids and (not multi or (var.get("identity") or default_identity(m)) == iid)]:
+        gone = mem_el["variants"].pop(vid)
+        m["assets"] = [a for a in m.get("assets", []) if a.get("id") not in set(gone.get("media") or [])]
+        shutil.rmtree(d / "elements" / "memories" / vid, ignore_errors=True)
+        for p_ in (m.get("presets") or {}).values():
+            if (p_.get("slots") or {}).get("memories"):
+                p_["slots"]["memories"] = [x for x in p_["slots"]["memories"] if x != vid]
     for mem in s["memories"]:
         vid = mem["id"]
         rel_dir = f"elements/memories/{vid}"
