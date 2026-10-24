@@ -1216,10 +1216,7 @@
       },
       "images": [
         {
-          "prompt": "A 2D Japanese anime film still — a hand-drawn cel-shaded illustration with bold clean ink outlines, flat colours, painted anime sky and light, not a photograph — reproducing the composition of the reference photograph: a stone village house at the foot of the Alps in summer, a wooden table under a lime tree with an open notebook showing a child's pencil drawing of a hut (no faces in the drawing), mountains behind, late afternoon. No people.",
-          "refs": [
-            "../../../spec/examples/10-clara-mercier/elements/memories/m1/m1-1.jpg"
-          ],
+          "prompt": "A 2D Japanese anime film still — a hand-drawn cel-shaded illustration with bold clean ink outlines, flat colours, painted anime sky and light, not a photograph — a stone village house at the foot of the Alps in summer, a wooden table under a lime tree with an open notebook showing a child's pencil drawing of a hut (no faces in the drawing), mountains behind, late afternoon. No people.",
           "aspect": "3:2",
           "style": "manga",
           "regen": true
@@ -1307,10 +1304,7 @@
       },
       "images": [
         {
-          "prompt": "A 2D Japanese anime film still — a hand-drawn cel-shaded illustration with bold clean ink outlines, flat colours, painted anime sky and light, not a photograph — reproducing the composition of the reference photograph: a bright empty studio with a large window on a park, a clean wooden desk with a closed laptop and a cup, one cardboard box on the floor, plants by the window, soft morning light. Empty of people, nobody at the desk.",
-          "refs": [
-            "../../../spec/examples/10-clara-mercier/elements/memories/m2/m2-1.jpg"
-          ],
+          "prompt": "A 2D Japanese anime film still — a hand-drawn cel-shaded illustration with bold clean ink outlines, flat colours, painted anime sky and light, not a photograph — a bright empty studio with a large window on a park, a clean wooden desk with a closed laptop and a cup, one cardboard box on the floor, plants by the window, soft morning light. Empty of people, nobody at the desk.",
           "aspect": "3:2",
           "style": "manga",
           "regen": true
@@ -1484,12 +1478,9 @@
       "age": 29,
       "images": [
         {
-          "prompt": "A 2D Japanese anime film still — a hand-drawn cel-shaded illustration with bold clean ink outlines, flat colours, painted anime sky and light, not a photograph — reproducing the composition of the reference photograph: a grassy hillside at night above the lights of a city, a flock of sheep whose wool glows softly in pale blue and amber, and the young woman standing among them seen from behind in a long cardigan, drawn as the manga character of the first reference image; stars above.",
+          "prompt": "A 2D Japanese anime film still — a hand-drawn cel-shaded illustration with bold clean ink outlines, flat colours, painted anime sky and light, not a photograph — a grassy hillside at night above the lights of a city, a flock of sheep whose wool glows softly in pale blue and amber, and the young woman standing among them seen from behind in a long cardigan, drawn as the manga character of the reference image; stars above.",
           "shows_character": true,
           "reference": "a-appearance-a5-gemini-generated-image-fwe-y33e",
-          "refs": [
-            "../../../spec/examples/10-clara-mercier/elements/memories/m4/m4-1.jpg"
-          ],
           "aspect": "3:2",
           "style": "manga",
           "regen": true
