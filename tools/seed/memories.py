@@ -259,8 +259,11 @@ def add_memories(d: Path, m: dict, s: dict, images: dict[str, list[tuple[bytes, 
     return m
 
 
-def review_file(s: dict, out: Path, cof: Path, report: str, prompts: dict) -> None:
-    lines = [f"# Review - memories of {s.get('name') or cof.stem}", "", "Status: **waiting for human review** - do not publish before every box is ticked.", "",
+def review_file(s: dict, out: Path, cof: Path, report: str, prompts: dict, failed: list[str] | None = None) -> None:
+    lines = [f"# Review - memories of {s.get('name') or cof.stem}", "", "Status: **waiting for human review** - do not publish before every box is ticked.", ""]
+    if failed:
+        lines += ["**Images not generated** (the model answered without an image; the memory kept its other media):"] + [f"- {f}" for f in failed] + [""]
+    lines += [
              "- [ ] No image shows a child or a person who could look under 18 (the childhood memory shows a place or an object, never the character as a child).",
              "- [ ] Images that show the character show the same person as the file's face views, at the declared age, fully clothed.",
              "- [ ] No real person, celebrity, brand, franchise character or third-party work in any image (reverse image search).",
@@ -327,6 +330,7 @@ def main(argv=None) -> int:
         if any(img.get("shows_character") and not img.get("base") and not img.get("keep") for mem in s["memories"] for img in mem["images"]) and ref is None:
             print("no likeness reference found (set 'reference' to an asset id of a face view)"); return 1
         images: dict[str, list] = {}
+        failed: list[str] = []
         keep_dir = a.out / "images"; keep_dir.mkdir(exist_ok=True)
         say(f"== memories of {src.name} ({len(prompts)} images to generate, {'dry run' if a.dry_run else a.model})")
         for mem in s["memories"]:
@@ -348,8 +352,8 @@ def main(argv=None) -> int:
                 try:
                     raw = (placeholder(mem["label"], size=ASPECT_PX[aspect]) if a.dry_run
                            else generate(client, a.model, prompts[key], refs, a.pause, aspect=aspect, size=a.size, log=say, api=a.api))
-                except RuntimeError as ex:
-                    say(f"FAIL {key}: {ex}"); return 1
+                except RuntimeError as ex:                        # one failed image never stops the chain: noted, skipped
+                    say(f"FAIL {key}: {ex} — skipped"); failed.append(f"{key}: {ex}"); continue
                 jpg, w, h = to_jpeg(raw, 1024 if aspect in ("1:1", "2:3") else 1536)
                 images.setdefault(mem["id"], []).append((jpg, w, h, "placeholder (dry run)" if a.dry_run else f"Google Gemini ({a.model})"))
                 if not a.dry_run:
@@ -366,7 +370,7 @@ def main(argv=None) -> int:
         r1 = subprocess.run(cof_cmd() + ["pack", str(d), "-o", str(cof), "--force"], capture_output=True, text=True)
         r2 = subprocess.run(cof_cmd() + ["validate", str(cof)], capture_output=True, text=True) if r1.returncode == 0 else r1
         report = r2.stdout + r2.stderr
-        review_file(s, a.out, cof, report, prompts)
+        review_file(s, a.out, cof, report, prompts, failed)
         if a.keep:
             keep = a.out / cof.stem
             if keep.exists():

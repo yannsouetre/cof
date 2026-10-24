@@ -97,8 +97,7 @@
           "aspect": "3:2"
         },
         {
-          "prompt": "Add to this bedroom, without changing anything else: a few children's toys on the wooden floor near the bed (a small wooden train, some building blocks, a spinning top), and one cute poster pinned on the wall above the bed showing a simple colourful drawing of a mountain hut with a sun. Same old-photograph look, same faded colours, same bed, same plush, same notebook.",
-          "base": "clara.memories/m1.chambre-v2.jpg",
+          "keep": "clara.memories/m1.chambre-v3.jpg",
           "aspect": "3:2"
         },
         {
@@ -344,9 +343,9 @@
       "age": 29,
       "images": [
         {
-          "prompt": "Change ONLY two things in the first image: (1) the alien's head becomes the head of the Martian in the second image — a smooth bright green, rounder bald head, big black almond-shaped eyes, pointed ears, a small nose and a small mouth, on a normal neck; (2) his shoes become the dark boots of the third image. His silver jacket and trousers, his pose, the glowing phone, the woman, the embankment, the river, the buildings and the blue-hour lighting stay exactly identical.",
-          "base": "clara.memories/m3.retouche-1.jpg",
+          "prompt": "Among the reference images: a portrait of the woman, a blue-hour photograph of the scene (the woman and a tall alien on a river embankment in Lyon), and two character-sheet views of a Martian (face, and full body in a silver outfit). Recreate the scene photograph as faithfully as possible — same framing, same two figures in the same poses at the same places, same embankment, same soft warm lights on the water and the facades, same quiet, touching mood — with one change: the tall alien is the Martian of the character sheets, with that exact head (smooth bright green, rounder bald head, big black almond-shaped eyes, pointed ears, small nose and mouth), his fitted silver jacket with a high collar, silver trousers and dark boots. He holds the glowing phone the same way and the woman looks at him the same way.",
           "refs": [
+            "clara.memories/m3.retouche-1.jpg",
             "../../../spec/examples/11-duo-clara-martien/elements/appearance/f1/head.front.jpg",
             "../../../spec/examples/11-duo-clara-martien/elements/appearance/b1/body.front.jpg"
           ],
