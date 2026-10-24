@@ -9,7 +9,8 @@ Usage:
   python memories.py sheets/clara.memories.json --prompts-only            # 1. read the prompts
   python memories.py sheets/clara.memories.json --dry-run --out out        # 2. whole chain, placeholder images, no API call
   python memories.py sheets/clara.memories.json --out out                  # 3. for real
-Options: --model NAME (or COF_GEMINI_MODEL), --pause SECONDS, --size 1K|2K, --keep (keep the unpacked folder).
+Options: --model NAME (or COF_GEMINI_MODEL), --edit-model NAME (or COF_GEMINI_EDIT_MODEL: the Pro image model for `base` edits),
+--pause SECONDS, --size 1K|2K, --keep (keep the unpacked folder).
 
 The sheet:
   { "source": "path/to/character.cof" | "path/to/folder",      the file or folder to extend (never modified in place)
@@ -298,6 +299,7 @@ def main(argv=None) -> int:
     ap.add_argument("sheet", type=Path)
     ap.add_argument("--out", type=Path, default=Path("out"))
     ap.add_argument("--model", default=DEFAULT_MODEL)
+    ap.add_argument("--edit-model", default=os.environ.get("COF_GEMINI_EDIT_MODEL") or None, help="model used for entries with `base` (edits of an existing image): the Pro image model gives usable edits, Flash rarely does (default: --model)")
     ap.add_argument("--pause", type=float, default=4.0, help="seconds between API calls")
     ap.add_argument("--size", default="1K", help="image size requested from the API (1K, 2K; interactions API only)")
     ap.add_argument("--api", default=DEFAULT_API, choices=["generate", "interactions"], help="generate_content (default) or the Interactions API")
@@ -351,7 +353,7 @@ def main(argv=None) -> int:
                     refs.append(to_jpeg((sheet_dir / r).read_bytes(), 1024)[0])
                 try:
                     raw = (placeholder(mem["label"], size=ASPECT_PX[aspect]) if a.dry_run
-                           else generate(client, a.model, prompts[key], refs, a.pause, aspect=aspect, size=a.size, log=say, api=a.api))
+                           else generate(client, (a.edit_model or a.model) if img.get("base") else a.model, prompts[key], refs, a.pause, aspect=aspect, size=a.size, log=say, api=a.api))
                 except RuntimeError as ex:                        # one failed image never stops the chain: noted, skipped
                     say(f"FAIL {key}: {ex} — skipped"); failed.append(f"{key}: {ex}"); continue
                 jpg, w, h = to_jpeg(raw, 1024 if aspect in ("1:1", "2:3") else 1536)

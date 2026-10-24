@@ -71,11 +71,15 @@ Le second script ajoute des **souvenirs** à un `.cof` existant (ou à un dossie
 ```powershell
 python memories.py sheets\clara.memories.json --prompts-only      # 1. relire les prompts
 python memories.py sheets\clara.memories.json --dry-run --out out  # 2. toute la chaîne sans API (images factices)
-python memories.py sheets\clara.memories.json --out out            # 3. pour de vrai (une image par souvenir illustré)
+python memories.py sheets\clara.memories.json --out out            # 3. pour de vrai (les images à générer ; les médias « keep » sont repris tels quels)
 ```
 
 La fiche (`sheets/clara.memories.json`, exemple complet) : `source` (le `.cof` ou le dossier à étendre), `identity`, `language` (langue maîtresse écrite sur l'identité), `reference` (l'asset de ressemblance envoyé à l'API quand le personnage apparaît), `presets` (quels presets listent quels souvenirs ; les presets qui héritent d'un autre héritent aussi de ses souvenirs), et `memories[]` : `id`, `kind` (`moment` / `period`), `label`, `node` (le contenu de `memory.json` : `gist` obligatoire, en une ou plusieurs langues), `image` (facultatif : `prompt`, `shows_character`, `aspect`, `style`) et `age` (l'âge du personnage s'il est montré).
 
 Règles vérifiées avant tout appel : aucun souvenir `explicit`, aucune personne réelle, et une image qui montre le personnage exige un âge ≥ 18 — la galerie ne représente jamais de mineur ; un souvenir d'enfance montre un lieu ou un objet, pas l'enfant.
+
+**Un à trois médias par souvenir.** Chaque souvenir porte `images: [...]` (une entrée par image : `prompt` ; `refs` = images de référence supplémentaires, relatives à la fiche, par exemple la planche d'un autre personnage du cast ou l'image validée de la même scène ; `base` = une image existante à retoucher, envoyée en premier, générée avec `--edit-model` quand il est donné — le modèle Pro, Flash retouche mal ; `keep` = une image déjà validée, reprise sans appel ; `shows_character` / `shows_person`, `aspect`, `style`) et `media_files: [...]` pour les médias faits ailleurs (audio, vidéo avec `poster`, textes courts avec `language`). Une image ratée est notée dans la REVIEW et sautée, la chaîne continue. Une fiche faite uniquement de `keep` et de `media_files` tourne sans clé. Les médias validés vivent dans `sheets/<personnage>.memories/`. Les règles de prompt, de cohérence et de retouche sont dans la skill `gemini-media-generation`.
+
+**Lancement sans écran** (PC de Yann) : `pipeline\watch_runs.cmd` tourne en tâche de fond ; déposer un fichier `pipeline\RUN.flag` lance `run_memories.cmd`, journal dans `out\run.log`.
 
 Les deux scripts partagent `gen.py` (client, génération avec image de référence, images factices du mode `--dry-run`).
