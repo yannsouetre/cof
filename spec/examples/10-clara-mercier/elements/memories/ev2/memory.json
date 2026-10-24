@@ -1,7 +1,7 @@
 {
   "gist": {
-    "fr": "Le premier matin dans mon atelier face au parc, à 28 ans : la lumière sur le bureau vide, le carton de l'agence pas encore ouvert, le silence après quatre ans d'open space.",
-    "en": "The first morning in my studio facing the park, at 28: light on the empty desk, the box from the agency still unopened, the silence after four years of open-plan offices."
+    "fr": "Le premier matin dans mon atelier à moi, face au parc, à 28 ans — le lendemain de mon dernier jour à l'agence : la lumière sur le bureau vide, le carton de l'agence pas encore ouvert, le silence après quatre ans d'open space.",
+    "en": "The first morning in my own studio facing the park, at 28 — the day after my last day at the agency: light on the empty desk, the box from the agency still unopened, the silence after four years of open-plan offices."
   },
   "nature": [
     "experienced"
@@ -12,14 +12,14 @@
       "unit": "years"
     },
     "label": {
-      "fr": "le premier matin dans l'atelier",
-      "en": "the first morning in the studio"
+      "fr": "le premier matin dans mon atelier",
+      "en": "the first morning in my own studio"
     }
   },
   "where": {
     "label": {
-      "fr": "mon atelier face au parc, Lyon",
-      "en": "my studio facing the park, Lyon"
+      "fr": "mon atelier personnel face au parc, Lyon",
+      "en": "my own studio facing the park, Lyon"
     },
     "environment": "appearance/e1"
   },
