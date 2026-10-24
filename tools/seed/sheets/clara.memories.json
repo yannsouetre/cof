@@ -1221,11 +1221,12 @@
       },
       "images": [
         {
-          "prompt": "Redraw the first image as a colour manga illustration: clean ink lines, flat cel colours with soft screentone shading, expressive manga faces, the same composition, the same place and the same people.",
+          "prompt": "Redraw the first image entirely as a Japanese anime-film still: bold clean ink outlines, flat cel colours, simplified shapes, stylised sky and light, soft screentone shading — nothing left photographic. Same composition, same place: the stone house, the table under the lime tree, the open notebook with a child's pencil drawing of a hut (just a hut, no faces). No people.",
           "base": "../../../spec/examples/10-clara-mercier/elements/memories/m1/m1-1.jpg",
           "restyle": true,
           "aspect": "3:2",
-          "style": "manga"
+          "style": "manga",
+          "regen": true
         }
       ],
       "media_files": [
@@ -1310,11 +1311,12 @@
       },
       "images": [
         {
-          "prompt": "Redraw the first image as a colour manga illustration: clean ink lines, flat cel colours with soft screentone shading, expressive manga faces, the same composition, the same place and the same people.",
+          "prompt": "Redraw the first image entirely as a Japanese anime-film still: bold clean ink outlines, flat cel colours, simplified shapes, stylised sky and light, soft screentone shading — nothing left photographic. Same composition, same place: the empty bright studio, the large window on the park, the clean desk with the closed laptop, the single cardboard box, the plants. Empty of people — nobody at the desk, no character anywhere.",
           "base": "../../../spec/examples/10-clara-mercier/elements/memories/m2/m2-1.jpg",
           "restyle": true,
           "aspect": "3:2",
-          "style": "manga"
+          "style": "manga",
+          "regen": true
         }
       ]
     },
@@ -1485,13 +1487,14 @@
       "age": 29,
       "images": [
         {
-          "prompt": "Redraw the first image as a colour manga illustration: clean ink lines, flat cel colours with soft screentone shading, expressive manga faces, the same composition, the same place and the same people. The woman is drawn as the manga character of the second reference image.",
+          "prompt": "Redraw the first image entirely as a Japanese anime-film still: bold clean ink outlines, flat cel colours, simplified shapes, stylised sky and light, soft screentone shading — nothing left photographic. Same composition, same place, same characters: the hillside meadow at night above the city lights, the glowing sheep, the young woman seen from behind — drawn as the manga character of the second reference image.",
           "base": "../../../spec/examples/10-clara-mercier/elements/memories/m4/m4-1.jpg",
           "restyle": true,
           "aspect": "3:2",
           "style": "manga",
           "shows_character": true,
-          "reference": "a-appearance-a5-gemini-generated-image-fwe-y33e"
+          "reference": "a-appearance-a5-gemini-generated-image-fwe-y33e",
+          "regen": true
         }
       ]
     }
