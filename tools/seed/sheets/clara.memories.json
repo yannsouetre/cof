@@ -1137,12 +1137,11 @@
       },
       "images": [
         {
-          "prompt": "A cinematic night still on an elevated expressway through a futuristic city of towers and neon: the woman of the first reference image, aged 29, riding the armoured motorbike of the second reference image, leaning into the speed, seen from a low three-quarter rear angle; her small recon drone of the third reference image hovers just above her; the wet asphalt reflects the lights; far behind her, small and blurred, a few sleek autonomous cars with white headlights, already left behind. Dystopian, rainy, exhilarating; nobody is hurt, no weapons.",
+          "prompt": "A cinematic night still on an elevated expressway through a futuristic city of towers and neon, rain-wet asphalt reflecting the lights: the woman of the first reference image, aged 29, in her dark combat suit and helmet with the visor up, riding the armoured motorbike of the second reference image at full speed, seen from a low three-quarter rear angle, her small recon drone hovering just above her; far behind, two sleek driverless cars with white headlights, small and blurred, left behind. Dystopian and exhilarating, nobody is hurt, no weapons, no crash.",
           "shows_character": true,
           "reference": "a-appearance-a4-gemini-generated-image-fwe-ms1p",
           "refs": [
-            "../../../spec/examples/10-clara-mercier/elements/appearance/x3/accessory.front.jpg",
-            "../../../spec/examples/10-clara-mercier/elements/appearance/x2/accessory.front.jpg"
+            "../../../spec/examples/10-clara-mercier/elements/appearance/x3/accessory.front.jpg"
           ],
           "aspect": "3:2",
           "style": "cinematic",

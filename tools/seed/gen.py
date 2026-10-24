@@ -70,12 +70,25 @@ def _via_generate_content(client, model: str, prompt: str, refs: list[bytes], as
     if cfg is None:
         cfg = types.GenerateContentConfig(response_modalities=["IMAGE"])
     resp = client.models.generate_content(model=model, contents=parts, config=cfg)
+    texts = []
     for cand in resp.candidates or []:
         for part in (cand.content.parts if cand.content else []) or []:
             data = getattr(part, "inline_data", None)
             if data and data.data:
                 return _b64(data.data)
-    return None
+            if getattr(part, "text", None):
+                texts.append(part.text.strip())
+        fr = getattr(cand, "finish_reason", None)
+        if fr:
+            texts.append(f"finish_reason={fr}")
+    pf = getattr(resp, "prompt_feedback", None)
+    if pf and getattr(pf, "block_reason", None):
+        texts.append(f"block_reason={pf.block_reason}")
+    raise NoImage(" | ".join(t[:200] for t in texts) or "empty answer")
+
+
+class NoImage(Exception):
+    """The model answered without an image: the text or the finish reason it gave, for the log."""
 
 
 _pool = concurrent.futures.ThreadPoolExecutor(max_workers=2)
@@ -106,6 +119,8 @@ def generate(client, model: str, prompt: str, refs: list[bytes], pause: float = 
                 say(f"      ok ({len(out)} bytes)")
                 return out
             last = "no image in the answer (refused or filtered?)"
+        except NoImage as ex:
+            last = f"no image — the model said: {ex}"
         except concurrent.futures.TimeoutError:
             last = f"no answer after {CALL_TIMEOUT_S} s (call abandoned)"
         except Exception as ex:                         # quota, network, safety block…

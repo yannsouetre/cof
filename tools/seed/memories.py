@@ -230,6 +230,13 @@ def add_memories(d: Path, m: dict, s: dict, images: dict[str, list[tuple[bytes, 
                                     "bytes": len(pdata), "sha256": hashlib.sha256(pdata).hexdigest(), "license": lic, "width": pw, "height": ph,
                                     "derived_from": aid, "method": "thumbnail", "digitalSourceType": src_type})
                 v["media"].append(aid + "-poster")
+        if not images.get(vid):                                    # no image produced: the character is not "shown"
+            for w in node.get("who") or []:
+                if w.get("identity") == "self":
+                    w.pop("shown", None)
+            if node.get("who") == [{"identity": "self"}]:
+                node.pop("who")
+            (d / rel_dir / "memory.json").write_text(json.dumps(node, ensure_ascii=False, indent=2) + "\n", "utf-8")
         if images.get(vid) or mem.get("media_files"):
             if images.get(vid) and any(img.get("shows_character") for img in mem["images"]):
                 v["age"] = {"value": mem["age"], "unit": "years", "basis": "canonical"}
