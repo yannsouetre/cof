@@ -1,0 +1,63 @@
+{
+  "gist": {
+    "fr": "Le premier matin dans mon atelier face au parc, à 28 ans : la lumière sur le bureau vide, le carton de l'agence pas encore ouvert, le silence après quatre ans d'open space.",
+    "en": "The first morning in my studio facing the park, at 28: light on the empty desk, the box from the agency still unopened, the silence after four years of open-plan offices."
+  },
+  "nature": [
+    "experienced"
+  ],
+  "when": {
+    "age": {
+      "value": 28,
+      "unit": "years"
+    },
+    "label": {
+      "fr": "le premier matin dans l'atelier",
+      "en": "the first morning in the studio"
+    }
+  },
+  "where": {
+    "label": {
+      "fr": "mon atelier face au parc, Lyon",
+      "en": "my studio facing the park, Lyon"
+    },
+    "environment": "appearance/e1"
+  },
+  "felt_then": {
+    "category": {
+      "set": "everyday",
+      "value": "hopeful"
+    },
+    "pad": {
+      "pleasure": 0.7,
+      "arousal": 0.4
+    }
+  },
+  "felt_now": {
+    "category": {
+      "set": "everyday",
+      "value": "proud"
+    },
+    "pad": {
+      "pleasure": 0.7,
+      "arousal": 0.1
+    }
+  },
+  "salience": 80,
+  "fidelity": "vivid",
+  "links": [
+    {
+      "to": "memories/p1",
+      "type": "after",
+      "label": {
+        "fr": "le lendemain de mon dernier jour à l'agence",
+        "en": "the day after my last day at the agency"
+      }
+    }
+  ],
+  "tags": [
+    "work",
+    "studio",
+    "freelance"
+  ]
+}

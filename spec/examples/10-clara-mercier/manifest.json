@@ -1,5 +1,5 @@
 {
-  "cof": "1.0",
+  "cof": "1.1",
   "id": "01M4N89GNXK2FHAGFHV96E1ATV",
   "name": "Clara Mercier",
   "nickname": "Clacla",
@@ -20,7 +20,8 @@
       "fictional": true,
       "morphology": {
         "class": "human"
-      }
+      },
+      "language": "fr"
     }
   },
   "default_identity": "id1",
@@ -28,9 +29,9 @@
     "auto": [
       "adult",
       "child",
-      "elder",
       "en",
       "fr",
+      "has-memories",
       "has-minor-preset",
       "has-motion",
       "has-skills",
@@ -572,6 +573,62 @@
           "rig": "custom"
         }
       }
+    },
+    "memories": {
+      "variants": {
+        "m1": {
+          "kind": "moment",
+          "label": "La maison de ma grand-mère / My grandmother's house",
+          "memory": "elements/memories/m1/memory.json",
+          "identity": "id1",
+          "media": [
+            "a-mem-m1"
+          ]
+        },
+        "p1": {
+          "kind": "period",
+          "label": "Les années d'agence / The agency years",
+          "memory": "elements/memories/p1/memory.json",
+          "identity": "id1"
+        },
+        "m2": {
+          "kind": "moment",
+          "label": "Le premier matin dans l'atelier / The first morning in the studio",
+          "memory": "elements/memories/m2/memory.json",
+          "identity": "id1",
+          "media": [
+            "a-mem-m2"
+          ]
+        },
+        "m3": {
+          "kind": "moment",
+          "label": "La rencontre avec le Martien / Meeting the Martian",
+          "memory": "elements/memories/m3/memory.json",
+          "identity": "id1",
+          "media": [
+            "a-mem-m3"
+          ],
+          "age": {
+            "value": 29,
+            "unit": "years",
+            "basis": "canonical"
+          }
+        },
+        "m4": {
+          "kind": "moment",
+          "label": "Le rêve des moutons électriques / The electric-sheep dream",
+          "memory": "elements/memories/m4/memory.json",
+          "identity": "id1",
+          "media": [
+            "a-mem-m4"
+          ],
+          "age": {
+            "value": 29,
+            "unit": "years",
+            "basis": "canonical"
+          }
+        }
+      }
     }
   },
   "presets": {
@@ -602,6 +659,13 @@
         ],
         "motion": [
           "m1"
+        ],
+        "memories": [
+          "m1",
+          "p1",
+          "m2",
+          "m3",
+          "m4"
         ]
       },
       "alternatives": {
@@ -633,8 +697,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-12T20:34:20Z"
+        "computed_by": "cof-cli/1.1.0",
+        "computed_at": "2026-10-24T09:51:53Z"
       }
     },
     "en-manga": {
@@ -685,8 +749,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-12T20:34:20Z"
+        "computed_by": "cof-cli/1.1.0",
+        "computed_at": "2026-10-24T09:51:53Z"
       }
     },
     "en-12": {
@@ -712,6 +776,9 @@
         ],
         "motion": [
           "m2"
+        ],
+        "memories": [
+          "m1"
         ]
       },
       "alternatives": {
@@ -743,8 +810,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-12T20:34:20Z"
+        "computed_by": "cof-cli/1.1.0",
+        "computed_at": "2026-10-24T09:51:53Z"
       }
     },
     "en-65": {
@@ -801,8 +868,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-12T20:34:20Z"
+        "computed_by": "cof-cli/1.1.0",
+        "computed_at": "2026-10-24T09:51:53Z"
       }
     },
     "en-future": {
@@ -857,8 +924,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-12T20:34:20Z"
+        "computed_by": "cof-cli/1.1.0",
+        "computed_at": "2026-10-24T09:51:53Z"
       }
     },
     "en-agent": {
@@ -900,8 +967,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-12T20:34:20Z"
+        "computed_by": "cof-cli/1.1.0",
+        "computed_at": "2026-10-24T09:51:53Z"
       }
     },
     "fr": {
@@ -942,8 +1009,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-12T20:34:20Z"
+        "computed_by": "cof-cli/1.1.0",
+        "computed_at": "2026-10-24T09:51:53Z"
       }
     },
     "fr-manga": {
@@ -994,8 +1061,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-12T20:34:20Z"
+        "computed_by": "cof-cli/1.1.0",
+        "computed_at": "2026-10-24T09:51:53Z"
       }
     },
     "fr-12": {
@@ -1021,6 +1088,9 @@
         ],
         "motion": [
           "m2"
+        ],
+        "memories": [
+          "m1"
         ]
       },
       "alternatives": {
@@ -1052,8 +1122,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-12T20:34:20Z"
+        "computed_by": "cof-cli/1.1.0",
+        "computed_at": "2026-10-24T09:51:53Z"
       }
     },
     "fr-65": {
@@ -1110,8 +1180,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-12T20:34:20Z"
+        "computed_by": "cof-cli/1.1.0",
+        "computed_at": "2026-10-24T09:51:53Z"
       }
     },
     "fr-futur": {
@@ -1166,8 +1236,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-12T20:34:20Z"
+        "computed_by": "cof-cli/1.1.0",
+        "computed_at": "2026-10-24T09:51:53Z"
       }
     },
     "fr-agent": {
@@ -1209,8 +1279,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc2",
-        "computed_at": "2026-10-12T20:34:20Z"
+        "computed_by": "cof-cli/1.1.0",
+        "computed_at": "2026-10-24T09:51:53Z"
       }
     }
   },
@@ -2328,6 +2398,62 @@
       "generator": "Google Gemini (Nano Banana 2)"
     },
     {
+      "id": "a-mem-m1",
+      "path": "elements/memories/m1/m1.jpg",
+      "role": "memory-media",
+      "mediaType": "image/jpeg",
+      "bytes": 319841,
+      "sha256": "d58d1359d3378b057b12e3e35260f15f7d40e78981333fd7d6fd072d870437a6",
+      "license": "CC-BY-4.0",
+      "width": 1248,
+      "height": 832,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (gemini-2.5-flash-image)"
+    },
+    {
+      "id": "a-mem-m2",
+      "path": "elements/memories/m2/m2.jpg",
+      "role": "memory-media",
+      "mediaType": "image/jpeg",
+      "bytes": 191294,
+      "sha256": "a3f70f288bdaaeea5bb6f03e260d4d1841a15541c0d0d413bf446b6c19766564",
+      "license": "CC-BY-4.0",
+      "width": 1248,
+      "height": 832,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (gemini-2.5-flash-image)"
+    },
+    {
+      "id": "a-mem-m3",
+      "path": "elements/memories/m3/m3.jpg",
+      "role": "memory-media",
+      "mediaType": "image/jpeg",
+      "bytes": 215482,
+      "sha256": "be66411c2f1f1ced8377ea7ebe3bb3fafa352d231369cfcd8da0776b50c4f709",
+      "license": "CC-BY-4.0",
+      "width": 1248,
+      "height": 832,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (gemini-2.5-flash-image)"
+    },
+    {
+      "id": "a-mem-m4",
+      "path": "elements/memories/m4/m4.jpg",
+      "role": "memory-media",
+      "mediaType": "image/jpeg",
+      "bytes": 217232,
+      "sha256": "8b93c4d0c179c36e9450f6639fca76c400b79c677f4391a334426f09ecfb18ff",
+      "license": "CC-BY-4.0",
+      "width": 1248,
+      "height": 832,
+      "style": "cinematic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "Google Gemini (gemini-2.5-flash-image)"
+    },
+    {
       "id": "thumbnail",
       "path": "Thumbnails/thumbnail.png",
       "role": "derived",
@@ -2364,7 +2490,7 @@
   },
   "provenance": {
     "created": "2026-10-11T10:32:23Z",
-    "modified": "2026-10-11T16:00:26Z",
+    "modified": "2026-10-24T09:51:53Z",
     "generator": "cof-builder/0.7.1",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/10-clara-mercier",
@@ -2387,42 +2513,6 @@
   },
   "extensions": {},
   "thumbnail": "Thumbnails/thumbnail.png",
-  "coverage": {
-    "elements": [
-      "personality",
-      "appearance",
-      "voice",
-      "posture",
-      "files",
-      "motion"
-    ],
-    "variants": 52,
-    "presets": 12,
-    "identities": 1
-  },
-  "completeness": {
-    "score": 59,
-    "level": "C",
-    "layers": {
-      "identity": 100,
-      "personality": 60,
-      "appearance": 30,
-      "physique": 100,
-      "voice": 65,
-      "volume": 0,
-      "motion": 75,
-      "rights": 85
-    },
-    "targets_ready": [
-      "chat-text",
-      "agent-persona",
-      "chat-voice",
-      "image-video-gen",
-      "archive"
-    ],
-    "computed_by": "cof-cli/1.0.0rc2",
-    "computed_at": "2026-10-12T20:34:20Z"
-  },
   "preset_tags": [
     {
       "id": "en",
@@ -2527,5 +2617,42 @@
         "fr-futur"
       ]
     }
-  ]
+  ],
+  "completeness": {
+    "score": 59,
+    "level": "C",
+    "layers": {
+      "identity": 100,
+      "personality": 60,
+      "appearance": 30,
+      "physique": 100,
+      "voice": 65,
+      "volume": 0,
+      "motion": 75,
+      "rights": 85
+    },
+    "targets_ready": [
+      "chat-text",
+      "agent-persona",
+      "chat-voice",
+      "image-video-gen",
+      "archive"
+    ],
+    "computed_by": "cof-cli/1.1.0",
+    "computed_at": "2026-10-24T09:51:53Z"
+  },
+  "coverage": {
+    "elements": [
+      "personality",
+      "appearance",
+      "voice",
+      "posture",
+      "files",
+      "motion",
+      "memories"
+    ],
+    "variants": 59,
+    "presets": 12,
+    "identities": 1
+  }
 }

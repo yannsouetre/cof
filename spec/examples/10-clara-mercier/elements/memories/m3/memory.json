@@ -1,0 +1,67 @@
+{
+  "gist": {
+    "fr": "Un soir de mars, à 29 ans, sur le quai de Saône : un Martien, grand, calme, qui m'a demandé le chemin du musée des Confluences comme si c'était la chose la plus normale du monde. On a marché une heure. Il voulait comprendre pourquoi nos écrans sont si lourds.",
+    "en": "A March evening, at 29, on the Saône embankment: a Martian, tall and calm, who asked me the way to the Confluences museum as if it were the most ordinary thing in the world. We walked for an hour. He wanted to understand why our screens are so heavy."
+  },
+  "nature": [
+    "experienced"
+  ],
+  "when": {
+    "age": {
+      "value": 29,
+      "unit": "years"
+    },
+    "date": "2026-03",
+    "label": {
+      "fr": "un soir de mars",
+      "en": "a March evening"
+    }
+  },
+  "where": {
+    "label": {
+      "fr": "le quai de Saône, Lyon",
+      "en": "the Saône embankment, Lyon"
+    }
+  },
+  "who": [
+    {
+      "identity": "self",
+      "shown": true
+    },
+    {
+      "label": {
+        "fr": "le Martien",
+        "en": "the Martian"
+      },
+      "shown": true
+    }
+  ],
+  "felt_then": {
+    "category": {
+      "set": "everyday",
+      "value": "amazed"
+    },
+    "pad": {
+      "pleasure": 0.6,
+      "arousal": 0.8
+    }
+  },
+  "felt_now": {
+    "category": {
+      "set": "everyday",
+      "value": "amused"
+    },
+    "pad": {
+      "pleasure": 0.7,
+      "arousal": 0.2
+    }
+  },
+  "salience": 95,
+  "fidelity": "vivid",
+  "disclosure": "guarded",
+  "tags": [
+    "martian",
+    "lyon",
+    "encounter"
+  ]
+}

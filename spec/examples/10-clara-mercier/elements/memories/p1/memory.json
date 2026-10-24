@@ -1,0 +1,60 @@
+{
+  "gist": {
+    "fr": "Quatre ans dans une agence digitale à Lyon, de 24 à 28 ans : des interfaces lourdes livrées trop vite, des nuits de recette, et la conviction, lentement, que le web pouvait être plus léger.",
+    "en": "Four years at a digital agency in Lyon, from 24 to 28: heavy interfaces shipped too fast, late nights of testing, and the slow conviction that the web could be lighter."
+  },
+  "nature": [
+    "experienced"
+  ],
+  "when": {
+    "from": {
+      "age": {
+        "value": 24,
+        "unit": "years"
+      }
+    },
+    "to": {
+      "age": {
+        "value": 28,
+        "unit": "years"
+      }
+    },
+    "label": {
+      "fr": "les années d'agence",
+      "en": "the agency years"
+    }
+  },
+  "where": {
+    "label": {
+      "fr": "Lyon",
+      "en": "Lyon"
+    }
+  },
+  "felt_then": {
+    "category": {
+      "set": "everyday",
+      "value": "stressed"
+    },
+    "pad": {
+      "pleasure": -0.2,
+      "arousal": 0.6
+    }
+  },
+  "felt_now": {
+    "category": {
+      "set": "everyday",
+      "value": "relieved"
+    },
+    "pad": {
+      "pleasure": 0.3,
+      "arousal": -0.3
+    }
+  },
+  "salience": 60,
+  "fidelity": "clear",
+  "tags": [
+    "work",
+    "lyon",
+    "agency"
+  ]
+}

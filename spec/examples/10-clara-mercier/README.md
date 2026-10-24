@@ -1,4 +1,4 @@
-# Example 10 — Clara Mercier (flagship, bilingual) — version 6
+# Example 10 — Clara Mercier (flagship, bilingual) — version 7 (format 1.1)
 
 One character, **twelve presets tagged by language and by age**, one file:
 
@@ -16,6 +16,7 @@ What it demonstrates:
 - **Applied and offered** — each preset *applies* (`slots`) its look: the full-body reference image, which is its **primary image** (`primary_image`), so the outfit and hair visible on it are the default. The clothes and accessories are *offered* (`alternatives`) by the preset they suit only — Clara at 12 is never offered Clara at 65's cardigan. Each outfit layers a T-shirt or shirt (`top`) under a sweater (`outerwear`), with trousers and shoes, without region conflict if a reader applies it.
 - **Age on the representation** — each appearance variant declares its depicted age (12, 29, 65); the two 12-year-old presets are minor presets and the § 9.4 rules apply to them alone.
 - **Agent use** — the *AI agent* presets use a short Character Card V3 (FR and EN system prompts aligned, exportable to `SOUL.md`) plus a shared **skill** in the `files` category: `accessible-color-palette` — a multi-file Agent Skill (`SKILL.md`, exact colour maths, a worked palette with computed WCAG ratios) for building harmonious, accessible colour systems in OKLCH. Persona facts live in the card fields, expert know-how lives in the skill.
+- **Memories (1.1, RFC 0002)** — the first 1.1 file: five nodes in the `memories` category, listed by the default preset and inherited by every other preset except the two 12-year-old ones, which only list the childhood memory. Her grandmother's house at the foot of the Alps at 8 (a photo of the house and a child's drawing — never the child), the agency years (a *period*, 24–28, no media), the first morning in her studio at 28 (linked to the `e1` environment), the meeting with the Martian at 29 on the Saône embankment (Clara shown, so the variant carries her age), and the electric-sheep dream (nature `imagined`, linked `about` the meeting). Bilingual gists, feelings then and now, fidelity from `vivid` to `fragment`, one `guarded` disclosure. Images generated with Google Gemini and reviewed by a human; `identities.id1.language` is `fr`.
 - **Built by an AI** — version 4 (English variants, voices wiring, presets and tags) was assembled programmatically by Claude from the French version, then validated with `cof validate`.
 
 Provenance: texts and character sheets generated with Google Gemini, English versions translated with Claude; images with Google Gemini (Nano Banana 2); voices with ElevenLabs (model v4) and Typecast, free plans — *Voice generated with Typecast (https://typecast.ai)*. Fictional character; any resemblance to a real person is coincidental.
