@@ -4,6 +4,7 @@
 - Author: Yann Souetre (with Claude)
 - Date: 2026-10-24 (draft)
 - Target: COF **1.1** — additive only; every 1.0 file stays valid and every 1.0 reader keeps working (§ 7)
+- Reference implementation (same branch): `cof-cli` 1.1.0 (validator, `export --agent`, `extract` purges), explorer 1.1 (timeline), builder 0.12.0 (Memories step), ComfyUI-COF 0.6.0 (COF Memories node and preview workflow), example 10, the seed pipeline `tools/seed/memories.py`, fixture and negative corpus (§ 10)
 
 ## 1. Motivation
 
@@ -184,7 +185,10 @@ Memories do not enter the completeness score in 1.1 (a new layer would change ev
 - The explorer shows a timeline by age (undated apart), the gist in the preset's language, media on click (explicit never; nude only on opt-in on an adult preset).
 
 ### 6.5 Builder
-A "Memories" tab (0.12): the timeline as the editor (a click adds a moment, a drag adds a period), node picker for links (no one types `memories/m3`), radio buttons with the defaults pre-selected and written explicitly, a four-notch fidelity slider, "same media as…" filling `media_from`, an import pop-up when the three policy axes were absent, an info line in the checks step until reviewed, and two build options: "All audiences" and "Keep personal memories" (unchecked).
+A "Memories" step (0.12, advanced mode): one card per node in timeline order — moment or period, label, gist per language, when / where / who, feelings then and now, salience, a four-notch fidelity, nature, factual (real persons), the three policy axes as radio buttons with the defaults pre-selected and **written explicitly**, explicit (with the nudity confirmation; the variant gets `nudity: true` and the file its `tags.content`), links with a node picker (no one types `memories/m3`), tags, one to three media or "same media as…" (`media_from`), a per-preset matrix of the memories each preset lists (a preset that lists everything stays implicit, so a new memory joins it), the character's primary language; checks in the checks step; two build options: "All audiences" and "Keep personal memories" (unchecked). A file with memories is written as `cof: "1.1"`; a 1.0 file stays 1.0. Later (0.13): the timeline as the editor (a click adds a moment, a drag adds a period), an import pop-up when the three policy axes were absent, an "info line until reviewed".
+
+### 6.6 ComfyUI
+A **COF Memories** node (ComfyUI-COF 0.6.0): the preset's memories in timeline order as one text for a language model (gist in the preset's language, when-marker, `nature` / `disclosure` / `fidelity`, the short text media), their images as a batch, labels, count; `include personal` off by default; the media of an explicit node only when the loader allows adult content; a 1.0 file gives an empty text. The preview workflow gains a Memories row.
 
 ## 7. Impact on existing files and compatibility
 
@@ -192,7 +196,7 @@ A "Memories" tab (0.12): the timeline as the editor (a click adds a moment, a dr
 - **1.0 readers**: ignore the category (`cof-cli` 1.0.1 and builder 0.11.8 preserve it and read it as a library; earlier 1.0.0 tools refused it — see CHANGELOG 1.0.1). Explicit memories are visible to 1.0 purges through `nudity: true` and `tags.content` (§ 5.3).
 - **Schemas**: `schemas/1.1/` adds `memories` to the category pattern, the kinds `moment` / `period`, the variant field `memory`, the asset role `memory-media`, the asset flag `as_remembered`, and `identities.<id>.language`; `memory.schema.json` is the node file's schema. `$id`s under `https://yannsouetre.github.io/cof/schemas/1.1/`.
 - **A file declares the lowest minor that defines everything it uses**: a file with memories declares `cof: "1.1"`.
-- **Example**: `spec/examples/10-clara-mercier` becomes the first 1.1 file, with five memories: four moments (the grandmother's house — the house and a child's drawing, never the child; the first morning in the studio; the meeting with the Martian; the electric-sheep dream) and one period (the agency years, no media). The eight other examples stay 1.0.
+- **Example**: `spec/examples/10-clara-mercier` becomes the first 1.1 file, with five memories and fifteen media: four moments (the grandmother's house — the house, the child's bedroom with her drawing, the grandmother, never the child, plus a 10-second river ambience and her sentences as short texts in two languages; the first morning in the studio, two images; the meeting with the Martian of example 11, one image and a few remembered lines; the electric-sheep dream, three images and a 10-second clip with ambient sound, `as_remembered`) and one period (the agency years, no media). One to three images per memory; the sheet is `tools/seed/sheets/clara.memories.json`. The eight other examples stay 1.0.
 - Negative corpus: one case per error of § 6.1.
 
 ## 8. Alternatives considered
@@ -214,3 +218,10 @@ A "Memories" tab (0.12): the timeline as the editor (a click adds a moment, a dr
 - **Carrying another real person's consent** at extraction, instead of dropping the media.
 - **Per-media fidelity**, if authors ask for it.
 - **Audio memories**: nothing special in the schema (an asset is an asset); examples will follow the image prototype.
+
+## 10. Implementation notes (this branch)
+
+- `cof_cli/memories.py` holds what every reader shares: node loading, the timeline order of § 4.3 (age, else date and the birth year the file implies, else links, undated last), the gist language rule of § 3, effective media through `media_from`, the real-person guard of § 4.5. The explorer and the ComfyUI node port the same three functions.
+- `tags.auto` age buckets ignore the ages carried by memories (a memory legitimately shows another age; the builder, which computes the same buckets, does not read the category); the minor-preset rule of § 5.2 does not.
+- Media types: image, audio, short video (with a poster image `derived_from` it, `method: thumbnail`; the 1.0 video cap), short text (`text/markdown` or `text/plain`, with `language`). The validator warns on a video without poster and a text without language.
+- The seed pipeline (`tools/seed/memories.py`) generates images with Gemini from a sheet (one to three per memory, kept images reused without a call, edits from a base image with references), takes other media from files (`media_files`), packs and validates; a failed image is listed in the review sheet and skipped. Edits that replace a character on a photograph need the Pro model (see the `gemini-media-generation` skill).
