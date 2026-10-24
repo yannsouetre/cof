@@ -1,0 +1,64 @@
+{
+  "gist": {
+    "fr": "La nuit qui a suivi la rencontre, un rêve : un pré au-dessus de Lyon, des moutons dont la laine clignotait doucement comme des diodes en veille, et moi qui essayais de les compter sans jamais arriver au même nombre.",
+    "en": "The night after the encounter, a dream: a meadow above Lyon, sheep whose wool blinked softly like standby LEDs, and me trying to count them without ever reaching the same number twice."
+  },
+  "nature": [
+    "imagined"
+  ],
+  "when": {
+    "age": {
+      "value": 29,
+      "unit": "years"
+    },
+    "approx": true,
+    "label": {
+      "fr": "la nuit après la rencontre",
+      "en": "the night after the encounter"
+    }
+  },
+  "who": [
+    {
+      "identity": "self",
+      "shown": true
+    }
+  ],
+  "felt_then": {
+    "category": {
+      "set": "everyday",
+      "value": "serene"
+    },
+    "pad": {
+      "pleasure": 0.5,
+      "arousal": -0.4
+    }
+  },
+  "felt_now": {
+    "category": {
+      "set": "everyday",
+      "value": "wistful"
+    },
+    "pad": {
+      "pleasure": 0.3,
+      "arousal": -0.3
+    }
+  },
+  "salience": 70,
+  "fidelity": "fragment",
+  "disclosure": "guarded",
+  "links": [
+    {
+      "to": "memories/mg3",
+      "type": "about",
+      "label": {
+        "fr": "le rêve est venu la nuit suivante",
+        "en": "the dream came the following night"
+      }
+    }
+  ],
+  "tags": [
+    "dream",
+    "sheep",
+    "night"
+  ]
+}

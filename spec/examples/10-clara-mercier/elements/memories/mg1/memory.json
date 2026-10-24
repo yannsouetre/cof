@@ -1,0 +1,65 @@
+{
+  "gist": {
+    "fr": "L'été de mes huit ans, la maison de ma grand-mère dans un village au pied des Alpes : la table sous le tilleul, le carnet où je dessinais des plans de cabanes, le bruit de la rivière le soir.",
+    "en": "The summer I was eight, my grandmother's house in a village at the foot of the Alps: the table under the lime tree, the notebook where I drew plans of huts, the sound of the river at night."
+  },
+  "nature": [
+    "experienced"
+  ],
+  "when": {
+    "age": {
+      "value": 8,
+      "unit": "years"
+    },
+    "approx": true,
+    "label": {
+      "fr": "l'été de mes huit ans",
+      "en": "the summer I was eight"
+    }
+  },
+  "where": {
+    "label": {
+      "fr": "la maison de ma grand-mère, au pied des Alpes",
+      "en": "my grandmother's house, at the foot of the Alps"
+    }
+  },
+  "who": [
+    {
+      "label": {
+        "fr": "ma grand-mère",
+        "en": "my grandmother"
+      }
+    }
+  ],
+  "felt_then": {
+    "category": {
+      "set": "everyday",
+      "value": "content"
+    },
+    "pad": {
+      "pleasure": 0.8,
+      "arousal": 0.1
+    }
+  },
+  "felt_now": {
+    "category": {
+      "set": "everyday",
+      "value": "affectionate"
+    },
+    "pad": {
+      "pleasure": 0.6,
+      "arousal": -0.2
+    }
+  },
+  "salience": 75,
+  "fidelity": "faded",
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open",
+  "tags": [
+    "childhood",
+    "alps",
+    "house",
+    "drawing"
+  ]
+}

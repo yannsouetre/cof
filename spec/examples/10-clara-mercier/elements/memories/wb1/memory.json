@@ -1,0 +1,77 @@
+{
+  "gist": {
+    "fr": "Le hangar, la table holographique, et Miss Tral en face de moi — une femme de métal brossé, élégante, patiente — qui déplaçait les points lumineux de la carte d'opérations en m'expliquant où l'IA adverse cachait ses relais. Elle ne hausse jamais la voix.",
+    "en": "The hangar, the holographic table, and Miss Tral across from me — a woman of brushed metal, elegant, patient — moving the glowing dots of the operations map as she explained where the rival AI hid its relays. She never raises her voice."
+  },
+  "nature": [
+    "experienced"
+  ],
+  "when": {
+    "age": {
+      "value": 29,
+      "unit": "years"
+    },
+    "label": {
+      "fr": "le briefing",
+      "en": "the briefing"
+    }
+  },
+  "where": {
+    "label": {
+      "fr": "le hangar tactique",
+      "en": "the tactical hangar"
+    },
+    "environment": "appearance/e2"
+  },
+  "who": [
+    {
+      "identity": "self",
+      "shown": true
+    },
+    {
+      "label": {
+        "fr": "Miss Tral (incarnation)",
+        "en": "Miss Tral (embodiment)"
+      },
+      "shown": true,
+      "age": {
+        "value": 30,
+        "unit": "years"
+      }
+    }
+  ],
+  "felt_then": {
+    "category": {
+      "set": "everyday",
+      "value": "focused"
+    },
+    "pad": {
+      "pleasure": 0.3,
+      "arousal": 0.6
+    }
+  },
+  "felt_now": {
+    "category": {
+      "set": "everyday",
+      "value": "respectful"
+    },
+    "pad": {
+      "pleasure": 0.5,
+      "arousal": 0.2
+    }
+  },
+  "salience": 85,
+  "fidelity": "vivid",
+  "disclosure": "guarded",
+  "links": [
+    {
+      "to": "memories/p2",
+      "type": "part-of"
+    }
+  ],
+  "tags": [
+    "ai-war",
+    "miss-tral",
+    "briefing"
+  ]
+}

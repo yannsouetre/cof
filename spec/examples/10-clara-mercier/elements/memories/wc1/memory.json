@@ -1,0 +1,73 @@
+{
+  "gist": {
+    "fr": "Le relais saboté, la X-09 lancée sur la voie rapide de nuit, mon drone au-dessus de moi, et derrière, quatre véhicules de l'IA adverse qui voulaient m'arrêter. Ils n'ont jamais eu la moindre chance : cette moto est trop puissante. J'ai ri dans mon casque.",
+    "en": "The relay sabotaged, the X-09 launched down the night expressway, my drone above me, and behind, four vehicles of the rival AI trying to stop me. They never stood a chance: that bike is far too powerful. I laughed inside my helmet."
+  },
+  "nature": [
+    "experienced"
+  ],
+  "when": {
+    "age": {
+      "value": 29,
+      "unit": "years"
+    },
+    "label": {
+      "fr": "la poursuite",
+      "en": "the chase"
+    }
+  },
+  "where": {
+    "label": {
+      "fr": "la voie rapide, de nuit",
+      "en": "the night expressway"
+    }
+  },
+  "who": [
+    {
+      "identity": "self"
+    }
+  ],
+  "felt_then": {
+    "category": {
+      "set": "everyday",
+      "value": "exhilarated"
+    },
+    "pad": {
+      "pleasure": 0.6,
+      "arousal": 0.9
+    }
+  },
+  "felt_now": {
+    "category": {
+      "set": "everyday",
+      "value": "amused"
+    },
+    "pad": {
+      "pleasure": 0.7,
+      "arousal": 0.3
+    }
+  },
+  "salience": 90,
+  "fidelity": "vivid",
+  "disclosure": "guarded",
+  "links": [
+    {
+      "to": "memories/p2",
+      "type": "part-of"
+    },
+    {
+      "to": "memories/wb1",
+      "type": "after",
+      "label": {
+        "fr": "la nuit après le briefing",
+        "en": "the night after the briefing"
+      }
+    }
+  ],
+  "tags": [
+    "ai-war",
+    "chase",
+    "x-09",
+    "drone"
+  ]
+}

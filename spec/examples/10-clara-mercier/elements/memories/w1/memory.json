@@ -1,0 +1,75 @@
+{
+  "gist": {
+    "fr": "Notre mariage, à 31 ans, dans le jardin de la mairie du 1er : une robe simple, Théo qui n'arrivait pas à mettre l'alliance, le discours de ma grand-mère qui a fait pleurer tout le monde.",
+    "en": "Our wedding, at 31, in the garden of the town hall: a simple dress, Théo failing to slide the ring on, my grandmother's speech that made everyone cry."
+  },
+  "nature": [
+    "experienced"
+  ],
+  "when": {
+    "age": {
+      "value": 31,
+      "unit": "years"
+    },
+    "label": {
+      "fr": "notre mariage",
+      "en": "our wedding"
+    }
+  },
+  "where": {
+    "label": {
+      "fr": "le jardin de la mairie, Lyon 1er",
+      "en": "the town hall garden, Lyon"
+    }
+  },
+  "who": [
+    {
+      "identity": "self",
+      "shown": true
+    },
+    {
+      "label": {
+        "fr": "Théo, mon mari",
+        "en": "Théo, my husband"
+      },
+      "shown": true,
+      "age": {
+        "value": 33,
+        "unit": "years"
+      }
+    },
+    {
+      "label": {
+        "fr": "ma grand-mère",
+        "en": "my grandmother"
+      }
+    }
+  ],
+  "felt_then": {
+    "category": {
+      "set": "everyday",
+      "value": "joyful"
+    },
+    "pad": {
+      "pleasure": 0.9,
+      "arousal": 0.6
+    }
+  },
+  "felt_now": {
+    "category": {
+      "set": "everyday",
+      "value": "affectionate"
+    },
+    "pad": {
+      "pleasure": 0.8,
+      "arousal": 0.0
+    }
+  },
+  "salience": 95,
+  "fidelity": "vivid",
+  "tags": [
+    "wedding",
+    "theo",
+    "family"
+  ]
+}

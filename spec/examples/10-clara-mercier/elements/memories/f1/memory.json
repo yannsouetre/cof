@@ -1,0 +1,81 @@
+{
+  "gist": {
+    "fr": "Mes 60 ans, dans le salon : Théo, Léo et moi sur le canapé, les vinyles derrière, le retardateur qui n'a marché qu'à la troisième fois. La seule photo où nous sommes tous les trois bien.",
+    "en": "My 60th birthday, in the living room: Théo, Léo and me on the sofa, the records behind us, the self-timer that only worked on the third try. The only photo where all three of us look right."
+  },
+  "nature": [
+    "experienced"
+  ],
+  "when": {
+    "age": {
+      "value": 60,
+      "unit": "years"
+    },
+    "label": {
+      "fr": "mes 60 ans",
+      "en": "my 60th birthday"
+    }
+  },
+  "where": {
+    "label": {
+      "fr": "notre salon, Lyon",
+      "en": "our living room, Lyon"
+    },
+    "environment": "appearance/e3"
+  },
+  "who": [
+    {
+      "identity": "self",
+      "shown": true
+    },
+    {
+      "label": {
+        "fr": "Théo",
+        "en": "Théo"
+      },
+      "shown": true,
+      "age": {
+        "value": 62,
+        "unit": "years"
+      }
+    },
+    {
+      "label": {
+        "fr": "Léo",
+        "en": "Léo"
+      },
+      "shown": true,
+      "age": {
+        "value": 27,
+        "unit": "years"
+      }
+    }
+  ],
+  "felt_then": {
+    "category": {
+      "set": "everyday",
+      "value": "content"
+    },
+    "pad": {
+      "pleasure": 0.8,
+      "arousal": 0.2
+    }
+  },
+  "felt_now": {
+    "category": {
+      "set": "everyday",
+      "value": "affectionate"
+    },
+    "pad": {
+      "pleasure": 0.8,
+      "arousal": -0.1
+    }
+  },
+  "salience": 80,
+  "fidelity": "clear",
+  "tags": [
+    "family",
+    "birthday",
+    "home"
+  ]
+}

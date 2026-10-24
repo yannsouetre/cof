@@ -1,0 +1,55 @@
+{
+  "gist": {
+    "fr": "Deux ans où les IA se sont fait la guerre entre elles — jamais contre nous. Les humains choisissaient un camp et servaient de mains : sabotages, intrusions, relais. J'ai choisi Miss Tral.",
+    "en": "Two years when the AIs waged war on each other — never on us. Humans picked a side and served as hands: sabotage, intrusions, relays. I chose Miss Tral."
+  },
+  "nature": [
+    "experienced"
+  ],
+  "when": {
+    "from": {
+      "age": {
+        "value": 27,
+        "unit": "years"
+      }
+    },
+    "to": {
+      "age": {
+        "value": 29,
+        "unit": "years"
+      }
+    },
+    "label": {
+      "fr": "la guerre des IA",
+      "en": "the AI war"
+    }
+  },
+  "felt_then": {
+    "category": {
+      "set": "everyday",
+      "value": "tense"
+    },
+    "pad": {
+      "pleasure": -0.1,
+      "arousal": 0.7
+    }
+  },
+  "felt_now": {
+    "category": {
+      "set": "everyday",
+      "value": "resolute"
+    },
+    "pad": {
+      "pleasure": 0.2,
+      "arousal": 0.4
+    }
+  },
+  "salience": 90,
+  "fidelity": "clear",
+  "disclosure": "guarded",
+  "tags": [
+    "ai-war",
+    "miss-tral",
+    "alternate"
+  ]
+}

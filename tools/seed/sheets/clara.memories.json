@@ -597,9 +597,9 @@
       },
       "images": [
         {
-          "prompt": "A wedding photograph in a small town-hall garden in Lyon on a bright spring day: the woman of the first reference image, aged about 31, in a simple ivory dress with a short veil, laughing, next to her husband, a tall man of about 33 with short dark hair and a navy suit, who is fumbling with a ring; a few adult guests blurred behind, plane trees, old stone facade. Style of a family photograph printed and kept for years: natural colours, slight fade, soft grain.",
-          "shows_character": true,
-          "aspect": "3:2"
+          "keep": "clara.memories/w1.jpg",
+          "aspect": "3:2",
+          "shows_character": true
         }
       ]
     },
@@ -690,10 +690,9 @@
       },
       "images": [
         {
-          "prompt": "A graduation-day photograph on the stone steps of a university in Lyon: a young man of 23 with short brown hair in a black graduation gown and cap holding a rolled diploma, flanked by his parents — the woman of the first reference image, aged about 56, grey streaks in her hair, in an elegant blouse, and his father, about 58, grey-haired, in a jacket — all three smiling at the camera, other adult graduates blurred behind. Style of a family photograph printed and kept for years: natural colours, slight fade, soft grain.",
-          "shows_character": true,
-          "reference": "a-appearance-a3-face-2u2o",
-          "aspect": "3:2"
+          "keep": "clara.memories/g1.jpg",
+          "aspect": "3:2",
+          "shows_character": true
         }
       ]
     },
@@ -785,13 +784,9 @@
       },
       "images": [
         {
-          "prompt": "A family photograph taken with a self-timer in a cosy living room with shelves of books and vinyl records: on a sofa, the woman of the first reference image, aged about 60, in the middle, her husband of about 62 with grey hair on her left, their son of about 27 with short brown hair on her right, all three relaxed and smiling, a birthday cake with candles on the low table. Style of a family photograph printed and kept for years: natural colours, slight fade, soft grain.",
-          "shows_character": true,
-          "reference": "a-appearance-a3-face-2u2o",
-          "refs": [
-            "../../../spec/examples/10-clara-mercier/elements/appearance/e3/background.desktop.jpg"
-          ],
-          "aspect": "3:2"
+          "keep": "clara.memories/f1.jpg",
+          "aspect": "3:2",
+          "shows_character": true
         }
       ]
     },
@@ -894,10 +889,9 @@
       },
       "images": [
         {
-          "prompt": "A holiday photograph on a wide sandy beach in Brittany on a sunny afternoon: in the foreground the woman of the first reference image, aged about 63, in a light summer dress and straw hat, sitting on a towel next to her husband of about 65 in a linen shirt, both looking at the sea; far away in the shallow water, two small figures, an adult man and an adult woman, waving. Style of a family photograph printed and kept for years: natural colours, slight fade, soft grain.",
-          "shows_character": true,
-          "reference": "a-appearance-a3-face-2u2o",
-          "aspect": "3:2"
+          "keep": "clara.memories/b1.jpg",
+          "aspect": "3:2",
+          "shows_character": true
         }
       ]
     },
@@ -1045,13 +1039,9 @@
       },
       "images": [
         {
-          "prompt": "A cinematic still inside the tactical hangar of the reference environment image (dim industrial hall, a large holographic operations table glowing blue in the middle): the woman of the first reference image, aged 29, in her dark combat jacket, leaning over the table and listening; across from her, Miss Tral — an elegant humanoid android woman with smooth brushed-silver metallic skin and face, calm expression, slender, in a fitted dark grey suit — pointing at glowing dots on the map with one metallic hand. Dystopian futuristic atmosphere, no weapons, no violence.",
-          "shows_character": true,
-          "reference": "a-appearance-a4-gemini-generated-image-fwe-ms1p",
-          "refs": [
-            "../../../spec/examples/10-clara-mercier/elements/appearance/e2/background.desktop.jpg"
-          ],
+          "keep": "clara.memories/wb1.jpg",
           "aspect": "3:2",
+          "shows_character": true,
           "style": "cinematic"
         }
       ]
@@ -1135,13 +1125,9 @@
       },
       "images": [
         {
-          "prompt": "A cinematic night still on an elevated expressway through a futuristic city of towers and neon, rain-wet asphalt reflecting the lights: a rider in a dark armoured suit and a closed helmet (face not visible) on the armoured motorbike of the reference image, leaning into the speed, seen from a low three-quarter rear angle; a small recon drone hovers just above; far behind, two sleek driverless cars with white headlights, small and blurred, left behind. Dystopian and exhilarating, nobody is hurt, no weapons, no crash.",
-          "refs": [
-            "../../../spec/examples/10-clara-mercier/elements/appearance/x3/accessory.front.jpg"
-          ],
+          "keep": "clara.memories/wc1.jpg",
           "aspect": "3:2",
-          "style": "cinematic",
-          "regen": true
+          "style": "cinematic"
         }
       ]
     },
@@ -1216,10 +1202,9 @@
       },
       "images": [
         {
-          "prompt": "A 2D Japanese anime film still — a hand-drawn cel-shaded illustration with bold clean ink outlines, flat colours, painted anime sky and light, not a photograph — a stone village house at the foot of the Alps in summer, a wooden table under a lime tree with an open notebook showing a child's pencil drawing of a hut (no faces in the drawing), mountains behind, late afternoon. No people.",
+          "keep": "clara.memories/mg1.jpg",
           "aspect": "3:2",
-          "style": "manga",
-          "regen": true
+          "style": "manga"
         }
       ],
       "media_files": [
@@ -1304,10 +1289,9 @@
       },
       "images": [
         {
-          "prompt": "A 2D Japanese anime film still — a hand-drawn cel-shaded illustration with bold clean ink outlines, flat colours, painted anime sky and light, not a photograph — a bright empty studio with a large window on a park, a clean wooden desk with a closed laptop and a cup, one cardboard box on the floor, plants by the window, soft morning light. Empty of people, nobody at the desk.",
+          "keep": "clara.memories/mg2.jpg",
           "aspect": "3:2",
-          "style": "manga",
-          "regen": true
+          "style": "manga"
         }
       ]
     },
@@ -1385,13 +1369,10 @@
       "age": 29,
       "images": [
         {
-          "prompt": "Redraw the first image as a colour manga illustration: clean ink lines, flat cel colours with soft screentone shading, expressive manga faces, the same composition, the same place and the same people. The woman is drawn as the manga character of the second reference image.",
-          "base": "../../../spec/examples/10-clara-mercier/elements/memories/m3/m3.jpg",
-          "restyle": true,
+          "keep": "clara.memories/mg3.jpg",
           "aspect": "3:2",
-          "style": "manga",
           "shows_character": true,
-          "reference": "a-appearance-a5-gemini-generated-image-fwe-y33e"
+          "style": "manga"
         }
       ],
       "media_files": [
@@ -1478,12 +1459,10 @@
       "age": 29,
       "images": [
         {
-          "prompt": "A 2D Japanese anime film still — a hand-drawn cel-shaded illustration with bold clean ink outlines, flat colours, painted anime sky and light, not a photograph — a grassy hillside at night above the lights of a city, a flock of sheep whose wool glows softly in pale blue and amber, and the young woman standing among them seen from behind in a long cardigan, drawn as the manga character of the reference image; stars above.",
-          "shows_character": true,
-          "reference": "a-appearance-a5-gemini-generated-image-fwe-y33e",
+          "keep": "clara.memories/mg4.jpg",
           "aspect": "3:2",
-          "style": "manga",
-          "regen": true
+          "shows_character": true,
+          "style": "manga"
         }
       ]
     }

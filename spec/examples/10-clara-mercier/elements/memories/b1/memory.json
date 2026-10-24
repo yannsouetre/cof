@@ -1,0 +1,92 @@
+{
+  "gist": {
+    "fr": "Des vacances en Bretagne, à 63 ans : Théo et moi sur nos serviettes, et tout au loin dans l'eau Léo avec Maëlle, qu'il venait de nous présenter. Je les regardais nager et je me disais que tout allait bien.",
+    "en": "A holiday in Brittany, at 63: Théo and me on our towels, and far out in the water Léo with Maëlle, whom he had just introduced to us. I watched them swim and thought that everything was fine."
+  },
+  "nature": [
+    "experienced"
+  ],
+  "when": {
+    "age": {
+      "value": 63,
+      "unit": "years"
+    },
+    "approx": true,
+    "label": {
+      "fr": "les vacances en Bretagne",
+      "en": "the holiday in Brittany"
+    }
+  },
+  "where": {
+    "label": {
+      "fr": "une plage de Bretagne",
+      "en": "a beach in Brittany"
+    }
+  },
+  "who": [
+    {
+      "identity": "self",
+      "shown": true
+    },
+    {
+      "label": {
+        "fr": "Théo",
+        "en": "Théo"
+      },
+      "shown": true,
+      "age": {
+        "value": 65,
+        "unit": "years"
+      }
+    },
+    {
+      "label": {
+        "fr": "Léo",
+        "en": "Léo"
+      },
+      "shown": true,
+      "age": {
+        "value": 30,
+        "unit": "years"
+      }
+    },
+    {
+      "label": {
+        "fr": "Maëlle, l'amie de Léo",
+        "en": "Maëlle, Léo's girlfriend"
+      },
+      "shown": true,
+      "age": {
+        "value": 29,
+        "unit": "years"
+      }
+    }
+  ],
+  "felt_then": {
+    "category": {
+      "set": "everyday",
+      "value": "serene"
+    },
+    "pad": {
+      "pleasure": 0.8,
+      "arousal": -0.2
+    }
+  },
+  "felt_now": {
+    "category": {
+      "set": "everyday",
+      "value": "serene"
+    },
+    "pad": {
+      "pleasure": 0.7,
+      "arousal": -0.3
+    }
+  },
+  "salience": 75,
+  "fidelity": "clear",
+  "tags": [
+    "holiday",
+    "beach",
+    "family"
+  ]
+}

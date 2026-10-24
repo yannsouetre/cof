@@ -640,6 +640,141 @@
             "unit": "years",
             "basis": "canonical"
           }
+        },
+        "w1": {
+          "kind": "moment",
+          "label": "Notre mariage / Our wedding",
+          "memory": "elements/memories/w1/memory.json",
+          "identity": "id1",
+          "media": [
+            "a-mem-w1"
+          ],
+          "age": {
+            "value": 31,
+            "unit": "years",
+            "basis": "canonical"
+          }
+        },
+        "g1": {
+          "kind": "moment",
+          "label": "Le diplôme de Léo / Léo's graduation",
+          "memory": "elements/memories/g1/memory.json",
+          "identity": "id1",
+          "media": [
+            "a-mem-g1"
+          ],
+          "age": {
+            "value": 56,
+            "unit": "years",
+            "basis": "canonical"
+          }
+        },
+        "f1": {
+          "kind": "moment",
+          "label": "Photo de famille / Family photo",
+          "memory": "elements/memories/f1/memory.json",
+          "identity": "id1",
+          "media": [
+            "a-mem-f1"
+          ],
+          "age": {
+            "value": 60,
+            "unit": "years",
+            "basis": "canonical"
+          }
+        },
+        "b1": {
+          "kind": "moment",
+          "label": "La plage, tous ensemble / The beach, all together",
+          "memory": "elements/memories/b1/memory.json",
+          "identity": "id1",
+          "media": [
+            "a-mem-b1"
+          ],
+          "age": {
+            "value": 63,
+            "unit": "years",
+            "basis": "canonical"
+          }
+        },
+        "p2": {
+          "kind": "period",
+          "label": "La guerre des IA / The AI war",
+          "memory": "elements/memories/p2/memory.json",
+          "identity": "id1"
+        },
+        "wb1": {
+          "kind": "moment",
+          "label": "Briefing avec Miss Tral / Briefing with Miss Tral",
+          "memory": "elements/memories/wb1/memory.json",
+          "identity": "id1",
+          "media": [
+            "a-mem-wb1"
+          ],
+          "age": {
+            "value": 29,
+            "unit": "years",
+            "basis": "canonical"
+          }
+        },
+        "wc1": {
+          "kind": "moment",
+          "label": "La poursuite / The chase",
+          "memory": "elements/memories/wc1/memory.json",
+          "identity": "id1",
+          "media": [
+            "a-mem-wc1"
+          ]
+        },
+        "mg1": {
+          "kind": "moment",
+          "label": "La maison de ma grand-mère / My grandmother's house (manga)",
+          "memory": "elements/memories/mg1/memory.json",
+          "identity": "id1",
+          "media": [
+            "a-mem-mg1",
+            "a-mem-mg1-dialogue-fr",
+            "a-mem-mg1-dialogue-en"
+          ]
+        },
+        "mg2": {
+          "kind": "moment",
+          "label": "Le premier matin dans l'atelier / The first morning in the studio (manga)",
+          "memory": "elements/memories/mg2/memory.json",
+          "identity": "id1",
+          "media": [
+            "a-mem-mg2"
+          ]
+        },
+        "mg3": {
+          "kind": "moment",
+          "label": "La rencontre avec le Martien / Meeting the Martian (manga)",
+          "memory": "elements/memories/mg3/memory.json",
+          "identity": "id1",
+          "media": [
+            "a-mem-mg3",
+            "a-mem-mg3-dialogue-fr",
+            "a-mem-mg3-dialogue-en"
+          ],
+          "age": {
+            "value": 29,
+            "unit": "years",
+            "basis": "canonical"
+          }
+        },
+        "mg4": {
+          "kind": "moment",
+          "label": "Le rêve des moutons électriques / The electric-sheep dream (manga)",
+          "memory": "elements/memories/mg4/memory.json",
+          "identity": "id1",
+          "media": [
+            "a-mem-mg4"
+          ],
+          "age": {
+            "value": 29,
+            "unit": "years",
+            "basis": "canonical"
+          }
         }
       }
     }
@@ -711,7 +846,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T12:24:04Z"
+        "computed_at": "2026-10-24T13:57:04Z"
       }
     },
     "en-manga": {
@@ -734,6 +869,13 @@
         ],
         "motion": [
           "m5"
+        ],
+        "memories": [
+          "mg1",
+          "p1",
+          "mg2",
+          "mg3",
+          "mg4"
         ]
       },
       "alternatives": {
@@ -763,7 +905,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T12:24:04Z"
+        "computed_at": "2026-10-24T13:57:04Z"
       }
     },
     "en-12": {
@@ -824,7 +966,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T12:24:04Z"
+        "computed_at": "2026-10-24T13:57:04Z"
       }
     },
     "en-65": {
@@ -850,6 +992,17 @@
         ],
         "motion": [
           "m3"
+        ],
+        "memories": [
+          "m1",
+          "p1",
+          "m2",
+          "m3",
+          "m4",
+          "w1",
+          "g1",
+          "f1",
+          "b1"
         ]
       },
       "alternatives": {
@@ -882,7 +1035,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T12:24:04Z"
+        "computed_at": "2026-10-24T13:57:04Z"
       }
     },
     "en-future": {
@@ -908,6 +1061,14 @@
         ],
         "motion": [
           "m4"
+        ],
+        "memories": [
+          "m1",
+          "p1",
+          "m2",
+          "p2",
+          "wb1",
+          "wc1"
         ]
       },
       "alternatives": {
@@ -938,7 +1099,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T12:24:04Z"
+        "computed_at": "2026-10-24T13:57:04Z"
       }
     },
     "en-agent": {
@@ -981,7 +1142,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T12:24:04Z"
+        "computed_at": "2026-10-24T13:57:04Z"
       }
     },
     "fr": {
@@ -1023,7 +1184,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T12:24:04Z"
+        "computed_at": "2026-10-24T13:57:04Z"
       }
     },
     "fr-manga": {
@@ -1046,6 +1207,13 @@
         ],
         "motion": [
           "m5"
+        ],
+        "memories": [
+          "mg1",
+          "p1",
+          "mg2",
+          "mg3",
+          "mg4"
         ]
       },
       "alternatives": {
@@ -1075,7 +1243,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T12:24:04Z"
+        "computed_at": "2026-10-24T13:57:04Z"
       }
     },
     "fr-12": {
@@ -1136,7 +1304,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T12:24:04Z"
+        "computed_at": "2026-10-24T13:57:04Z"
       }
     },
     "fr-65": {
@@ -1162,6 +1330,17 @@
         ],
         "motion": [
           "m3"
+        ],
+        "memories": [
+          "m1",
+          "p1",
+          "m2",
+          "m3",
+          "m4",
+          "w1",
+          "g1",
+          "f1",
+          "b1"
         ]
       },
       "alternatives": {
@@ -1194,7 +1373,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T12:24:04Z"
+        "computed_at": "2026-10-24T13:57:04Z"
       }
     },
     "fr-futur": {
@@ -1220,6 +1399,14 @@
         ],
         "motion": [
           "m4"
+        ],
+        "memories": [
+          "m1",
+          "p1",
+          "m2",
+          "p2",
+          "wb1",
+          "wc1"
         ]
       },
       "alternatives": {
@@ -1250,7 +1437,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T12:24:04Z"
+        "computed_at": "2026-10-24T13:57:04Z"
       }
     },
     "fr-agent": {
@@ -1293,7 +1480,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T12:24:04Z"
+        "computed_at": "2026-10-24T13:57:04Z"
       }
     }
   },
@@ -2415,14 +2602,14 @@
       "path": "elements/memories/m1/m1-1.jpg",
       "role": "memory-media",
       "mediaType": "image/jpeg",
-      "bytes": 319585,
-      "sha256": "0637e892de44948d9a835a079731d4508502c4312d7a4f52b7e6077492096401",
+      "bytes": 319452,
+      "sha256": "27b629c90eea66c8f3f86ea0cdb3b670db5436887fa00371c7b00674855839ba",
       "license": "CC-BY-4.0",
       "width": 1248,
       "height": 832,
       "style": "photo-realistic",
       "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
-      "generator": "kept from ../../../spec/examples/10-clara-mercier/elements/memories/m1/m1.jpg"
+      "generator": "kept from ../../../spec/examples/10-clara-mercier/elements/memories/m1/m1-1.jpg"
     },
     {
       "id": "a-mem-m1-2",
@@ -2491,14 +2678,14 @@
       "path": "elements/memories/m2/m2-1.jpg",
       "role": "memory-media",
       "mediaType": "image/jpeg",
-      "bytes": 185274,
-      "sha256": "7226db15bd8c497ec982bc43b5b91213350578bb0eece41536c61f2ad4b33f28",
+      "bytes": 185349,
+      "sha256": "7c30e509de220e037d15052f337dd2c8c9347e283953dcca354210dbc4198bdf",
       "license": "CC-BY-4.0",
       "width": 1248,
       "height": 712,
       "style": "photo-realistic",
       "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
-      "generator": "kept from ../../../spec/examples/10-clara-mercier/elements/memories/m2/m2.jpg"
+      "generator": "kept from ../../../spec/examples/10-clara-mercier/elements/memories/m2/m2-1.jpg"
     },
     {
       "id": "a-mem-m2-2",
@@ -2555,14 +2742,14 @@
       "path": "elements/memories/m4/m4-1.jpg",
       "role": "memory-media",
       "mediaType": "image/jpeg",
-      "bytes": 217282,
-      "sha256": "a09fc6a73da29a57950dec35dd8f0834642ed2ad489d3f4abad13ff64c6b4731",
+      "bytes": 217246,
+      "sha256": "846a17a070e4553c5af7f062843dbcc943b2d45e6f648404f89947246a6b4b6f",
       "license": "CC-BY-4.0",
       "width": 1248,
       "height": 832,
       "style": "cinematic",
       "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
-      "generator": "kept from ../../../spec/examples/10-clara-mercier/elements/memories/m4/m4.jpg"
+      "generator": "kept from ../../../spec/examples/10-clara-mercier/elements/memories/m4/m4-1.jpg"
     },
     {
       "id": "a-mem-m4-2",
@@ -2623,6 +2810,190 @@
       "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
     },
     {
+      "id": "a-mem-w1",
+      "path": "elements/memories/w1/w1.jpg",
+      "role": "memory-media",
+      "mediaType": "image/jpeg",
+      "bytes": 288202,
+      "sha256": "2f7879d1c690506ccc8ca8cbfc8a70ff7765272661e0dd213d7ecb02ed877a56",
+      "license": "CC-BY-4.0",
+      "width": 1248,
+      "height": 832,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "kept from clara.memories/w1.jpg"
+    },
+    {
+      "id": "a-mem-g1",
+      "path": "elements/memories/g1/g1.jpg",
+      "role": "memory-media",
+      "mediaType": "image/jpeg",
+      "bytes": 278169,
+      "sha256": "dbdf7211d61a7bb82bc9d13c29b917ceabd3fffb8bec743f85a4e703e684b0e3",
+      "license": "CC-BY-4.0",
+      "width": 1248,
+      "height": 832,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "kept from clara.memories/g1.jpg"
+    },
+    {
+      "id": "a-mem-f1",
+      "path": "elements/memories/f1/f1.jpg",
+      "role": "memory-media",
+      "mediaType": "image/jpeg",
+      "bytes": 311728,
+      "sha256": "5cf5d5882d0d9713cac3b81d1d94325172c440ca65798a2e3d48d57993dcb790",
+      "license": "CC-BY-4.0",
+      "width": 1248,
+      "height": 832,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "kept from clara.memories/f1.jpg"
+    },
+    {
+      "id": "a-mem-b1",
+      "path": "elements/memories/b1/b1.jpg",
+      "role": "memory-media",
+      "mediaType": "image/jpeg",
+      "bytes": 273465,
+      "sha256": "3ef5fbb97affaefa1b2b59ae69ff7146d2776e28178723b79cd28a86a6c59b9e",
+      "license": "CC-BY-4.0",
+      "width": 1248,
+      "height": 832,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "kept from clara.memories/b1.jpg"
+    },
+    {
+      "id": "a-mem-wb1",
+      "path": "elements/memories/wb1/wb1.jpg",
+      "role": "memory-media",
+      "mediaType": "image/jpeg",
+      "bytes": 216513,
+      "sha256": "d86bed6b392c41a8814a94c63ebff3c33e0f92337915df2f3d2cac6d803b7024",
+      "license": "CC-BY-4.0",
+      "width": 1248,
+      "height": 832,
+      "style": "cinematic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "kept from clara.memories/wb1.jpg"
+    },
+    {
+      "id": "a-mem-wc1",
+      "path": "elements/memories/wc1/wc1.jpg",
+      "role": "memory-media",
+      "mediaType": "image/jpeg",
+      "bytes": 220392,
+      "sha256": "a7eb8b7415ea5bfbd283717fd27a85e5f923d96b5a0e95a3f3d151f97a34a7be",
+      "license": "CC-BY-4.0",
+      "width": 1248,
+      "height": 832,
+      "style": "cinematic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "kept from clara.memories/wc1.jpg"
+    },
+    {
+      "id": "a-mem-mg1",
+      "path": "elements/memories/mg1/mg1.jpg",
+      "role": "memory-media",
+      "mediaType": "image/jpeg",
+      "bytes": 321541,
+      "sha256": "d2477f15d9a7705909839c0f33358e7c07fc13ca2577ff015de4ff9e32e78321",
+      "license": "CC-BY-4.0",
+      "width": 1248,
+      "height": 832,
+      "style": "manga",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "kept from clara.memories/mg1.jpg"
+    },
+    {
+      "id": "a-mem-mg1-dialogue-fr",
+      "path": "elements/memories/mg1/m1.dialogue.fr.md",
+      "role": "memory-media",
+      "mediaType": "text/markdown",
+      "bytes": 468,
+      "sha256": "36217718d2ef7806edd689a3f339aa3dc76a8f9076c7404fce08b63bee6ae151",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "language": "fr"
+    },
+    {
+      "id": "a-mem-mg1-dialogue-en",
+      "path": "elements/memories/mg1/m1.dialogue.en.md",
+      "role": "memory-media",
+      "mediaType": "text/markdown",
+      "bytes": 403,
+      "sha256": "986b202f88dc5529dfdc161a80b29c13224511158c8be10dc59f54dbf13a8930",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "language": "en"
+    },
+    {
+      "id": "a-mem-mg2",
+      "path": "elements/memories/mg2/mg2.jpg",
+      "role": "memory-media",
+      "mediaType": "image/jpeg",
+      "bytes": 287844,
+      "sha256": "89dcd9a7d59e6907bb6f912dff9a9591cc96830eca621200925db74abcfa65bf",
+      "license": "CC-BY-4.0",
+      "width": 1248,
+      "height": 832,
+      "style": "manga",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "kept from clara.memories/mg2.jpg"
+    },
+    {
+      "id": "a-mem-mg3",
+      "path": "elements/memories/mg3/mg3.jpg",
+      "role": "memory-media",
+      "mediaType": "image/jpeg",
+      "bytes": 271216,
+      "sha256": "9752ffe89e0b29f676566aabc584d82f395572ec042a56eb5e116353057b234b",
+      "license": "CC-BY-4.0",
+      "width": 1248,
+      "height": 832,
+      "style": "manga",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "kept from clara.memories/mg3.jpg"
+    },
+    {
+      "id": "a-mem-mg3-dialogue-fr",
+      "path": "elements/memories/mg3/m3.dialogue.fr.md",
+      "role": "memory-media",
+      "mediaType": "text/markdown",
+      "bytes": 651,
+      "sha256": "f090a952a7576e6aa26604917648a320247ec38601f6668d1f334e7ca569cc71",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "language": "fr"
+    },
+    {
+      "id": "a-mem-mg3-dialogue-en",
+      "path": "elements/memories/mg3/m3.dialogue.en.md",
+      "role": "memory-media",
+      "mediaType": "text/markdown",
+      "bytes": 613,
+      "sha256": "79c3c7b47cb64d83d364a56241eca6548aa4d0d656d7f90926846e40038174b6",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "language": "en"
+    },
+    {
+      "id": "a-mem-mg4",
+      "path": "elements/memories/mg4/mg4.jpg",
+      "role": "memory-media",
+      "mediaType": "image/jpeg",
+      "bytes": 208629,
+      "sha256": "df7eed3a0874bd50b099d296fc59d31b6f13327cf741a135686137435a1be5ed",
+      "license": "CC-BY-4.0",
+      "width": 1134,
+      "height": 832,
+      "style": "manga",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "kept from clara.memories/mg4.jpg"
+    },
+    {
       "id": "thumbnail",
       "path": "Thumbnails/thumbnail.png",
       "role": "derived",
@@ -2659,7 +3030,7 @@
   },
   "provenance": {
     "created": "2026-10-11T10:32:23Z",
-    "modified": "2026-10-24T12:24:04Z",
+    "modified": "2026-10-24T13:57:04Z",
     "generator": "cof-builder/0.7.1",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/10-clara-mercier",
@@ -2808,7 +3179,7 @@
       "archive"
     ],
     "computed_by": "cof-cli/1.1.0",
-    "computed_at": "2026-10-24T12:24:04Z"
+    "computed_at": "2026-10-24T13:57:04Z"
   },
   "coverage": {
     "elements": [
@@ -2820,7 +3191,7 @@
       "motion",
       "memories"
     ],
-    "variants": 59,
+    "variants": 70,
     "presets": 12,
     "identities": 1
   }

@@ -1,0 +1,80 @@
+{
+  "gist": {
+    "fr": "Léo, 23 ans, en toge noire sur les marches de l'université, son diplôme de master à la main et ce sourire qu'il a depuis qu'il est petit. J'ai pleuré, évidemment.",
+    "en": "Léo, 23, in a black gown on the university steps, his master's diploma in hand and the smile he has had since he was little. I cried, of course."
+  },
+  "nature": [
+    "experienced"
+  ],
+  "when": {
+    "age": {
+      "value": 56,
+      "unit": "years"
+    },
+    "label": {
+      "fr": "le diplôme de Léo",
+      "en": "Léo's graduation"
+    }
+  },
+  "where": {
+    "label": {
+      "fr": "les marches de l'université, Lyon",
+      "en": "the university steps, Lyon"
+    }
+  },
+  "who": [
+    {
+      "identity": "self",
+      "shown": true
+    },
+    {
+      "label": {
+        "fr": "Léo, mon fils",
+        "en": "Léo, my son"
+      },
+      "shown": true,
+      "age": {
+        "value": 23,
+        "unit": "years"
+      }
+    },
+    {
+      "label": {
+        "fr": "Théo",
+        "en": "Théo"
+      },
+      "shown": true,
+      "age": {
+        "value": 58,
+        "unit": "years"
+      }
+    }
+  ],
+  "felt_then": {
+    "category": {
+      "set": "everyday",
+      "value": "proud"
+    },
+    "pad": {
+      "pleasure": 0.9,
+      "arousal": 0.5
+    }
+  },
+  "felt_now": {
+    "category": {
+      "set": "everyday",
+      "value": "proud"
+    },
+    "pad": {
+      "pleasure": 0.8,
+      "arousal": 0.1
+    }
+  },
+  "salience": 85,
+  "fidelity": "vivid",
+  "tags": [
+    "leo",
+    "family",
+    "graduation"
+  ]
+}
