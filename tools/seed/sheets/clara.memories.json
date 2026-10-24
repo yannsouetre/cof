@@ -45,7 +45,6 @@
     "en-future": [
       "m1",
       "p1",
-      "m2",
       "p2",
       "wb1",
       "wc1"
@@ -53,7 +52,6 @@
     "fr-futur": [
       "m1",
       "p1",
-      "m2",
       "p2",
       "wb1",
       "wc1"
@@ -889,9 +887,19 @@
       },
       "images": [
         {
-          "keep": "clara.memories/b1.jpg",
+          "prompt": "Turn the two seated people in the foreground of the first image so that they are seen from behind, both looking out at the sea towards the two small figures waving in the shallow water; keep their towel, clothes, hat, the beach, the light and everything else exactly identical.",
+          "base": "clara.memories/b1.jpg",
+          "shows_character": true,
+          "reference": "a-appearance-a3-face-2u2o",
           "aspect": "3:2",
-          "shows_character": true
+          "regen": true
+        },
+        {
+          "prompt": "A holiday photograph on a wide sandy beach in Brittany on a sunny afternoon, taken from behind: in the foreground, seen from the back, the woman of the first reference image, aged about 63, in a light summer dress and straw hat, sitting on a towel next to her husband of about 65 in a linen shirt, both facing the sea and watching; far away in the shallow water, two small figures, an adult man and an adult woman, waving at them. Style of a family photograph printed and kept for years: natural colours, slight fade, soft grain.",
+          "shows_character": true,
+          "reference": "a-appearance-a3-face-2u2o",
+          "aspect": "3:2",
+          "regen": true
         }
       ]
     },
@@ -1040,9 +1048,16 @@
       "images": [
         {
           "keep": "clara.memories/wb1.jpg",
-          "aspect": "3:2",
           "shows_character": true,
+          "aspect": "3:2",
           "style": "cinematic"
+        },
+        {
+          "prompt": "Remove the second holographic table-screen in the background of the first image (the glowing screen far behind the two figures), replacing it with the plain dark hangar wall and machinery; everything else — the two figures, the foreground holographic table, the lighting, the colours, the framing — stays exactly identical.",
+          "base": "clara.memories/wb1.jpg",
+          "aspect": "3:2",
+          "style": "cinematic",
+          "regen": true
         }
       ]
     },
@@ -1125,9 +1140,13 @@
       },
       "images": [
         {
-          "keep": "clara.memories/wc1.jpg",
+          "prompt": "A cinematic night action still on an elevated expressway through a futuristic city of towers and neon, rain-wet asphalt: the armoured motorbike of the reference image — exactly that bike, with its full enclosed outer shell, cockpit canopy and lights as on the sheet — races TOWARDS the camera, seen from the front at a low angle, its rider hidden inside the closed cockpit; a small recon drone flies just above it; behind it, in the distance, three sleek driverless pursuit cars with white headlights, losing ground. Exhilarating, nobody is hurt, no weapons, no crash.",
+          "refs": [
+            "../../../spec/examples/10-clara-mercier/elements/appearance/x3/accessory.front.jpg"
+          ],
           "aspect": "3:2",
-          "style": "cinematic"
+          "style": "cinematic",
+          "regen": true
         }
       ]
     },
@@ -1208,6 +1227,13 @@
         }
       ],
       "media_files": [
+        {
+          "file": "clara.memories/m1.riviere.mp3",
+          "mediaType": "audio/mpeg",
+          "duration_s": 10,
+          "generator": "procedural ambience (numpy + ffmpeg): running water and crickets",
+          "source_type": "algorithmicMedia"
+        },
         {
           "file": "clara.memories/m1.dialogue.fr.md",
           "mediaType": "text/markdown",
@@ -1369,10 +1395,16 @@
       "age": 29,
       "images": [
         {
-          "keep": "clara.memories/mg3.jpg",
-          "aspect": "3:2",
+          "prompt": "A 2D Japanese anime film still — a hand-drawn cel-shaded illustration with bold clean ink outlines, flat colours, painted anime sky and light, not a photograph: a river embankment in Lyon at blue hour, old facades lit across the water, a stone quay; a young woman in a light cream jacket and jeans (drawn as the manga character of the first reference image) talks with a tall slender Martian (the character of the other two reference images: bright green skin, bald rounder head, big black almond eyes, pointed ears, fitted silver jacket, silver trousers, dark boots) who shows her a glowing phone; both seen from the side. Everything, background included, drawn in the same anime style.",
           "shows_character": true,
-          "style": "manga"
+          "reference": "a-appearance-a5-gemini-generated-image-fwe-y33e",
+          "refs": [
+            "../../../spec/examples/11-duo-clara-martien/elements/appearance/f1/head.front.jpg",
+            "../../../spec/examples/11-duo-clara-martien/elements/appearance/b1/body.front.jpg"
+          ],
+          "aspect": "3:2",
+          "style": "manga",
+          "regen": true
         }
       ],
       "media_files": [
