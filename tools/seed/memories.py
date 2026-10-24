@@ -231,7 +231,7 @@ def add_memories(d: Path, m: dict, s: dict, images: dict[str, list[tuple[bytes, 
                                     "derived_from": aid, "method": "thumbnail", "digitalSourceType": src_type})
                 v["media"].append(aid + "-poster")
         if images.get(vid) or mem.get("media_files"):
-            if any(img.get("shows_character") for img in mem["images"]):
+            if images.get(vid) and any(img.get("shows_character") for img in mem["images"]):
                 v["age"] = {"value": mem["age"], "unit": "years", "basis": "canonical"}
                 who = node.setdefault("who", [])
                 if not any(w.get("identity") == "self" for w in who):
@@ -306,6 +306,7 @@ def main(argv=None) -> int:
     ap.add_argument("--size", default="1K", help="image size requested from the API (1K, 2K; interactions API only)")
     ap.add_argument("--api", default=DEFAULT_API, choices=["generate", "interactions"], help="generate_content (default) or the Interactions API")
     ap.add_argument("--dry-run", action="store_true", help="placeholder images, no API call")
+    ap.add_argument("--fresh", action="store_true", help="regenerate every image, even those found in out/images from an earlier run (per entry: \"regen\": true)")
     ap.add_argument("--prompts-only", action="store_true")
     ap.add_argument("--keep", action="store_true", help="keep the unpacked folder next to the .cof")
     a = ap.parse_args(argv)
@@ -346,6 +347,11 @@ def main(argv=None) -> int:
                     jpg, w, h = to_jpeg(data, None)
                     images.setdefault(mem["id"], []).append((jpg, w, h, f"kept from {img['keep']}"))
                     say(f"   keep {key} {w}x{h} ({img['keep']})"); continue
+                prev = keep_dir / f"{mem['id']}-{n}.jpg"              # an image of a previous run: reused unless `regen` (no API call)
+                if prev.is_file() and not a.dry_run and not img.get("regen") and not a.fresh:
+                    jpg, w, h = to_jpeg(prev.read_bytes(), None)
+                    images.setdefault(mem["id"], []).append((jpg, w, h, f"Google Gemini ({a.model}), earlier run"))
+                    say(f"   reuse {key} {w}x{h} ({prev.name})"); continue
                 refs = []
                 if img.get("base"):
                     refs.append(to_jpeg((sheet_dir / img["base"]).read_bytes(), 1536)[0])
