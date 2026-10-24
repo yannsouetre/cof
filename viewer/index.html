@@ -108,13 +108,28 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 .nude{filter:blur(28px);cursor:pointer}
 .nudewrap{position:relative;display:block}
 .nudewrap span{position:absolute;inset:auto 6px 6px 6px;font-size:.7rem;background:var(--panel);color:var(--ink);border-radius:6px;padding:2px 6px;text-align:center}
+.tl{position:relative;padding-left:22px;margin:8px 0}
+.tl:before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tl .node{position:relative;margin:0 0 18px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.tl .node:before{content:"";position:absolute;left:-20px;top:16px;width:10px;height:10px;border-radius:50%;background:var(--accent);border:2px solid var(--panel)}
+.tl .node.period:before{border-radius:3px;background:var(--offer)}
+.tl .node.undated:before{background:var(--muted)}
+.tl .when{font:600 .78rem var(--mono);color:var(--accent)}
+.tl .node.period .when{color:var(--offer)}
+.tl .ttl{font:700 1.02rem var(--display);margin:2px 0 4px}
+.tl .gist{max-width:72ch;overflow-wrap:anywhere;margin:4px 0 8px}
+.tl .marks{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0 8px}
+.tl .ctx{font-size:.82rem;color:var(--muted);margin:4px 0}
+.tl details{margin:6px 0}.tl summary{cursor:pointer;font-size:.85rem;color:var(--accent)}
+.tl .poster{position:relative;display:inline-block;cursor:pointer}.tl .poster span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2rem;color:#fff;text-shadow:0 0 8px #000}
+.tl a.lk{font-size:.82rem;margin-right:8px}
 @media (prefers-reduced-motion:no-preference){.pcard,.chip,button{transition:background .15s,border-color .15s}}
 </style>
 </head>
 <body>
 <header>
   <div class="brand"><svg class="logo" viewBox="0 0 64 64" width="30" height="30" aria-hidden="true"><circle cx="32" cy="17.5" r="13" fill="currentColor"/><path d="M5.5 60a26.5 26 0 0 1 53 0Z" fill="currentColor"/><circle cx="32" cy="47" r="7" fill="var(--accent-soft)"/></svg>
-  <h1>COF Explorer <span>· Character Open File 1.0 · <span id="ver">explorer 1.0</span></span></h1></div>
+  <h1>COF Explorer <span>· Character Open File 1.0 · <span id="ver">explorer 1.1</span></span></h1></div>
   <span class="muted tagline" data-i="tagline">Read-only. Your file never leaves your browser.</span>
   <span class="spacer"></span>
   <button id="btnOpen" class="primary" data-i="open">Open a .cof</button>
@@ -149,9 +164,9 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 "use strict";
 /* ---------- i18n ---------- */
 const T={en:{},fr:{rightsShort:"Droits",allRights:"Tous les droits ›",commercial:"usage commercial",redistrib:"redistribution",voiceClone:"clonage de voix",training:"entraînement",close:"Fermer ce fichier",nonProfit:"personnel, non lucratif",personalProfit:"personnel, lucratif",corporation:"autorisé",dark:"🌙 Sombre",light:"☀️ Clair",yesW:"oui",noW:"non",tagline:"Lecture seule. Votre fichier ne quitte pas votre navigateur.",open:"Ouvrir un .cof",sample1:"Exemple : Clara",sample2:"Exemple : Clara et Martien",dropTitle:"Déposez un fichier .cof ici",dropText:"Un .cof est un fichier ouvert qui contient tout un personnage IA — personnalité, apparence, voix, poses, compétences d'agent — et ses droits. Ouvrez-en un pour parcourir ses presets, changer de langue ou d'âge en un clic, et voir ce que son auteur autorise.",build:"Créer le vôtre avec le builder →",noValidate:"Cet explorateur lit les fichiers ; il ne les valide pas. Utilisez cof validate pour cela.",
-look:"Apparence",offered:"Proposé avec ce preset",personality:"Personnalité",voice:"Voix",poses:"Poses et mouvements",files:"Compétences et fichiers",rights:"Droits",about:"Fiche",presets:"Presets",age:"âge",noAge:"âge non déclaré",intimate:"Un élément intime existe pour ce preset ; l'explorateur ne l'affiche jamais.",switchTo:"Changer",none:"aucun",style:"style",completeness:"complétude",backstage:"Éléments en coulisses (cités par aucun preset)",yes:"oui",no:"non",characters:"Personnages",loading:"Lecture…",badFile:"Ce fichier n'est pas un .cof lisible : ",fictional:"fictif",real:"personne réelle",consent:"consentement enregistré",noConsent:"pas de consentement enregistré",download:"Le fichier d'exemple n'a pas pu être chargé (page ouverte hors ligne ?) — ouvrez un .cof avec le bouton ou glissez-le ici. Détail : ",
+look:"Apparence",memories:"Souvenirs",undated:"Sans date",period:"période",memNote:"Ce que le personnage retient, du plus ancien au plus récent. Un souvenir « secret » n'est jamais raconté ; « réservé », seulement quand cela compte.",memExplicit:"Souvenir explicite : l'explorateur n'affiche jamais ses médias.",memText:"Texte",memLinks:"Liens",offered:"Proposé avec ce preset",personality:"Personnalité",voice:"Voix",poses:"Poses et mouvements",files:"Compétences et fichiers",rights:"Droits",about:"Fiche",presets:"Presets",age:"âge",noAge:"âge non déclaré",intimate:"Un élément intime existe pour ce preset ; l'explorateur ne l'affiche jamais.",switchTo:"Changer",none:"aucun",style:"style",completeness:"complétude",backstage:"Éléments en coulisses (cités par aucun preset)",yes:"oui",no:"non",characters:"Personnages",loading:"Lecture…",badFile:"Ce fichier n'est pas un .cof lisible : ",fictional:"fictif",real:"personne réelle",consent:"consentement enregistré",noConsent:"pas de consentement enregistré",download:"Le fichier d'exemple n'a pas pu être chargé (page ouverte hors ligne ?) — ouvrez un .cof avec le bouton ou glissez-le ici. Détail : ",
 perm:{avatarPermission:"Qui peut l'incarner",commercialUsage:"Usage commercial",modification:"Modification",allowRedistribution:"Redistribution",creditNotation:"Crédit",allowExcessivelyViolentUsage:"Violence excessive",allowSexualUsage:"Usage sexuel",allowPoliticalOrReligiousUsage:"Usage politique ou religieux",allowAntisocialOrHateUsage:"Usage haineux",allowVoiceCloning:"Clonage de la voix",allowTraining:"Entraînement",allowImpersonationOfRealPerson:"Usurper une personne réelle",aiDisclosure:"Signaler que c'est une IA",ageRating:"Classification",minUserAge:"Âge minimum de l'utilisateur"}}};
-const EN={yesW:"yes",noW:"no",rightsShort:"Rights",allRights:"All rights ›",commercial:"commercial use",redistrib:"redistribution",voiceClone:"voice cloning",training:"training",close:"Close this file",nonProfit:"personal, non-profit",personalProfit:"personal, for profit",corporation:"allowed",dark:"🌙 Dark",light:"☀️ Light",look:"Look",offered:"Offered with this preset",personality:"Personality",voice:"Voice",poses:"Poses & motion",files:"Skills & files",rights:"Rights",about:"Card",presets:"Presets",age:"age",noAge:"age not declared",intimate:"An intimate element exists for this preset; the explorer never displays it.",switchTo:"Switch",none:"none",style:"style",completeness:"completeness",backstage:"Backstage elements (used by no preset)",yes:"yes",no:"no",characters:"Characters",loading:"Reading…",badFile:"This file is not a readable .cof: ",fictional:"fictional",real:"real person",consent:"consent recorded",noConsent:"no consent recorded",download:"The example file could not be loaded (page opened offline?) — open a .cof with the button or drop it here. Details: ",
+const EN={yesW:"yes",noW:"no",memories:"Memories",undated:"Undated",period:"period",memNote:"What the character remembers, oldest first. A “secret” memory is never told; “guarded”, only when it matters.",memExplicit:"Explicit memory: the explorer never displays its media.",memText:"Text",memLinks:"Links",rightsShort:"Rights",allRights:"All rights ›",commercial:"commercial use",redistrib:"redistribution",voiceClone:"voice cloning",training:"training",close:"Close this file",nonProfit:"personal, non-profit",personalProfit:"personal, for profit",corporation:"allowed",dark:"🌙 Dark",light:"☀️ Light",look:"Look",offered:"Offered with this preset",personality:"Personality",voice:"Voice",poses:"Poses & motion",files:"Skills & files",rights:"Rights",about:"Card",presets:"Presets",age:"age",noAge:"age not declared",intimate:"An intimate element exists for this preset; the explorer never displays it.",switchTo:"Switch",none:"none",style:"style",completeness:"completeness",backstage:"Backstage elements (used by no preset)",yes:"yes",no:"no",characters:"Characters",loading:"Reading…",badFile:"This file is not a readable .cof: ",fictional:"fictional",real:"real person",consent:"consent recorded",noConsent:"no consent recorded",download:"The example file could not be loaded (page opened offline?) — open a .cof with the button or drop it here. Details: ",
 perm:{avatarPermission:"Who may embody it",commercialUsage:"Commercial use",modification:"Modification",allowRedistribution:"Redistribution",creditNotation:"Credit",allowExcessivelyViolentUsage:"Excessive violence",allowSexualUsage:"Sexual use",allowPoliticalOrReligiousUsage:"Political or religious use",allowAntisocialOrHateUsage:"Hateful use",allowVoiceCloning:"Voice cloning",allowTraining:"Training",allowImpersonationOfRealPerson:"Impersonate a real person",aiDisclosure:"Disclose it is an AI",ageRating:"Rating",minUserAge:"Minimum user age"}};
 let LANG="en";try{LANG=localStorage.getItem("cofv-lang")||((navigator.language||"").startsWith("fr")?"fr":"en")}catch(e){}
 const tr=k=>(LANG==="fr"?T.fr[k]:EN[k])??EN[k]??k;
@@ -242,7 +257,7 @@ async function openBuffer(buf){
   try{
     Z=await zipRead(buf);const mf=await jsonAt("manifest.json");if(!mf)throw new Error("manifest.json missing");
     for(const u of urls.values())URL.revokeObjectURL(u);urls.clear();
-    M=mf;_A=null;filter={};tab="look";curChar=charIds()[0];curPreset=charDefault(curChar);
+    M=mf;_A=null;memNodes.clear();filter={};tab="look";curChar=charIds()[0];curPreset=charDefault(curChar);
     document.getElementById("drop").hidden=true;document.getElementById("app").hidden=false;render();
   }catch(e){err.textContent=tr("badFile")+e.message;err.hidden=false}
 }
@@ -279,6 +294,49 @@ async function render(){
 function nudeSet(){const n=new Set();for(const [cat,e] of Object.entries(M.elements||{}))for(const vid of Object.keys(e.variants||{})){const v=resolveVariant(cat,vid);if(v&&(v.nudity===true||v.kind==="intimate"))for(const k of ["images","derived"])for(const a of v[k]||[])n.add(a)}return n}
 async function gallery(aids,cap){const NS=nudeSet();const out=[];for(const aid of aids){const a=A()[aid];if(!a||!String(a.mediaType||"").startsWith("image/"))continue;const u=await urlOf(aid);if(u)out.push(`<figure>${NS.has(aid)?`<span class="nudewrap"><img src="${u}" alt="${esc(cap||"")}" class="nude" data-reveal><span>${LANG==="fr"?"nudité — cliquer pour afficher":"nudity — click to show"}</span></span>`:`<img src="${u}" alt="${esc(cap||"")}" data-zoom>`}<figcaption>${esc([a.subject,a.angle].filter(Boolean).join(" · "))}</figcaption></figure>`)}return out.join("")}
 
+/* ---------- memories (RFC 0002: node files, timeline order, gist language) ---------- */
+const memNodes=new Map();
+async function memNode(vid){if(!memNodes.has(vid)){const v=resolveVariant("memories",vid);memNodes.set(vid,(v&&v.memory?await jsonAt(v.memory):null)||{})}return memNodes.get(vid)}
+function yearOf(d){const m=/^(-?\d{1,4})(?:-(\d{2})(?:-(\d{2}))?)?$/.exec(String(d||""));if(!m)return null;return +m[1]+((+m[2]||7)-1)/12+((+m[3]||15)-1)/365}
+function nodePoint(kind,n){const w=n.when||{};const p=kind==="period"?(w.from||w.to||{}):w;return [ageYears(p.age),yearOf(p.date)]}
+function memTimeline(vids,nodes){
+  const by=[];for(const v of vids){const [a,y]=nodePoint(resolveVariant("memories",v).kind,nodes[v]);if(a!==null&&y!==null)by.push(y-a)}
+  const birth=by.length?by.sort((x,y)=>x-y)[Math.floor(by.length/2)]:null;const key={};
+  for(const v of vids){let [a,y]=nodePoint(resolveVariant("memories",v).kind,nodes[v]);if(a===null&&y!==null)a=birth!==null?y-birth:10000+y;if(a!==null)key[v]=a}
+  for(let i=0;i<vids.length;i++){let ch=false;for(const v of vids){if(v in key)continue;for(const l of nodes[v].links||[]){const [c,,tg]=String(l.to||"").split(/\/(.*)/);if(c==="memories"&&tg in key){key[v]=key[tg]+0.001;ch=true;break}}}if(!ch)break}
+  const dated=vids.filter(v=>v in key).sort((x,y)=>key[x]-key[y]||vids.indexOf(x)-vids.indexOf(y));return [...dated,...vids.filter(v=>!(v in key))]}
+function textIn(o,lang){if(!o||typeof o!=="object")return "";const low={};for(const [k,v] of Object.entries(o))low[k.toLowerCase()]=v;return low[lang.toLowerCase()]||low[lang.split("-")[0].toLowerCase()]||Object.values(o)[0]||""}
+function gistLang(pid,vid,n){const g=n.gist||{};if(!Object.keys(g).length)return ["",""];const want=[];const pers=(resolved(slots(pid)).personality||[])[0];if(pers&&pers.language)want.push(pers.language);const il=(ids()[variantOwner("memories",vid)]||{}).language;if(il)want.push(il);want.push(LANG);const low={};for(const k of Object.keys(g))low[k.toLowerCase()]=k;for(const w of want){const k=low[w.toLowerCase()]||Object.keys(low).find(x=>x.split("-")[0]===w.toLowerCase().split("-")[0]);if(k)return [low[k],g[low[k]]]}const k=Object.keys(g)[0];return [k,g[k]]}
+function whenLabel(kind,n,lang){const w=n.when||{};const lab=textIn(w.label,lang);let fig="";if(kind==="period"){const f=w.from||{},t=w.to||{};const fa=ageYears(f.age),ta=ageYears(t.age);fig=(fa!==null||ta!==null)?(ta===null?`${tr("age")} ${fa}`:fa===null?`→ ${tr("age")} ${ta}`:`${tr("age")} ${fa}–${ta}`):[f.date,t.date].filter(Boolean).join(" – ")}else{const a=ageYears(w.age);fig=a!==null?`${w.approx?"~":""}${tr("age")} ${a}`:"";if(w.date)fig=fig?`${fig}, ${w.date}`:w.date}return lab&&fig?`${lab} (${fig})`:(lab||fig)}
+function effMedia(vid){const seen=new Set();let c=vid;while(c&&!seen.has(c)){seen.add(c);const v=resolveVariant("memories",c)||{};if(v.media&&v.media.length)return v.media;c=String(v.media_from||"").split("/")[1]}return []}
+async function renderMemories(pid,memIds,app){
+  const nodes={};for(const v of memIds)nodes[v]=await memNode(v);
+  const order=memTimeline(memIds,nodes);const NS=nudeSet();
+  let t=`<p class="note">${tr("memNote")}</p><div class="tl">`;
+  for(const vid of order){
+    const rv=resolveVariant("memories",vid)||{},n=nodes[vid],kind=rv.kind;const [lang,gist]=gistLang(pid,vid,n);
+    const wl=whenLabel(kind,n,lang);const undated=!wl;
+    const marks=[...(n.nature||[]).filter(x=>x!=="experienced"),...(n.disclosure&&n.disclosure!=="open"?[n.disclosure]:[]),...(n.fidelity&&n.fidelity!=="clear"?[n.fidelity]:[]),...(n.origin==="lived"?["lived"]:[]),...(n.visibility==="personal"?["personal"]:[]),...(n.factual===true?["factual"]:[])];
+    t+=`<div class="node ${kind==="period"?"period":""} ${undated?"undated":""}" id="mem-${esc(vid)}"><div class="when">${esc(wl||tr("undated"))}${kind==="period"?` · ${tr("period")}`:""}</div><div class="ttl">${esc(rv.label||vid)}</div>`;
+    if(marks.length)t+=`<div class="marks">${marks.map(m=>`<span class="badge${m==="secret"||m==="personal"?" warn":""}">${esc(m)}</span>`).join("")}</div>`;
+    t+=`<div class="gist">${md(gist)}</div>`;
+    const where=textIn((n.where||{}).label,lang),who=(n.who||[]).filter(w=>w.label).map(w=>textIn(w.label,lang));
+    if(where||who.length)t+=`<div class="ctx">${where?`📍 ${esc(where)}`:""}${where&&who.length?" · ":""}${who.length?`👤 ${esc(who.join(", "))}`:""}</div>`;
+    if(n.explicit){t+=`<p class="note">${tr("memExplicit")}</p>`}
+    else{
+      const med=effMedia(vid).map(a=>A()[a]).filter(Boolean);
+      const imgs=med.filter(a=>String(a.mediaType||"").startsWith("image/")&&!a.derived_from);
+      if(imgs.length)t+=`<div class="gallery">${await gallery(imgs.map(a=>a.id),rv.label)}</div>`;
+      for(const a of med.filter(a=>String(a.mediaType||"").startsWith("video/"))){const u=await urlOf(a.id);const poster=med.find(x=>x.derived_from===a.id&&String(x.mediaType||"").startsWith("image/"));const pu=poster?await urlOf(poster.id):null;if(u)t+=`<div><video controls preload="none" width="360" src="${u}"${pu?` poster="${pu}"`:""}></video></div>`}
+      for(const a of med.filter(a=>String(a.mediaType||"").startsWith("audio/"))){const u=await urlOf(a.id);if(u)t+=`<div><audio controls preload="none" src="${u}"></audio>${a.duration_s?` <span class="muted mono">${esc(a.duration_s)} s</span>`:""}</div>`}
+      const texts=med.filter(a=>String(a.mediaType||"").startsWith("text/"));
+      for(const a of texts){const b=await bytes(a.path);if(!b)continue;const tx=dec.decode(b);const open=!a.language||a.language.toLowerCase().split("-")[0]===lang.toLowerCase().split("-")[0];t+=`<details${open?" open":""}><summary>${tr("memText")}${a.language?` <span class="badge">${esc(a.language)}</span>`:""}</summary><div class="text">${md(tx)}</div></details>`}
+    }
+    const links=(n.links||[]).map(l=>{const [c,tg]=String(l.to||"").split(/\/(.*)/);const lab=textIn(l.label,lang);const tl=c==="memories"&&V("memories")[tg]?(resolveVariant("memories",tg).label||tg):String(l.to);return c==="memories"&&memIds.includes(tg)?`<a class="lk" href="#mem-${esc(tg)}">${esc(l.type)} → ${esc(tl)}</a>${lab?`<span class="muted" style="font-size:.82rem">${esc(lab)}</span> `:""}`:`<span class="lk muted">${esc(l.type)} → ${esc(tl)}</span>`});
+    if(links.length)t+=`<div class="ctx">${links.join("")}</div>`;
+    t+=`</div>`}
+  return t+`</div>`}
+
 async function renderPreset(){
   const main=document.getElementById("main");const pid=curPreset;if(!pid){main.innerHTML="";return}
   const p=P()[pid],I=identityOf(presetOwner(pid)),age=presetAge(pid),perms=permsOf(pid);
@@ -295,7 +353,9 @@ async function renderPreset(){
     <div class="rsum"><b class="muted" style="font-size:.8rem">${tr("rightsShort")}</b>${rightsSummary(perms)}<button class="more" data-tab="rights">${tr("allRights")}</button></div>
     <p class="text">${esc(I.summary||M.summary||"")}</p>${sw.join("")}
     ${hasIntimate?`<p class="note">${tr("intimate")}</p>`:""}</div></div>`;
-  const tabs=[["look",tr("look")],["personality",tr("personality")],["voice",tr("voice")],["poses",tr("poses")],["files",tr("files")],["rights",tr("rights")]];
+  const memIds=(slots(pid).memories||[]).filter(v=>V("memories")[v]);
+  const tabs=[["look",tr("look")],["personality",tr("personality")],...(memIds.length?[["memories",tr("memories")+" ("+memIds.length+")"]]:[]),["voice",tr("voice")],["poses",tr("poses")],["files",tr("files")],["rights",tr("rights")]];
+  if(tab==="memories"&&!memIds.length)tab="look";
   h+=`<div class="tabs" role="tablist">${tabs.map(([k,l])=>`<button role="tab" aria-selected="${k===tab}" data-tab="${k}">${l}</button>`).join("")}</div><div id="tabBody"></div>`;
   main.innerHTML=`<button id="btnClose" title="${tr("close")}" aria-label="${tr("close")}">×</button>`+h;
   document.getElementById("btnClose").onclick=closeFile;
@@ -314,6 +374,8 @@ async function renderPreset(){
       if(v.kind==="card"&&v.card){const c=await jsonAt(v.card);const d=(c&&c.data)||{};t+=`<div class="text">${d.description?md(d.description):""}${d.personality?`<h4>${LANG==="fr"?"Caractère":"Personality"}</h4>${md(d.personality)}`:""}${d.first_mes?`<h4>${LANG==="fr"?"Premier message":"First message"}</h4>${md(d.first_mes)}`:""}</div>`}
       else if(v.text)t+=`<div class="text">${md(v.text)}</div>`;t+=`</div>`}
     if(!t)t=`<p class="muted">${tr("none")}</p>`;
+  }else if(tab==="memories"){
+    t+=await renderMemories(pid,memIds,app);
   }else if(tab==="voice"){
     for(const v of [...(app.voice||[]),...(off.voice||[])]){t+=`<div class="group"><div>${label(v)}${v.language?` <span class="badge">${esc(v.language)}</span>`:""}${(off.voice||[]).includes(v)?` <span class="chip offer">${tr("offered")}</span>`:""}</div>`;
       for(const aid of v.samples||[]){const u=await urlOf(aid);const a=A()[aid]||{};if(u)t+=`<audio controls preload="none" src="${u}"></audio>${a.transcript?"":""}<br>`}t+=`</div>`}
