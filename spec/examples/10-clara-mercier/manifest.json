@@ -733,6 +733,7 @@
           "identity": "id1",
           "media": [
             "a-mem-mg1",
+            "a-mem-mg1-riviere",
             "a-mem-mg1-dialogue-fr",
             "a-mem-mg1-dialogue-en"
           ]
@@ -846,7 +847,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T13:57:04Z"
+        "computed_at": "2026-10-24T15:01:28Z"
       }
     },
     "en-manga": {
@@ -905,7 +906,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T13:57:04Z"
+        "computed_at": "2026-10-24T15:01:28Z"
       }
     },
     "en-12": {
@@ -966,7 +967,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T13:57:04Z"
+        "computed_at": "2026-10-24T15:01:28Z"
       }
     },
     "en-65": {
@@ -1035,7 +1036,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T13:57:04Z"
+        "computed_at": "2026-10-24T15:01:28Z"
       }
     },
     "en-future": {
@@ -1065,7 +1066,6 @@
         "memories": [
           "m1",
           "p1",
-          "m2",
           "p2",
           "wb1",
           "wc1"
@@ -1099,7 +1099,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T13:57:04Z"
+        "computed_at": "2026-10-24T15:01:28Z"
       }
     },
     "en-agent": {
@@ -1142,7 +1142,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T13:57:04Z"
+        "computed_at": "2026-10-24T15:01:28Z"
       }
     },
     "fr": {
@@ -1184,7 +1184,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T13:57:04Z"
+        "computed_at": "2026-10-24T15:01:28Z"
       }
     },
     "fr-manga": {
@@ -1243,7 +1243,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T13:57:04Z"
+        "computed_at": "2026-10-24T15:01:28Z"
       }
     },
     "fr-12": {
@@ -1304,7 +1304,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T13:57:04Z"
+        "computed_at": "2026-10-24T15:01:28Z"
       }
     },
     "fr-65": {
@@ -1373,7 +1373,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T13:57:04Z"
+        "computed_at": "2026-10-24T15:01:28Z"
       }
     },
     "fr-futur": {
@@ -1403,7 +1403,6 @@
         "memories": [
           "m1",
           "p1",
-          "m2",
           "p2",
           "wb1",
           "wc1"
@@ -1437,7 +1436,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T13:57:04Z"
+        "computed_at": "2026-10-24T15:01:28Z"
       }
     },
     "fr-agent": {
@@ -1480,7 +1479,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T13:57:04Z"
+        "computed_at": "2026-10-24T15:01:28Z"
       }
     }
   },
@@ -2602,8 +2601,8 @@
       "path": "elements/memories/m1/m1-1.jpg",
       "role": "memory-media",
       "mediaType": "image/jpeg",
-      "bytes": 319452,
-      "sha256": "27b629c90eea66c8f3f86ea0cdb3b670db5436887fa00371c7b00674855839ba",
+      "bytes": 319604,
+      "sha256": "b89a016c15a090af5e1f4e8a64c34db2d2bc68b7fbae3de4962dfa7ec10eeddb",
       "license": "CC-BY-4.0",
       "width": 1248,
       "height": 832,
@@ -2678,8 +2677,8 @@
       "path": "elements/memories/m2/m2-1.jpg",
       "role": "memory-media",
       "mediaType": "image/jpeg",
-      "bytes": 185349,
-      "sha256": "7c30e509de220e037d15052f337dd2c8c9347e283953dcca354210dbc4198bdf",
+      "bytes": 185305,
+      "sha256": "670314704f9f522d086701ad77399a74392ae3ab407d678ce6990c82fa64c947",
       "license": "CC-BY-4.0",
       "width": 1248,
       "height": 712,
@@ -2742,8 +2741,8 @@
       "path": "elements/memories/m4/m4-1.jpg",
       "role": "memory-media",
       "mediaType": "image/jpeg",
-      "bytes": 217246,
-      "sha256": "846a17a070e4553c5af7f062843dbcc943b2d45e6f648404f89947246a6b4b6f",
+      "bytes": 217257,
+      "sha256": "fa8b117c2d2ed1aa177ada70270488393e95808a8e0d867c761b88dcf6ed5932",
       "license": "CC-BY-4.0",
       "width": 1248,
       "height": 832,
@@ -2856,8 +2855,8 @@
       "path": "elements/memories/b1/b1.jpg",
       "role": "memory-media",
       "mediaType": "image/jpeg",
-      "bytes": 273465,
-      "sha256": "3ef5fbb97affaefa1b2b59ae69ff7146d2776e28178723b79cd28a86a6c59b9e",
+      "bytes": 276643,
+      "sha256": "bbb6fdf438203fd9b1dc507e67036ea7ebbad3c197be2be6d2e58146a69d153a",
       "license": "CC-BY-4.0",
       "width": 1248,
       "height": 832,
@@ -2870,8 +2869,8 @@
       "path": "elements/memories/wb1/wb1.jpg",
       "role": "memory-media",
       "mediaType": "image/jpeg",
-      "bytes": 216513,
-      "sha256": "d86bed6b392c41a8814a94c63ebff3c33e0f92337915df2f3d2cac6d803b7024",
+      "bytes": 203118,
+      "sha256": "8db9ad32d8a1f93bd59ef17b8b14e077537e8da4bc99eec6148f653daa348a2c",
       "license": "CC-BY-4.0",
       "width": 1248,
       "height": 832,
@@ -2884,8 +2883,8 @@
       "path": "elements/memories/wc1/wc1.jpg",
       "role": "memory-media",
       "mediaType": "image/jpeg",
-      "bytes": 220392,
-      "sha256": "a7eb8b7415ea5bfbd283717fd27a85e5f923d96b5a0e95a3f3d151f97a34a7be",
+      "bytes": 245844,
+      "sha256": "b599f093e071982c211d25ac28ffbdbb2f023bf5a66b482debf4894a06bfbffc",
       "license": "CC-BY-4.0",
       "width": 1248,
       "height": 832,
@@ -2906,6 +2905,18 @@
       "style": "manga",
       "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
       "generator": "kept from clara.memories/mg1.jpg"
+    },
+    {
+      "id": "a-mem-mg1-riviere",
+      "path": "elements/memories/mg1/m1.riviere.mp3",
+      "role": "memory-media",
+      "mediaType": "audio/mpeg",
+      "bytes": 80501,
+      "sha256": "f138e3f2d95427e520e44e921e243f0661ca03ae91260afc60a312636efddd7c",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/algorithmicMedia",
+      "duration_s": 10,
+      "generator": "procedural ambience (numpy + ffmpeg): running water and crickets"
     },
     {
       "id": "a-mem-mg1-dialogue-fr",
@@ -2948,11 +2959,11 @@
       "path": "elements/memories/mg3/mg3.jpg",
       "role": "memory-media",
       "mediaType": "image/jpeg",
-      "bytes": 271216,
-      "sha256": "9752ffe89e0b29f676566aabc584d82f395572ec042a56eb5e116353057b234b",
+      "bytes": 189333,
+      "sha256": "3d1f611946b6008174d9501db19c69c9dad0297a7f7fc0eeefce484bc17cc919",
       "license": "CC-BY-4.0",
-      "width": 1248,
-      "height": 832,
+      "width": 1138,
+      "height": 685,
       "style": "manga",
       "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
       "generator": "kept from clara.memories/mg3.jpg"
@@ -3030,7 +3041,7 @@
   },
   "provenance": {
     "created": "2026-10-11T10:32:23Z",
-    "modified": "2026-10-24T13:57:04Z",
+    "modified": "2026-10-24T15:01:28Z",
     "generator": "cof-builder/0.7.1",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/10-clara-mercier",
@@ -3179,7 +3190,7 @@
       "archive"
     ],
     "computed_by": "cof-cli/1.1.0",
-    "computed_at": "2026-10-24T13:57:04Z"
+    "computed_at": "2026-10-24T15:01:28Z"
   },
   "coverage": {
     "elements": [
