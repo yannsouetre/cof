@@ -343,9 +343,18 @@
       "age": 29,
       "images": [
         {
-          "prompt": "Reference images: a portrait of the woman; a photograph of her standing on a river embankment in Lyon at blue hour (this sets the place, the framing, the soft warm lights of the facades reflected on the water, and the quiet, touching mood — reproduce them exactly); and two character-sheet views of a Martian (face, and full body in a silver outfit). Compose the full scene in landscape: the woman exactly as in the embankment photograph, standing at the right, looking up kindly; at her left, facing her at one metre, the Martian of the character sheets — tall and slender, that exact head (smooth bright green, rounder bald head, big black almond-shaped eyes, pointed ears, small nose and mouth), his fitted silver jacket with a high collar, silver trousers, dark boots — holding a glowing phone between them and showing it to her, both seen from the side at a few metres, same blue-hour light on both faces.",
+          "prompt": "Reference images: a portrait of the woman; a photograph of the embankment and the river where she stands (reproduce exactly this place, this framing and this light); two character-sheet views of a Martian. Compose the complete scene in landscape, with exactly two figures: the woman at the right, exactly as in the embankment photograph, looking up kindly; and at her left, facing her at one metre, the Martian of the character sheets — tall and slender, exactly that head: smooth bright green skin, a rounder bald head, big black almond-shaped eyes, pointed ears, a small nose and mouth, a normal neck — wearing his fitted silver jacket with a high collar, silver trousers and dark boots, holding a glowing phone between them and showing it to her. Both seen from the side at a few metres. No other alien, no other person. Blue hour: deep blue dusk sky, the old facades across the river lit by warm sodium lamps, their long golden reflections trembling on the dark water, a stone embankment, candid documentary photograph, muted colours, soft grain, a quiet and touching moment.",
           "refs": [
             "clara.memories/m3.scene-sans-alien.jpg",
+            "../../../spec/examples/11-duo-clara-martien/elements/appearance/f1/head.front.jpg",
+            "../../../spec/examples/11-duo-clara-martien/elements/appearance/b1/body.front.jpg"
+          ],
+          "shows_character": true,
+          "aspect": "3:2"
+        },
+        {
+          "prompt": "Reference images: a portrait of the woman, and two character-sheet views of a Martian. A candid evening photograph on the Saône embankment in Lyon, France: the woman of the portrait, in a light cream jacket and jeans, stands at the right looking up kindly at the Martian of the character sheets — tall and slender, exactly that head: smooth bright green skin, a rounder bald head, big black almond-shaped eyes, pointed ears, a small nose and mouth, a normal neck — wearing his fitted silver jacket with a high collar, silver trousers and dark boots, who faces her at one metre, at the left, holding a glowing phone between them and showing it to her. Exactly two figures, both seen from the side at a few metres. Blue hour: deep blue dusk sky, the old facades across the river lit by warm sodium lamps, their long golden reflections trembling on the dark water, a stone embankment, candid documentary photograph, muted colours, soft grain, a quiet and touching moment.",
+          "refs": [
             "../../../spec/examples/11-duo-clara-martien/elements/appearance/f1/head.front.jpg",
             "../../../spec/examples/11-duo-clara-martien/elements/appearance/b1/body.front.jpg"
           ],
