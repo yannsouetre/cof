@@ -1060,7 +1060,6 @@
       "id": "wc1",
       "kind": "moment",
       "label": "La poursuite / The chase",
-      "age": 29,
       "node": {
         "gist": {
           "fr": "Le relais saboté, la X-09 lancée sur la voie rapide de nuit, mon drone au-dessus de moi, et derrière, quatre véhicules de l'IA adverse qui voulaient m'arrêter. Ils n'ont jamais eu la moindre chance : cette moto est trop puissante. J'ai ri dans mon casque.",
@@ -1087,8 +1086,7 @@
         },
         "who": [
           {
-            "identity": "self",
-            "shown": true
+            "identity": "self"
           }
         ],
         "felt_then": {
@@ -1137,9 +1135,7 @@
       },
       "images": [
         {
-          "prompt": "A cinematic night still on an elevated expressway through a futuristic city of towers and neon, rain-wet asphalt reflecting the lights: the woman of the first reference image, aged 29, in her dark combat suit and helmet with the visor up, riding the armoured motorbike of the second reference image at full speed, seen from a low three-quarter rear angle, her small recon drone hovering just above her; far behind, two sleek driverless cars with white headlights, small and blurred, left behind. Dystopian and exhilarating, nobody is hurt, no weapons, no crash.",
-          "shows_character": true,
-          "reference": "a-appearance-a4-gemini-generated-image-fwe-ms1p",
+          "prompt": "A cinematic night still on an elevated expressway through a futuristic city of towers and neon, rain-wet asphalt reflecting the lights: a rider in a dark armoured suit and a closed helmet (face not visible) on the armoured motorbike of the reference image, leaning into the speed, seen from a low three-quarter rear angle; a small recon drone hovers just above; far behind, two sleek driverless cars with white headlights, small and blurred, left behind. Dystopian and exhilarating, nobody is hurt, no weapons, no crash.",
           "refs": [
             "../../../spec/examples/10-clara-mercier/elements/appearance/x3/accessory.front.jpg"
           ],
