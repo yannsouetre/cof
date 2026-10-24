@@ -319,7 +319,7 @@ def main(argv=None) -> int:
     src = (a.sheet.parent / s["source"]).resolve() if not Path(s["source"]).is_absolute() else Path(s["source"])
     if not src.exists():
         print(f"source not found: {src}"); return 1
-    client = None if a.dry_run else gemini_client()
+    client = None if a.dry_run or not prompts else gemini_client()      # a sheet made only of kept media needs no key
     a.out.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory() as td:
         work = Path(td)

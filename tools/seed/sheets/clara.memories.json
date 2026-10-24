@@ -343,21 +343,7 @@
       "age": 29,
       "images": [
         {
-          "prompt": "Reference images: a portrait of the woman; a photograph of the embankment and the river where she stands (reproduce exactly this place, this framing and this light); two character-sheet views of a Martian. Compose the complete scene in landscape, with exactly two figures: the woman at the right, exactly as in the embankment photograph, looking up kindly; and at her left, facing her at one metre, the Martian of the character sheets — tall and slender, exactly that head: smooth bright green skin, a rounder bald head, big black almond-shaped eyes, pointed ears, a small nose and mouth, a normal neck — wearing his fitted silver jacket with a high collar, silver trousers and dark boots, holding a glowing phone between them and showing it to her. Both seen from the side at a few metres. No other alien, no other person. Blue hour: deep blue dusk sky, the old facades across the river lit by warm sodium lamps, their long golden reflections trembling on the dark water, a stone embankment, candid documentary photograph, muted colours, soft grain, a quiet and touching moment.",
-          "refs": [
-            "clara.memories/m3.scene-sans-alien.jpg",
-            "../../../spec/examples/11-duo-clara-martien/elements/appearance/f1/head.front.jpg",
-            "../../../spec/examples/11-duo-clara-martien/elements/appearance/b1/body.front.jpg"
-          ],
-          "shows_character": true,
-          "aspect": "3:2"
-        },
-        {
-          "prompt": "Reference images: a portrait of the woman, and two character-sheet views of a Martian. A candid evening photograph on the Saône embankment in Lyon, France: the woman of the portrait, in a light cream jacket and jeans, stands at the right looking up kindly at the Martian of the character sheets — tall and slender, exactly that head: smooth bright green skin, a rounder bald head, big black almond-shaped eyes, pointed ears, a small nose and mouth, a normal neck — wearing his fitted silver jacket with a high collar, silver trousers and dark boots, who faces her at one metre, at the left, holding a glowing phone between them and showing it to her. Exactly two figures, both seen from the side at a few metres. Blue hour: deep blue dusk sky, the old facades across the river lit by warm sodium lamps, their long golden reflections trembling on the dark water, a stone embankment, candid documentary photograph, muted colours, soft grain, a quiet and touching moment.",
-          "refs": [
-            "../../../spec/examples/11-duo-clara-martien/elements/appearance/f1/head.front.jpg",
-            "../../../spec/examples/11-duo-clara-martien/elements/appearance/b1/body.front.jpg"
-          ],
+          "keep": "clara.memories/m3.martien-final.jpg",
           "shows_character": true,
           "aspect": "3:2"
         }
@@ -452,7 +438,7 @@
           "style": "cinematic"
         },
         {
-          "keep": "clara.memories/m4.caresse.jpg",
+          "keep": "clara.memories/m4.caresse-v2.jpg",
           "shows_character": true,
           "aspect": "3:2",
           "style": "cinematic"
@@ -465,14 +451,14 @@
       ],
       "media_files": [
         {
-          "file": "clara.memories/m4.reve.mp4",
+          "file": "clara.memories/m4.caresse.mp4",
           "mediaType": "video/mp4",
-          "duration_s": 6,
-          "width": 640,
-          "height": 426,
+          "duration_s": 10,
+          "width": 854,
+          "height": 480,
           "fps": 24,
-          "generator": "slow push-in on the dream image with blinking wool and a synthetic hum (numpy + ffmpeg)",
-          "poster": "clara.memories/m4.reve.poster.jpg",
+          "generator": "Google Gemini (video from the image, ambient sound; downscaled to 480p)",
+          "poster": "clara.memories/m4.caresse.poster.jpg",
           "as_remembered": true
         }
       ]

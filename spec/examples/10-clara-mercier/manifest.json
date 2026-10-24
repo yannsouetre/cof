@@ -29,6 +29,7 @@
     "auto": [
       "adult",
       "child",
+      "elder",
       "en",
       "fr",
       "has-memories",
@@ -582,7 +583,12 @@
           "memory": "elements/memories/m1/memory.json",
           "identity": "id1",
           "media": [
-            "a-mem-m1"
+            "a-mem-m1-1",
+            "a-mem-m1-2",
+            "a-mem-m1-3",
+            "a-mem-m1-riviere",
+            "a-mem-m1-dialogue-fr",
+            "a-mem-m1-dialogue-en"
           ]
         },
         "p1": {
@@ -597,7 +603,8 @@
           "memory": "elements/memories/m2/memory.json",
           "identity": "id1",
           "media": [
-            "a-mem-m2"
+            "a-mem-m2-1",
+            "a-mem-m2-2"
           ]
         },
         "m3": {
@@ -606,7 +613,9 @@
           "memory": "elements/memories/m3/memory.json",
           "identity": "id1",
           "media": [
-            "a-mem-m3"
+            "a-mem-m3",
+            "a-mem-m3-dialogue-fr",
+            "a-mem-m3-dialogue-en"
           ],
           "age": {
             "value": 29,
@@ -620,7 +629,11 @@
           "memory": "elements/memories/m4/memory.json",
           "identity": "id1",
           "media": [
-            "a-mem-m4"
+            "a-mem-m4-1",
+            "a-mem-m4-2",
+            "a-mem-m4-3",
+            "a-mem-m4-caresse",
+            "a-mem-m4-caresse-poster"
           ],
           "age": {
             "value": 29,
@@ -698,7 +711,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T09:51:53Z"
+        "computed_at": "2026-10-24T12:24:04Z"
       }
     },
     "en-manga": {
@@ -750,7 +763,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T09:51:53Z"
+        "computed_at": "2026-10-24T12:24:04Z"
       }
     },
     "en-12": {
@@ -811,7 +824,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T09:51:53Z"
+        "computed_at": "2026-10-24T12:24:04Z"
       }
     },
     "en-65": {
@@ -869,7 +882,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T09:51:53Z"
+        "computed_at": "2026-10-24T12:24:04Z"
       }
     },
     "en-future": {
@@ -925,7 +938,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T09:51:53Z"
+        "computed_at": "2026-10-24T12:24:04Z"
       }
     },
     "en-agent": {
@@ -968,7 +981,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T09:51:53Z"
+        "computed_at": "2026-10-24T12:24:04Z"
       }
     },
     "fr": {
@@ -1010,7 +1023,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T09:51:53Z"
+        "computed_at": "2026-10-24T12:24:04Z"
       }
     },
     "fr-manga": {
@@ -1062,7 +1075,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T09:51:53Z"
+        "computed_at": "2026-10-24T12:24:04Z"
       }
     },
     "fr-12": {
@@ -1123,7 +1136,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T09:51:53Z"
+        "computed_at": "2026-10-24T12:24:04Z"
       }
     },
     "fr-65": {
@@ -1181,7 +1194,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T09:51:53Z"
+        "computed_at": "2026-10-24T12:24:04Z"
       }
     },
     "fr-futur": {
@@ -1237,7 +1250,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T09:51:53Z"
+        "computed_at": "2026-10-24T12:24:04Z"
       }
     },
     "fr-agent": {
@@ -1280,7 +1293,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T09:51:53Z"
+        "computed_at": "2026-10-24T12:24:04Z"
       }
     }
   },
@@ -2398,60 +2411,216 @@
       "generator": "Google Gemini (Nano Banana 2)"
     },
     {
-      "id": "a-mem-m1",
-      "path": "elements/memories/m1/m1.jpg",
+      "id": "a-mem-m1-1",
+      "path": "elements/memories/m1/m1-1.jpg",
       "role": "memory-media",
       "mediaType": "image/jpeg",
-      "bytes": 319841,
-      "sha256": "d58d1359d3378b057b12e3e35260f15f7d40e78981333fd7d6fd072d870437a6",
+      "bytes": 319585,
+      "sha256": "0637e892de44948d9a835a079731d4508502c4312d7a4f52b7e6077492096401",
       "license": "CC-BY-4.0",
       "width": 1248,
       "height": 832,
       "style": "photo-realistic",
       "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
-      "generator": "Google Gemini (gemini-2.5-flash-image)"
+      "generator": "kept from ../../../spec/examples/10-clara-mercier/elements/memories/m1/m1.jpg"
     },
     {
-      "id": "a-mem-m2",
-      "path": "elements/memories/m2/m2.jpg",
+      "id": "a-mem-m1-2",
+      "path": "elements/memories/m1/m1-2.jpg",
       "role": "memory-media",
       "mediaType": "image/jpeg",
-      "bytes": 191294,
-      "sha256": "a3f70f288bdaaeea5bb6f03e260d4d1841a15541c0d0d413bf446b6c19766564",
+      "bytes": 182725,
+      "sha256": "c85a73a7e8a81f57e43ad1ee71f11e777feb358db7212984dd9f76cb8d98dd57",
       "license": "CC-BY-4.0",
       "width": 1248,
       "height": 832,
       "style": "photo-realistic",
       "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
-      "generator": "Google Gemini (gemini-2.5-flash-image)"
+      "generator": "kept from clara.memories/m1.chambre-v3.jpg"
+    },
+    {
+      "id": "a-mem-m1-3",
+      "path": "elements/memories/m1/m1-3.jpg",
+      "role": "memory-media",
+      "mediaType": "image/jpeg",
+      "bytes": 281945,
+      "sha256": "65fb49f5976ed18d9ef7feafd2ee4ecfdc3e68e1f7d2186d513ef1e6ba20a8cc",
+      "license": "CC-BY-4.0",
+      "width": 1248,
+      "height": 832,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "kept from clara.memories/m1.grand-mere.jpg"
+    },
+    {
+      "id": "a-mem-m1-riviere",
+      "path": "elements/memories/m1/m1.riviere.mp3",
+      "role": "memory-media",
+      "mediaType": "audio/mpeg",
+      "bytes": 80501,
+      "sha256": "f138e3f2d95427e520e44e921e243f0661ca03ae91260afc60a312636efddd7c",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/algorithmicMedia",
+      "duration_s": 10,
+      "generator": "procedural ambience (numpy + ffmpeg): running water and crickets"
+    },
+    {
+      "id": "a-mem-m1-dialogue-fr",
+      "path": "elements/memories/m1/m1.dialogue.fr.md",
+      "role": "memory-media",
+      "mediaType": "text/markdown",
+      "bytes": 468,
+      "sha256": "36217718d2ef7806edd689a3f339aa3dc76a8f9076c7404fce08b63bee6ae151",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "language": "fr"
+    },
+    {
+      "id": "a-mem-m1-dialogue-en",
+      "path": "elements/memories/m1/m1.dialogue.en.md",
+      "role": "memory-media",
+      "mediaType": "text/markdown",
+      "bytes": 403,
+      "sha256": "986b202f88dc5529dfdc161a80b29c13224511158c8be10dc59f54dbf13a8930",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "language": "en"
+    },
+    {
+      "id": "a-mem-m2-1",
+      "path": "elements/memories/m2/m2-1.jpg",
+      "role": "memory-media",
+      "mediaType": "image/jpeg",
+      "bytes": 185274,
+      "sha256": "7226db15bd8c497ec982bc43b5b91213350578bb0eece41536c61f2ad4b33f28",
+      "license": "CC-BY-4.0",
+      "width": 1248,
+      "height": 712,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "kept from ../../../spec/examples/10-clara-mercier/elements/memories/m2/m2.jpg"
+    },
+    {
+      "id": "a-mem-m2-2",
+      "path": "elements/memories/m2/m2-2.jpg",
+      "role": "memory-media",
+      "mediaType": "image/jpeg",
+      "bytes": 111126,
+      "sha256": "51578746fc9cdb68daf2116098fc19bed7ceb5bc294cd4c4f8f6bab03d1456f8",
+      "license": "CC-BY-4.0",
+      "width": 1248,
+      "height": 832,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "kept from clara.memories/m2.fenetre.jpg"
     },
     {
       "id": "a-mem-m3",
       "path": "elements/memories/m3/m3.jpg",
       "role": "memory-media",
       "mediaType": "image/jpeg",
-      "bytes": 215482,
-      "sha256": "be66411c2f1f1ced8377ea7ebe3bb3fafa352d231369cfcd8da0776b50c4f709",
+      "bytes": 278291,
+      "sha256": "18b7b8d27ea191fdfbe49a16ed8be3250b80bfc970f92de945454770c098cdd4",
       "license": "CC-BY-4.0",
-      "width": 1248,
-      "height": 832,
+      "width": 1536,
+      "height": 1024,
       "style": "photo-realistic",
       "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
-      "generator": "Google Gemini (gemini-2.5-flash-image)"
+      "generator": "kept from clara.memories/m3.martien-final.jpg"
     },
     {
-      "id": "a-mem-m4",
-      "path": "elements/memories/m4/m4.jpg",
+      "id": "a-mem-m3-dialogue-fr",
+      "path": "elements/memories/m3/m3.dialogue.fr.md",
+      "role": "memory-media",
+      "mediaType": "text/markdown",
+      "bytes": 651,
+      "sha256": "f090a952a7576e6aa26604917648a320247ec38601f6668d1f334e7ca569cc71",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "language": "fr"
+    },
+    {
+      "id": "a-mem-m3-dialogue-en",
+      "path": "elements/memories/m3/m3.dialogue.en.md",
+      "role": "memory-media",
+      "mediaType": "text/markdown",
+      "bytes": 613,
+      "sha256": "79c3c7b47cb64d83d364a56241eca6548aa4d0d656d7f90926846e40038174b6",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "language": "en"
+    },
+    {
+      "id": "a-mem-m4-1",
+      "path": "elements/memories/m4/m4-1.jpg",
       "role": "memory-media",
       "mediaType": "image/jpeg",
-      "bytes": 217232,
-      "sha256": "8b93c4d0c179c36e9450f6639fca76c400b79c677f4391a334426f09ecfb18ff",
+      "bytes": 217282,
+      "sha256": "a09fc6a73da29a57950dec35dd8f0834642ed2ad489d3f4abad13ff64c6b4731",
       "license": "CC-BY-4.0",
       "width": 1248,
       "height": 832,
       "style": "cinematic",
       "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
-      "generator": "Google Gemini (gemini-2.5-flash-image)"
+      "generator": "kept from ../../../spec/examples/10-clara-mercier/elements/memories/m4/m4.jpg"
+    },
+    {
+      "id": "a-mem-m4-2",
+      "path": "elements/memories/m4/m4-2.jpg",
+      "role": "memory-media",
+      "mediaType": "image/jpeg",
+      "bytes": 283503,
+      "sha256": "33283e1ed54dd20a07475acd1e2ecfbd5076a3dd7641c6b7afec4fa7f80e156f",
+      "license": "CC-BY-4.0",
+      "width": 1536,
+      "height": 1024,
+      "style": "cinematic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "kept from clara.memories/m4.caresse-v2.jpg"
+    },
+    {
+      "id": "a-mem-m4-3",
+      "path": "elements/memories/m4/m4-3.jpg",
+      "role": "memory-media",
+      "mediaType": "image/jpeg",
+      "bytes": 155208,
+      "sha256": "58b80b4a44092dd5c52d3c00913b94f5d2c74169b6072bdfc49a4dbe0fddcaef",
+      "license": "CC-BY-4.0",
+      "width": 1248,
+      "height": 832,
+      "style": "cinematic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "kept from clara.memories/m4.mouton-halos.jpg"
+    },
+    {
+      "id": "a-mem-m4-caresse",
+      "path": "elements/memories/m4/m4.caresse.mp4",
+      "role": "memory-media",
+      "mediaType": "video/mp4",
+      "bytes": 445479,
+      "sha256": "94954e2df60be6288cd14d04660f353e6ef78c35252a2f1ba1e7f2e0c76fb0e8",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "duration_s": 10,
+      "width": 854,
+      "height": 480,
+      "fps": 24,
+      "generator": "Google Gemini (video from the image, ambient sound; downscaled to 480p)",
+      "as_remembered": true
+    },
+    {
+      "id": "a-mem-m4-caresse-poster",
+      "path": "elements/memories/m4/m4.caresse.poster.jpg",
+      "role": "memory-media",
+      "mediaType": "image/jpeg",
+      "bytes": 32222,
+      "sha256": "1ae456056396212d812dd65a32b2a7c440b1daae886873d80a8a7c21ee1afdf7",
+      "license": "CC-BY-4.0",
+      "width": 854,
+      "height": 480,
+      "derived_from": "a-mem-m4-caresse",
+      "method": "thumbnail",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
     },
     {
       "id": "thumbnail",
@@ -2490,7 +2659,7 @@
   },
   "provenance": {
     "created": "2026-10-11T10:32:23Z",
-    "modified": "2026-10-24T09:51:53Z",
+    "modified": "2026-10-24T12:24:04Z",
     "generator": "cof-builder/0.7.1",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/10-clara-mercier",
@@ -2639,7 +2808,7 @@
       "archive"
     ],
     "computed_by": "cof-cli/1.1.0",
-    "computed_at": "2026-10-24T09:51:53Z"
+    "computed_at": "2026-10-24T12:24:04Z"
   },
   "coverage": {
     "elements": [
