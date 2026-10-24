@@ -31,6 +31,7 @@ import argparse
 import datetime as dt
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -40,7 +41,7 @@ import zipfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from gen import DEFAULT_MODEL, IPTC_AI, gemini_client, generate, placeholder, to_jpeg  # noqa: E402
+from gen import DEFAULT_API, DEFAULT_MODEL, IPTC_AI, gemini_client, generate, placeholder, to_jpeg  # noqa: E402
 
 ASPECT_PX = {"3:2": (1536, 1024), "4:3": (1365, 1024), "1:1": (1024, 1024), "16:9": (1820, 1024), "2:3": (1024, 1536)}
 
@@ -235,7 +236,8 @@ def main(argv=None) -> int:
     ap.add_argument("--out", type=Path, default=Path("out"))
     ap.add_argument("--model", default=DEFAULT_MODEL)
     ap.add_argument("--pause", type=float, default=4.0, help="seconds between API calls")
-    ap.add_argument("--size", default="1K", help="image size requested from the API (1K, 2K)")
+    ap.add_argument("--size", default="1K", help="image size requested from the API (1K, 2K; interactions API only)")
+    ap.add_argument("--api", default=DEFAULT_API, choices=["generate", "interactions"], help="generate_content (default) or the Interactions API")
     ap.add_argument("--dry-run", action="store_true", help="placeholder images, no API call")
     ap.add_argument("--prompts-only", action="store_true")
     ap.add_argument("--keep", action="store_true", help="keep the unpacked folder next to the .cof")
@@ -274,7 +276,7 @@ def main(argv=None) -> int:
             try:
                 raw = (placeholder(mem["label"], size=ASPECT_PX[aspect]) if a.dry_run
                        else generate(client, a.model, prompts[mem["id"]], [ref] if img.get("shows_character") and ref else [], a.pause,
-                                     aspect=aspect, size=a.size, log=say))
+                                     aspect=aspect, size=a.size, log=say, api=a.api))
             except RuntimeError as ex:
                 say(f"FAIL {mem['id']}: {ex}"); return 1
             jpg, w, h = to_jpeg(raw, 1024 if aspect in ("1:1", "2:3") else 1536)
@@ -303,7 +305,8 @@ def main(argv=None) -> int:
         say(f"   {'VALID' if ok else 'INVALID'} -> {cof}  (review: {cof.stem}.memories.REVIEW.md)")
         if not ok:
             say(report)
-        return 0 if ok else 1
+        sys.stdout.flush(); sys.stderr.flush()
+        os._exit(0 if ok else 1)                       # never wait for an abandoned API call thread
 
 
 if __name__ == "__main__":

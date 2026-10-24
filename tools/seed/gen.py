@@ -9,12 +9,15 @@
 from __future__ import annotations
 
 import base64
+import concurrent.futures
 import io
 import os
 import random
 import time
 
-DEFAULT_MODEL = os.environ.get("COF_GEMINI_MODEL", "gemini-nano-banana-2.1")   # check the current image model name in Google's docs
+DEFAULT_MODEL = os.environ.get("COF_GEMINI_MODEL", "gemini-2.5-flash-image")   # the proven generate_content image model; newer names via --model
+DEFAULT_API = os.environ.get("COF_GEMINI_API", "generate")                        # generate (models.generate_content) | interactions
+CALL_TIMEOUT_S = 240                                                               # hard watchdog per API call: a stuck call never blocks the run
 IPTC_AI = "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
 
 
@@ -54,12 +57,19 @@ def _via_interactions(client, model: str, prompt: str, refs: list[bytes], aspect
     return None
 
 
-def _via_generate_content(client, model: str, prompt: str, refs: list[bytes]):
-    """Older call (google-genai before the Interactions API, or models that only answer there)."""
+def _via_generate_content(client, model: str, prompt: str, refs: list[bytes], aspect: str | None = None):
+    """models.generate_content with IMAGE output (the long-standing image path); aspect ratio through image_config when the SDK has it."""
     from google.genai import types
     parts = [types.Part.from_bytes(data=r, mime_type="image/jpeg") for r in refs] + [prompt]
-    resp = client.models.generate_content(model=model, contents=parts,
-                                          config=types.GenerateContentConfig(response_modalities=["IMAGE"]))
+    cfg = None
+    if aspect:
+        try:
+            cfg = types.GenerateContentConfig(response_modalities=["IMAGE"], image_config=types.ImageConfig(aspect_ratio=aspect))
+        except Exception:
+            cfg = None
+    if cfg is None:
+        cfg = types.GenerateContentConfig(response_modalities=["IMAGE"])
+    resp = client.models.generate_content(model=model, contents=parts, config=cfg)
     for cand in resp.candidates or []:
         for part in (cand.content.parts if cand.content else []) or []:
             data = getattr(part, "inline_data", None)
@@ -68,28 +78,36 @@ def _via_generate_content(client, model: str, prompt: str, refs: list[bytes]):
     return None
 
 
+_pool = concurrent.futures.ThreadPoolExecutor(max_workers=2)
+
+
+def _call(fn, *args):
+    """Run an SDK call under a hard timeout; a call that never returns is abandoned (its thread is left behind)."""
+    fut = _pool.submit(fn, *args)
+    return fut.result(timeout=CALL_TIMEOUT_S)
+
+
 def generate(client, model: str, prompt: str, refs: list[bytes], pause: float = 2.0, tries: int = 3,
-             aspect: str | None = None, size: str | None = "1K", log=None) -> bytes:
+             aspect: str | None = None, size: str | None = "1K", log=None, api: str | None = None) -> bytes:
     """One image. `refs` are JPEG bytes sent before the prompt (likeness references). Raises after `tries` failures.
-    `log(msg)` receives one line per attempt, so a stalled run can be diagnosed from the log."""
+    `log(msg)` receives one line per attempt, so a stalled run can be diagnosed from the log.
+    `api`: "generate" (models.generate_content, default) or "interactions" (the Interactions API)."""
     last = None
     say = log or (lambda m: None)
+    api = api or DEFAULT_API
     for i in range(tries):
-        say(f"      attempt {i + 1}/{tries} ({model}, {len(refs)} reference(s), {aspect or 'default'} {size or ''})")
+        say(f"      attempt {i + 1}/{tries} ({model}, {api}, {len(refs)} reference(s), {aspect or 'default'} {size or ''})")
         try:
-            out = None
-            if hasattr(client, "interactions"):
-                try:
-                    out = _via_interactions(client, model, prompt, refs, aspect, size)
-                except (AttributeError, TypeError) as ex:     # SDK without the Interactions API, or an older signature
-                    last = f"interactions API unavailable ({ex.__class__.__name__}); falling back"
-                    out = None
-            if out is None:
-                out = _via_generate_content(client, model, prompt + (f" Aspect ratio {aspect}." if aspect else ""), refs)
+            if api == "interactions" and hasattr(client, "interactions"):
+                out = _call(_via_interactions, client, model, prompt, refs, aspect, size)
+            else:
+                out = _call(_via_generate_content, client, model, prompt, refs, aspect)
             if out:
                 say(f"      ok ({len(out)} bytes)")
                 return out
             last = "no image in the answer (refused or filtered?)"
+        except concurrent.futures.TimeoutError:
+            last = f"no answer after {CALL_TIMEOUT_S} s (call abandoned)"
         except Exception as ex:                         # quota, network, safety block…
             last = f"{ex.__class__.__name__}: {str(ex)[:300]}"
         say(f"      failed: {last}")
