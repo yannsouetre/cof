@@ -190,8 +190,10 @@ def cmd_export(a):
         elif fmt == "agent":
             from .convert import export_agent
             out = out or Path(f"{manifest['name']}-agent")
-            done = export_agent(d, out, pid)
-            print(f"skills: {', '.join(done['skills']) or '—'} · memories: {len(done['memories'])} · documents: {len(done['documents'])}")
+            done = export_agent(d, out, pid, keep_personal=getattr(a, "keep_personal", False))
+            print(f"skills: {', '.join(done['skills']) or '—'} · memory files: {len(done['memories'])} · memories (nodes): {done.get('memory_nodes', 0)} · documents: {len(done['documents'])}")
+            if done.get("personal_dropped"):
+                print(f"personal memories not exported: {done['personal_dropped']} (--keep-personal exports them)")
         elif fmt == "card":
             card = json.loads((d / card_path).read_text("utf-8"))
             out = out or Path(f"{manifest['name']}.card.json")
@@ -222,17 +224,25 @@ def cmd_extract(a):
     src = Path(a.src)
     with tempfile.TemporaryDirectory() as td:
         d = src if src.is_dir() else unpack(src, td)
+        notes: list[str] = []
         if a.tag:
             extract_tag(d, Path(a.out), a.tag)
         elif getattr(a, "identity", None):
             from .ops import extract_identity
-            extract_identity(d, Path(a.out), a.identity)
+            extract_identity(d, Path(a.out), a.identity, notes)
         else:
             extract_preset(d, Path(a.out), a.preset)
+        for n in notes:
+            print(f"WARN   {n}")
+        if not getattr(a, "keep_personal", False):           # RFC 0002 § 5.7: personal memories never travel unasked
+            from .ops import drop_personal_memories
+            dropped = drop_personal_memories(Path(a.out))
+            if dropped:
+                print(f"personal memories dropped: {', '.join(dropped)} (--keep-personal keeps them)")
         if getattr(a, "no_intimate", False):
             from .ops import strip_intimate
             gone = strip_intimate(Path(a.out))
-            print(f"--no-intimate: removed {', '.join(gone) or 'nothing'}; allowSexualUsage set to false — review tags.content")
+            print(f"--all-audiences: removed {', '.join(gone) or 'nothing'}; allowSexualUsage set to false — review tags.content")
     rep = Report(); validate_dir(Path(a.out), rep, recompute=True)
     what = 'tags ' + '+'.join(a.tag) if a.tag else ('character ' + a.identity if getattr(a, "identity", None) else 'preset ' + a.preset)
     print(f"{what} extracted to: {a.out}")
@@ -288,10 +298,10 @@ def main(argv=None) -> int:
     s = sub.add_parser("embed-text", help="write a text (.md/.txt) into a PNG as iTXt 'Description' — readable by the builder (personality + appearance)"); s.add_argument("png"); s.add_argument("text"); s.add_argument("-o", "--out"); s.set_defaults(fn=cmd_embed_text)
     s = sub.add_parser("read-text", help="show the descriptive text embedded in an image (PNG/JPEG: iTXt, XMP, EXIF)"); s.add_argument("image"); s.set_defaults(fn=cmd_read_text)
     s = sub.add_parser("import", help="PNG/JSON card (CCv2/V3) → COF folder"); s.add_argument("src"); s.add_argument("-o", "--out"); s.add_argument("--age", type=int); s.add_argument("--real", action="store_true", help="character based on a real person (consent required)"); s.add_argument("--lang", default="en"); s.add_argument("--keep-png", action="store_true", help="keep the PNG as the head.front view"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_import)
-    s = sub.add_parser("export", help="folder/.cof → png | soul | card | agent (workspace: SOUL.md, IDENTITY.md, skills/, memories) — from the default preset or --preset"); s.add_argument("src"); s.add_argument("--format", choices=["png", "soul", "card", "agent"], required=True); s.add_argument("-o", "--out"); s.add_argument("--preset"); s.set_defaults(fn=cmd_export)
+    s = sub.add_parser("export", help="folder/.cof → png | soul | card | agent (workspace: SOUL.md, IDENTITY.md, skills/, memories) — from the default preset or --preset"); s.add_argument("src"); s.add_argument("--format", choices=["png", "soul", "card", "agent"], required=True); s.add_argument("-o", "--out"); s.add_argument("--preset"); s.add_argument("--keep-personal", action="store_true", help="agent: also export `visibility: personal` memories (dropped by default)"); s.set_defaults(fn=cmd_export)
     s = sub.add_parser("migrate", help="folder v0.2 … v0.5 → v1.0"); s.add_argument("dir"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_migrate)
     s = sub.add_parser("merge", help="merge several .cof files/folders (same name, nickname, fictional status and morphology class ⇒ same identity, otherwise multiple identities)"); s.add_argument("sources", nargs="+"); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_merge)
-    s = sub.add_parser("extract", help="extract a preset, a character (--identity), or the presets carrying one or more tags (intersection), into a lighter COF folder"); s.add_argument("src"); g = s.add_mutually_exclusive_group(required=True); g.add_argument("--preset"); g.add_argument("--identity", help="one character: all its presets, elements, files and rights"); g.add_argument("--tag", action="append", help="repeatable: --tag english --tag age-12"); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.add_argument("--no-intimate", action="store_true", help="safe-for-work slice: drop intimate variants, allowSexualUsage = false"); s.set_defaults(fn=cmd_extract)
+    s = sub.add_parser("extract", help="extract a preset, a character (--identity), or the presets carrying one or more tags (intersection), into a lighter COF folder"); s.add_argument("src"); g = s.add_mutually_exclusive_group(required=True); g.add_argument("--preset"); g.add_argument("--identity", help="one character: all its presets, elements, files and rights"); g.add_argument("--tag", action="append", help="repeatable: --tag english --tag age-12"); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.add_argument("--all-audiences", "--no-intimate", dest="no_intimate", action="store_true", help="all-audiences slice: drop intimate / nude variants and the media of explicit memories (gist kept), allowSexualUsage = false"); s.add_argument("--keep-personal", action="store_true", help="keep `visibility: personal` memories (a user's data; dropped by default)"); s.set_defaults(fn=cmd_extract)
 
     a = ap.parse_args(argv)
     try:

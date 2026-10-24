@@ -948,3 +948,104 @@ def test_real_person_memory_warns_without_factual(tmp_path):
     rep = _val(d)
     assert any("factual" in w for w in rep.warnings), rep.warnings
     assert any("conversational-persona" in w for w in rep.warnings + rep.errors)
+
+
+def _add_mem(d, m, vid, node, kind="moment", **variant):
+    (d / f"elements/memories/{vid}").mkdir(parents=True, exist_ok=True)
+    (d / f"elements/memories/{vid}/memory.json").write_text(json.dumps(node), "utf-8")
+    m["elements"]["memories"]["variants"][vid] = {"kind": kind, "label": vid, "memory": f"elements/memories/{vid}/memory.json", "identity": "id1", **variant}
+    m["presets"]["default"]["slots"]["memories"].append(vid)
+
+
+def test_memory_timeline_order_and_gist_language(tmp_path):
+    """RFC 0002 § 4.3: by age, else by date (age derived from the birth year the file implies), else by links, else
+    undated last. § 3: gist in the preset's language, else the identity's, else the first entry."""
+    from cof_cli.memories import gist_text, load_nodes, timeline, when_label
+    d, m = _mem_copy(tmp_path)
+    _add_mem(d, m, "d1", {"gist": {"en": "A dated one."}, "when": {"date": "2003"}})                  # m3: age 29 in 2019-03 → born ~1990 → 2003 ≈ 13
+    _add_mem(d, m, "l1", {"gist": {"en": "Linked only."}, "links": [{"to": "memories/m3", "type": "after"}]})
+    _add_mem(d, m, "u1", {"gist": {"en": "Undated."}})
+    _write(d, m)
+    assert _val(d).ok
+    nodes = load_nodes(d, m)
+    order = timeline(m, nodes, m["presets"]["default"]["slots"]["memories"])
+    assert order == ["m1", "d1", "p1", "m3", "l1", "m4", "u1"] or order == ["m1", "d1", "p1", "m3", "m4", "l1", "u1"], order
+    assert order.index("m3") < order.index("l1") and order[-1] == "u1" and order[1] == "d1"
+    assert gist_text(m, "m3", nodes["m3"], "default") == ("fr", "La rencontre avec le Martien.")       # identity language fr
+    m["identities"]["id1"].pop("language"); _write(d, m)
+    assert gist_text(m, "m3", nodes["m3"], "default")[0] == "fr"                                      # first entry
+    assert when_label("moment", nodes["m3"], "fr") == "age 29, 2019-03" and when_label("period", nodes["p1"], "fr") == "age 18–23"
+
+
+def test_export_agent_writes_memory_md(tmp_path):
+    """§ 6.4: MEMORY.md = host memory file + the canon gists in timeline order with markers; media of non-explicit
+    nodes in memories/<id>/; personal nodes dropped unless keep_personal; explicit media never exported."""
+    from cof_cli.convert import export_agent
+    d, m = _mem_copy(tmp_path)
+    n = _node(d, "m1"); n["visibility"] = "personal"; _write(d, vid="m1", node=n)
+    out = tmp_path / "ws"; done = export_agent(d, out, "default")
+    md = (out / "MEMORY.md").read_text("utf-8")
+    assert done["memory_nodes"] == 3 and done["personal_dropped"] == 1 and "MEMORY.md" in done["memories"]
+    assert "## Memories" in md and "grand" not in md.lower()                                           # personal m1 gone
+    assert md.index("p1") < md.index("m3  ·") < md.index("m4  ·") and "guarded" in md and "imagined" in md and "fragment" in md
+    assert (out / "memories/m3/meeting.jpg").is_file() and (out / "memories/m4/meeting.jpg").is_file()   # m4 borrows m3's media
+    out2 = tmp_path / "ws2"; export_agent(d, out2, "default", keep_personal=True)
+    assert "grand" in (out2 / "MEMORY.md").read_text("utf-8").lower() or "m1  ·" in (out2 / "MEMORY.md").read_text("utf-8")
+    # explicit node: gist exported, media withheld
+    m["elements"]["memories"]["variants"]["m3"]["nudity"] = True; m["tags"]["content"] = ["nudity"]; _write(d, m)
+    n = _node(d, "m3"); n["explicit"] = "nudity"; _write(d, vid="m3", node=n)
+    out3 = tmp_path / "ws3"; export_agent(d, out3, "default")
+    assert "media withheld" in (out3 / "MEMORY.md").read_text("utf-8") and not (out3 / "memories/m3").exists()
+    # example 10 (the first 1.1 file) exports its five memories in French for the fr-agent preset
+    out4 = tmp_path / "ws4"; done = export_agent(ROOT / "spec/examples/10-clara-mercier", out4, "fr-agent")
+    md = (out4 / "MEMORY.md").read_text("utf-8")
+    assert done["memory_nodes"] == 5 and "grand-mère" in md and md.index("grand-mère") < md.index("Martien")
+
+
+def test_extract_purges_personal_and_explicit_memories(tmp_path):
+    """§ 5.7: personal nodes leave unless kept; § 5.8: --all-audiences takes the media off explicit nodes, gist kept;
+    the node file travels with the variant; media borrowed through media_from follow their source."""
+    from cof_cli.ops import drop_personal_memories, extract_presets, strip_intimate
+    d, m = _mem_copy(tmp_path)
+    m["elements"]["memories"]["variants"]["m3"]["nudity"] = True; m["tags"]["content"] = ["nudity"]; _write(d, m)
+    n = _node(d, "m3"); n["explicit"] = "nudity"; _write(d, vid="m3", node=n)
+    n = _node(d, "m1"); n["visibility"] = "personal"; _write(d, vid="m1", node=n)
+    assert _val(d).ok
+    a = tmp_path / "a"; extract_presets(d, a, ["default"])
+    assert (a / "elements/memories/m3/memory.json").is_file() and (a / "elements/memories/m3/meeting.jpg").is_file()
+    assert drop_personal_memories(a) == ["m1"]
+    ma = json.loads((a / "manifest.json").read_text("utf-8"))
+    assert "m1" not in ma["elements"]["memories"]["variants"] and ma["presets"]["default"]["slots"]["memories"] == ["p1", "m3", "m4"]
+    assert not (a / "elements/memories/m1").exists()
+    gone = strip_intimate(a)
+    ma = json.loads((a / "manifest.json").read_text("utf-8")); V = ma["elements"]["memories"]["variants"]
+    assert gone == ["memories.m3 (media only)"] and "m3" in V and "media" not in V["m3"] and "nudity" not in V["m3"]
+    assert "media_from" not in V["m4"] and not any(x.get("role") == "memory-media" for x in ma["assets"])
+    assert not (a / "elements/memories/m3/meeting.jpg").exists() and "explicit" not in _node(a, "m3") and _node(a, "m3")["gist"]
+    assert ma["tags"]["content"] == ["none"]
+    rep = Report(); validate_dir(a, rep); assert rep.ok, rep.errors
+
+
+def test_extract_identity_leaves_other_real_persons_media_behind(tmp_path):
+    """§ 4.5: media showing another real person do not travel with one character; a media_from whose source
+    leaves the file is flattened into a `media` list."""
+    from cof_cli.ops import extract_identity
+    d, m = _mem_copy(tmp_path)
+    m["identities"]["id2"] = {"name": "Marc Real", "fictional": False, "morphology": {"class": "human", "species": "human"},
+                              "consent": {"subject_is_real_person": True, "scope": ["conversational-persona", "likeness-image"], "granted": "2026-10-01", "jurisdictions": ["FR"], "proof": [{"type": "other", "uri": "https://example.org/c"}]}}
+    m["presets"]["marc"] = {"label": "Marc", "identity": "id2", "slots": {"memories": ["x1"]}, "age_override": {"value": 40, "unit": "years", "basis": "declared"}}
+    m["identities"]["id2"]["default_preset"] = "marc"
+    (d / "elements/memories/x1").mkdir(); (d / "elements/memories/x1/memory.json").write_text(json.dumps({"gist": {"fr": "Le même soir, vu par Marc."}, "factual": True, "who": [{"identity": "self", "shown": True}], "links": [{"to": "memories/m3", "type": "same-event"}]}), "utf-8")
+    m["elements"]["memories"]["variants"]["x1"] = {"kind": "moment", "label": "x1", "memory": "elements/memories/x1/memory.json", "identity": "id2", "media_from": "memories/m3", "age": {"value": 40, "unit": "years", "basis": "canonical"}}
+    n = _node(d, "m3"); n["who"].append({"identity": "id2", "shown": True, "age": {"value": 40}}); _write(d, vid="m3", node=n)
+    _write(d, m)
+    rep = _val(d); assert rep.ok, rep.errors
+    notes = []; out = extract_identity(d, tmp_path / "clara", "id1", notes)
+    V = out["elements"]["memories"]["variants"]
+    assert notes and "m3" in notes[0] and "media" not in V["m3"] and "media_from" not in V["m4"]       # Marc's likeness stays behind
+    assert _node(tmp_path / "clara", "m3")["gist"] and "x1" not in V
+    out2 = extract_identity(d, tmp_path / "marc", "id2")
+    V2 = out2["elements"]["memories"]["variants"]
+    assert V2["x1"].get("media") == ["a-m3-meeting"] and "media_from" not in V2["x1"] and "m3" not in V2   # flattened
+    assert (tmp_path / "marc/elements/memories/m3/meeting.jpg").is_file()
+    rep = Report(); validate_dir(tmp_path / "marc", rep); assert not [e for e in rep.errors if "x1" in e], rep.errors

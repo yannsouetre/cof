@@ -313,9 +313,72 @@ def export_soul(src: Path, preset: str | None = None) -> tuple[str, str]:
     return soul, identity
 
 
-def export_agent(src: Path, out: Path, preset: str | None = None) -> dict:
+def memory_section(src: Path, manifest: dict, pid: str | None, keep_personal: bool = False) -> tuple[str, list[tuple[str, dict, dict]], int]:
+    """The "Memories" section of MEMORY.md (RFC 0002 § 6.4): canon gists in timeline order, each with its
+    when-marker, disclosure and fidelity. Returns (markdown, [(vid, variant, node)] exported, personal nodes dropped)."""
+    from .memories import gist_text, load_nodes, preset_memories, text_in, timeline, when_label
+    from .model import resolve_variant
+    nodes = load_nodes(src, manifest)
+    vids = [v for v in preset_memories(manifest, pid) if v in nodes]
+    if not vids:
+        return "", [], 0
+    dropped = 0
+    kept = []
+    for vid in timeline(manifest, nodes, vids):
+        node = nodes[vid]
+        if node.get("visibility") == "personal" and not keep_personal:
+            dropped += 1; continue
+        kept.append((vid, resolve_variant(manifest, "memories", vid) or {}, node))
+    if not kept:
+        return "", [], dropped
+    lines = ["## Memories", "",
+             "What the character remembers, oldest first. Markers: `secret` is never told, `guarded` only when it matters; "
+             "`faded` / `fragment` memories are recalled with hesitation (RFC 0002).", ""]
+    for vid, rv, node in kept:
+        lang, text = gist_text(manifest, vid, node, pid)
+        mark = [when_label(rv.get("kind"), node, lang) or "undated"]
+        if rv.get("kind") == "period":
+            mark.append("period")
+        nat = [n for n in node.get("nature") or [] if n != "experienced"]
+        mark += nat
+        if node.get("disclosure", "open") != "open":
+            mark.append(node["disclosure"])
+        if node.get("fidelity", "clear") != "clear":
+            mark.append(node["fidelity"])
+        if node.get("origin") == "lived":
+            mark.append("lived")
+        if node.get("explicit"):
+            mark.append("explicit: media withheld")
+        if node.get("factual") is True:
+            mark.append("factual")
+        label = rv.get("label") or vid
+        lines.append(f"### {label}  ·  {' · '.join(mark)}")
+        lines.append("")
+        lines.append(text.strip())
+        where = text_in((node.get("where") or {}).get("label"), lang)
+        who = [text_in(w.get("label"), lang) for w in node.get("who") or [] if w.get("label")]
+        ctx = [f"where: {where}" if where else "", f"with: {', '.join(who)}" if who else ""]
+        links = []
+        for ln in node.get("links") or []:
+            tgt = str(ln.get("to", "")).partition("/")[2]
+            tl = (resolve_variant(manifest, "memories", tgt) or {}).get("label") or tgt
+            lab = text_in(ln.get("label"), lang)
+            links.append(f"{ln.get('type')} “{tl}”" + (f" — {lab}" if lab else ""))
+        if links:
+            ctx.append("links: " + "; ".join(links))
+        ctx = [c for c in ctx if c]
+        if ctx:
+            lines.append("")
+            lines.append("_" + " · ".join(ctx) + "_")
+        lines.append("")
+    return "\n".join(lines).rstrip() + "\n", kept, dropped
+
+
+def export_agent(src: Path, out: Path, preset: str | None = None, keep_personal: bool = False) -> dict:
     """A ready-to-use agent workspace from one preset: SOUL.md, IDENTITY.md, avatar, skills/<name>/,
-    memories at the root, documents in docs/, and COF.md (rights and provenance the agent host must honour)."""
+    memories at the root, documents in docs/, and COF.md (rights and provenance the agent host must honour).
+    With a `memories` category (1.1): MEMORY.md = the host memory file (files/memory) followed by the canon gists in
+    timeline order, and memories/<id>/ holding the media of non-explicit nodes (RFC 0002 § 6.4)."""
     import shutil
     from .model import asset_index, default_preset_id, effective_permissions, preset_identity, resolved
     manifest = json.loads((src / "manifest.json").read_text("utf-8"))
@@ -351,6 +414,23 @@ def export_agent(src: Path, out: Path, preset: str | None = None) -> dict:
             for a in files:
                 dest.mkdir(parents=True, exist_ok=True); shutil.copy(src / a["path"], dest / Path(a["path"]).name)
                 done["memories" if kind == "memory" else "documents"].append(Path(a["path"]).name)
+    # memories category (1.1): MEMORY.md = host memory file (if any) + the canon gists; media of non-explicit nodes
+    section, kept, dropped = memory_section(src, manifest, pid, keep_personal)
+    done["memory_nodes"], done["personal_dropped"] = len(kept), dropped
+    if section:
+        from .memories import media_assets
+        host = out / "MEMORY.md"
+        head = host.read_text("utf-8").rstrip() + "\n\n" if host.is_file() else f"# MEMORY.md — {(preset_identity(manifest, pid) or {}).get('name') or manifest.get('name')}\n\n"
+        host.write_text(head + section, "utf-8")
+        if "MEMORY.md" not in done["memories"]:
+            done["memories"].append("MEMORY.md")
+        for vid, rv, node in kept:
+            if node.get("explicit"):
+                continue
+            for a in media_assets(manifest, vid):
+                if a.get("path") and (src / a["path"]).is_file():
+                    d_ = out / "memories" / vid; d_.mkdir(parents=True, exist_ok=True)
+                    shutil.copy(src / a["path"], d_ / Path(a["path"]).name)
     perms = effective_permissions(manifest, pid)
     ident = preset_identity(manifest, pid) or {}
     note = [f"# COF.md — {ident.get('name') or manifest.get('name')} (preset `{pid}`)", "",

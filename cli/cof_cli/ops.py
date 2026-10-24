@@ -56,7 +56,7 @@ def _copy_tree_assets(src: Path, dst: Path, m: dict, prefix: str, taken_assets: 
 
 
 def _copy_variant_files(src: Path, dst: Path, v: dict, prefix: str):
-    for fld in ("card", "psyche", "story", "lorebook", "params", "code", "spec", "profile", "vec", "visemes", "path", "skeleton"):
+    for fld in ("card", "psyche", "story", "lorebook", "params", "code", "spec", "profile", "vec", "visemes", "path", "skeleton", "memory"):
         rel = v.get(fld)
         if isinstance(rel, str) and (src / rel).is_file():
             newrel = rel
@@ -206,8 +206,9 @@ def extract_preset(src: Path, dst: Path, pid: str) -> dict:
     return extract_presets(src, dst, [pid])
 
 
-def extract_identity(src: Path, dst: Path, iid: str) -> dict:
-    """Export one character: all its presets, its elements, their files, its rights."""
+def extract_identity(src: Path, dst: Path, iid: str, notes: list[str] | None = None) -> dict:
+    """Export one character: all its presets, its elements, their files, its rights. Memory media that show
+    another real person stay behind (their consent does not travel — RFC 0002 § 4.5); `notes` receives one line each."""
     from .model import preset_owner
     m = json.loads((src / "manifest.json").read_text("utf-8"))
     if iid not in (m.get("identities") or {}) and iid != m.get("default_identity"):
@@ -221,7 +222,155 @@ def extract_identity(src: Path, dst: Path, iid: str) -> dict:
     out = extract_presets(src, dst, pids)
     out["default_preset"] = pids[0]
     (dst / "manifest.json").write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", "utf-8")
-    return out
+    for vid in strip_foreign_real_media(dst, {iid}, m.get("identities") or {}):
+        (notes if notes is not None else []).append(f"memories.{vid}: media showing another real person left behind (gist kept)")
+    return json.loads((dst / "manifest.json").read_text("utf-8"))
+
+
+# ---- memories (RFC 0002 § 5.7, § 5.8, § 4.5) ---------------------------------------------------------------------
+
+def _memory_variants(m: dict) -> dict:
+    return ((m.get("elements") or {}).get("memories") or {}).get("variants") or {}
+
+
+def _prune_assets(dst: Path, m: dict, freed: set[str]) -> None:
+    """Remove the assets in `freed` that no variant uses any more (file and manifest entry); fix primary images."""
+    from .model import variant_asset_ids
+    still = {aid for e in (m.get("elements") or {}).values() for v in (e.get("variants") or {}).values() for aid in variant_asset_ids(v)}
+    gone = freed - still
+    for a in list(m.get("assets") or []):
+        if a["id"] in gone or a.get("source") in gone:
+            if a.get("path") and (dst / a["path"]).is_file():
+                (dst / a["path"]).unlink()
+            m["assets"].remove(a)
+    for p in (m.get("presets") or {}).values():
+        if p.get("primary_image") in gone:
+            p.pop("primary_image")
+
+
+def _unlist_variant(m: dict, cat: str, vid: str) -> None:
+    for p in (m.get("presets") or {}).values():
+        for key in ("slots", "alternatives"):
+            if (p.get(key) or {}).get(cat):
+                p[key][cat] = [x for x in p[key][cat] if x != vid]
+                if not p[key][cat]:
+                    del p[key][cat]
+
+
+def drop_dangling_memory_links(dst: Path, m: dict) -> list[str]:
+    """Links whose target node is no longer in the file are removed from the node files (an extract of one character
+    loses the `same-event` links to the others'). Returns "vid → target" for each dropped link."""
+    E = m.get("elements") or {}
+    dropped = []
+    for vid, v in _memory_variants(m).items():
+        rel = v.get("memory")
+        if not rel or not (dst / rel).is_file():
+            continue
+        try:
+            node = json.loads((dst / rel).read_text("utf-8"))
+        except Exception:
+            continue
+        keep = []
+        for ln in node.get("links") or []:
+            cat, _, tgt = str(ln.get("to", "")).partition("/")
+            if tgt in (((E.get(cat) or {}).get("variants") or {})):
+                keep.append(ln)
+            else:
+                dropped.append(f"{vid} → {ln.get('to')}")
+        if len(keep) != len(node.get("links") or []):
+            if keep:
+                node["links"] = keep
+            else:
+                node.pop("links", None)
+            (dst / rel).write_text(json.dumps(node, ensure_ascii=False, indent=2) + "\n", "utf-8")
+    return dropped
+
+
+def _memory_media_off(dst: Path, m: dict, vid: str) -> set[str]:
+    """Take the media off one memory node (the gist stays): variant `media` / `media_from` / `nudity`, node `explicit`.
+    Nodes that borrowed these media through `media_from` lose them too. Returns the freed asset ids."""
+    V = _memory_variants(m)
+    v = V.get(vid) or {}
+    freed = set(v.pop("media", None) or [])
+    v.pop("media_from", None); v.pop("nudity", None)
+    rel = v.get("memory")
+    if rel and (dst / rel).is_file():
+        try:
+            node = json.loads((dst / rel).read_text("utf-8"))
+            if node.pop("explicit", None) is not None:
+                (dst / rel).write_text(json.dumps(node, ensure_ascii=False, indent=2) + "\n", "utf-8")
+        except Exception:
+            pass
+    for ovid, ov in V.items():
+        if str(ov.get("media_from") or "").partition("/")[2] == vid:
+            freed |= _memory_media_off(dst, m, ovid)
+    return freed
+
+
+def strip_explicit_memory_media(dst: Path) -> list[str]:
+    """All-audiences purge of the memories (RFC 0002 § 5.8): explicit nodes keep their gist and lose their media."""
+    m = json.loads((dst / "manifest.json").read_text("utf-8"))
+    V = _memory_variants(m)
+    hit = [vid for vid, v in V.items() if v.get("nudity") is True]
+    if not hit:
+        return []
+    freed = set()
+    for vid in hit:
+        freed |= _memory_media_off(dst, m, vid)
+    _prune_assets(dst, m, freed)
+    (dst / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
+    return hit
+
+
+def strip_foreign_real_media(dst: Path, kept_identities: set[str], identities: dict | None = None) -> list[str]:
+    """Extraction guard (RFC 0002 § 4.5): media showing a real person who is not among `kept_identities` are dropped.
+    `identities` is the source file's table (the extract no longer holds the other characters)."""
+    from .memories import load_nodes, shows_other_real_person
+    m = json.loads((dst / "manifest.json").read_text("utf-8"))
+    nodes = load_nodes(dst, m)
+    hit = [vid for vid, node in nodes.items()
+           if (_memory_variants(m).get(vid) or {}).get("media") or (_memory_variants(m).get(vid) or {}).get("media_from")
+           if shows_other_real_person(m, vid, node, kept_identities, identities)]
+    if not hit:
+        return []
+    freed = set()
+    for vid in hit:
+        freed |= _memory_media_off(dst, m, vid)
+    _prune_assets(dst, m, freed)
+    (dst / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
+    return hit
+
+
+def drop_personal_memories(dst: Path) -> list[str]:
+    """RFC 0002 § 5.7: `visibility: personal` nodes are a user's data — removed with their files, unlisted from presets."""
+    from .memories import load_nodes
+    from .model import variant_asset_ids
+    m = json.loads((dst / "manifest.json").read_text("utf-8"))
+    V = _memory_variants(m)
+    nodes = load_nodes(dst, m)
+    hit = [vid for vid, node in nodes.items() if node.get("visibility") == "personal"]
+    if not hit:
+        return []
+    freed = set()
+    for vid in hit:
+        for ovid, ov in V.items():          # a node that borrowed the media of a personal node keeps a copy of the list
+            if ovid not in hit and str(ov.get("media_from") or "").partition("/")[2] == vid:
+                from .memories import effective_media
+                med = effective_media(m, ovid); ov.pop("media_from")
+                if med:
+                    ov["media"] = med
+        v = V.pop(vid)
+        freed |= variant_asset_ids(v)
+        _unlist_variant(m, "memories", vid)
+        folder = dst / "elements" / "memories" / vid
+        if folder.is_dir():
+            shutil.rmtree(folder)
+    if not V:
+        m["elements"].pop("memories", None)
+    drop_dangling_memory_links(dst, m)
+    _prune_assets(dst, m, freed)
+    (dst / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
+    return hit
 
 
 def extract_tag(src: Path, dst: Path, tids: list[str]) -> dict:
@@ -274,10 +423,19 @@ def extract_presets(src: Path, dst: Path, pids: list[str], tags: list[str] | Non
     out = json.loads(json.dumps(m))
     out["elements"] = {}
     keep_assets: set[str] = set()
-    for cat, vid in keep_v:
-        v = m["elements"][cat]["variants"][vid]
+    for cat, vid in sorted(keep_v):
+        v = json.loads(json.dumps(m["elements"][cat]["variants"][vid]))
+        if cat == "memories" and v.get("media_from"):
+            # shared media (RFC 0002 § 4.5): when the node the media come from leaves the file, the list is copied here
+            from .memories import effective_media
+            tgt = str(v["media_from"]).partition("/")[2]
+            if ("memories", tgt) not in keep_v:
+                med = effective_media(m, vid)
+                v.pop("media_from")
+                if med:
+                    v["media"] = med
         out["elements"].setdefault(cat, {"variants": {}})["variants"][vid] = v
-        for lst in ("images", "derived", "samples", "clips", "videos", "files"):
+        for lst in ("images", "derived", "samples", "clips", "videos", "files", "media"):
             keep_assets |= set(v.get(lst) or [])
         if isinstance(v.get("mesh"), dict):
             keep_assets |= set(v["mesh"].get("textures") or [])
@@ -332,6 +490,7 @@ def extract_presets(src: Path, dst: Path, pids: list[str], tags: list[str] | Non
     for k in ("completeness", "coverage", "thumbnail"):
         out.pop(k, None)
     (dst / "manifest.json").write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", "utf-8")
+    drop_dangling_memory_links(dst, out)
     return out
 
 
@@ -339,12 +498,13 @@ def strip_intimate(dst: Path) -> list[str]:
     """Safe-for-work slice: remove every `intimate` variant (and the files only it used), drop it from presets,
     and set allowSexualUsage to false everywhere (root, characters, presets). Returns the removed variant ids."""
     from .model import variant_asset_ids
+    mem_hit = strip_explicit_memory_media(dst)                  # memories: the gist stays, the media go (RFC 0002 § 5.8)
     m = json.loads((dst / "manifest.json").read_text("utf-8"))
     V = ((m.get("elements") or {}).get("appearance") or {}).get("variants") or {}
     gone = [vid for vid, v in V.items() if v.get("kind") == "intimate" or v.get("nudity") is True]
-    extra_freed, extra_gone = set(), []
+    extra_freed, extra_gone = set(), [f"memories.{x} (media only)" for x in mem_hit]
     for cat, e in (m.get("elements") or {}).items():          # nude variants of other categories (posture photos…)
-        if cat == "appearance":
+        if cat in ("appearance", "memories"):
             continue
         for vid in [k for k, v in ((e or {}).get("variants") or {}).items() if (v or {}).get("nudity") is True]:
             extra_freed |= variant_asset_ids(e["variants"].pop(vid)); extra_gone.append(f"{cat}.{vid}")
@@ -378,4 +538,4 @@ def strip_intimate(dst: Path) -> list[str]:
         if not tc:
             tc.append("none")
     (dst / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
-    return gone
+    return gone + extra_gone

@@ -192,7 +192,7 @@ A "Memories" tab (0.12): the timeline as the editor (a click adds a moment, a dr
 - **1.0 readers**: ignore the category (`cof-cli` 1.0.1 and builder 0.11.8 preserve it and read it as a library; earlier 1.0.0 tools refused it — see CHANGELOG 1.0.1). Explicit memories are visible to 1.0 purges through `nudity: true` and `tags.content` (§ 5.3).
 - **Schemas**: `schemas/1.1/` adds `memories` to the category pattern, the kinds `moment` / `period`, the variant field `memory`, the asset role `memory-media`, the asset flag `as_remembered`, and `identities.<id>.language`; `memory.schema.json` is the node file's schema. `$id`s under `https://yannsouetre.github.io/cof/schemas/1.1/`.
 - **A file declares the lowest minor that defines everything it uses**: a file with memories declares `cof: "1.1"`.
-- **Example**: `spec/examples/10-clara-mercier` becomes the first 1.1 file, with four memories (grandmother's house — the house and a child's drawing, never the child; the meeting with the Martian; the office; the electric-sheep dream). The eight other examples stay 1.0.
+- **Example**: `spec/examples/10-clara-mercier` becomes the first 1.1 file, with five memories: four moments (the grandmother's house — the house and a child's drawing, never the child; the first morning in the studio; the meeting with the Martian; the electric-sheep dream) and one period (the agency years, no media). The eight other examples stay 1.0.
 - Negative corpus: one case per error of § 6.1.
 
 ## 8. Alternatives considered

@@ -379,10 +379,12 @@ def lowest_age(manifest: dict) -> float | None:
     return min(ages) if ages else None
 
 
-def preset_age(manifest: dict, pid: str | None) -> float | None:
-    """Age of a preset = min(ages of its applied AND offered morphological variants, age_override). None = no age known (e.g. text only)."""
+def preset_age(manifest: dict, pid: str | None, ignore: set[str] = frozenset()) -> float | None:
+    """Age of a preset = min(ages of its applied AND offered morphological variants, age_override). None = no age known (e.g. text only).
+    `ignore`: categories left out — the age buckets of tags.auto ignore `memories` (a memory legitimately shows another
+    age; the builder, which does not read that category, computes the same buckets), the minor rules never do."""
     res = resolved_all(manifest, pid)
-    va = [x for cat in AGE_CATEGORIES for v in res.get(cat, []) if v.get("kind") not in AGELESS_KINDS for x in [_age_value(v.get("age"))] if x is not None]
+    va = [x for cat in AGE_CATEGORIES - set(ignore) for v in res.get(cat, []) if v.get("kind") not in AGELESS_KINDS for x in [_age_value(v.get("age"))] if x is not None]
     x = _age_value(preset_age_override(manifest, pid))
     if x is not None:
         va.append(x)

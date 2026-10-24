@@ -828,8 +828,8 @@ def auto_tags(manifest: dict) -> list[str]:
         I = ids.get(preset_owner(manifest, p)) or manifest
         return ((I.get("morphology") or manifest.get("morphology") or {}).get("class") or "human") in HUMAN_FORM
     ages = [preset_age(manifest, p) for p in P if form(p)]
-    at |= {bucket(a) for a in ages} | set(manifest.get("languages") or [])
-    if any(a is not None and a < 18 for a in ages):
+    at |= {bucket(a) for a in (preset_age(manifest, p, ignore={"memories"}) for p in P if form(p))} | set(manifest.get("languages") or [])
+    if any(a is not None and a < 18 for a in ages):                 # a memory showing a minor makes a minor preset (RFC 0002 § 5.2)
         at.add("has-minor-preset")
     for cat, tag in (("voice", "has-voice"), ("volume3d", "has-3d"), ("motion", "has-motion"), ("identity_weights", "has-weights")):
         if (E.get(cat) or {}).get("variants"):
