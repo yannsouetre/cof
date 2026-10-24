@@ -97,10 +97,8 @@
           "aspect": "3:2"
         },
         {
-          "prompt": "A small, simple child's bedroom in the grandmother's house, empty of people: plain pale wallpaper, a narrow single bed neatly made with a light cotton cover, a small worn plush rabbit (the size of a hand) on the pillow, a small bedside table with a closed lamp and an ordinary A5 spiral notebook lying open on it showing a pencil drawing of a hut on stilts; no toys on the floor; summer light through thin curtains. Same photographic style as the reference image: an old family photograph, slightly faded colours of a 2000s print, soft grain, warm cast.",
-          "refs": [
-            "../../../spec/examples/10-clara-mercier/elements/memories/m1/m1.jpg"
-          ],
+          "prompt": "Add to this bedroom, without changing anything else: a few children's toys on the wooden floor near the bed (a small wooden train, some building blocks, a spinning top), and one cute poster pinned on the wall above the bed showing a simple colourful drawing of a mountain hut with a sun. Same old-photograph look, same faded colours, same bed, same plush, same notebook.",
+          "base": "clara.memories/m1.chambre-v2.jpg",
           "aspect": "3:2"
         },
         {
@@ -346,17 +344,8 @@
       "age": 29,
       "images": [
         {
-          "prompt": "Change ONLY the alien character in the first image. His new look is the Martian of the second (face) and third (full body, outfit) images: smooth bright green skin, a large bald head, big black almond-shaped eyes, pointed ears, a small nose and mouth; he wears a fitted silver jacket with a high collar, silver trousers and dark boots, instead of the dark robe. He keeps exactly the same pose, position, height and gesture with the glowing phone. The woman, her clothes and pose, the river, the embankment, the buildings and the lighting stay identical.",
-          "base": "../../../spec/examples/10-clara-mercier/elements/memories/m3/m3.jpg",
-          "refs": [
-            "../../../spec/examples/11-duo-clara-martien/elements/appearance/f1/head.front.jpg",
-            "../../../spec/examples/11-duo-clara-martien/elements/appearance/b1/body.front.jpg"
-          ],
-          "shows_character": true,
-          "aspect": "3:2"
-        },
-        {
-          "prompt": "A candid evening photograph on the Saône embankment in Lyon, France, blue hour, old facades lit across the water: the young woman of the first reference image (a light cream jacket, jeans) stands talking with the Martian of the second and third reference images — tall and slender, smooth bright green skin, large bald head, big black almond eyes, pointed ears, a fitted silver jacket with a high collar, silver trousers, dark boots — both seen from the side at a few metres, the Martian holding a glowing phone and showing it to her. Friendly, ordinary, slightly surreal.",
+          "prompt": "Change ONLY two things in the first image: (1) the alien's head becomes the head of the Martian in the second image — a smooth bright green, rounder bald head, big black almond-shaped eyes, pointed ears, a small nose and a small mouth, on a normal neck; (2) his shoes become the dark boots of the third image. His silver jacket and trousers, his pose, the glowing phone, the woman, the embankment, the river, the buildings and the blue-hour lighting stay exactly identical.",
+          "base": "clara.memories/m3.retouche-1.jpg",
           "refs": [
             "../../../spec/examples/11-duo-clara-martien/elements/appearance/f1/head.front.jpg",
             "../../../spec/examples/11-duo-clara-martien/elements/appearance/b1/body.front.jpg"
@@ -461,7 +450,7 @@
           "style": "cinematic"
         },
         {
-          "prompt": "Close-up of the face of one of the sheep of the reference image, on the same grassy hillside above the blurred city lights at night: an ordinary, gentle sheep's face looking at the viewer, with a few discreet signs that it is electric — a faint circuit-like glow under the skin of its muzzle, a soft LED pinpoint in each pupil, a thin seam along one ear — its wool blinking faintly in pale blue and amber like the other sheep behind it. Same scene, same night, same painterly dreamlike style as the reference image: hazy edges, muted colours, soft focus.",
+          "prompt": "Close-up of the face of one of the sheep of the reference image, on the same grassy hillside above the blurred city lights at night, the other sheep softly glowing behind it exactly as in the reference: an ordinary, gentle sheep's face looking at the viewer. It is electric only in a subtle way: faint halos of light glow from INSIDE its flesh and wool, as if small electric organs shone through the skin — a soft diffuse pale-blue and amber bloom under the cheeks and inside the ears, a quiet inner light in the eyes. No dots, no LEDs, no garlands, no circuit lines, nothing stuck on the skin. Same painterly dreamlike style, hazy edges, muted colours, soft focus.",
           "refs": [
             "../../../spec/examples/10-clara-mercier/elements/memories/m4/m4.jpg"
           ],
