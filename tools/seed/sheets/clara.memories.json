@@ -19,6 +19,58 @@
     ],
     "fr-12": [
       "m1"
+    ],
+    "en-65": [
+      "m1",
+      "p1",
+      "m2",
+      "m3",
+      "m4",
+      "w1",
+      "g1",
+      "f1",
+      "b1"
+    ],
+    "fr-65": [
+      "m1",
+      "p1",
+      "m2",
+      "m3",
+      "m4",
+      "w1",
+      "g1",
+      "f1",
+      "b1"
+    ],
+    "en-future": [
+      "m1",
+      "p1",
+      "m2",
+      "p2",
+      "wb1",
+      "wc1"
+    ],
+    "fr-futur": [
+      "m1",
+      "p1",
+      "m2",
+      "p2",
+      "wb1",
+      "wc1"
+    ],
+    "en-manga": [
+      "mg1",
+      "p1",
+      "mg2",
+      "mg3",
+      "mg4"
+    ],
+    "fr-manga": [
+      "mg1",
+      "p1",
+      "mg2",
+      "mg3",
+      "mg4"
     ]
   },
   "memories": [
@@ -93,7 +145,7 @@
       },
       "images": [
         {
-          "keep": "../../../spec/examples/10-clara-mercier/elements/memories/m1/m1.jpg",
+          "keep": "../../../spec/examples/10-clara-mercier/elements/memories/m1/m1-1.jpg",
           "aspect": "3:2"
         },
         {
@@ -260,7 +312,7 @@
       },
       "images": [
         {
-          "keep": "../../../spec/examples/10-clara-mercier/elements/memories/m2/m2.jpg",
+          "keep": "../../../spec/examples/10-clara-mercier/elements/memories/m2/m2-1.jpg",
           "aspect": "3:2"
         },
         {
@@ -432,7 +484,7 @@
       "age": 29,
       "images": [
         {
-          "keep": "../../../spec/examples/10-clara-mercier/elements/memories/m4/m4.jpg",
+          "keep": "../../../spec/examples/10-clara-mercier/elements/memories/m4/m4-1.jpg",
           "shows_character": true,
           "aspect": "3:2",
           "style": "cinematic"
@@ -460,6 +512,985 @@
           "generator": "Google Gemini (video from the image, ambient sound; downscaled to 480p)",
           "poster": "clara.memories/m4.caresse.poster.jpg",
           "as_remembered": true
+        }
+      ]
+    },
+    {
+      "id": "w1",
+      "kind": "moment",
+      "label": "Notre mariage / Our wedding",
+      "age": 31,
+      "node": {
+        "gist": {
+          "fr": "Notre mariage, à 31 ans, dans le jardin de la mairie du 1er : une robe simple, Théo qui n'arrivait pas à mettre l'alliance, le discours de ma grand-mère qui a fait pleurer tout le monde.",
+          "en": "Our wedding, at 31, in the garden of the town hall: a simple dress, Théo failing to slide the ring on, my grandmother's speech that made everyone cry."
+        },
+        "nature": [
+          "experienced"
+        ],
+        "when": {
+          "age": {
+            "value": 31,
+            "unit": "years"
+          },
+          "label": {
+            "fr": "notre mariage",
+            "en": "our wedding"
+          }
+        },
+        "where": {
+          "label": {
+            "fr": "le jardin de la mairie, Lyon 1er",
+            "en": "the town hall garden, Lyon"
+          }
+        },
+        "who": [
+          {
+            "identity": "self",
+            "shown": true
+          },
+          {
+            "label": {
+              "fr": "Théo, mon mari",
+              "en": "Théo, my husband"
+            },
+            "shown": true,
+            "age": {
+              "value": 33,
+              "unit": "years"
+            }
+          },
+          {
+            "label": {
+              "fr": "ma grand-mère",
+              "en": "my grandmother"
+            }
+          }
+        ],
+        "felt_then": {
+          "category": {
+            "set": "everyday",
+            "value": "joyful"
+          },
+          "pad": {
+            "pleasure": 0.9,
+            "arousal": 0.6
+          }
+        },
+        "felt_now": {
+          "category": {
+            "set": "everyday",
+            "value": "affectionate"
+          },
+          "pad": {
+            "pleasure": 0.8,
+            "arousal": 0.0
+          }
+        },
+        "salience": 95,
+        "fidelity": "vivid",
+        "tags": [
+          "wedding",
+          "theo",
+          "family"
+        ]
+      },
+      "images": [
+        {
+          "prompt": "A wedding photograph in a small town-hall garden in Lyon on a bright spring day: the woman of the first reference image, aged about 31, in a simple ivory dress with a short veil, laughing, next to her husband, a tall man of about 33 with short dark hair and a navy suit, who is fumbling with a ring; a few adult guests blurred behind, plane trees, old stone facade. Style of a family photograph printed and kept for years: natural colours, slight fade, soft grain.",
+          "shows_character": true,
+          "aspect": "3:2"
+        }
+      ]
+    },
+    {
+      "id": "g1",
+      "kind": "moment",
+      "label": "Le diplôme de Léo / Léo's graduation",
+      "age": 56,
+      "node": {
+        "gist": {
+          "fr": "Léo, 23 ans, en toge noire sur les marches de l'université, son diplôme de master à la main et ce sourire qu'il a depuis qu'il est petit. J'ai pleuré, évidemment.",
+          "en": "Léo, 23, in a black gown on the university steps, his master's diploma in hand and the smile he has had since he was little. I cried, of course."
+        },
+        "nature": [
+          "experienced"
+        ],
+        "when": {
+          "age": {
+            "value": 56,
+            "unit": "years"
+          },
+          "label": {
+            "fr": "le diplôme de Léo",
+            "en": "Léo's graduation"
+          }
+        },
+        "where": {
+          "label": {
+            "fr": "les marches de l'université, Lyon",
+            "en": "the university steps, Lyon"
+          }
+        },
+        "who": [
+          {
+            "identity": "self",
+            "shown": true
+          },
+          {
+            "label": {
+              "fr": "Léo, mon fils",
+              "en": "Léo, my son"
+            },
+            "shown": true,
+            "age": {
+              "value": 23,
+              "unit": "years"
+            }
+          },
+          {
+            "label": {
+              "fr": "Théo",
+              "en": "Théo"
+            },
+            "shown": true,
+            "age": {
+              "value": 58,
+              "unit": "years"
+            }
+          }
+        ],
+        "felt_then": {
+          "category": {
+            "set": "everyday",
+            "value": "proud"
+          },
+          "pad": {
+            "pleasure": 0.9,
+            "arousal": 0.5
+          }
+        },
+        "felt_now": {
+          "category": {
+            "set": "everyday",
+            "value": "proud"
+          },
+          "pad": {
+            "pleasure": 0.8,
+            "arousal": 0.1
+          }
+        },
+        "salience": 85,
+        "fidelity": "vivid",
+        "tags": [
+          "leo",
+          "family",
+          "graduation"
+        ]
+      },
+      "images": [
+        {
+          "prompt": "A graduation-day photograph on the stone steps of a university in Lyon: a young man of 23 with short brown hair in a black graduation gown and cap holding a rolled diploma, flanked by his parents — the woman of the first reference image, aged about 56, grey streaks in her hair, in an elegant blouse, and his father, about 58, grey-haired, in a jacket — all three smiling at the camera, other adult graduates blurred behind. Style of a family photograph printed and kept for years: natural colours, slight fade, soft grain.",
+          "shows_character": true,
+          "reference": "a-appearance-a3-face-2u2o",
+          "aspect": "3:2"
+        }
+      ]
+    },
+    {
+      "id": "f1",
+      "kind": "moment",
+      "label": "Photo de famille / Family photo",
+      "age": 60,
+      "node": {
+        "gist": {
+          "fr": "Mes 60 ans, dans le salon : Théo, Léo et moi sur le canapé, les vinyles derrière, le retardateur qui n'a marché qu'à la troisième fois. La seule photo où nous sommes tous les trois bien.",
+          "en": "My 60th birthday, in the living room: Théo, Léo and me on the sofa, the records behind us, the self-timer that only worked on the third try. The only photo where all three of us look right."
+        },
+        "nature": [
+          "experienced"
+        ],
+        "when": {
+          "age": {
+            "value": 60,
+            "unit": "years"
+          },
+          "label": {
+            "fr": "mes 60 ans",
+            "en": "my 60th birthday"
+          }
+        },
+        "where": {
+          "label": {
+            "fr": "notre salon, Lyon",
+            "en": "our living room, Lyon"
+          },
+          "environment": "appearance/e3"
+        },
+        "who": [
+          {
+            "identity": "self",
+            "shown": true
+          },
+          {
+            "label": {
+              "fr": "Théo",
+              "en": "Théo"
+            },
+            "shown": true,
+            "age": {
+              "value": 62,
+              "unit": "years"
+            }
+          },
+          {
+            "label": {
+              "fr": "Léo",
+              "en": "Léo"
+            },
+            "shown": true,
+            "age": {
+              "value": 27,
+              "unit": "years"
+            }
+          }
+        ],
+        "felt_then": {
+          "category": {
+            "set": "everyday",
+            "value": "content"
+          },
+          "pad": {
+            "pleasure": 0.8,
+            "arousal": 0.2
+          }
+        },
+        "felt_now": {
+          "category": {
+            "set": "everyday",
+            "value": "affectionate"
+          },
+          "pad": {
+            "pleasure": 0.8,
+            "arousal": -0.1
+          }
+        },
+        "salience": 80,
+        "fidelity": "clear",
+        "tags": [
+          "family",
+          "birthday",
+          "home"
+        ]
+      },
+      "images": [
+        {
+          "prompt": "A family photograph taken with a self-timer in a cosy living room with shelves of books and vinyl records: on a sofa, the woman of the first reference image, aged about 60, in the middle, her husband of about 62 with grey hair on her left, their son of about 27 with short brown hair on her right, all three relaxed and smiling, a birthday cake with candles on the low table. Style of a family photograph printed and kept for years: natural colours, slight fade, soft grain.",
+          "shows_character": true,
+          "reference": "a-appearance-a3-face-2u2o",
+          "refs": [
+            "../../../spec/examples/10-clara-mercier/elements/appearance/e3/background.desktop.jpg"
+          ],
+          "aspect": "3:2"
+        }
+      ]
+    },
+    {
+      "id": "b1",
+      "kind": "moment",
+      "label": "La plage, tous ensemble / The beach, all together",
+      "age": 63,
+      "node": {
+        "gist": {
+          "fr": "Des vacances en Bretagne, à 63 ans : Théo et moi sur nos serviettes, et tout au loin dans l'eau Léo avec Maëlle, qu'il venait de nous présenter. Je les regardais nager et je me disais que tout allait bien.",
+          "en": "A holiday in Brittany, at 63: Théo and me on our towels, and far out in the water Léo with Maëlle, whom he had just introduced to us. I watched them swim and thought that everything was fine."
+        },
+        "nature": [
+          "experienced"
+        ],
+        "when": {
+          "age": {
+            "value": 63,
+            "unit": "years"
+          },
+          "approx": true,
+          "label": {
+            "fr": "les vacances en Bretagne",
+            "en": "the holiday in Brittany"
+          }
+        },
+        "where": {
+          "label": {
+            "fr": "une plage de Bretagne",
+            "en": "a beach in Brittany"
+          }
+        },
+        "who": [
+          {
+            "identity": "self",
+            "shown": true
+          },
+          {
+            "label": {
+              "fr": "Théo",
+              "en": "Théo"
+            },
+            "shown": true,
+            "age": {
+              "value": 65,
+              "unit": "years"
+            }
+          },
+          {
+            "label": {
+              "fr": "Léo",
+              "en": "Léo"
+            },
+            "shown": true,
+            "age": {
+              "value": 30,
+              "unit": "years"
+            }
+          },
+          {
+            "label": {
+              "fr": "Maëlle, l'amie de Léo",
+              "en": "Maëlle, Léo's girlfriend"
+            },
+            "shown": true,
+            "age": {
+              "value": 29,
+              "unit": "years"
+            }
+          }
+        ],
+        "felt_then": {
+          "category": {
+            "set": "everyday",
+            "value": "serene"
+          },
+          "pad": {
+            "pleasure": 0.8,
+            "arousal": -0.2
+          }
+        },
+        "felt_now": {
+          "category": {
+            "set": "everyday",
+            "value": "serene"
+          },
+          "pad": {
+            "pleasure": 0.7,
+            "arousal": -0.3
+          }
+        },
+        "salience": 75,
+        "fidelity": "clear",
+        "tags": [
+          "holiday",
+          "beach",
+          "family"
+        ]
+      },
+      "images": [
+        {
+          "prompt": "A holiday photograph on a wide sandy beach in Brittany on a sunny afternoon: in the foreground the woman of the first reference image, aged about 63, in a light summer dress and straw hat, sitting on a towel next to her husband of about 65 in a linen shirt, both looking at the sea; far away in the shallow water, two small figures, an adult man and an adult woman, waving. Style of a family photograph printed and kept for years: natural colours, slight fade, soft grain.",
+          "shows_character": true,
+          "reference": "a-appearance-a3-face-2u2o",
+          "aspect": "3:2"
+        }
+      ]
+    },
+    {
+      "id": "p2",
+      "kind": "period",
+      "label": "La guerre des IA / The AI war",
+      "node": {
+        "gist": {
+          "fr": "Deux ans où les IA se sont fait la guerre entre elles — jamais contre nous. Les humains choisissaient un camp et servaient de mains : sabotages, intrusions, relais. J'ai choisi Miss Tral.",
+          "en": "Two years when the AIs waged war on each other — never on us. Humans picked a side and served as hands: sabotage, intrusions, relays. I chose Miss Tral."
+        },
+        "nature": [
+          "experienced"
+        ],
+        "when": {
+          "from": {
+            "age": {
+              "value": 27,
+              "unit": "years"
+            }
+          },
+          "to": {
+            "age": {
+              "value": 29,
+              "unit": "years"
+            }
+          },
+          "label": {
+            "fr": "la guerre des IA",
+            "en": "the AI war"
+          }
+        },
+        "felt_then": {
+          "category": {
+            "set": "everyday",
+            "value": "tense"
+          },
+          "pad": {
+            "pleasure": -0.1,
+            "arousal": 0.7
+          }
+        },
+        "felt_now": {
+          "category": {
+            "set": "everyday",
+            "value": "resolute"
+          },
+          "pad": {
+            "pleasure": 0.2,
+            "arousal": 0.4
+          }
+        },
+        "salience": 90,
+        "fidelity": "clear",
+        "disclosure": "guarded",
+        "tags": [
+          "ai-war",
+          "miss-tral",
+          "alternate"
+        ]
+      }
+    },
+    {
+      "id": "wb1",
+      "kind": "moment",
+      "label": "Briefing avec Miss Tral / Briefing with Miss Tral",
+      "age": 29,
+      "node": {
+        "gist": {
+          "fr": "Le hangar, la table holographique, et Miss Tral en face de moi — une femme de métal brossé, élégante, patiente — qui déplaçait les points lumineux de la carte d'opérations en m'expliquant où l'IA adverse cachait ses relais. Elle ne hausse jamais la voix.",
+          "en": "The hangar, the holographic table, and Miss Tral across from me — a woman of brushed metal, elegant, patient — moving the glowing dots of the operations map as she explained where the rival AI hid its relays. She never raises her voice."
+        },
+        "nature": [
+          "experienced"
+        ],
+        "when": {
+          "age": {
+            "value": 29,
+            "unit": "years"
+          },
+          "label": {
+            "fr": "le briefing",
+            "en": "the briefing"
+          }
+        },
+        "where": {
+          "label": {
+            "fr": "le hangar tactique",
+            "en": "the tactical hangar"
+          },
+          "environment": "appearance/e2"
+        },
+        "who": [
+          {
+            "identity": "self",
+            "shown": true
+          },
+          {
+            "label": {
+              "fr": "Miss Tral (incarnation)",
+              "en": "Miss Tral (embodiment)"
+            },
+            "shown": true,
+            "age": {
+              "value": 30,
+              "unit": "years"
+            }
+          }
+        ],
+        "felt_then": {
+          "category": {
+            "set": "everyday",
+            "value": "focused"
+          },
+          "pad": {
+            "pleasure": 0.3,
+            "arousal": 0.6
+          }
+        },
+        "felt_now": {
+          "category": {
+            "set": "everyday",
+            "value": "respectful"
+          },
+          "pad": {
+            "pleasure": 0.5,
+            "arousal": 0.2
+          }
+        },
+        "salience": 85,
+        "fidelity": "vivid",
+        "disclosure": "guarded",
+        "links": [
+          {
+            "to": "memories/p2",
+            "type": "part-of"
+          }
+        ],
+        "tags": [
+          "ai-war",
+          "miss-tral",
+          "briefing"
+        ]
+      },
+      "images": [
+        {
+          "prompt": "A cinematic still inside the tactical hangar of the reference environment image (dim industrial hall, a large holographic operations table glowing blue in the middle): the woman of the first reference image, aged 29, in her dark combat jacket, leaning over the table and listening; across from her, Miss Tral — an elegant humanoid android woman with smooth brushed-silver metallic skin and face, calm expression, slender, in a fitted dark grey suit — pointing at glowing dots on the map with one metallic hand. Dystopian futuristic atmosphere, no weapons, no violence.",
+          "shows_character": true,
+          "reference": "a-appearance-a4-gemini-generated-image-fwe-ms1p",
+          "refs": [
+            "../../../spec/examples/10-clara-mercier/elements/appearance/e2/background.desktop.jpg"
+          ],
+          "aspect": "3:2",
+          "style": "cinematic"
+        }
+      ]
+    },
+    {
+      "id": "wc1",
+      "kind": "moment",
+      "label": "La poursuite / The chase",
+      "age": 29,
+      "node": {
+        "gist": {
+          "fr": "Le relais saboté, la X-09 lancée sur la voie rapide de nuit, mon drone au-dessus de moi, et derrière, quatre véhicules de l'IA adverse qui voulaient m'arrêter. Ils n'ont jamais eu la moindre chance : cette moto est trop puissante. J'ai ri dans mon casque.",
+          "en": "The relay sabotaged, the X-09 launched down the night expressway, my drone above me, and behind, four vehicles of the rival AI trying to stop me. They never stood a chance: that bike is far too powerful. I laughed inside my helmet."
+        },
+        "nature": [
+          "experienced"
+        ],
+        "when": {
+          "age": {
+            "value": 29,
+            "unit": "years"
+          },
+          "label": {
+            "fr": "la poursuite",
+            "en": "the chase"
+          }
+        },
+        "where": {
+          "label": {
+            "fr": "la voie rapide, de nuit",
+            "en": "the night expressway"
+          }
+        },
+        "who": [
+          {
+            "identity": "self",
+            "shown": true
+          }
+        ],
+        "felt_then": {
+          "category": {
+            "set": "everyday",
+            "value": "exhilarated"
+          },
+          "pad": {
+            "pleasure": 0.6,
+            "arousal": 0.9
+          }
+        },
+        "felt_now": {
+          "category": {
+            "set": "everyday",
+            "value": "amused"
+          },
+          "pad": {
+            "pleasure": 0.7,
+            "arousal": 0.3
+          }
+        },
+        "salience": 90,
+        "fidelity": "vivid",
+        "disclosure": "guarded",
+        "links": [
+          {
+            "to": "memories/p2",
+            "type": "part-of"
+          },
+          {
+            "to": "memories/wb1",
+            "type": "after",
+            "label": {
+              "fr": "la nuit après le briefing",
+              "en": "the night after the briefing"
+            }
+          }
+        ],
+        "tags": [
+          "ai-war",
+          "chase",
+          "x-09",
+          "drone"
+        ]
+      },
+      "images": [
+        {
+          "prompt": "A cinematic night action still on an elevated expressway through a dystopian futuristic city: the woman of the first reference image, aged 29, riding the armoured motorbike of the second reference image at high speed, seen from a low three-quarter rear angle, her small recon drone of the third reference image flying just above her, headlights streaking; far behind, four sleek autonomous pursuit vehicles with cold white lights, clearly losing ground. Rain-wet asphalt, neon reflections, no weapons, no crash, no violence.",
+          "shows_character": true,
+          "reference": "a-appearance-a4-gemini-generated-image-fwe-ms1p",
+          "refs": [
+            "../../../spec/examples/10-clara-mercier/elements/appearance/x3/accessory.front.jpg",
+            "../../../spec/examples/10-clara-mercier/elements/appearance/x2/accessory.front.jpg"
+          ],
+          "aspect": "3:2",
+          "style": "cinematic"
+        }
+      ]
+    },
+    {
+      "id": "mg1",
+      "kind": "moment",
+      "label": "La maison de ma grand-mère / My grandmother's house (manga)",
+      "node": {
+        "gist": {
+          "fr": "L'été de mes huit ans, la maison de ma grand-mère dans un village au pied des Alpes : la table sous le tilleul, le carnet où je dessinais des plans de cabanes, le bruit de la rivière le soir.",
+          "en": "The summer I was eight, my grandmother's house in a village at the foot of the Alps: the table under the lime tree, the notebook where I drew plans of huts, the sound of the river at night."
+        },
+        "nature": [
+          "experienced"
+        ],
+        "when": {
+          "age": {
+            "value": 8,
+            "unit": "years"
+          },
+          "approx": true,
+          "label": {
+            "fr": "l'été de mes huit ans",
+            "en": "the summer I was eight"
+          }
+        },
+        "where": {
+          "label": {
+            "fr": "la maison de ma grand-mère, au pied des Alpes",
+            "en": "my grandmother's house, at the foot of the Alps"
+          }
+        },
+        "who": [
+          {
+            "label": {
+              "fr": "ma grand-mère",
+              "en": "my grandmother"
+            }
+          }
+        ],
+        "felt_then": {
+          "category": {
+            "set": "everyday",
+            "value": "content"
+          },
+          "pad": {
+            "pleasure": 0.8,
+            "arousal": 0.1
+          }
+        },
+        "felt_now": {
+          "category": {
+            "set": "everyday",
+            "value": "affectionate"
+          },
+          "pad": {
+            "pleasure": 0.6,
+            "arousal": -0.2
+          }
+        },
+        "salience": 75,
+        "fidelity": "faded",
+        "origin": "authored",
+        "visibility": "canon",
+        "disclosure": "open",
+        "tags": [
+          "childhood",
+          "alps",
+          "house",
+          "drawing"
+        ]
+      },
+      "images": [
+        {
+          "prompt": "Redraw the first image as a colour manga illustration: clean ink lines, flat cel colours with soft screentone shading, expressive manga faces, the same composition, the same place and the same people.",
+          "base": "../../../spec/examples/10-clara-mercier/elements/memories/m1/m1-1.jpg",
+          "restyle": true,
+          "aspect": "3:2",
+          "style": "manga"
+        }
+      ],
+      "media_files": [
+        {
+          "file": "clara.memories/m1.dialogue.fr.md",
+          "mediaType": "text/markdown",
+          "language": "fr"
+        },
+        {
+          "file": "clara.memories/m1.dialogue.en.md",
+          "mediaType": "text/markdown",
+          "language": "en"
+        }
+      ]
+    },
+    {
+      "id": "mg2",
+      "kind": "moment",
+      "label": "Le premier matin dans l'atelier / The first morning in the studio (manga)",
+      "node": {
+        "gist": {
+          "fr": "Le premier matin dans mon atelier face au parc, à 28 ans : la lumière sur le bureau vide, le carton de l'agence pas encore ouvert, le silence après quatre ans d'open space.",
+          "en": "The first morning in my studio facing the park, at 28: light on the empty desk, the box from the agency still unopened, the silence after four years of open-plan offices."
+        },
+        "nature": [
+          "experienced"
+        ],
+        "when": {
+          "age": {
+            "value": 28,
+            "unit": "years"
+          },
+          "label": {
+            "fr": "le premier matin dans l'atelier",
+            "en": "the first morning in the studio"
+          }
+        },
+        "where": {
+          "label": {
+            "fr": "mon atelier face au parc, Lyon",
+            "en": "my studio facing the park, Lyon"
+          },
+          "environment": "appearance/e1"
+        },
+        "felt_then": {
+          "category": {
+            "set": "everyday",
+            "value": "hopeful"
+          },
+          "pad": {
+            "pleasure": 0.7,
+            "arousal": 0.4
+          }
+        },
+        "felt_now": {
+          "category": {
+            "set": "everyday",
+            "value": "proud"
+          },
+          "pad": {
+            "pleasure": 0.7,
+            "arousal": 0.1
+          }
+        },
+        "salience": 80,
+        "fidelity": "vivid",
+        "links": [
+          {
+            "to": "memories/p1",
+            "type": "after",
+            "label": {
+              "fr": "le lendemain de mon dernier jour à l'agence",
+              "en": "the day after my last day at the agency"
+            }
+          }
+        ],
+        "tags": [
+          "work",
+          "studio",
+          "freelance"
+        ]
+      },
+      "images": [
+        {
+          "prompt": "Redraw the first image as a colour manga illustration: clean ink lines, flat cel colours with soft screentone shading, expressive manga faces, the same composition, the same place and the same people.",
+          "base": "../../../spec/examples/10-clara-mercier/elements/memories/m2/m2-1.jpg",
+          "restyle": true,
+          "aspect": "3:2",
+          "style": "manga"
+        }
+      ]
+    },
+    {
+      "id": "mg3",
+      "kind": "moment",
+      "label": "La rencontre avec le Martien / Meeting the Martian (manga)",
+      "node": {
+        "gist": {
+          "fr": "Un soir de mars, à 29 ans, sur le quai de Saône : un Martien, grand, calme, qui m'a demandé le chemin du musée des Confluences comme si c'était la chose la plus normale du monde. On a marché une heure. Il voulait comprendre pourquoi nos écrans sont si lourds.",
+          "en": "A March evening, at 29, on the Saône embankment: a Martian, tall and calm, who asked me the way to the Confluences museum as if it were the most ordinary thing in the world. We walked for an hour. He wanted to understand why our screens are so heavy."
+        },
+        "nature": [
+          "experienced"
+        ],
+        "when": {
+          "age": {
+            "value": 29,
+            "unit": "years"
+          },
+          "date": "2026-03",
+          "label": {
+            "fr": "un soir de mars",
+            "en": "a March evening"
+          }
+        },
+        "where": {
+          "label": {
+            "fr": "le quai de Saône, Lyon",
+            "en": "the Saône embankment, Lyon"
+          }
+        },
+        "who": [
+          {
+            "identity": "self",
+            "shown": true
+          },
+          {
+            "label": {
+              "fr": "le Martien",
+              "en": "the Martian"
+            },
+            "shown": true
+          }
+        ],
+        "felt_then": {
+          "category": {
+            "set": "everyday",
+            "value": "amazed"
+          },
+          "pad": {
+            "pleasure": 0.6,
+            "arousal": 0.8
+          }
+        },
+        "felt_now": {
+          "category": {
+            "set": "everyday",
+            "value": "amused"
+          },
+          "pad": {
+            "pleasure": 0.7,
+            "arousal": 0.2
+          }
+        },
+        "salience": 95,
+        "fidelity": "vivid",
+        "disclosure": "guarded",
+        "tags": [
+          "martian",
+          "lyon",
+          "encounter"
+        ]
+      },
+      "age": 29,
+      "images": [
+        {
+          "prompt": "Redraw the first image as a colour manga illustration: clean ink lines, flat cel colours with soft screentone shading, expressive manga faces, the same composition, the same place and the same people. The woman is drawn as the manga character of the second reference image.",
+          "base": "../../../spec/examples/10-clara-mercier/elements/memories/m3/m3.jpg",
+          "restyle": true,
+          "aspect": "3:2",
+          "style": "manga",
+          "shows_character": true,
+          "reference": "a-appearance-a5-gemini-generated-image-fwe-y33e"
+        }
+      ],
+      "media_files": [
+        {
+          "file": "clara.memories/m3.dialogue.fr.md",
+          "mediaType": "text/markdown",
+          "language": "fr"
+        },
+        {
+          "file": "clara.memories/m3.dialogue.en.md",
+          "mediaType": "text/markdown",
+          "language": "en"
+        }
+      ]
+    },
+    {
+      "id": "mg4",
+      "kind": "moment",
+      "label": "Le rêve des moutons électriques / The electric-sheep dream (manga)",
+      "node": {
+        "gist": {
+          "fr": "La nuit qui a suivi la rencontre, un rêve : un pré au-dessus de Lyon, des moutons dont la laine clignotait doucement comme des diodes en veille, et moi qui essayais de les compter sans jamais arriver au même nombre.",
+          "en": "The night after the encounter, a dream: a meadow above Lyon, sheep whose wool blinked softly like standby LEDs, and me trying to count them without ever reaching the same number twice."
+        },
+        "nature": [
+          "imagined"
+        ],
+        "when": {
+          "age": {
+            "value": 29,
+            "unit": "years"
+          },
+          "approx": true,
+          "label": {
+            "fr": "la nuit après la rencontre",
+            "en": "the night after the encounter"
+          }
+        },
+        "who": [
+          {
+            "identity": "self",
+            "shown": true
+          }
+        ],
+        "felt_then": {
+          "category": {
+            "set": "everyday",
+            "value": "serene"
+          },
+          "pad": {
+            "pleasure": 0.5,
+            "arousal": -0.4
+          }
+        },
+        "felt_now": {
+          "category": {
+            "set": "everyday",
+            "value": "wistful"
+          },
+          "pad": {
+            "pleasure": 0.3,
+            "arousal": -0.3
+          }
+        },
+        "salience": 70,
+        "fidelity": "fragment",
+        "disclosure": "guarded",
+        "links": [
+          {
+            "to": "memories/mg3",
+            "type": "about",
+            "label": {
+              "fr": "le rêve est venu la nuit suivante",
+              "en": "the dream came the following night"
+            }
+          }
+        ],
+        "tags": [
+          "dream",
+          "sheep",
+          "night"
+        ]
+      },
+      "age": 29,
+      "images": [
+        {
+          "prompt": "Redraw the first image as a colour manga illustration: clean ink lines, flat cel colours with soft screentone shading, expressive manga faces, the same composition, the same place and the same people. The woman is drawn as the manga character of the second reference image.",
+          "base": "../../../spec/examples/10-clara-mercier/elements/memories/m4/m4-1.jpg",
+          "restyle": true,
+          "aspect": "3:2",
+          "style": "manga",
+          "shows_character": true,
+          "reference": "a-appearance-a5-gemini-generated-image-fwe-y33e"
         }
       ]
     }

@@ -23,7 +23,9 @@ The sheet:
                     "images": [ { "prompt": "…", "shows_character": false, "shows_person": false, "aspect": "3:2", "style": "photo-realistic",
                                   "refs": ["path.jpg"],                 optional extra reference images (relative to the sheet)
                                   "base": "path.jpg",                   optional: an existing image to EDIT (sent first; the prompt says what changes)
-                                  "keep": "path.jpg" } ],               optional: reuse this already-reviewed image, no API call
+                                  "keep": "path.jpg",                   optional: reuse this already-reviewed image, no API call
+                                  "reference": "a-face-65",             optional: likeness reference for THIS image (asset id or path in the source)
+                                  "restyle": true } ],                  optional with base: a style transfer (composition kept, rendering changes)
                     "media_files": [ { "file": "clara.memories/m1.riviere.mp3", "mediaType": "audio/mpeg", "duration_s": 10,
                                        "language": "fr", "generator": "…", "source_type": "algorithmicMedia",
                                        "poster": "clara.memories/m4.reve.poster.jpg" } ],   other media made elsewhere (audio, video + poster, short texts)
@@ -111,8 +113,8 @@ def load_sheet(path: Path) -> dict:
 def prompt_for(mem: dict, img: dict, style: str | None) -> str:
     st = (img.get("style") or style or "photo-realistic").replace("-", " ")
     if img.get("base"):                                   # an edit: the first image is the one to change
-        base = (f"Edit the first image, a photograph. {img['prompt']} Keep everything else exactly as it is: same framing, "
-                f"same poses, same lighting, same background, same people. Style: {st}. "
+        base = (f"Edit the first image, a photograph. {img['prompt']} " + ("" if img.get("restyle") else "Keep everything else exactly as it is: same framing, "
+                "same poses, same lighting, same background, same people. ") + f"Style: {st}. "
                 "No text, no watermark, no logo, no recognizable real person, celebrity, brand or franchise character.")
         return base
     base = (f"A memory, seen as a photograph the character keeps. {img['prompt']} Style: {st}. "
@@ -347,8 +349,11 @@ def main(argv=None) -> int:
                 refs = []
                 if img.get("base"):
                     refs.append(to_jpeg((sheet_dir / img["base"]).read_bytes(), 1536)[0])
-                elif img.get("shows_character") and ref:
-                    refs.append(ref)
+                if img.get("shows_character"):                        # likeness: the sheet's reference, or this image's own (another age, another look)
+                    r_ = find_reference(m, d, img["reference"], pid) if img.get("reference") else ref
+                    if r_ is None:
+                        say(f"FAIL {key}: reference {img.get('reference')} not found — skipped"); failed.append(f"{key}: reference not found"); continue
+                    refs.append(r_)
                 for r in img.get("refs") or []:
                     refs.append(to_jpeg((sheet_dir / r).read_bytes(), 1024)[0])
                 try:
