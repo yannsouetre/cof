@@ -1,6 +1,6 @@
 # RFC 0004 — `psyche`: the character's inner life, as a graph of nodes
 
-- Status: **early draft, design only** (private; announced in RFC 0002 § 2; targeted at COF **1.2**, shortly after 1.1 — no implementation yet)
+- Status: **draft, design only** (announced in RFC 0002 § 2; targeted at COF **1.2**, shortly after 1.1 — no implementation yet; § 3 bis to § 3 sexies are the normative draft to review, § 7 lists what is still open)
 - Author: Yann Souetre (with Claude)
 - Date: 2026-10-25 (draft)
 - Target: COF 1.2 — additive only; every 1.0 and 1.1 file stays valid and every earlier reader keeps working (§ 8)
@@ -40,7 +40,7 @@ Easy mode of the builder: a loaded card stays prose; nothing is extracted. Decom
 
 ## 3. The model (normative draft) — maximal reuse of RFC 0002
 
-**Category `psyche`**, variants = nodes, node file `psyche.json` per variant, same conventions as memories: `label`, `identity`, a multilingual gist (the node in one sentence), `links[]` typed to `<category>/<id>`, the three axes `origin / visibility / disclosure` (identical), `tags`, `revisions[]` on `lived` nodes. No `when` (no timeline); instead two measures and one anchor:
+**Category `psyche`**, variants = nodes, node file `node.json` per variant (`elements/psyche/<id>/node.json` — not `psyche.json`, which is the 1.0 trait sheet of a personality variant and would be read for it by mistake), same conventions as memories: `label`, `identity`, a multilingual gist (the node in one sentence), `links[]` typed to `<category>/<id>`, the three axes `origin / visibility / disclosure` (identical), `tags`, `revisions[]` on `lived` nodes. No `when` (no timeline); instead two measures and one anchor:
 
 | Field | Meaning |
 |---|---|
@@ -67,6 +67,84 @@ Easy mode of the builder: a loaded card stays prose; nothing is extracted. Decom
 
 **Size**: 15 to 60 nodes for a rich character; a node is 100–300 characters per language. Injection budget: an agent selects by tags and links; the agent export writes the whole `SOUL.md` in a fixed order (wound → values → beliefs → want / need → fears → stances → tastes → habits → contradictions), which is also a good reading order for a person.
 
+## 3 bis. The manifest variant and the node file (normative draft)
+
+As in RFC 0002 § 3, the manifest variant carries what a tool reads without opening the node; the node file carries the content.
+
+On the manifest variant (`elements.psyche.variants.<id>`):
+
+| Field | Required | Meaning |
+|---|---|---|
+| `kind` | **yes** | one of the ten kinds of § 3 |
+| `label` | **yes** | a short name, as every variant |
+| `identity` | in a cast file | the character, as every element |
+| `node` | **yes** | `elements/psyche/<id>/node.json` |
+| `strength` | no | 0–100, mirrored from the node so a reader can rank without opening files (as `age` is mirrored for memories) |
+
+Variant ids: free; the builder names them by kind, `val1`, `bel2`, `want1`, `need1`, `fear1`, `wound1`, `stance1`, `taste1`, `hab1`, `contra1` (prefixes no other category uses).
+
+In `node.json`:
+
+```jsonc
+{ "gist": { "en": "Lightness: do less, better — a page should cost the planet and the reader as little as possible.",
+            "fr": "La légèreté : faire moins, mieux — une page doit coûter le moins possible à la planète et au lecteur." },
+  "strength": 95, "stability": "core",
+  "since": { "age": { "value": 28, "unit": "years" } },
+  "origin": "authored", "visibility": "canon", "disclosure": "open",
+  "links": [ { "to": "psyche/wound1",  "type": "because" },
+             { "to": "memories/ev2",  "type": "because", "label": { "en": "the first morning in my own studio" } } ],
+  "tags": ["sobriety", "eco"] }
+```
+
+| Field | Required | Meaning |
+|---|---|---|
+| `gist` | **yes** | the node in one or two sentences, a language map (RFC 0002 § 3 reading rule) |
+| `strength` | no | 0–100 (default 50): weight in decisions |
+| `stability` | no | `core` \| `settled` \| `shifting` \| `fragile` (default `settled`) |
+| `since` | no | a point as in RFC 0002 `when` (age and/or date): when it appeared in the character's life |
+| `false_but_held` | no | `belief` only: the character holds it and the author says it is false (the "lie") |
+| `about` | no | `stance` only: `{ "identity": <cast id> }`, `{ "node": "<category>/<id>" }` or `{ "label": {…} }` — what the stance bears on (a link `about` carries the same thing for other kinds; `stance` has it as a field because it is its subject, not a side reference) |
+| `origin`, `visibility`, `disclosure` | no | the three axes of RFC 0002 § 3.3, same values, same defaults, same purges |
+| `links[]` | no | `because`, `about`, `supports`, `conflicts`, typed and qualified (RFC 0002 § 3.1–3.2); `because` and `about` may target a memory, a psyche node or an identity (`identities/<id>`); `supports` and `conflicts` target psyche nodes only |
+| `tags[]` | no | slugs, as memory tags |
+| `revisions[]` | no | `lived` nodes only, as memories |
+
+A `contradiction` node carries exactly two `conflicts` links (error otherwise): it is the owned tension, not a third opinion. A `wound` SHOULD carry at least one `because` to a memory (information otherwise). `strength` of a `contradiction` says how much the tension costs the character, not which side wins.
+
+Stability is normative for engines the way fidelity is: `core` — never changed at use time, a `lived` node may only comment on it (`about`); `settled` — changes only through a `lived` node that declares it (`revisions`), never silently; `shifting` — may move with evidence, the engine keeps the previous value in `revisions`; `fragile` — may move within one conversation. Numbers for tools that need them: 1.0 / 0.8 / 0.5 / 0.2 (the probability that the node still holds after a conversation that pushes against it).
+
+## 3 ter. Presets, purges, compatibility
+
+- A preset lists the nodes it holds in `slots.psyche`, inherited through `extends` like every library; a preset younger than a node's `since` is a coherence finding (as RFC 0002 § 4.4). Clara at 12 does not hold `wound1`.
+- `visibility: personal` nodes leave a file exactly as personal memories do (`cof extract`, `cof export`, the builder's purge, `--keep-personal`); `disclosure: secret` nodes are context, never quoted.
+- Nothing in a psyche node is a media: no age, no `nudity`, no `explicit`. The category never enters the minor rules. A node *about* an explicit memory is text and falls under `tags.content` like a card.
+- A 1.0 or 1.1 reader sees the category as a library and ignores it (cof-cli 1.0.1 rule); a file that uses it declares `cof: "1.2"`.
+
+## 3 quater. From the 1.0 lists to nodes (conversion, done by builders at load)
+
+| 1.0 / 1.1 field | becomes | notes |
+|---|---|---|
+| `psyche.json` › `goals[]` | `want` nodes | `strength` 70 by default; the text as gist in the variant's language |
+| `psyche.json` › `fears[]` | `fear` nodes | idem |
+| `psyche.json` › `values[]` | `value` nodes | one word becomes a short gist (`"Sobriety"` → "Sobriety."), the author completes it |
+| card extension `cof.behavior[]` | `habit` nodes | |
+| card extension `cof.goals[]`, `cof.fears[]` | as above | duplicates of `psyche.json` merged by text |
+| `psyche.json` › `traits` (Big Five, custom) | unchanged | the optional annex stays where it is |
+| `psyche.json` › `baseline_emotion`, `renderings` | unchanged | |
+
+The converted lists are **deprecated but read** from 1.2 on: a builder that opens a file with lists and no `psyche` category offers the conversion (advanced mode) and writes nodes; `cof migrate --psyche` does the same from the command line; readers that find both prefer the nodes. The lists are never removed by a tool without the author's say-so (a 1.0 reader still needs them).
+
+## 3 quinquies. Rendering and selection (readers)
+
+- **`SOUL.md`** (`cof export --agent`) gains a section "Who she is" rendered deterministically from the nodes, in the fixed order wound → values → beliefs (lies marked) → wants and needs → fears → stances → tastes → habits → contradictions, one line per node (`strength` ≥ 70 in full, below as a short clause), `secret` nodes omitted with one line saying there are things the character does not tell, `guarded` ones kept with a marker. The personality sheet keeps the voice; the psyche section gives the substance.
+- **Selection at use time**: a host that injects only part of the file picks nodes by `tags`, by `about` (the identity or the memory the conversation touches) and by `strength`, and always includes `core` nodes. Recommendation: the whole psyche of a 20–60 node character fits in 2–6 KB per language; selection matters for big casts, not for one character.
+- **Constellations**: a reader groups nodes by the memory or the identity they hang on (`because` / `about`), which gives the explorer's view and the ComfyUI node's "what she thinks of X" text. No hierarchy is stored.
+
+## 3 sexies. Checks (`cof validate` 1.2)
+
+Errors: node file missing or invalid; unresolved link or `about` target; a `supports` / `conflicts` link to something that is not a psyche node; a `contradiction` with a number of `conflicts` links other than two; `false_but_held` on a kind other than `belief`; `about` field on a kind other than `stance`; `revisions` on an `authored` node with media (none allowed); a file using the category and declaring `cof: "1.1"` or lower.
+Warnings: a `wound` with no `because`; a `want` and a `fear` on the same subject (`about`) with no `contradiction` naming them; a `stance` with no `about`; a `belief` marked `false_but_held` that no memory or node contradicts (information, not a warning — "that is life"); `since` later than a preset's age (coherence); `personal` nodes present.
+
 ## 4. What it enables (the leverage)
 
 - **Explorer**: a **Constellation** view (force graph: nodes by kind, `because` edges to the memories — the past visibly pulling on the present); click → card; the same component as the memories graph; a list view too.
@@ -91,12 +169,13 @@ Easy mode of the builder: a loaded card stays prose; nothing is extracted. Decom
 4. The ten kinds above; the "lie" as a `belief` with a flag.
 5. A separate RFC, published after the 1.1 launch, announced now (RFC 0002 § 2); implementation in the week that follows.
 
-## 7. Open points for the full draft
+## 7. Open points (to settle with Yann before implementation)
 
-- Exact vocabulary for `stance` targets (identity, memory, free text) and whether `about` may target an `appearance` element (a place she loves).
-- Whether `strength` and `stability` deserve normative tables or recommendations only.
-- The decomposition prompt (sheet → nodes) as a documented, model-agnostic recipe, not code.
-- Clara's psyche as the proof of value, before any tool is written — a first cut is in § 7 bis; it still has to be read against her personality sheets and the dialogue examples.
+- The node file name: `node.json` (§ 3) rather than `psyche.json` — to confirm, since RFC 0002 chose a kind-specific name (`memory.json`).
+- Whether `about → identities/<id>` and `about → memories/<id>` are one relation or two (a stance toward a person, a taste about a dream); the draft keeps one link type and lets the target say which.
+- Whether `strength` is required (the draft says optional, default 50) and whether the stability numbers are normative or a recommendation.
+- The decomposition prompt (sheet → nodes): a documented, model-agnostic recipe — read the sheet and the memories; list candidate nodes by kind with one sentence each; for each, name the memory or node it comes from or say "none"; mark contradictions the sheet contains; propose `strength` and `stability`; the author reviews every node before anything is written. The recipe lives in `docs/`, not in the format.
+- Clara's psyche (§ 7 bis) read against her sheets and dialogue examples before it becomes the example file.
 
 ## 7 bis. Worked example — Clara's psyche (design only, not in the example file)
 
