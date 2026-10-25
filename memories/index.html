@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AI characters now have memories — COF 1.1</title>
-<meta name="description" content="COF 1.1 gives AI characters a past: moments and periods of a life, what they felt, what they keep to themselves, what fades — in the same open file as their face, voice and rights.">
+<meta name="description" content="COF now gives AI characters a past: moments and periods of a life, what they felt, what they keep to themselves, what fades — in the same open file as their face, voice and rights.">
 <meta property="og:title" content="AI characters now have memories">
 <meta property="og:description" content="A character with a past has reasons. COF 1.1 — memories, in one open file.">
 <meta property="og:image" content="https://yannsouetre.github.io/cof/memories/img/electric-sheep.jpg">
@@ -89,6 +89,51 @@ footer{max-width:var(--col);margin:72px auto 0;padding:18px 20px 48px;border-top
 footer a{color:var(--muted)}
 footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:-.02em;margin-bottom:6px}
 
+/* the memories graph: SVG built from data, animated on arrival, one memory in focus at a time */
+.graph .gwrap{overflow-x:auto;border-radius:18px;border:1px solid var(--line);background:linear-gradient(180deg,#121917 0%,#0e1514 100%)}
+.graph svg{display:block;width:100%;min-width:760px;font-family:Plex,system-ui,sans-serif}
+.graph .axis{stroke:#2f3b39;stroke-width:1.5}
+.graph .axis-head{fill:#2f3b39}
+.graph .tick{font:500 11px PlexMono,monospace;fill:#5f6f6b}
+.graph .period rect{fill:rgba(169,138,232,.10);stroke:rgba(169,138,232,.55);stroke-width:1}
+.graph .period text{font:500 13px Plex,sans-serif;fill:#cbbcf0}
+.graph .period .sub{font:500 11px PlexMono,monospace;fill:#9f8cd0}
+.graph .link{fill:none;stroke:var(--teal);stroke-width:1.6;stroke-dasharray:5 5;opacity:.75}
+.graph .link.about{stroke-dasharray:2 5;stroke-linecap:round}
+.graph .linklab{font:500 11px PlexMono,monospace;fill:var(--mint);letter-spacing:.04em}
+.graph .thread{fill:none;stroke:#2f3b39;stroke-width:1.1;transition:stroke .3s,opacity .3s}
+.graph .thread.hot{stroke:var(--teal);opacity:.9}
+.graph .mem{cursor:pointer}
+.graph .mem .ring{fill:#0b100f;stroke:var(--teal);stroke-width:2;transition:stroke-width .3s,filter .3s}
+.graph .mem image{transition:filter .4s}
+.graph .mem .lab{font:500 14px Plex,sans-serif;fill:var(--ink);text-anchor:middle}
+.graph .mem .sub{font:400 11.5px Plex,sans-serif;fill:var(--muted);text-anchor:middle}
+.graph .mem .node{transform-box:fill-box;transform-origin:center;transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.graph .mem.on .node{transform:scale(1.22)}
+.graph .mem.on .ring{stroke-width:3;filter:drop-shadow(0 0 10px rgba(76,194,168,.55))}
+.graph .mem.dim image{filter:saturate(.5) brightness(.75)}
+.graph .person circle{fill:#1b2624;stroke:#3a4a47;stroke-width:1.2;transition:stroke .3s}
+.graph .person text{font:500 12px Plex,sans-serif;fill:#c7d1ce;text-anchor:middle}
+.graph .person .ini{font:500 13px PlexMono,monospace;fill:var(--mint)}
+.graph .person.hot circle{stroke:var(--teal)}
+.graph .place .frame{fill:#0b100f;stroke:#3a4a47;stroke-width:1.2}
+.graph .place text{font:400 11.5px Plex,sans-serif;fill:var(--muted);text-anchor:middle}
+.graph .lane{font:500 11px PlexMono,monospace;fill:#5f6f6b;letter-spacing:.06em}
+/* arrival */
+.graph .in{opacity:0;transition:opacity .6s ease}
+.graph.live .in{opacity:1}
+.graph .draw{stroke-dasharray:600;stroke-dashoffset:600;transition:stroke-dashoffset 1.4s ease}
+.graph.live .draw{stroke-dashoffset:0}
+/* focus card */
+.focus{display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:center;max-width:calc(var(--col) - 40px);margin:18px auto 0;min-height:120px;transition:opacity .35s}
+.focus.fade{opacity:0}
+.focus img{width:120px;height:120px;object-fit:cover;border-radius:14px;border:1px solid var(--line)}
+.focus .gist{font:500 20px/1.4 Cormorant,Georgia,serif;color:#e8e3da;margin:0 0 8px}
+.focus .meta{font:500 12px/1.7 PlexMono,monospace;color:var(--muted);margin:0;letter-spacing:.03em}
+.focus .meta b{color:var(--teal);font-weight:500}
+@media (max-width:640px){.focus{grid-template-columns:84px 1fr}.focus img{width:84px;height:84px}.focus .gist{font-size:17px}}
+@media (prefers-reduced-motion:reduce){.graph .in,.graph .draw{transition:none;opacity:1;stroke-dashoffset:0}.graph .mem .node{transition:none}.focus{transition:none}}
+
 @media (max-width:640px){
   .hero{min-height:78vh}
   h1{letter-spacing:.14em}
@@ -118,8 +163,9 @@ footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:
 
 <main>
 <p class="lede">An AI character has always been a description. A face, a voice, a way of speaking, a few traits. Describe it well and it performs itself convincingly, for as long as the conversation lasts. Then it forgets.</p>
-<p>COF 1.1 gives characters a past. Not a log of what was said to them: a memory. Moments and periods of a life, what happened and with whom, how it felt then and how it feels now, how clearly it comes back — and what the character would rather not tell you.</p>
+<p>COF now gives characters a past. Not a log of what was said to them: a memory. Moments and periods of a life, what happened and with whom, how it felt then and how it feels now, how clearly it comes back — and what the character would rather not tell you.</p>
 <p>It lives in the same open file as everything else that makes the character: its looks, its voice, its body, its rights. One <code>.cof</code>, readable by any tool, that you can keep, copy, and take elsewhere.</p>
+<p>A memory here is not only words. It carries what the senses kept: a photograph, the sound of a river at night, a few seconds of film, a sentence someone said. These traces are what make a memory more than a note, and a character more than a description. A face, a voice and a list of traits describe someone from the outside; a past is what makes them someone from the inside. That piece was missing. With it, AI characters get closer to what we are, since we are, for a large part, what we remember — and what a character can become from there is only beginning to show.</p>
 
 <h2>A memory, not a paragraph</h2>
 <p>This is the first memory in Clara's file. Clara is a fictional designer from Lyon, the example character that ships with the format.</p>
@@ -142,15 +188,19 @@ footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:
 <p>A paragraph in a character sheet is read whole or not at all. A memory is a small, structured thing. When a conversation turns to childhood, an agent can bring this one up and leave the others aside. A renderer can blur its images the way faded memories blur. A text model can tell it with the hesitation of something half-remembered. The character's past becomes material, not filler.</p>
 
 <h2>A life, as a map</h2>
-<figure class="wide">
-  <img src="img/clara-graph.jpg" alt="Clara's memories as a graph in the COF explorer: a period, four moments, the people in them, a linked place">
-  <figcaption>Clara's memories in the COF explorer. The agency years, a period; the first morning in her own studio, right after; the meeting with the Martian; the dream, about that meeting. Below, the people she remembers and the place one memory happened in.</figcaption>
+<figure class="wide graph" id="graph" aria-label="Clara's memories at 65, as a graph">
+  <div class="gwrap"><svg id="gsvg" viewBox="0 0 1200 600" role="img" aria-hidden="true"></svg></div>
+  <div class="focus" id="gfocus"><img alt=""><div><p class="gist"></p><p class="meta"></p></div></div>
+  <figcaption>Clara at 65, nine memories. The agency years are a period; the first morning in her own studio comes right after; the dream floats above the evening it is about. Below, the people who come back from one memory to the next, and the places two of them happened in. Hover a memory, or let them come.</figcaption>
 </figure>
 <p>Memories are nodes in a graph. A moment is a point in time; a period is a span; links say that one thing came after another, or because of it, or that a dream was about an evening. Readers put the rest together: the timeline, what belongs to what, the people who come back from one memory to the next. Nothing is told twice.</p>
 
 <h2>Why this changes what a character is</h2>
 <h3>Memory is where identity comes from</h3>
-<p>We are not our list of traits. We are what happened to us and what we made of it. A character with a past has reasons: Clara's obsession with lightness is not an adjective in a prompt, it is four years at an agency shipping interfaces too heavy, too fast. Give a character a memory and its opinions get a history. It stops being a style and starts being someone.</p>
+<p>We are not our list of traits. We are what happened to us and what we made of it. A character with a past has reasons: Clara's obsession with lightness is not an adjective in a prompt, it is four years at an agency shipping interfaces too heavy, too fast. Give a character a memory and its opinions get a history. It stops being a style and starts being someone — shaped by what happened to it, the way a person is.</p>
+
+<h3>Memories are multimodal</h3>
+<p>Nobody remembers in text. A memory is a light, a voice, a smell, a photograph on a shelf, a sentence heard once. So a COF memory carries one to three traces — an image, a sound, a few seconds of film, a short text — alongside its words, and every reader uses the ones it can: an image generator shows the studio in the morning light, a voice engine hears the river, a text model tells the rest. The same memory, in every modality the character has. Until now, only the description of a character travelled between tools; now its sensory past does too.</p>
 
 <h3>Two characters, one evening, two memories</h3>
 <p>Clara met the Martian on the Saône embankment. In a file that holds them both, each keeps their own memory of that evening — the same photograph, a different sentence, a different feeling. The format refuses to share the memory itself, only the picture. That refusal is what a point of view is.</p>
@@ -202,5 +252,61 @@ footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:
   <div class="mark">COF</div>
   Character Open File — an open format for AI characters, with their rights. Clara Mercier and the Martian are fictional example characters; their images are AI-generated. <a href="https://github.com/yannsouetre/cof">Source on GitHub</a> · <a href="../">About the format</a>
 </footer>
+<script>
+(function(){
+// Clara at 65 — the data of spec/examples/10-clara-mercier, nine memories, English gists shortened for the card.
+const M=[
+ {id:"ev1",x:95,age:8,lab:"My grandmother's house",sub:"age 8 · a village in the Alps",img:"img/ev1-t.jpg",who:["grandmother"],
+  gist:"The summer I was eight, my grandmother's house at the foot of the Alps: the table under the lime tree, the notebook where I drew plans of huts, the sound of the river at night.",meta:"felt then: <b>content</b> · now: <b>affectionate</b> · fidelity: <b>faded</b> · three images, a sound, a few sentences"},
+ {id:"ev2",x:330,age:28,lab:"My own studio",sub:"age 28 · first morning",img:"img/ev2-t.jpg",place:"e1",after:"ep1",
+  gist:"The first morning in my own studio facing the park, the day after my last day at the agency: light on the desk, nothing to deliver, and the quiet that I had forgotten.",meta:"felt then: <b>hopeful</b> · now: <b>proud</b> · fidelity: <b>vivid</b> · after the agency years · two images"},
+ {id:"ev3",x:480,age:29,lab:"Meeting the Martian",sub:"age 29 · Saône embankment",img:"img/ev3-t.jpg",who:["martian"],
+  gist:"A March evening on the Saône embankment: a Martian, tall and calm, who asked me the way to the Confluences museum as if it were the most ordinary thing in the world. We walked for an hour.",meta:"felt then: <b>amazed</b> · now: <b>amused</b> · disclosure: <b>guarded</b> · fidelity: <b>vivid</b> · one image, a few remembered lines"},
+ {id:"ev4",x:585,y:118,age:29,lab:"The electric-sheep dream",sub:"age 29 · imagined, the night after",img:"img/ev4-t.jpg",about:"ev3",
+  gist:"A meadow above Lyon, sheep whose wool blinked softly like standby LEDs, and me trying to count them without ever reaching the same number twice.",meta:"nature: <b>imagined</b> · felt then: <b>serene</b> · now: <b>wistful</b> · fidelity: <b>fragment</b> · three images and a clip, as remembered"},
+ {id:"ev5",x:680,age:31,lab:"Our wedding",sub:"age 31 · town hall garden",img:"img/ev5-t.jpg",who:["theo","grandmother"],
+  gist:"Our wedding in the garden of the town hall: a simple dress, Théo failing to slide the ring on, my grandmother's speech that made everyone cry.",meta:"felt then: <b>joyful</b> · now: <b>affectionate</b> · fidelity: <b>vivid</b> · one image"},
+ {id:"ev6",x:830,age:56,lab:"Léo's graduation",sub:"age 56 · university steps",img:"img/ev6-t.jpg",who:["leo","theo"],
+  gist:"Léo, 23, in a black gown on the university steps, his master's diploma in hand and the smile he has had since he was little. I cried, of course.",meta:"felt then: <b>proud</b> · now: <b>proud</b> · fidelity: <b>vivid</b> · one image"},
+ {id:"ev7",x:960,age:60,lab:"Family photo",sub:"age 60 · living room",img:"img/ev7-t.jpg",who:["theo","leo"],place:"e3",
+  gist:"My 60th birthday, in the living room: Théo, Léo and me on the sofa, the records behind us, the self-timer that only worked on the third try.",meta:"felt then: <b>content</b> · now: <b>affectionate</b> · fidelity: <b>clear</b> · one image"},
+ {id:"ev8",x:1100,age:63,lab:"The beach, all together",sub:"age 63 · Brittany",img:"img/ev8-t.jpg",who:["theo","leo","maelle"],
+  gist:"A holiday in Brittany: Théo and me on our towels, and far out in the water Léo with Maëlle, whom he had just introduced to us. I watched them swim and thought that this was enough.",meta:"felt then: <b>serene</b> · now: <b>serene</b> · fidelity: <b>clear</b> · one image"}];
+const P={grandmother:{x:190,n:"my grandmother",i:"G"},martian:{x:540,n:"the Martian",i:"M"},theo:{x:790,n:"Théo",i:"T"},leo:{x:920,n:"Léo",i:"L"},maelle:{x:1060,n:"Maëlle",i:"Ma"}};
+const PL={e1:{x:330,n:"her studio",img:"img/e1-t.jpg"},e3:{x:960,n:"their living room",img:"img/e3-t.jpg"}};
+const Y=262,R=34,PY=455,LY=548;
+const svg=document.getElementById("gsvg"),NS="http://www.w3.org/2000/svg";
+const el=(t,a,txt)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;return e};
+const g=(cls,delay)=>{const e=el("g",{class:cls});if(delay!=null)e.style.transitionDelay=delay+"ms";return e};
+// clip paths for the round images
+const defs=el("defs",{});M.forEach(m=>{const c=el("clipPath",{id:"c-"+m.id});c.appendChild(el("circle",{cx:m.x,cy:m.y||Y,r:R-3}));defs.appendChild(c)});svg.appendChild(defs);
+// axis
+const ax=g("in",0);ax.appendChild(el("line",{class:"axis",x1:40,y1:Y,x2:1150,y2:Y}));ax.appendChild(el("path",{class:"axis-head",d:`M1150 ${Y-6} L1162 ${Y} L1150 ${Y+6} Z`}));ax.appendChild(el("text",{class:"lane",x:42,y:PY-34},"PEOPLE SHE REMEMBERS"));ax.appendChild(el("text",{class:"lane",x:42,y:LY-36},"PLACES IN THE FILE"));svg.appendChild(ax);
+// period: the agency years, 24–28, ending where the studio morning begins
+const pe=g("period in",250);pe.appendChild(el("rect",{x:170,y:Y-94,width:150,height:40,rx:20}));pe.appendChild(el("text",{x:245,y:Y-70,"text-anchor":"middle"},"The agency years"));pe.appendChild(el("text",{class:"sub",x:245,y:Y-57,"text-anchor":"middle"},"a period · 24–28"));svg.appendChild(pe);
+// threads to people and places (behind the nodes)
+const threads={};M.forEach((m,i)=>{const y=m.y||Y;(m.who||[]).forEach(w=>{const p=P[w];const d=`M${m.x} ${y+R} C ${m.x} ${y+R+80}, ${p.x} ${PY-70}, ${p.x} ${PY-18}`;const t=el("path",{class:"thread in",d});t.style.transitionDelay=(400+i*330)+"ms";t.dataset.mem=m.id;t.dataset.person=w;svg.appendChild(t)});if(m.place){const q=PL[m.place];const t=el("path",{class:"thread in",d:`M${m.x} ${y+R} L${q.x} ${LY-26}`});t.style.transitionDelay=(400+i*330)+"ms";t.dataset.mem=m.id;t.style.strokeDasharray="3 4";svg.appendChild(t)}});
+// links: after (period → studio), about (dream → evening)
+const lk=g("",0);const af=el("path",{class:"link draw",d:`M318 ${Y-74} C 330 ${Y-40}, 330 ${Y-60}, 330 ${Y-R-2}`});af.style.transitionDelay="900ms";lk.appendChild(af);lk.appendChild(Object.assign(el("text",{class:"linklab in",x:352,y:Y-62},"after"),{style:"transition-delay:1300ms"}));
+const ab=el("path",{class:"link about draw",d:`M${M[3].x-R+4} ${M[3].y+16} C 540 170, 505 200, 494 ${Y-R+4}`});ab.style.transitionDelay="1500ms";lk.appendChild(ab);lk.appendChild(Object.assign(el("text",{class:"linklab in",x:470,y:178,"text-anchor":"end"},"about"),{style:"transition-delay:1900ms"}));svg.appendChild(lk);
+// moments
+M.forEach((m,i)=>{const y=m.y||Y;const grp=g("mem in",300+i*330);grp.dataset.id=m.id;const node=el("g",{class:"node"});node.appendChild(el("circle",{class:"ring",cx:m.x,cy:y,r:R}));node.appendChild(el("image",{href:m.img,x:m.x-R+3,y:y-R+3,width:2*R-6,height:2*R-6,"clip-path":`url(#c-${m.id})`,preserveAspectRatio:"xMidYMid slice"}));grp.appendChild(node);grp.appendChild(el("text",{class:"lab",x:m.x,y:y+R+22},m.lab));grp.appendChild(el("text",{class:"sub",x:m.x,y:y+R+39},m.sub));grp.appendChild(el("text",{class:"tick",x:m.x,y:Y+(m.y?-R-12:-R-12),"text-anchor":"middle"},m.y?"":String(m.age)));svg.appendChild(grp)});
+// people
+Object.entries(P).forEach(([k,p],i)=>{const grp=g("person in",1200+i*180);grp.dataset.person=k;grp.appendChild(el("circle",{cx:p.x,cy:PY,r:17}));grp.appendChild(el("text",{class:"ini",x:p.x,y:PY+5,"text-anchor":"middle"},p.i));grp.appendChild(el("text",{x:p.x,y:PY+36},p.n));svg.appendChild(grp)});
+// places
+Object.entries(PL).forEach(([k,q],i)=>{const grp=g("place in",1700+i*200);const c=el("clipPath",{id:"p-"+k});c.appendChild(el("rect",{x:q.x-22,y:LY-22,width:44,height:44,rx:10}));defs.appendChild(c);grp.appendChild(el("rect",{class:"frame",x:q.x-24,y:LY-24,width:48,height:48,rx:12}));grp.appendChild(el("image",{href:q.img,x:q.x-22,y:LY-22,width:44,height:44,"clip-path":`url(#p-${k})`,preserveAspectRatio:"xMidYMid slice"}));grp.appendChild(el("text",{x:q.x,y:LY+42},q.n));svg.appendChild(grp)});
+// focus: one memory at a time
+const fig=document.getElementById("graph"),card=document.getElementById("gfocus"),img=card.querySelector("img"),gist=card.querySelector(".gist"),meta=card.querySelector(".meta");
+let cur=-1,timer=null,hold=0;
+function focus(i,user){cur=i;const m=M[i];svg.querySelectorAll(".mem").forEach(e=>{e.classList.toggle("on",e.dataset.id===m.id);e.classList.toggle("dim",e.dataset.id!==m.id)});svg.querySelectorAll(".thread").forEach(t=>t.classList.toggle("hot",t.dataset.mem===m.id));svg.querySelectorAll(".person").forEach(p=>p.classList.toggle("hot",(m.who||[]).includes(p.dataset.person)));card.classList.add("fade");setTimeout(()=>{img.src=m.img;gist.textContent=m.gist;meta.innerHTML=m.sub+" · "+m.meta;card.classList.remove("fade")},180);if(user)hold=Date.now()+9000}
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+let started=false;
+function start(){if(started)return;started=true;fig.classList.add("live");focus(0);if(reduce)return;timer=setInterval(()=>{if(Date.now()<hold)return;focus((cur+1)%M.length)},3600)}
+svg.addEventListener("mouseover",e=>{const t=e.target.closest(".mem");if(t)focus(M.findIndex(m=>m.id===t.dataset.id),true)});
+svg.addEventListener("click",e=>{const t=e.target.closest(".mem");if(t)focus(M.findIndex(m=>m.id===t.dataset.id),true)});
+if("IntersectionObserver" in window){const io=new IntersectionObserver(es=>{if(es.some(x=>x.isIntersecting)){start();io.disconnect()}},{threshold:.35});io.observe(fig)}else start();
+setTimeout(start,6000);
+})();
+</script>
 </body>
 </html>
