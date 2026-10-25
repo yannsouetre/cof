@@ -1190,7 +1190,7 @@ $("#e_build").onclick=async()=>{const issues=runChecks();const errs=issues.filte
 // Au-delà, elle afficherait des fichiers qu'elle ne sait pas relier entre eux et son champ « âge » écraserait les âges de toutes les représentations : on n'y passe pas.
 function variantHasContent(v){return Object.entries(v).some(([k,x])=>!k.startsWith("_")&&Array.isArray(x)&&x.length)||!!(v.text||v.card||v.kind==="card"||v.model)}
 function easyBlockers(){const r=[];const ni=Object.keys(S.identities).length,np=Object.keys(S.presets).length;
-  if(ni>1)r.push(ni+" "+t("personnages"));if(np>1)r.push(np+" presets");
+  if(ni>1)r.push(ni+" "+t("personnages"));if(np>1)r.push(np+" presets");const nm=Object.keys(S.memories||{}).length;if(nm)r.push(nm+" "+t("Souvenirs").toLowerCase());
   for(const [cat,e] of Object.entries(S.elements)){const vs=Object.values(e.variants||{}).filter(variantHasContent);if(!vs.length)continue;const lab=t(CAT_LABEL[cat]||cat);
     if(!["personality","appearance","voice"].includes(cat))r.push(lab);
     else if(vs.length>1)r.push(lab+" : "+vs.length+" "+t("déclinaisons"));
