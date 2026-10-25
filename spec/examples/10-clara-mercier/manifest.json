@@ -24,10 +24,6 @@
         "class": "human"
       },
       "gender": "female",
-      "pronouns": {
-        "fr": "elle",
-        "en": "she/her"
-      },
       "language": "fr"
     }
   },
@@ -854,7 +850,17 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T07:41:52Z"
+        "computed_at": "2026-10-25T08:37:16Z"
+      },
+      "prompts": {
+        "greeting": {
+          "fr": "Bonjour ! Clara, designer à Lyon. Dites-moi ce qui pèse dans votre interface, on va l'alléger.",
+          "en": "Hi! Clara, designer in Lyon. Tell me what weighs your interface down — we'll make it lighter."
+        },
+        "scene": {
+          "fr": "Clara à son bureau face au parc, lumière du matin, carnet ouvert, plan moyen, photo réaliste",
+          "en": "Clara at her desk facing the park, morning light, an open notebook, medium shot, photo-realistic"
+        }
       }
     },
     "en-manga": {
@@ -913,7 +919,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T07:41:52Z"
+        "computed_at": "2026-10-25T08:37:16Z"
       }
     },
     "en-12": {
@@ -974,7 +980,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T07:41:52Z"
+        "computed_at": "2026-10-25T08:37:16Z"
       }
     },
     "en-65": {
@@ -1043,7 +1049,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T07:41:52Z"
+        "computed_at": "2026-10-25T08:37:16Z"
       }
     },
     "en-future": {
@@ -1106,7 +1112,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T07:41:52Z"
+        "computed_at": "2026-10-25T08:37:16Z"
       }
     },
     "en-agent": {
@@ -1149,7 +1155,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T07:41:52Z"
+        "computed_at": "2026-10-25T08:37:16Z"
       }
     },
     "fr": {
@@ -1191,7 +1197,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T07:41:52Z"
+        "computed_at": "2026-10-25T08:37:16Z"
       }
     },
     "fr-manga": {
@@ -1250,7 +1256,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T07:41:52Z"
+        "computed_at": "2026-10-25T08:37:16Z"
       }
     },
     "fr-12": {
@@ -1311,7 +1317,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T07:41:52Z"
+        "computed_at": "2026-10-25T08:37:16Z"
       }
     },
     "fr-65": {
@@ -1380,7 +1386,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T07:41:52Z"
+        "computed_at": "2026-10-25T08:37:16Z"
       }
     },
     "fr-futur": {
@@ -1443,7 +1449,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T07:41:52Z"
+        "computed_at": "2026-10-25T08:37:16Z"
       }
     },
     "fr-agent": {
@@ -1486,7 +1492,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T07:41:52Z"
+        "computed_at": "2026-10-25T08:37:16Z"
       }
     }
   },
@@ -3048,7 +3054,7 @@
   },
   "provenance": {
     "created": "2026-10-11T10:32:23Z",
-    "modified": "2026-10-25T07:41:52Z",
+    "modified": "2026-10-25T08:37:16Z",
     "generator": "cof-builder/0.7.1",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/10-clara-mercier",
@@ -3197,7 +3203,7 @@
       "archive"
     ],
     "computed_by": "cof-cli/1.1.0",
-    "computed_at": "2026-10-25T07:41:52Z"
+    "computed_at": "2026-10-25T08:37:16Z"
   },
   "coverage": {
     "elements": [

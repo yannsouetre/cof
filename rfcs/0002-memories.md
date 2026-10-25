@@ -17,7 +17,7 @@ What is new here is not episodic memory for agents (Generative Agents, 2023; Mem
 ## 2. What already exists, and the boundary
 
 - **`files` / `kind: memory`** (1.0, § 7 bis) carries an agent's memory file **in the host's own format** (`MEMORY.md`, dated notes): opaque, copied as-is by `cof export --agent`. It stays. The new category is the **structured, portable** form; a file may hold both. The agent export combines them (§ 6.4).
-- **`personality/psyche.json`** (typed traits, goals, fears, values) describes the character *now*. It is untouched. A later RFC ("psyche graph") will add the inner life as nodes of the same mechanism; this RFC defines the mechanism so that the two categories link to each other.
+- **`personality/psyche.json`** (typed traits, goals, fears, values) describes the character *now*. It is untouched. A later RFC — **RFC 0004, "psyche graph", targeted at COF 1.2 shortly after 1.1** — will add the inner life (values, beliefs, wants, needs, fears, wounds, stances) as nodes of the same mechanism, linked `because` to memories; this RFC defines the mechanism so that the two categories link to each other.
 - **`appearance` / `volume3d` `environment`** are the places a character is tied to. A memory points to one (§ 4.6); it does not define places. A hierarchy of places (room ⊂ house ⊂ town) is world knowledge, left to a future "world" category built on the same mechanism (§ 9).
 - The emotion structure of `psyche.json` (`baseline_emotion`: an EmotionML category and PAD dimensions) is reused as-is for feelings (§ 4.8). No new vocabulary.
 

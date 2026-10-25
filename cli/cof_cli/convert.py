@@ -305,6 +305,12 @@ def export_soul(src: Path, preset: str | None = None) -> tuple[str, str]:
     rel = [x for x in il if x.startswith("Relations")]
     if rel:
         lines += ["## Relations", *[f"- {x}" for x in rel[0].split(": ", 1)[1].split(" · ")], ""]
+    from .cast import preset_prompts, text_in
+    pr = preset_prompts(manifest, pid)
+    if pr.get("greeting"):
+        lines += ["## Opening line", text_in(pr["greeting"], p.get("language") or lang).strip(), ""]
+    if pr.get("scene"):
+        lines += ["## Default scene (for image and video generators)", text_in(pr["scene"], p.get("language") or lang).strip(), ""]
     if data.get("system_prompt"):
         lines += ["## Boundaries", data["system_prompt"].strip(), ""]
     perms = effective_permissions(manifest, pid)

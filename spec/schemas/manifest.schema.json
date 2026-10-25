@@ -1052,7 +1052,18 @@
                 "pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
               }
             },
-            "pronouns": {
+            "summary": {
+              "type": "string",
+              "maxLength": 2000
+            }
+          }
+        },
+        "prompts": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "RFC 0003 § 4 bis: what a host uses when nothing more is asked — a scene description for image / video generators, a greeting for dialogue generators; language maps; inherited through extends, nearest declaration wins per field",
+          "properties": {
+            "scene": {
               "type": "object",
               "additionalProperties": {
                 "type": "string"
@@ -1061,9 +1072,14 @@
                 "pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
               }
             },
-            "summary": {
-              "type": "string",
-              "maxLength": 2000
+            "greeting": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              },
+              "propertyNames": {
+                "pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
+              }
             }
           }
         }
@@ -1789,16 +1805,6 @@
             "pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
           },
           "description": "RFC 0003 § 3: free wording of the gender (when other) or a nuance, per language (BCP 47)"
-        },
-        "pronouns": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          },
-          "propertyNames": {
-            "pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
-          },
-          "description": "RFC 0003 § 3: pronouns per language (\"elle\", \"she/her\", \"they/them\"); absent = the language's default for `gender`"
         },
         "relations": {
           "type": "array",

@@ -1,4 +1,4 @@
-"""RFC 0003 (1.1): gender, pronouns, archetype, narrative role, relations between characters.
+"""RFC 0003 (1.1): gender, archetype, narrative role, relations between characters.
 
 Shared by the validator (vocabularies, cast rules, coherence), the exports (IDENTITY.md / SOUL.md lines)
 and `extract --identity` (relations whose target leaves the file).
@@ -55,7 +55,7 @@ def text_in(m, lang: str | None) -> str:
     return next(iter(m.values()))
 
 
-OVERRIDABLE = ("name", "given_name", "family_name", "nicknames", "gender", "gender_label", "pronouns", "summary")
+OVERRIDABLE = ("name", "given_name", "family_name", "nicknames", "gender", "gender_label", "summary")
 
 
 def identity_override(manifest: dict, pid: str | None) -> dict:
@@ -81,6 +81,19 @@ def identity_view(manifest: dict, pid: str | None, iid: str | None = None) -> di
     return base
 
 
+def preset_prompts(manifest: dict, pid: str | None) -> dict:
+    """The preset chain's default prompts (`scene`, `greeting`), nearest declaration wins per field (RFC 0003 § 4 bis)."""
+    presets = manifest.get("presets") or {}
+    out, q, seen = {}, pid, set()
+    while q and q in presets and q not in seen:
+        seen.add(q)
+        for k, v in (presets[q].get("prompts") or {}).items():
+            if k in ("scene", "greeting") and k not in out and v:
+                out[k] = v
+        q = presets[q].get("extends")
+    return out
+
+
 def preset_gender(manifest: dict, pid: str | None, iid: str | None = None) -> str | None:
     """identity_override.gender of the preset chain (nearest wins), else the identity's gender, else None (RFC 0003 § 4)."""
     return identity_view(manifest, pid, iid).get("gender")
@@ -98,12 +111,14 @@ def uses_1_1_fields(manifest: dict, src: Path | None = None) -> list[str]:
     """Which RFC 0003 fields a manifest uses (for the 'declare 1.1' rule)."""
     used = []
     for iid, i in (manifest.get("identities") or {}).items():
-        for k in ("gender", "gender_label", "pronouns", "relations", "given_name", "family_name", "nicknames"):
+        for k in ("gender", "gender_label", "relations", "given_name", "family_name", "nicknames"):
             if (i or {}).get(k) is not None:
                 used.append(f"identities.{iid}.{k}")
     for pid, p in (manifest.get("presets") or {}).items():
         if (p or {}).get("identity_override") is not None:
             used.append(f"presets.{pid}.identity_override")
+        if (p or {}).get("prompts") is not None:
+            used.append(f"presets.{pid}.prompts")
     if src is not None:
         for vid, v in (((manifest.get("elements") or {}).get("personality") or {}).get("variants") or {}).items():
             if v.get("psyche") and (src / v["psyche"]).is_file():
@@ -215,7 +230,7 @@ def drop_foreign_relations(manifest: dict) -> list[str]:
 
 
 def identity_lines(manifest: dict, iid: str, pid: str | None, lang: str) -> list[str]:
-    """Lines for IDENTITY.md / a character card: gender (preset override first), pronouns, relations."""
+    """Lines for IDENTITY.md / a character card: gender (preset override first), relations."""
     L = "fr" if str(lang).lower().startswith("fr") else "en"
     i = identity_view(manifest, pid, iid)
     base = (manifest.get("identities") or {}).get(iid) or {}
@@ -234,9 +249,6 @@ def identity_lines(manifest: dict, iid: str, pid: str | None, lang: str) -> list
         if base.get("gender") and g != base.get("gender"):
             word += " — " + ("dans ce preset" if L == "fr" else "in this preset") + f" ({GENDER_WORDS[L].get(base['gender'], base['gender'])} " + ("au canon" if L == "fr" else "in canon") + ")"
         out.append(("Genre" if L == "fr" else "Gender") + f": {word}")
-    pr = text_in(i.get("pronouns"), lang)
-    if pr:
-        out.append(("Pronoms" if L == "fr" else "Pronouns") + f": {pr}")
     rels = relations_of(manifest, iid)
     if rels:
         ids = manifest.get("identities") or {}

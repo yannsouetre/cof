@@ -25,10 +25,6 @@
       },
       "default_preset": "default",
       "gender": "female",
-      "pronouns": {
-        "fr": "elle",
-        "en": "she/her"
-      },
       "relations": [
         {
           "to": "martien",
@@ -78,10 +74,6 @@
       "gender_label": {
         "fr": "les Martiens n'ont pas de genre",
         "en": "Martians have no gender"
-      },
-      "pronouns": {
-        "fr": "il",
-        "en": "it / they"
       }
     }
   },
@@ -390,7 +382,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T07:41:53Z"
+        "computed_at": "2026-10-25T08:37:17Z"
       }
     },
     "fr": {
@@ -432,7 +424,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T07:41:53Z"
+        "computed_at": "2026-10-25T08:37:17Z"
       }
     },
     "m1-default": {
@@ -463,7 +455,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T07:41:53Z"
+        "computed_at": "2026-10-25T08:37:17Z"
       },
       "age_override": {
         "value": 40,
@@ -1085,7 +1077,7 @@
   },
   "provenance": {
     "created": "2026-10-11T10:32:23Z",
-    "modified": "2026-10-25T07:41:53Z",
+    "modified": "2026-10-25T08:37:17Z",
     "generator": "cof-cli merge (example 11)",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/10-clara-mercier",
@@ -1164,7 +1156,7 @@
       "archive"
     ],
     "computed_by": "cof-cli/1.1.0",
-    "computed_at": "2026-10-25T07:41:53Z"
+    "computed_at": "2026-10-25T08:37:17Z"
   },
   "coverage": {
     "elements": [

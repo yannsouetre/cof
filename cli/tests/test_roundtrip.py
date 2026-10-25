@@ -1051,12 +1051,12 @@ def test_extract_identity_leaves_other_real_persons_media_behind(tmp_path):
     rep = Report(); validate_dir(tmp_path / "marc", rep); assert not [e for e in rep.errors if "x1" in e], rep.errors
 
 
-# ---- RFC 0003: gender, pronouns, archetype, role, relations ----------------------------------------------------
+# ---- RFC 0003: gender, archetype, role, relations ----------------------------------------------------
 
 def _cast(tmp_path):
     """The memories fixture with a second (fictional) character and a relation between the two."""
     d, m = _mem_copy(tmp_path)
-    m["identities"]["id1"]["gender"] = "female"; m["identities"]["id1"]["pronouns"] = {"fr": "elle", "en": "she/her"}
+    m["identities"]["id1"]["gender"] = "female"
     m["identities"]["id2"] = {"name": "Léo", "fictional": True, "morphology": {"class": "human"}, "gender": "male", "default_preset": "leo",
                               "relations": [{"to": "id1", "type": "child", "label": {"fr": "sa mère"}}]}
     m["presets"]["leo"] = {"label": "Léo", "identity": "id2", "slots": {}, "age_override": {"value": 20, "unit": "years", "basis": "declared"}}
@@ -1126,3 +1126,23 @@ def test_archetype_role_and_exports(tmp_path):
     assert ("wizard" in soul) == (vid in (m["presets"][pid].get("slots", {}).get("personality") or []))
     notes = []; out = extract_identity(d, tmp_path / "clara", "id1", notes)
     assert "relations" not in out["identities"]["id1"] and any("relation dropped" in n for n in notes), notes
+
+
+def test_self_description_and_memory_add(tmp_path):
+    """COF.md is written at pack and `memory add` appends a lived node that validates, listed by the presets (inherited lists copied)."""
+    from cof_cli.selfdesc import memory_add, self_description, write_self_description
+    from cof_cli.model import resolve_preset_slots
+    d, m = _mem_copy(tmp_path)
+    m["presets"]["child"] = {"label": "child", "extends": "default", "slots": {}}; _write(d, m)
+    write_self_description(d, m)
+    txt = (d / "COF.md").read_text("utf-8")
+    assert "cof memory add" in txt and "specification and `manifest.json` win" in txt and "Memories" in txt
+    before = list(resolve_preset_slots(m, "child").get("memories") or [])
+    note = tmp_path / "n.md"; note.write_text("— a line", "utf-8")
+    vid = memory_add(d, identity=None, kind="moment", gists={"fr": "Ce matin, relu avec Léo."}, date="2026-10-25", who=["Léo"], tags=["Léo", "work"], personal=True, media=[note], presets=["child"])
+    m2 = json.loads((d / "manifest.json").read_text("utf-8"))
+    assert vid in m2["elements"]["memories"]["variants"] and m2["presets"]["child"]["slots"]["memories"] == before + [vid]
+    n = _node(d, vid); assert n["visibility"] == "personal" and n["origin"] == "lived" and n["tags"] == ["leo", "work"]
+    assert any(a["id"].startswith(f"a-mem-{vid}") and a["role"] == "memory-media" for a in m2["assets"])
+    rep = _val(d); assert rep.ok, rep.errors
+    assert "personal memory" in " ".join(rep.warnings)

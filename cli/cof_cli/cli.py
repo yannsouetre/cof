@@ -73,6 +73,9 @@ def cmd_pack(a):
         from datetime import datetime, timezone
         manifest.setdefault("provenance", {})["modified"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         (src / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", "utf-8")
+    if manifest and not getattr(a, "no_readme", False):
+        from .selfdesc import write_self_description
+        write_self_description(src, manifest)                     # COF.md: the container describes itself (never normative)
     out = Path(a.out) if a.out else src.with_suffix(".cof")
     try:
         pack(src, out)
@@ -220,6 +223,43 @@ def cmd_merge(a):
     return _print_report(rep, a.json)
 
 
+def cmd_memory_add(a):
+    import tempfile
+    from .selfdesc import memory_add, write_self_description
+    gists = {}
+    for g in a.gist:
+        if "=" not in g:
+            print("ERROR  --gist expects LANG=TEXT (e.g. fr=\"…\")", file=sys.stderr); return 2
+        k, v = g.split("=", 1); gists[k.strip()] = v.strip()
+    src = Path(a.src)
+    is_file = src.is_file()
+    work = Path(tempfile.mkdtemp(prefix="cof-mem-")) / "x" if is_file else src
+    try:
+        if is_file:
+            unpack(src, work)
+        vid = memory_add(work, identity=a.identity, kind=a.kind, gists=gists, label=a.label, age=a.age, date=a.date, approx=a.approx, where=a.where,
+                         who=a.who, tags=a.tag, personal=a.personal, origin=a.origin, disclosure=a.disclosure, fidelity=a.fidelity, salience=a.salience,
+                         media=[Path(x) for x in (a.media or [])], presets=a.preset)
+        rep = Report()
+        manifest = validate_dir(work, rep, recompute=True)
+        if rep.errors:
+            _print_report(rep, False); print("Memory not added: the file would not validate.", file=sys.stderr); return 1
+        if manifest:
+            (work / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", "utf-8")
+            write_self_description(work, manifest)
+        if is_file:
+            out = Path(a.out) if a.out else src
+            pack(work, out)
+            print(f"added {vid} → {out}")
+        else:
+            print(f"added {vid} in {work}")
+        for w in rep.warnings:
+            print(f"WARN   {w}")
+        return 0
+    except (ValueError, ContainerError) as e:
+        print(f"ERROR  {e}", file=sys.stderr); return 2
+
+
 def cmd_extract(a):
     src = Path(a.src)
     with tempfile.TemporaryDirectory() as td:
@@ -292,6 +332,17 @@ def main(argv=None) -> int:
 
     s = sub.add_parser("validate", help="validate a .cof or a character folder"); s.add_argument("path"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_validate)
     s = sub.add_parser("pack", help="folder → .cof (recomputes hashes and completeness)"); s.add_argument("dir"); s.add_argument("-o", "--out"); s.add_argument("--force", action="store_true"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_pack)
+    s = sub.add_parser("memory", help="memories: `memory add` appends a lived memory to a .cof or a folder (RFC 0002, the write path of COF.md)")
+    ms = s.add_subparsers(dest="mcmd", required=True)
+    ma = ms.add_parser("add", help="append one memory node"); ma.add_argument("src", help=".cof file or character folder")
+    ma.add_argument("--identity", help="character id (default: the file's default character)"); ma.add_argument("--kind", choices=["moment", "period"], default="moment")
+    ma.add_argument("--gist", action="append", required=True, metavar="LANG=TEXT", help="the memory in one paragraph; repeat per language")
+    ma.add_argument("--label"); ma.add_argument("--age", type=float); ma.add_argument("--date", help="YYYY, YYYY-MM or YYYY-MM-DD"); ma.add_argument("--approx", action="store_true")
+    ma.add_argument("--where"); ma.add_argument("--who", action="append", help="a person (label); repeat"); ma.add_argument("--tag", action="append")
+    ma.add_argument("--personal", action="store_true", help="visibility: personal (one user's data) instead of canon"); ma.add_argument("--origin", choices=["lived", "authored"], default="lived")
+    ma.add_argument("--disclosure", choices=["open", "guarded", "secret"], default="open"); ma.add_argument("--fidelity", choices=["vivid", "clear", "faded", "fragment"], default="clear"); ma.add_argument("--salience", type=int)
+    ma.add_argument("--media", action="append", help="image / audio / video / short text file; repeat"); ma.add_argument("--preset", action="append", help="preset(s) that may recall it (default: the character's presets)")
+    ma.add_argument("-o", "--out", help="output .cof (default: in place)"); ma.set_defaults(fn=cmd_memory_add)
     s = sub.add_parser("unpack", help=".cof → folder"); s.add_argument("cof"); s.add_argument("-o", "--out"); s.set_defaults(fn=cmd_unpack)
     s = sub.add_parser("info", help="summary of a .cof"); s.add_argument("cof"); s.set_defaults(fn=cmd_info)
     s = sub.add_parser("tokens", help="token estimate per block"); s.add_argument("path"); s.set_defaults(fn=cmd_tokens)
