@@ -271,8 +271,9 @@ def export_soul(src: Path, preset: str | None = None) -> tuple[str, str]:
     from .model import asset_index, default_preset_id, effective_permissions, first, preset_identity, preset_primary_image, resolved
     manifest = json.loads((src / "manifest.json").read_text("utf-8"))
     pid = preset or default_preset_id(manifest)
+    from .model import preset_owner
     def preset_identity_id(m, q):
-        return ((m.get("presets") or {}).get(q) or {}).get("identity") or m.get("default_identity") or next(iter(m.get("identities") or {}), None)
+        return preset_owner(m, q) or m.get("default_identity") or next(iter(m.get("identities") or {}), None)
     r = resolved(manifest, pid)
     from .cast import identity_view
     ident = identity_view(manifest, pid) or preset_identity(manifest, pid) or {}
@@ -337,6 +338,7 @@ def memory_section(src: Path, manifest: dict, pid: str | None, keep_personal: bo
     when-marker, disclosure and fidelity. Returns (markdown, [(vid, variant, node)] exported, personal nodes dropped)."""
     from .memories import gist_text, load_nodes, preset_memories, text_in, timeline, when_label
     from .model import resolve_variant
+    from .model import variant_owner
     nodes = load_nodes(src, manifest)
     vids = [v for v in preset_memories(manifest, pid) if v in nodes]
     if not vids:
@@ -368,8 +370,8 @@ def memory_section(src: Path, manifest: dict, pid: str | None, keep_personal: bo
             mark.append("lived")
         if node.get("explicit"):
             mark.append("explicit: media withheld")
-        if node.get("factual") is True:
-            mark.append("factual")
+        if node.get("factual") is True and ((manifest.get("identities") or {}).get(variant_owner(manifest, "memories", vid) or "") or {}).get("fictional") is False:
+            mark.append("factual")       # meaningful for a real person only (RFC 0002 § 4.2)
         label = rv.get("label") or vid
         lines.append(f"### {label}  ·  {' · '.join(mark)}")
         lines.append("")
@@ -443,8 +445,14 @@ def export_agent(src: Path, out: Path, preset: str | None = None, keep_personal:
         host.write_text(head + section, "utf-8")
         if "MEMORY.md" not in done["memories"]:
             done["memories"].append("MEMORY.md")
+        from .memories import shows_other_real_person
+        from .model import preset_owner
+        owner_ = preset_owner(manifest, pid)
         for vid, rv, node in kept:
             if node.get("explicit"):
+                continue
+            if shows_other_real_person(manifest, vid, node, {owner_} if owner_ else set()):      # § 4.5 guard: another real person's likeness never leaves with one character
+                done.setdefault("media_withheld", []).append(vid)
                 continue
             for a in media_assets(manifest, vid):
                 if a.get("path") and (src / a["path"]).is_file():

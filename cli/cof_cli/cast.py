@@ -36,7 +36,7 @@ ROLE_WORDS = {"en": {r: r.replace("-", " ") for r in ROLES},
                      "love-interest": "intérêt amoureux", "narrator": "narrateur", "ensemble": "ensemble", "other": "autre"}}
 
 # the voice profile's gender_presentation vocabulary (voice-profile.schema.json) mapped onto RFC 0003 genders
-VOICE_TO_GENDER = {"feminine": "female", "masculine": "male", "androgynous": "non-binary", "female": "female", "male": "male", "neutral": "non-binary"}
+VOICE_TO_GENDER = {"feminine": "female", "masculine": "male", "female": "female", "male": "male"}    # androgynous / neutral never conflict (RFC 0003 § 6)
 
 
 def text_in(m, lang: str | None) -> str:
@@ -77,6 +77,8 @@ def identity_view(manifest: dict, pid: str | None, iid: str | None = None) -> di
     if iid is None and pid and pid in presets:
         iid = presets[pid].get("identity") or manifest.get("default_identity")
     base = dict((manifest.get("identities") or {}).get(iid or "", {}) or {})
+    if not base:                                   # a root-only 1.0 file: the character's record is the root copy (SPEC § 2.1)
+        base = {k: manifest[k] for k in ("name", "nickname", "summary", "fictional", "morphology", "language", "rights") if k in manifest}
     base.update(identity_override(manifest, pid))
     return base
 
@@ -159,11 +161,22 @@ def cast_rules(manifest: dict, src: Path, rep) -> None:
             if to not in ids or to == iid:
                 continue
             back = [b for b in ((ids[to] or {}).get("relations") or []) if b.get("to") == iid]
-            if not back:
+            if not back or r.get("mutual") is False or any(b.get("mutual") is False for b in back):     # a one-sided relation is declared on purpose
                 continue
             want = ty if ty in SYMMETRIC else INVERSE.get(ty)
             if want and all(b.get("type") != want for b in back):
                 rep.warnings.append(f"identities.{iid}.relations → {to}: '{ty}' on this side, {[b.get('type') for b in back]} on the other — the two sides disagree (coherence)")
+    # a relation that began after the age the preset shows (coherence, RFC 0003 § 6)
+    from .model import preset_age, preset_owner
+    for pid in (manifest.get("presets") or {}):
+        pa = preset_age(manifest, pid, ignore={"memories"})
+        oid = preset_owner(manifest, pid)
+        if pa is None or not oid:
+            continue
+        for r in ((ids.get(oid) or {}).get("relations") or []):
+            sa = ((r.get("since") or {}).get("age") or {}).get("value") if isinstance(r.get("since"), dict) else None
+            if isinstance(sa, (int, float)) and sa > pa:
+                rep.warnings.append(f"presets.{pid}: relation {r.get('type')} → {r.get('to')} began at {sa:g}, after the age this preset shows ({pa:g}) — the character does not know that person yet (coherence)")
     # preset gender vs the voice's presentation (never blocking)
     for pid, p in (manifest.get("presets") or {}).items():
         g = preset_gender(manifest, pid)
@@ -180,7 +193,7 @@ def cast_rules(manifest: dict, src: Path, rep) -> None:
                 continue
             gp = str(((prof.get("canonical") or {}).get("gender_presentation") or "")).lower()
             vg = VOICE_TO_GENDER.get(gp)
-            if vg and vg != g:
+            if vg and vg != g and g in ("female", "male"):      # only female × masculine and male × feminine are conflicts
                 rep.warnings.append(f"presets.{pid}: gender {g} but voice {vid} presents as {gp} (coherence, not an error: a voice may differ on purpose)")
 
 
@@ -197,8 +210,8 @@ def relations_of(manifest: dict, iid: str) -> list[dict]:
                 continue
             ty = r.get("type")
             inv = ty if ty in SYMMETRIC else INVERSE.get(ty)
-            if inv and (oid, inv) not in seen:
-                out.append({"to": oid, "type": inv, "label": r.get("label"), "since": r.get("since"), "_stored": False})
+            if inv and inv != "other" and (oid, inv) not in seen:
+                out.append({"to": oid, "type": inv, "_stored": False, "_declared_by": oid})     # the label and `since` are the other side's words and age: not carried over
                 seen.add((oid, inv))
     return out
 
@@ -250,7 +263,7 @@ def identity_lines(manifest: dict, iid: str, pid: str | None, lang: str) -> list
             name = (ids.get(r["to"]) or {}).get("name") or r["to"]
             word = RELATION_WORDS[L].get(r["type"], r["type"])
             lab = text_in(r.get("label"), lang)
-            items.append(f"{name} — {word}" + (f" ({lab})" if lab else ""))
+            items.append(f"{name} — {word}" + (f" ({lab})" if lab else "") + ((" (" + ("déclaré par " if L == "fr" else "declared by ") + name + ")") if r.get("_declared_by") else ""))
         out.append("Relations: " + " · ".join(items))
     return out
 

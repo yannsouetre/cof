@@ -356,12 +356,9 @@ def drop_personal_memories(dst: Path) -> list[str]:
         return []
     freed = set()
     for vid in hit:
-        for ovid, ov in V.items():          # a node that borrowed the media of a personal node keeps a copy of the list
+        for ovid, ov in V.items():          # a node that borrowed the media of a personal node loses them: the files leave with the personal node (RFC 0002 § 5.7)
             if ovid not in hit and str(ov.get("media_from") or "").partition("/")[2] == vid:
-                from .memories import effective_media
-                med = effective_media(m, ovid); ov.pop("media_from")
-                if med:
-                    ov["media"] = med
+                ov.pop("media_from")
         v = V.pop(vid)
         freed |= variant_asset_ids(v)
         _unlist_variant(m, "memories", vid)

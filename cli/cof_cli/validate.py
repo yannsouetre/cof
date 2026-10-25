@@ -643,6 +643,12 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                 for k in ("goals", "fears"):
                     ids_ |= {it.get("id") for it in ps.get(k, []) or []}
                 ids_ |= {f"trait:big5.{d}" for d in (ps.get("traits", {}).get("big5") or {})}
+                a_ = ps.get("archetype")
+                if isinstance(a_, dict):
+                    if a_.get("model") == "free" and not a_.get("value"):
+                        rep.warnings.append(f"{p['psyche']}: archetype model 'free' without a value")
+                    if a_.get("value") and a_.get("value") in (a_.get("secondary") or []):
+                        rep.warnings.append(f"{p['psyche']}: archetype {a_['value']!r} is both primary and secondary (RFC 0003 § 5)")
             except Exception as e:
                 rep.errors.append(f"{p['psyche']} unreadable: {e}")
         for v in r.get("posture", []) + r.get("voice", []):
@@ -1105,7 +1111,7 @@ def _memory_rules(manifest: dict, src: Path, rep: "Report") -> None:
             if mt.startswith("video/"):
                 if not any(x.get("derived_from") == aid and str(x.get("mediaType", "")).startswith("image/") for x in med):
                     rep.warnings.append(f"{where}: video {aid} has no poster image (an image media derived_from it, method thumbnail)")
-                if (a.get("bytes") or 0) > 20_000_000 and not manifest.get("max_bytes_ack"):
+                if (a.get("bytes") or 0) > 20_000_000 and not rv.get("max_bytes_ack"):
                     rep.warnings.append(f"{where}: video {aid} > 20 MB without `max_bytes_ack` (portability)")
             if mt.startswith("text/") and not a.get("language"):
                 rep.warnings.append(f"{where}: text media {aid} has no `language`")
@@ -1133,8 +1139,11 @@ def _memory_rules(manifest: dict, src: Path, rep: "Report") -> None:
         self_shown = False
         for w_ in node.get("who") or []:
             iid = w_.get("identity")
-            if iid is not None and iid != "self" and ids and iid not in ids:
-                rep.errors.append(f"{where}: who: unknown identity {iid}")
+            if iid is not None and iid != "self" and iid not in ids:
+                rep.errors.append(f"{where}: who: unknown identity {iid}" + ("" if ids else " (a file without an `identities` table only knows \"self\")"))
+            # F7: a memory naming a real identity of the file (shown or not) needs that person's conversational-persona consent
+            if iid and iid != "self" and (ids.get(iid) or {}).get("fictional") is False and "conversational-persona" not in set((((ids.get(iid) or {}).get("consent") or {}).get("scope")) or []):
+                rep.warnings.append(f"{where}: names the real person '{iid}' — their consent record lacks scope 'conversational-persona' (RFC 0002 § 5.5)")
             if iid == "self":
                 self_shown = self_shown or bool(w_.get("shown"))
                 continue
@@ -1155,9 +1164,24 @@ def _memory_rules(manifest: dict, src: Path, rep: "Report") -> None:
         if self_shown and va is None:
             rep.errors.append(f"{where}: a media shows the character — the variant must carry `age` (the character's age at the time, RFC 0002 § 5)")
         if va is not None and wa is not None and abs(va - wa) > 0.5:
-            rep.warnings.append(f"{where}: variant age {va:g} differs from when.age {wa:g}")
-        # explicit nodes
+            (rep.errors if node.get("explicit") else rep.warnings).append(f"{where}: variant age {va:g} differs from when.age {wa:g}" + (" — on an explicit node the two must agree (the variant age is the one the minor rules read)" if node.get("explicit") else ""))
+        # media borrowed from an explicit node: the borrowing node is explicit too, same value (RFC 0002 § 4.5, § 5.3)
         ex = node.get("explicit")
+        src_vid = vid
+        seen_ = set()
+        while src_vid and src_vid not in seen_ and not (resolve_variant(manifest, "memories", src_vid) or {}).get("media"):
+            seen_.add(src_vid)
+            src_vid = str((resolve_variant(manifest, "memories", src_vid) or {}).get("media_from") or "").partition("/")[2]
+        if src_vid and src_vid != vid and src_vid in nodes:
+            sx = nodes[src_vid].get("explicit")
+            if sx and ex != sx:
+                rep.errors.append(f"{where}: borrows the media of memories.{src_vid}, an explicit node ({sx}) — the borrowing node must declare explicit: {sx} and nudity: true itself (nothing else is inherited)")
+        any_shown = self_shown or any(w_.get("shown") for w_ in node.get("who") or [] if w_.get("identity") != "self")
+        if ex and not any_shown:
+            rep.errors.append(f"{where}: explicit node ({ex}) with nobody declared shown — an explicit media shows someone: declare who (`who[].shown`, `identity: \"self\"` for the character) with a known age of {ADULT} or more")
+        if not ex and node.get("origin") == "lived" and any(str(a.get("mediaType") or "").startswith(("image/", "video/")) for a in med) and not any_shown:
+            rep.warnings.append(f"{where}: lived memory with image or video media and nobody declared shown — a host adding media says who is in them (`who[].shown`, `real: true` for a user)")
+        # explicit nodes
         if ex:
             if rv.get("nudity") is not True:
                 rep.errors.append(f"{where}: explicit node ({ex}) — the variant must also carry nudity: true (1.0 tools read that flag)")
@@ -1175,8 +1199,10 @@ def _memory_rules(manifest: dict, src: Path, rep: "Report") -> None:
                 iid = me if w_.get("identity") == "self" else w_.get("identity")
                 if iid and ids:
                     I = ids.get(iid) or {}
-                    if I.get("fictional") is False and not ({"nudity", "intimate"} & set(((I.get("consent") or {}).get("scope")) or [])):
-                        rep.errors.append(f"{where}: explicit node shows the real person '{iid}' without consent scope nudity / intimate")
+                    sc_ = set(((I.get("consent") or {}).get("scope")) or [])
+                    ok_ = ("intimate" in sc_) if ex == "intimate" else bool({"nudity", "intimate"} & sc_)
+                    if I.get("fictional") is False and not ok_:
+                        rep.errors.append(f"{where}: explicit node ({ex}) shows the real person '{iid}' without consent scope {'intimate' if ex == 'intimate' else 'nudity / intimate'} (the 1.0 rule of appearance/intimate)")
                 elif w_.get("real"):
                     rep.errors.append(f"{where}: explicit node shows a real person who is not an identity of the file — never allowed")
         elif rv.get("nudity") is True:
@@ -1187,5 +1213,45 @@ def _memory_rules(manifest: dict, src: Path, rep: "Report") -> None:
         # personal nodes
         if node.get("visibility") == "personal":
             rep.warnings.append(f"{where}: personal memory (a user's data) — dropped by extract / export unless --keep-personal; do not share this file as is")
-        if node.get("origin") == "authored" and node.get("revisions"):
+        if node.get("origin", "authored") == "authored" and node.get("revisions"):
             rep.warnings.append(f"{where}: revisions on an authored node — tools only rewrite lived nodes")
+
+    # timeline (RFC 0002 § 4.3, § 6.1): an `after` link against the dates; ages and dates implying different birth years
+    def _pts(vid_):
+        n_ = nodes.get(vid_) or {}
+        w_ = n_.get("when") or {}
+        kind_ = (resolve_variant(manifest, "memories", vid_) or {}).get("kind")
+        if kind_ == "period":
+            f_, t_ = w_.get("from") or {}, w_.get("to") or {}
+            return (_age_value(f_.get("age")), f_.get("date")), (_age_value(t_.get("age")), t_.get("date"))
+        pt_ = (_age_value(w_.get("age")), w_.get("date"))
+        return pt_, pt_
+
+    def _before(a, b):
+        """Is point a strictly before point b? Ages first, else dates at their common precision; None when unknown."""
+        if a[0] is not None and b[0] is not None:
+            return a[0] < b[0]
+        if a[1] and b[1]:
+            n_ = min(len(a[1]), len(b[1]))
+            return a[1][:n_] < b[1][:n_]
+        return None
+
+    for vid, node in nodes.items():
+        for ln in node.get("links") or []:
+            if ln.get("type") != "after":
+                continue
+            tgt = str(ln.get("to", "")).partition("/")[2]
+            if tgt not in nodes:
+                continue
+            if _before(_pts(vid)[0], _pts(tgt)[1]):
+                rep.warnings.append(f"memories.{vid}: `after` {tgt} contradicts the dates (it starts before {tgt} ends) — the link is for undated nodes; bounds that touch are not a contradiction")
+    by_owner: dict[str, list[tuple[str, int]]] = {}
+    for vid, node in nodes.items():
+        a_, d_ = _pts(vid)[0]
+        m_ = re.match(r"^(-?\d{1,4})", str(d_ or ""))
+        if a_ is not None and m_:
+            by_owner.setdefault(owner(vid) or "", []).append((vid, int(m_.group(1)) - int(a_)))
+    for iid_, L_ in by_owner.items():
+        ys = sorted(set(y for _, y in L_))
+        if ys and ys[-1] - ys[0] > 1:
+            rep.warnings.append(f"memories of {iid_ or 'the character'} imply different birth years ({', '.join(f'{v}: {y}' for v, y in L_[:4])}) — ages and dates disagree")

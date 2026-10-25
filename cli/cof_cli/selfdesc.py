@@ -54,8 +54,8 @@ def self_description(manifest: dict) -> str:
         "## Writing back what the character lives (hosts and agents)",
         "The canon is read-only for tools. What happens at use time is added as **new memory nodes** with `origin: \"lived\"`, and `visibility: \"personal\"` when it concerns one user:",
         "1. Create `elements/memories/<id>/memory.json` — `{\"gist\": {\"<lang>\": \"one paragraph\"}, \"when\": {\"date\": \"YYYY-MM-DD\"}, \"origin\": \"lived\", \"visibility\": \"personal\", \"disclosure\": \"open\", \"fidelity\": \"clear\", \"nature\": [\"experienced\"]}` (ids `ev<n>` for moments, `ep<n>` for periods; never reuse an id).",
-        "2. Declare it in `manifest.json` › `elements.memories.variants.<id>`: `{\"kind\": \"moment\", \"label\": \"…\", \"memory\": \"elements/memories/<id>/memory.json\", \"identity\": \"<character>\"}`, and list the id in the `slots.memories` of the presets that may recall it. Media go under the same folder, declared in `assets` with role `memory-media` and their `sha256`.",
-        "3. Set `cof` to `\"1.1\"` if it says `\"1.0\"`, then run `cof validate` — or let the tool do all of it: `cof memory add <file.cof> --identity <id> --gist fr=\"…\" --date 2026-10-25 --personal`.",
+        "2. Declare it in `manifest.json` › `elements.memories.variants.<id>`: `{\"kind\": \"moment\", \"label\": \"…\", \"memory\": \"elements/memories/<id>/memory.json\", \"identity\": \"<character>\"}`, and list the id in the `slots.memories` of the presets that may recall it. Media go under the same folder, declared in `assets` with role `memory-media` and their `sha256`; say who is in them — `who: [{\"identity\": \"self\", \"shown\": true}]` with the character's `age` on the variant, `{\"label\": {…}, \"shown\": true, \"real\": true}` for the user — a validator warns on image media with nobody declared shown.",
+        "3. Set `cof` to `\"1.1\"` if it says `\"1.0\"`, then run `cof validate` — or let the tool do all of it: `cof memory add <file.cof> --identity <id> --gist fr=\"…\" --date 2026-10-25 --personal` (add `--self-shown --age 29` when the character is in the media, `--who \"Sam|shown|34|real\"` for someone else).",
         "Do not rewrite existing nodes; a changed feeling is a new `lived` node linked `about` the old one. Never add a memory that shows a real person who is not a consenting identity of this file.",
         "",
         f"_Written by cof-cli for COF {SELFDESC_VERSION}; regenerate with `cof pack`. Not part of the character._",
@@ -83,7 +83,7 @@ def _next_id(variants: dict, prefix: str) -> str:
 def memory_add(src: Path, *, identity: str | None, kind: str, gists: dict[str, str], label: str | None = None, age: float | None = None,
                date: str | None = None, approx: bool = False, where: str | None = None, who: list[str] | None = None, tags: list[str] | None = None,
                personal: bool = False, origin: str = "lived", disclosure: str = "open", fidelity: str = "clear", salience: int | None = None,
-               media: list[Path] | None = None, presets: list[str] | None = None, lang: str | None = None) -> str:
+               media: list[Path] | None = None, presets: list[str] | None = None, lang: str | None = None, self_shown: bool = False) -> str:
     """Append one lived memory to an unpacked character folder (RFC 0002 § 3, § 5.7); returns the new node id."""
     mpath = src / "manifest.json"
     m = json.loads(mpath.read_text("utf-8"))
@@ -117,8 +117,26 @@ def memory_add(src: Path, *, identity: str | None, kind: str, gists: dict[str, s
         node["when"] = when
     if where:
         node["where"] = {"label": {lang: where}}
-    if who:
-        node["who"] = [{"label": {lang: w}} for w in who]
+    W = []
+    if self_shown:
+        if age is None:
+            raise ValueError("--self-shown needs --age: a media showing the character carries the character's age (RFC 0002 § 5)")
+        W.append({"identity": "self", "shown": True})
+    for w in who or []:                                    # "label|shown|34|real" — the builder's 'Other people' line
+        parts = [x.strip() for x in str(w).split("|")]
+        e: dict = {"label": {lang: parts[0]}}
+        for x in parts[1:]:
+            if x.lower() == "shown":
+                e["shown"] = True
+            elif x.lower() == "real":
+                e["real"] = True
+            elif re.fullmatch(r"\d+(\.\d+)?", x):
+                e["age"] = {"value": float(x) if "." in x else int(x), "unit": "years"}
+            elif x:
+                raise ValueError(f"--who {w!r}: unknown word {x!r} (use shown, real or an age)")
+        W.append(e)
+    if W:
+        node["who"] = W
     if salience is not None:
         node["salience"] = int(salience)
     node["fidelity"] = fidelity
@@ -133,6 +151,8 @@ def memory_add(src: Path, *, identity: str | None, kind: str, gists: dict[str, s
     d.mkdir(parents=True, exist_ok=True)
     (d / "memory.json").write_text(json.dumps(node, ensure_ascii=False, indent=2) + "\n", "utf-8")
     var: dict = {"kind": kind, "label": label or next(iter(gists.values()))[:60], "memory": f"elements/memories/{vid}/memory.json"}
+    if self_shown:
+        var["age"] = {"value": age, "unit": "years"}
     if len(ids) > 1 or (ids and any(v.get("identity") for e in E.values() for v in (e.get("variants") or {}).values())):
         var["identity"] = iid
     media_ids = []

@@ -239,7 +239,7 @@ def cmd_memory_add(a):
             unpack(src, work)
         vid = memory_add(work, identity=a.identity, kind=a.kind, gists=gists, label=a.label, age=a.age, date=a.date, approx=a.approx, where=a.where,
                          who=a.who, tags=a.tag, personal=a.personal, origin=a.origin, disclosure=a.disclosure, fidelity=a.fidelity, salience=a.salience,
-                         media=[Path(x) for x in (a.media or [])], presets=a.preset)
+                         media=[Path(x) for x in (a.media or [])], presets=a.preset, self_shown=a.self_shown)
         rep = Report()
         manifest = validate_dir(work, rep, recompute=True)
         if rep.errors:
@@ -338,7 +338,8 @@ def main(argv=None) -> int:
     ma.add_argument("--identity", help="character id (default: the file's default character)"); ma.add_argument("--kind", choices=["moment", "period"], default="moment")
     ma.add_argument("--gist", action="append", required=True, metavar="LANG=TEXT", help="the memory in one paragraph; repeat per language")
     ma.add_argument("--label"); ma.add_argument("--age", type=float); ma.add_argument("--date", help="YYYY, YYYY-MM or YYYY-MM-DD"); ma.add_argument("--approx", action="store_true")
-    ma.add_argument("--where"); ma.add_argument("--who", action="append", help="a person (label); repeat"); ma.add_argument("--tag", action="append")
+    ma.add_argument("--where"); ma.add_argument("--who", action="append", metavar="LABEL[|shown][|AGE][|real]", help="a person: label, then optional words 'shown' (appears in a media), their age, 'real' (a real person who is not a character of the file); repeat");
+    ma.add_argument("--self-shown", action="store_true", help="the character appears in the media (requires --age: the minor rules read it)"); ma.add_argument("--tag", action="append")
     ma.add_argument("--personal", action="store_true", help="visibility: personal (one user's data) instead of canon"); ma.add_argument("--origin", choices=["lived", "authored"], default="lived")
     ma.add_argument("--disclosure", choices=["open", "guarded", "secret"], default="open"); ma.add_argument("--fidelity", choices=["vivid", "clear", "faded", "fragment"], default="clear"); ma.add_argument("--salience", type=int)
     ma.add_argument("--media", action="append", help="image / audio / video / short text file; repeat"); ma.add_argument("--preset", action="append", help="preset(s) that may recall it (default: the character's presets)")

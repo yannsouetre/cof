@@ -67,5 +67,9 @@ validator's error (`expect`) — other implementations only need to reject the f
 | `memory-shows-self-without-age.cof` | a node whose media show the character carries the character's age at the time |
 | `memory-media-and-media-from.cof` | media and media_from are exclusive |
 | `memory-showing-minor-with-intimate-preset.cof` | a memory showing the character under 18 makes the preset a minor preset: no intimate content there |
+| `memory-explicit-nobody-shown.cof` | an explicit media shows someone: an explicit node declares at least one person shown |
+| `memory-borrows-explicit-media.cof` | a node borrowing the media of an explicit node is explicit itself, same value (nothing else is inherited) |
+| `memory-explicit-age-mismatch.cof` | on an explicit node the variant age (read by the minor rules) equals when.age |
+| `relation-to-oneself.cof` | a relation names another character of the same file (RFC 0003) |
 
 Regenerate with `python tests/invalid/build.py` (it also checks every case against the reference validator).

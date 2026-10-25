@@ -76,5 +76,8 @@
     "leo",
     "family",
     "graduation"
-  ]
+  ],
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open"
 }

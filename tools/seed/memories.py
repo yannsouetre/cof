@@ -195,6 +195,8 @@ def add_memories(d: Path, m: dict, s: dict, images: dict[str, list[tuple[bytes, 
         rel_dir = f"elements/memories/{vid}"
         (d / rel_dir).mkdir(parents=True, exist_ok=True)
         node = json.loads(json.dumps(mem["node"]))
+        for k_, d_ in (("origin", "authored"), ("visibility", "canon"), ("disclosure", "open"), ("fidelity", "clear"), ("nature", ["experienced"])):
+            node.setdefault(k_, d_)                      # RFC 0002 § 3.3: writers put the defaults in the file
         (d / rel_dir / "memory.json").write_text(json.dumps(node, ensure_ascii=False, indent=2) + "\n", "utf-8")
         v = {"kind": mem["kind"], "label": mem["label"], "memory": f"{rel_dir}/memory.json"}
         if multi:

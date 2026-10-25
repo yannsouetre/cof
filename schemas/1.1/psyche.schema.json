@@ -266,6 +266,7 @@
         "secondary": {
           "type": "array",
           "maxItems": 2,
+          "uniqueItems": true,
           "items": {
             "type": "string"
           }

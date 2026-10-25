@@ -272,6 +272,28 @@ def _(d):
 @case("memory-showing-minor-with-intimate-preset", "a memory showing the character under 18 makes the preset a minor preset: no intimate content there", "RFC 0002 § 5.2", "intimate")
 def _(d): with_memory(d, node={"who": [{"identity": "self", "shown": True}]}, variant={"age": {"value": 8, "unit": "years", "basis": "canonical"}})
 
+@case("memory-explicit-nobody-shown", "an explicit media shows someone: an explicit node declares at least one person shown", "RFC 0002 § 5.4", "nobody declared shown")
+def _(d): with_memory(d, node={"explicit": "nudity"}, variant={"nudity": True})
+
+@case("memory-borrows-explicit-media", "a node borrowing the media of an explicit node is explicit itself, same value (nothing else is inherited)", "RFC 0002 § 4.5 / § 5.3", "borrows the media")
+def _(d):
+    m = with_memory(d, node={"explicit": "nudity", "who": [{"identity": "self", "shown": True}]}, variant={"age": {"value": 34, "unit": "years"}, "nudity": True, "media": ["a-head-front"]})
+    (d / "elements/memories/m2").mkdir(parents=True, exist_ok=True)
+    (d / "elements/memories/m2/memory.json").write_text(json.dumps({"gist": {"en": "The same night, as I remember it."}, "when": {"age": {"value": 34}}}), "utf-8")
+    V(m, "memories")["m2"] = {"kind": "moment", "label": "Same night", "memory": "elements/memories/m2/memory.json", "media_from": "memories/m1"}
+    m["presets"]["default"]["slots"]["memories"] = ["m1", "m2"]; save(d, m)
+
+@case("memory-explicit-age-mismatch", "on an explicit node the variant age (read by the minor rules) equals when.age", "RFC 0002 § 5.2", "must agree")
+def _(d): with_memory(d, node={"explicit": "nudity", "when": {"age": {"value": 15}}, "who": [{"identity": "self", "shown": True}]}, variant={"age": {"value": 34, "unit": "years"}, "nudity": True})
+
+@case("relation-to-oneself", "a relation names another character of the same file", "RFC 0003 § 3 / § 6", "relation to oneself")
+def _(d):
+    m = load(d); m["cof"] = "1.1"
+    iid = m.get("default_identity") or next(iter(m.get("identities") or {}), None)
+    if not iid:
+        iid = "id1"; m["default_identity"] = iid; m["identities"] = {iid: {k: m[k] for k in ("name", "fictional", "morphology", "summary") if k in m}}
+    m["identities"][iid]["relations"] = [{"to": iid, "type": "friend"}]; save(d, m)
+
 # ---------- archive-level cases (pack the valid base, then tamper) ----------
 def rewrite(src: Path, dst: Path, entries):
     with zipfile.ZipFile(dst, "w") as z:

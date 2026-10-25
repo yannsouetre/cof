@@ -22,11 +22,7 @@
       "en": "the night expressway"
     }
   },
-  "who": [
-    {
-      "identity": "self"
-    }
-  ],
+  "who": [],
   "felt_then": {
     "category": {
       "set": "everyday",
@@ -69,5 +65,7 @@
     "chase",
     "x-09",
     "drone"
-  ]
+  ],
+  "origin": "authored",
+  "visibility": "canon"
 }

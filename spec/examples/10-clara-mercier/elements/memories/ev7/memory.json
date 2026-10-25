@@ -77,5 +77,8 @@
     "family",
     "birthday",
     "home"
-  ]
+  ],
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open"
 }

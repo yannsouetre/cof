@@ -110,7 +110,7 @@
             "description": "A real person who is not modelled as an identity (for an identity entry, the identity's `fictional` decides)."
           }
         },
-        "oneOf": [
+        "anyOf": [
           {
             "required": [
               "identity"
@@ -220,11 +220,12 @@
       "items": {
         "type": "string",
         "pattern": "^[a-z0-9][a-z0-9:-]*$"
-      }
+      },
+      "description": "Slugs: lowercase ASCII letters, digits, `-` and `:` (as tags.* in 1.0); builders slug what the author types."
     },
     "revisions": {
       "type": "array",
-      "description": "lived nodes only: previous versions of the gist / felt_now, newest first; text only.",
+      "description": "lived nodes only: previous versions of the gist / felt_now, newest first; text only; keep about ten at most.",
       "items": {
         "type": "object",
         "required": [
@@ -258,7 +259,8 @@
         "pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
       },
       "additionalProperties": {
-        "type": "string"
+        "type": "string",
+        "minLength": 1
       },
       "description": "Language-keyed text (BCP 47)."
     },
@@ -299,6 +301,10 @@
         },
         "date": {
           "$ref": "#/$defs/date"
+        },
+        "approx": {
+          "type": "boolean",
+          "description": "This bound is approximate."
         }
       }
     },

@@ -916,8 +916,23 @@ def test_explicit_memory_rules(tmp_path):
     errs = _val(d).errors
     assert any("nudity: true" in e for e in errs) and any("tags.content" in e for e in errs), errs
     m["elements"]["memories"]["variants"]["m3"]["nudity"] = True; m["tags"]["content"] = ["nudity"]; _write(d, m)
+    errs = _val(d).errors                           # F1: m4 borrows m3's media and is not explicit itself
+    assert any("borrows the media" in e and "memories.m4" in e for e in errs), errs
+    n4 = _node(d, "m4"); n4["explicit"] = "nudity"; n4["who"] = [{"identity": "self", "shown": True}]; _write(d, vid="m4", node=n4)
+    m["elements"]["memories"]["variants"]["m4"]["nudity"] = True; m["elements"]["memories"]["variants"]["m4"]["age"] = {"value": 29, "unit": "years"}; _write(d, m)
     rep = _val(d)
-    assert rep.ok, rep.errors                       # adult (29), shown, flagged: allowed
+    assert rep.ok, rep.errors                       # adult (29), shown, flagged, borrower explicit too: allowed
+    # F2: an explicit node with nobody shown is invalid; a 12-year-old preset listing the borrower is invalid (1.0 nude rule)
+    n4b = dict(n4); n4b["who"] = []; _write(d, vid="m4", node=n4b)
+    assert any("nobody declared shown" in e for e in _val(d).errors)
+    _write(d, vid="m4", node=n4)
+    m["presets"]["child"] = {"label": "child", "slots": {"memories": ["m4"]}, "age_override": {"value": 12, "unit": "years"}}; _write(d, m)
+    assert any("presets.child" in e and "under 18" in e for e in _val(d).errors)
+    m["presets"].pop("child"); _write(d, m)
+    # F5: on an explicit node the variant age and when.age must agree
+    n3b = dict(n); n3b["when"] = {"age": {"value": 15}, "date": "2005-03"}; _write(d, vid="m3", node=n3b)
+    assert any("must agree" in e for e in _val(d).errors)
+    _write(d, vid="m3", node=n)
     m["elements"]["memories"]["variants"]["m3"]["age"] = {"value": 16, "unit": "years"}; _write(d, m)
     errs = _val(d).errors
     assert any("under 18" in e for e in errs), errs   # the node rule and the preset rule both fire
@@ -1009,8 +1024,10 @@ def test_extract_purges_personal_and_explicit_memories(tmp_path):
     d, m = _mem_copy(tmp_path)
     m["elements"]["memories"]["variants"]["m3"]["nudity"] = True; m["tags"]["content"] = ["nudity"]; _write(d, m)
     n = _node(d, "m3"); n["explicit"] = "nudity"; _write(d, vid="m3", node=n)
+    n = _node(d, "m4"); n["explicit"] = "nudity"; n["who"] = [{"identity": "self", "shown": True}]; _write(d, vid="m4", node=n)      # the borrower is explicit too (§ 4.5)
+    m["elements"]["memories"]["variants"]["m4"]["nudity"] = True; m["elements"]["memories"]["variants"]["m4"]["age"] = {"value": 29, "unit": "years"}; _write(d, m)
     n = _node(d, "m1"); n["visibility"] = "personal"; _write(d, vid="m1", node=n)
-    assert _val(d).ok
+    rep = _val(d); assert rep.ok, rep.errors
     a = tmp_path / "a"; extract_presets(d, a, ["default"])
     assert (a / "elements/memories/m3/memory.json").is_file() and (a / "elements/memories/m3/meeting.jpg").is_file()
     assert drop_personal_memories(a) == ["m1"]
@@ -1019,7 +1036,7 @@ def test_extract_purges_personal_and_explicit_memories(tmp_path):
     assert not (a / "elements/memories/m1").exists()
     gone = strip_intimate(a)
     ma = json.loads((a / "manifest.json").read_text("utf-8")); V = ma["elements"]["memories"]["variants"]
-    assert gone == ["memories.m3 (media only)"] and "m3" in V and "media" not in V["m3"] and "nudity" not in V["m3"]
+    assert gone == ["memories.m3 (media only)", "memories.m4 (media only)"] and "m3" in V and "media" not in V["m3"] and "nudity" not in V["m3"]
     assert "media_from" not in V["m4"] and not any(x.get("role") == "memory-media" for x in ma["assets"])
     assert not (a / "elements/memories/m3/meeting.jpg").exists() and "explicit" not in _node(a, "m3") and _node(a, "m3")["gist"]
     assert ma["tags"]["content"] == ["none"]

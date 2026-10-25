@@ -314,6 +314,30 @@
       "expect": "intimate"
     },
     {
+      "file": "memory-explicit-nobody-shown.cof",
+      "rule": "an explicit media shows someone: an explicit node declares at least one person shown",
+      "spec": "RFC 0002 § 5.4",
+      "expect": "nobody declared shown"
+    },
+    {
+      "file": "memory-borrows-explicit-media.cof",
+      "rule": "a node borrowing the media of an explicit node is explicit itself, same value (nothing else is inherited)",
+      "spec": "RFC 0002 § 4.5 / § 5.3",
+      "expect": "borrows the media"
+    },
+    {
+      "file": "memory-explicit-age-mismatch.cof",
+      "rule": "on an explicit node the variant age (read by the minor rules) equals when.age",
+      "spec": "RFC 0002 § 5.2",
+      "expect": "must agree"
+    },
+    {
+      "file": "relation-to-oneself.cof",
+      "rule": "a relation names another character of the same file",
+      "spec": "RFC 0003 § 3 / § 6",
+      "expect": "relation to oneself"
+    },
+    {
       "file": "mimetype-not-first.cof",
       "rule": "`mimetype` is the first entry",
       "spec": "§ 1.1",

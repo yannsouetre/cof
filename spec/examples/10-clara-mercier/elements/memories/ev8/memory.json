@@ -88,5 +88,8 @@
     "holiday",
     "beach",
     "family"
-  ]
+  ],
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open"
 }
