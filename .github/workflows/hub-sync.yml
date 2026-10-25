@@ -1,0 +1,30 @@
+# Mirrors the explorer (viewer/) to the Hugging Face Space yannsouetre/cof-explorer.
+# One-time setup: on huggingface.co create a *write* token limited to that Space, and store it in this repository:
+# Settings → Secrets and variables → Actions → New repository secret named HF_TOKEN. Without the secret the job is skipped.
+# Runs by hand (Actions → Sync the explorer to Hugging Face → Run workflow) and after a push to main that touches viewer/.
+name: Sync the explorer to Hugging Face
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["viewer/**"]
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    if: ${{ github.repository_owner == 'yannsouetre' }}
+    env:
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Skip when no token is set
+        if: ${{ env.HF_TOKEN == '' }}
+        run: echo "HF_TOKEN is not set — nothing synced (set the secret to enable the mirror)."
+      - uses: actions/setup-python@v5
+        if: ${{ env.HF_TOKEN != '' }}
+        with:
+          python-version: "3.12"
+      - name: Upload viewer/ to the Space
+        if: ${{ env.HF_TOKEN != '' }}
+        run: |
+          python -m pip install --upgrade "huggingface_hub[cli]"
+          huggingface-cli upload yannsouetre/cof-explorer viewer . --repo-type space --commit-message "Sync explorer from github.com/yannsouetre/cof@${GITHUB_SHA::7}"

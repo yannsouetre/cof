@@ -15,7 +15,7 @@
 
 COF est un format de fichier ouvert (`.cof`, conteneur ZIP) qui réunit tout ce qui définit un personnage IA : personnalité, apparence (photos, code vectoriel, descriptif), voix, corps 3D, mouvement — **et** ses droits, son consentement et sa provenance. Un même fichier s'ouvre dans un chat, un générateur d'images ou de vidéo, un moteur de jeu, Blender, ou sert d'« âme » à un agent.
 
-> Statut : **1.0, publiée le 17 octobre 2026** — format 1.0 (les fichiers écrits aujourd'hui restent lisibles par tous les outils 1.x), outil de référence `cof-cli` 1.0.1 (`pip install cof-cli`), builder 0.11, explorateur, nœuds ComfyUI. Les retours sont bienvenus via les [issues](https://github.com/yannsouetre/cof/issues).
+> Statut : **1.1, publiée le [date]** — [les personnages IA ont désormais des souvenirs](https://yannsouetre.github.io/cof/memories/) (RFC 0002), genre, relations, archétype et rôle (RFC 0003), un `COF.md` dans chaque fichier ; le format 1.0 (17 octobre 2026) reste valide et lisible par tous les outils 1.x. Outil de référence `cof-cli` 1.1.0 (`pip install cof-cli`), builder 0.13, explorateur, nœuds ComfyUI 0.6. Les retours sont bienvenus via les [issues](https://github.com/yannsouetre/cof/issues).
 
 *Les illustrations sont en anglais.*
 
