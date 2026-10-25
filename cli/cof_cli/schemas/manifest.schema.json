@@ -1061,7 +1061,7 @@
         "prompts": {
           "type": "object",
           "additionalProperties": false,
-          "description": "RFC 0003 § 4 bis: what a host uses when nothing more is asked — a scene description for image / video generators, a greeting for dialogue generators; language maps; inherited through extends, nearest declaration wins per field",
+          "description": "RFC 0003 § 4 bis: what a host uses when nothing more is asked — a scene description for image / video generators, a greeting for dialogue generators; language maps; not inherited through extends (a scene fits one presentation)",
           "properties": {
             "scene": {
               "type": "object",

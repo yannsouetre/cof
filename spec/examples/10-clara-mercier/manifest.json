@@ -850,15 +850,13 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T08:37:16Z"
+        "computed_at": "2026-10-25T09:24:26Z"
       },
       "prompts": {
         "greeting": {
-          "fr": "Bonjour ! Clara, designer à Lyon. Dites-moi ce qui pèse dans votre interface, on va l'alléger.",
           "en": "Hi! Clara, designer in Lyon. Tell me what weighs your interface down — we'll make it lighter."
         },
         "scene": {
-          "fr": "Clara à son bureau face au parc, lumière du matin, carnet ouvert, plan moyen, photo réaliste",
           "en": "Clara at her desk facing the park, morning light, an open notebook, medium shot, photo-realistic"
         }
       }
@@ -919,7 +917,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T08:37:16Z"
+        "computed_at": "2026-10-25T09:24:26Z"
       }
     },
     "en-12": {
@@ -980,7 +978,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T08:37:16Z"
+        "computed_at": "2026-10-25T09:24:26Z"
       }
     },
     "en-65": {
@@ -1049,7 +1047,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T08:37:16Z"
+        "computed_at": "2026-10-25T09:24:26Z"
       }
     },
     "en-future": {
@@ -1112,7 +1110,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T08:37:16Z"
+        "computed_at": "2026-10-25T09:24:26Z"
       }
     },
     "en-agent": {
@@ -1155,7 +1153,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T08:37:16Z"
+        "computed_at": "2026-10-25T09:24:26Z"
       }
     },
     "fr": {
@@ -1197,7 +1195,15 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T08:37:16Z"
+        "computed_at": "2026-10-25T09:24:26Z"
+      },
+      "prompts": {
+        "greeting": {
+          "fr": "Bonjour ! Clara, designer à Lyon. Dites-moi ce qui pèse dans votre interface, on va l'alléger."
+        },
+        "scene": {
+          "fr": "Clara à son bureau face au parc, lumière du matin, carnet ouvert, plan moyen, photo réaliste"
+        }
       }
     },
     "fr-manga": {
@@ -1256,7 +1262,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T08:37:16Z"
+        "computed_at": "2026-10-25T09:24:26Z"
       }
     },
     "fr-12": {
@@ -1317,7 +1323,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T08:37:16Z"
+        "computed_at": "2026-10-25T09:24:26Z"
       }
     },
     "fr-65": {
@@ -1386,7 +1392,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T08:37:16Z"
+        "computed_at": "2026-10-25T09:24:26Z"
       }
     },
     "fr-futur": {
@@ -1449,7 +1455,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T08:37:16Z"
+        "computed_at": "2026-10-25T09:24:26Z"
       }
     },
     "fr-agent": {
@@ -1492,7 +1498,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T08:37:16Z"
+        "computed_at": "2026-10-25T09:24:26Z"
       }
     }
   },
@@ -3054,7 +3060,7 @@
   },
   "provenance": {
     "created": "2026-10-11T10:32:23Z",
-    "modified": "2026-10-25T08:37:16Z",
+    "modified": "2026-10-25T09:24:26Z",
     "generator": "cof-builder/0.7.1",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/10-clara-mercier",
@@ -3203,7 +3209,7 @@
       "archive"
     ],
     "computed_by": "cof-cli/1.1.0",
-    "computed_at": "2026-10-25T08:37:16Z"
+    "computed_at": "2026-10-25T09:24:26Z"
   },
   "coverage": {
     "elements": [

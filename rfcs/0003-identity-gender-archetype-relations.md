@@ -66,7 +66,7 @@ A reader that needs "the identity as this preset presents it" merges the overrid
 
 | Field | Required | Meaning |
 |---|---|---|
-| `prompts` | no | `{ "scene": <language map>, "greeting": <language map> }` — what a host uses when nothing more is asked: a **scene description** for image and video generators (framing, light, place), a **greeting** for dialogue generators (the preset's first line). Inherited through `extends`, nearest declaration wins per field. Neither replaces the card's `first_mes` (a host of cards keeps its own); `greeting` is the portable, per-language form. |
+| `prompts` | no | `{ "scene": <language map>, "greeting": <language map> }` — what a host uses when nothing more is asked: a **scene description** for image and video generators (framing, light, place), a **greeting** for dialogue generators (the preset's first line). **Not inherited** through `extends`: a scene fits one presentation (Clara at 12 does not sit at her desk), so each preset says its own. Neither replaces the card's `first_mes` (a host of cards keeps its own); `greeting` is the portable, per-language form. |
 
 ## 5. Psyche fields (normative)
 

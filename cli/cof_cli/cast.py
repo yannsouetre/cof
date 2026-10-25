@@ -82,16 +82,9 @@ def identity_view(manifest: dict, pid: str | None, iid: str | None = None) -> di
 
 
 def preset_prompts(manifest: dict, pid: str | None) -> dict:
-    """The preset chain's default prompts (`scene`, `greeting`), nearest declaration wins per field (RFC 0003 § 4 bis)."""
-    presets = manifest.get("presets") or {}
-    out, q, seen = {}, pid, set()
-    while q and q in presets and q not in seen:
-        seen.add(q)
-        for k, v in (presets[q].get("prompts") or {}).items():
-            if k in ("scene", "greeting") and k not in out and v:
-                out[k] = v
-        q = presets[q].get("extends")
-    return out
+    """The preset's own default prompts (`scene`, `greeting`) — not inherited through extends: a scene fits one presentation (RFC 0003 § 4 bis)."""
+    p = (manifest.get("presets") or {}).get(pid or "") or {}
+    return {k: v for k, v in (p.get("prompts") or {}).items() if k in ("scene", "greeting") and v}
 
 
 def preset_gender(manifest: dict, pid: str | None, iid: str | None = None) -> str | None:
