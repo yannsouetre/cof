@@ -158,11 +158,28 @@ The skill itself was tested blind: fresh agents with no access to the spec, the 
 
 ---
 
+## 7 bis. COF 1.1 — memories, cast fields, default prompts (RFC 0002, RFC 0003)
+
+Everything in 1.1 is optional; a 1.0 reader ignores it. A file that uses any of it declares `cof: "1.1"`. What a reader of each profile should do:
+
+| Addition | Where | Readers |
+|---|---|---|
+| **Memories** — element category `memories`: variants `kind: moment | period`, each with `memory` → `memory.json` (gist per language, `when`, `where`, `who`, `felt_then` / `felt_now`, `salience`, `fidelity`, `origin`, `visibility`, `disclosure`, `links`, `tags`), `media[]` (assets with role `memory-media`: images, audio, short video with a poster, short texts) or `media_from` | preset `slots.memories` lists the nodes a preset may recall | **chat / agent**: order by age, else date, else links (`cof_cli.memories.timeline`); tell the gist in the preset's language; never tell `disclosure: secret`, `guarded` only when it matters; recall `faded` / `fragment` with hesitation; `visibility: personal` nodes are one user's data (never share the file as is). **visual**: media of non-`explicit` nodes only; an `explicit` node's media require an adult preset **and** `allowSexualUsage` **and** an explicit request. A moment is inside a period by dates when its point sits within both bounds; an explicit `part-of` / `after` link wins. |
+| **Writing back** — a host adds what the character lives as new nodes (`origin: lived`, `visibility: personal` for one user), never by rewriting canon | `cof memory add <file.cof> --gist <lang>=… --date … --personal` does it all (node file, variant, media hashes, preset lists, `cof: "1.1"`, validation, repack); the recipe is also in every file's `COF.md` | any host that keeps state for a user |
+| **Gender** — `identities.<id>.gender` (`female | male | non-binary | none | other`, `gender_label`), `given_name` / `family_name` / `nicknames` (`name` and `nickname` stay for 1.0), `relations[]` to other characters of the file (typed, stored on one side; compute the inverse: `cof_cli.cast.relations_of`) | identity | **all**: the identity *as presented by a preset* is the identity record with `presets.<id>.identity_override` merged over it (`cof_cli.cast.identity_view`) — name, nicknames, gender, summary may differ per preset; morphology, fictional, consent and rights never do. **voice**: `gender_presentation` may legitimately differ from `gender`. |
+| **Default prompts** — `presets.<id>.prompts.scene` / `.greeting` (language maps, per preset, not inherited) | preset | **visual**: start the generation prompt with `scene`; **chat**: `greeting` is the opening line; both are what to use when nothing more is asked |
+| **Archetype and role** — `psyche.json` › `archetype {model: pearson-12 | free, value, secondary}` and `role` | personality variant | **chat / agent**: one line each in the persona ("Archetype: the Creator (secondary: Explorer). Narrative role: protagonist."); casting tools may filter on them |
+| **`COF.md`** at the root — a short self-description written by `cof pack` / the builder: how to read the file, the rules, how to write back | root | a reader without this guide starts there; it is never normative |
+
+Purges a host may apply at import: `cof extract --all-audiences` (intimate and nude variants out, media of explicit memories out, gists kept) and the default drop of personal memories (`--keep-personal` to keep them).
+
+---
+
 ## 8. Versioning and extension
 
 - `manifest.cof` is `major.minor`. Minor versions only add optional things; readers of 1.x read every 1.y: an unknown field, enum value or element category in a later-minor file is a warning, never a reason to refuse it (an unknown category is read as a library and its variants are left unchecked; an unknown `kind` in a known category stays an error). A new major version is a breaking change and comes with `cof migrate`.
 - Extension points, from lightest to heaviest: `extensions` object (namespaced keys) → `x-` element categories → new variant `kind` values proposed by RFC → new vocabularies (CC0) in `vocabularies/`.
-- Planned 1.x additions are descriptive codes (face/hair/body vocabularies, LMA, skeletons, acoustic voice measures, pose extraction); a 1.0 reader keeps working with them.
+- 1.1 adds memories, cast fields, default prompts and `COF.md` (§ 7 bis; RFC 0002, RFC 0003). Planned next: the psyche graph (RFC 0004, 1.2), descriptive codes (face/hair/body vocabularies, LMA, skeletons, acoustic voice measures, pose extraction); a 1.0 reader keeps working with them.
 
 ---
 
