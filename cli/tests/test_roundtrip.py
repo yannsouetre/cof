@@ -1072,8 +1072,12 @@ def test_cast_fixture_valid_and_inverse_relations(tmp_path):
     assert not [w for w in rep.warnings if "disagree" in w], rep.warnings
     m["identities"]["id2"].pop("relations"); _write(d, m)                    # stored once, the inverse is computed
     assert [r["type"] for r in relations_of(m, "id2")] == ["child"]
-    m["presets"]["swap"] = {"label": "swap", "identity": "id1", "slots": {}, "gender_override": "male", "extends": "default"}
+    m["presets"]["swap"] = {"label": "swap", "identity": "id1", "slots": {}, "identity_override": {"gender": "male", "nicknames": ["Clé"]}, "extends": "default"}
     assert preset_gender(m, "swap") == "male" and preset_gender(m, "default") == "female"
+    from cof_cli.cast import identity_view
+    assert identity_view(m, "swap")["nicknames"] == ["Clé"] and identity_view(m, "swap")["name"] == m["identities"]["id1"]["name"]
+    m["identities"]["id1"]["relations"] = [{"to": "id2", "type": "parent"}, {"to": "id2", "type": "parent"}]; _write(d, m)
+    rep = _val(d); assert any("same relation twice" in e for e in rep.errors), rep.errors
 
 
 def test_cast_rules(tmp_path):

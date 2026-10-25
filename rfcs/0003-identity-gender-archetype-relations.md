@@ -41,6 +41,8 @@ The 1.0 vocabulary says nothing about any of this, so a 1.0 reader shows nothing
 
 | Field | Required | Meaning |
 |---|---|---|
+| `given_name`, `family_name` | no | The first and family names. `name` stays the full **display** name (1.0 readers read it; the builder fills it from the two until edited). |
+| `nicknames` | no | Every nickname, in order; `nickname` (1.0) stays the first one, so 1.0 readers see it. |
 | `gender` | no | `female`, `male`, `non-binary`, `none` (a robot, an entity, a thing), `other` (then `gender_label` says which). Absent = not stated. Lowercase, closed list; extension by RFC. |
 | `gender_label` | no | Language map (BCP 47 → text), free wording when `other`, or a nuance for any value. |
 | `pronouns` | no | Language map → the pronouns to use in that language ("elle", "she/her", "they/them"). Not derived from `gender` by a reader: absent means "use the language's default for `gender`, or neutral". |
@@ -56,9 +58,11 @@ A **real person** (`fictional: false`): `gender`, `pronouns` and `relations` are
 
 | Field | Required | Meaning |
 |---|---|---|
-| `gender_override` | no | Same vocabulary as `gender`. The character is presented with this gender in this preset (a gender-swapped version, a disguise, a shapeshifter's form). Inherited through `extends` like `age_override`. Does not change the identity. |
+| `identity_override` | no | An object: how the character is **presented** in this preset, field by field — `name`, `given_name`, `family_name`, `nicknames`, `gender`, `gender_label`, `pronouns`, `summary`. Absent fields are the identity's. Inherited through `extends`, nearest declaration wins **per field** (like `age_override`, which stays its own field for 1.0 compatibility). A gender-swapped version, a disguise, an alias, a shapeshifter's form, a summary that fits the preset's age. The identity itself is unchanged. |
 
-A reader that needs "the gender of this preset" takes `gender_override` of the preset chain, else the identity's `gender`, else nothing.
+What cannot be overridden, by design: `morphology` and `fictional` (another body or another person is another character), `consent` and `rights` (they are the person's), `language` (the preset's personality language already decides what the preset speaks, RFC 0002 § 3), `relations` (canon of the cast — a per-preset relation would have to be mirrored on the other character's presets and would break the computed inverses; if a real need appears, `relations_override` can be added by RFC), and the content flags, which are not an identity field at all: `tags.content` is file-level and **rises by itself** — a nude or intimate variant, an explicit memory, each adds its flag at build and `cof validate` checks the file carries them.
+
+A reader that needs "the identity as this preset presents it" merges the override chain over the identity record (`cof_cli.cast.identity_view`); "the gender of this preset" is that view's `gender`.
 
 ## 5. Psyche fields (normative)
 
@@ -81,12 +85,12 @@ Why in `psyche.json` and not in the card: the card is a host-owned closed format
 
 ## 6. Readers, writers, checks
 
-- **Validator** (`cof validate`, 1.1): vocabularies (errors: unknown `gender`, `gender_override`, relation `type`, archetype `model`, `value` out of the model, `role`); `relations[].to` must name another identity of the file (error); `other` without `label` (error); a `cof: "1.0"` file that uses any of these fields: warning "this file uses 1.1 fields; declare `cof: "1.1"`" (1.0 readers ignore them anyway).
+- **Validator** (`cof validate`, 1.1): vocabularies (errors: unknown `gender`, override field, relation `type`, archetype `model`, `value` out of the model, `role`); `relations[].to` must name another identity of the file (error); the same `(to, type)` twice (error — two relations to one character must differ in type: colleague and friend); `other` without `label` (error); `nickname` not among `nicknames`, `given_name` absent from `name` (warnings); a `cof: "1.0"` file that uses any of these fields: warning "this file uses 1.1 fields; declare `cof: "1.1"`" (1.0 readers ignore them anyway).
 - **Coherence** (never blocking): the preset's gender (§ 4) against the voice's `gender_presentation` when both are stated and differ (`female` vs `masculine`…); two sides of a relation that disagree (`parent` on one side, `friend` on the other); a relation `since` after the subject's age in a preset (as RFC 0002's "older than the preset").
 - **Export `--agent`**: `IDENTITY.md` states the gender and the pronouns of the preset's language; `SOUL.md` states the archetype and the role in one line each ("Archetype: the Creator (secondary: Explorer). Role: protagonist.") and the relations as a short list ("Relations: Martien — friend (met on the Saône embankment)").
 - **Extract `--identity`**: relations whose `to` leaves the file are dropped (a note names them).
 - **Explorer**: the character card shows the gender (and pronouns) as a badge, the preset's override when it differs, the relations as a list with the other character's name; the Personality tab shows the archetype and the role.
-- **Builder**: a "Gender" select and a "Pronouns" field on the character card (step 1), "Gender in this preset" next to "Age in this preset" (step 4), "Archetype" (the twelve, or free) and "Role" on the personality card (step 2), "Relations" on the character card when the file holds several characters (the other character, the type, the sentence). All optional, nothing pre-filled.
+- **Builder**: given name, family name (the display name fills itself from them), nicknames separated by ";", a "Gender" select and a "Pronouns" field on the character card (step 1); "Relations" with its column headers (who, relation, description, since) when the file holds several characters, a new row defaulting to a type not yet used with that character; an "Identity in this preset" fieldset on the preset card (step 4, folded; names, nicknames, gender, pronouns, summary, each empty = the character's; the hint says what cannot be overridden and why), "Archetype" (the twelve, or free) and "Role" on the personality card (step 2), "Relations" on the character card when the file holds several characters (the other character, the type, the sentence). All optional, nothing pre-filled.
 - **ComfyUI-COF**: the COF Personality node's text block gains the archetype and role lines when present (0.6.x).
 
 ## 7. Compatibility
@@ -98,4 +102,4 @@ Every field is optional and every reader ignores unknown keys (spec § 1.2): a 1
 - A **reference date of the canon** (`identities.<id>.now`): would date ages and memories together; left out until a reader needs it (ties to RFC 0002 `felt_now.as_of`).
 - **Languages spoken** (`languages: [{ code, level }]`): the primary `language` (RFC 0002) says what the gists fall back to, not what the character speaks; likely 1.2.
 - **Relations in time**: `since` is the only temporal marker; a relation that ends (`until`) can be added without breaking anything.
-- Whether `gender_override` deserves its own coherence check against the preset's images (needs an image classifier; out of scope for cof-cli).
+- Whether the preset's gender deserves its own coherence check against the preset's images (needs an image classifier; out of scope for cof-cli).

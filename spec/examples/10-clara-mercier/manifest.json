@@ -15,6 +15,8 @@
   "identities": {
     "id1": {
       "name": "Clara Mercier",
+      "given_name": "Clara",
+      "family_name": "Mercier",
       "nickname": "Clacla",
       "summary": "Clara Mercier, a designer from Lyon, depicted from age 12 to 65. / Designer lyonnaise, déclinée de 12 à 65 ans.",
       "fictional": true,
@@ -852,7 +854,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T22:18:42Z"
+        "computed_at": "2026-10-25T07:41:52Z"
       }
     },
     "en-manga": {
@@ -911,7 +913,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T22:18:42Z"
+        "computed_at": "2026-10-25T07:41:52Z"
       }
     },
     "en-12": {
@@ -972,7 +974,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T22:18:42Z"
+        "computed_at": "2026-10-25T07:41:52Z"
       }
     },
     "en-65": {
@@ -1041,7 +1043,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T22:18:42Z"
+        "computed_at": "2026-10-25T07:41:52Z"
       }
     },
     "en-future": {
@@ -1104,7 +1106,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T22:18:42Z"
+        "computed_at": "2026-10-25T07:41:52Z"
       }
     },
     "en-agent": {
@@ -1147,7 +1149,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T22:18:42Z"
+        "computed_at": "2026-10-25T07:41:52Z"
       }
     },
     "fr": {
@@ -1189,7 +1191,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T22:18:42Z"
+        "computed_at": "2026-10-25T07:41:52Z"
       }
     },
     "fr-manga": {
@@ -1248,7 +1250,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T22:18:42Z"
+        "computed_at": "2026-10-25T07:41:52Z"
       }
     },
     "fr-12": {
@@ -1309,7 +1311,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T22:18:42Z"
+        "computed_at": "2026-10-25T07:41:52Z"
       }
     },
     "fr-65": {
@@ -1378,7 +1380,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T22:18:42Z"
+        "computed_at": "2026-10-25T07:41:52Z"
       }
     },
     "fr-futur": {
@@ -1441,7 +1443,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T22:18:42Z"
+        "computed_at": "2026-10-25T07:41:52Z"
       }
     },
     "fr-agent": {
@@ -1484,7 +1486,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T22:18:42Z"
+        "computed_at": "2026-10-25T07:41:52Z"
       }
     }
   },
@@ -2724,8 +2726,8 @@
       "path": "elements/memories/ev3/m3.dialogue.fr.md",
       "role": "memory-media",
       "mediaType": "text/markdown",
-      "bytes": 651,
-      "sha256": "f090a952a7576e6aa26604917648a320247ec38601f6668d1f334e7ca569cc71",
+      "bytes": 888,
+      "sha256": "35a8305b302dee3b474abc1deed30c52fcf41a6431d7804271ff1f38c1e545df",
       "license": "CC-BY-4.0",
       "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
       "language": "fr"
@@ -2735,8 +2737,8 @@
       "path": "elements/memories/ev3/m3.dialogue.en.md",
       "role": "memory-media",
       "mediaType": "text/markdown",
-      "bytes": 613,
-      "sha256": "79c3c7b47cb64d83d364a56241eca6548aa4d0d656d7f90926846e40038174b6",
+      "bytes": 835,
+      "sha256": "380f16da9885989524afe0bf92d8e10ddc5033331c99dab7e71dbff1f0c94911",
       "license": "CC-BY-4.0",
       "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
       "language": "en"
@@ -2978,8 +2980,8 @@
       "path": "elements/memories/ev13/m3.dialogue.fr.md",
       "role": "memory-media",
       "mediaType": "text/markdown",
-      "bytes": 651,
-      "sha256": "f090a952a7576e6aa26604917648a320247ec38601f6668d1f334e7ca569cc71",
+      "bytes": 888,
+      "sha256": "35a8305b302dee3b474abc1deed30c52fcf41a6431d7804271ff1f38c1e545df",
       "license": "CC-BY-4.0",
       "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
       "language": "fr"
@@ -2989,8 +2991,8 @@
       "path": "elements/memories/ev13/m3.dialogue.en.md",
       "role": "memory-media",
       "mediaType": "text/markdown",
-      "bytes": 613,
-      "sha256": "79c3c7b47cb64d83d364a56241eca6548aa4d0d656d7f90926846e40038174b6",
+      "bytes": 835,
+      "sha256": "380f16da9885989524afe0bf92d8e10ddc5033331c99dab7e71dbff1f0c94911",
       "license": "CC-BY-4.0",
       "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
       "language": "en"
@@ -3046,7 +3048,7 @@
   },
   "provenance": {
     "created": "2026-10-11T10:32:23Z",
-    "modified": "2026-10-24T22:18:42Z",
+    "modified": "2026-10-25T07:41:52Z",
     "generator": "cof-builder/0.7.1",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/10-clara-mercier",
@@ -3195,7 +3197,7 @@
       "archive"
     ],
     "computed_by": "cof-cli/1.1.0",
-    "computed_at": "2026-10-24T22:18:42Z"
+    "computed_at": "2026-10-25T07:41:52Z"
   },
   "coverage": {
     "elements": [

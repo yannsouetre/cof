@@ -55,30 +55,55 @@ def text_in(m, lang: str | None) -> str:
     return next(iter(m.values()))
 
 
-def preset_gender(manifest: dict, pid: str | None, iid: str | None = None) -> str | None:
-    """gender_override of the preset chain (nearest wins), else the identity's gender, else None (RFC 0003 § 4)."""
+OVERRIDABLE = ("name", "given_name", "family_name", "nicknames", "gender", "gender_label", "pronouns", "summary")
+
+
+def identity_override(manifest: dict, pid: str | None) -> dict:
+    """The preset chain's identity_override, merged field by field (nearest declaration wins) — RFC 0003 § 4."""
     presets = manifest.get("presets") or {}
-    q, seen = pid, set()
+    out, q, seen = {}, pid, set()
     while q and q in presets and q not in seen:
         seen.add(q)
-        if presets[q].get("gender_override") in GENDERS:
-            return presets[q]["gender_override"]
+        for k, v in (presets[q].get("identity_override") or {}).items():
+            if k in OVERRIDABLE and k not in out and v is not None:
+                out[k] = v
         q = presets[q].get("extends")
+    return out
+
+
+def identity_view(manifest: dict, pid: str | None, iid: str | None = None) -> dict:
+    """The identity as presented by a preset: the identity's record with the override applied (never morphology, fictional, consent, rights)."""
+    presets = manifest.get("presets") or {}
     if iid is None and pid and pid in presets:
         iid = presets[pid].get("identity") or manifest.get("default_identity")
-    return ((manifest.get("identities") or {}).get(iid or "", {}) or {}).get("gender")
+    base = dict((manifest.get("identities") or {}).get(iid or "", {}) or {})
+    base.update(identity_override(manifest, pid))
+    return base
+
+
+def preset_gender(manifest: dict, pid: str | None, iid: str | None = None) -> str | None:
+    """identity_override.gender of the preset chain (nearest wins), else the identity's gender, else None (RFC 0003 § 4)."""
+    return identity_view(manifest, pid, iid).get("gender")
+
+
+def nicknames(i: dict) -> list[str]:
+    """Every nickname: `nicknames` (1.1) else `nickname` (1.0), semicolon-separated values accepted."""
+    out = list(i.get("nicknames") or [])
+    if not out and i.get("nickname"):
+        out = [x.strip() for x in str(i["nickname"]).split(";") if x.strip()]
+    return out
 
 
 def uses_1_1_fields(manifest: dict, src: Path | None = None) -> list[str]:
     """Which RFC 0003 fields a manifest uses (for the 'declare 1.1' rule)."""
     used = []
     for iid, i in (manifest.get("identities") or {}).items():
-        for k in ("gender", "gender_label", "pronouns", "relations"):
+        for k in ("gender", "gender_label", "pronouns", "relations", "given_name", "family_name", "nicknames"):
             if (i or {}).get(k) is not None:
                 used.append(f"identities.{iid}.{k}")
     for pid, p in (manifest.get("presets") or {}).items():
-        if (p or {}).get("gender_override") is not None:
-            used.append(f"presets.{pid}.gender_override")
+        if (p or {}).get("identity_override") is not None:
+            used.append(f"presets.{pid}.identity_override")
     if src is not None:
         for vid, v in (((manifest.get("elements") or {}).get("personality") or {}).get("variants") or {}).items():
             if v.get("psyche") and (src / v["psyche"]).is_file():
@@ -108,6 +133,17 @@ def cast_rules(manifest: dict, src: Path, rep) -> None:
                 rep.errors.append(f"{where}: unknown identity {to!r} (a relation names another character of the same file)")
             if r.get("type") == "other" and not r.get("label"):
                 rep.errors.append(f"{where}: type 'other' needs a label")
+        pairs = [(r.get("to"), r.get("type")) for r in i.get("relations") or []]
+        for pr in {x for x in pairs if pairs.count(x) > 1}:
+            rep.errors.append(f"identities.{iid}.relations: the same relation twice ({pr[1]} → {pr[0]}); two relations to one character must differ in type (colleague and friend)")
+        if i.get("nicknames") and i.get("nickname") and i["nickname"] not in i["nicknames"]:
+            rep.warnings.append(f"identities.{iid}: nickname {i['nickname']!r} is not among nicknames — 1.0 readers see `nickname`, keep it the first of `nicknames`")
+        if i.get("given_name") and i.get("name") and i["given_name"].lower() not in i["name"].lower():
+            rep.warnings.append(f"identities.{iid}: given_name {i['given_name']!r} does not appear in name {i['name']!r}")
+    for pid, p in (manifest.get("presets") or {}).items():
+        ov = (p or {}).get("identity_override") or {}
+        if ov.get("gender") == "other" and not ov.get("gender_label") and not (ids.get((p or {}).get("identity") or manifest.get("default_identity") or "", {}) or {}).get("gender_label"):
+            rep.warnings.append(f"presets.{pid}.identity_override: gender 'other' without gender_label")
     # both sides stored: they must agree (coherence)
     for iid, i in ids.items():
         for r in (i or {}).get("relations") or []:
@@ -181,8 +217,12 @@ def drop_foreign_relations(manifest: dict) -> list[str]:
 def identity_lines(manifest: dict, iid: str, pid: str | None, lang: str) -> list[str]:
     """Lines for IDENTITY.md / a character card: gender (preset override first), pronouns, relations."""
     L = "fr" if str(lang).lower().startswith("fr") else "en"
-    i = (manifest.get("identities") or {}).get(iid) or {}
+    i = identity_view(manifest, pid, iid)
+    base = (manifest.get("identities") or {}).get(iid) or {}
     out = []
+    nk = nicknames(i)
+    if nk:
+        out.append(("Surnoms" if L == "fr" else "Nicknames") + ": " + ", ".join(nk))
     g = preset_gender(manifest, pid, iid)
     if g:
         word = GENDER_WORDS[L].get(g, g)
@@ -191,8 +231,8 @@ def identity_lines(manifest: dict, iid: str, pid: str | None, lang: str) -> list
             word = lab
         elif lab:
             word += f" ({lab})"
-        if i.get("gender") and g != i.get("gender"):
-            word += " — " + ("dans ce preset" if L == "fr" else "in this preset") + f" ({GENDER_WORDS[L].get(i['gender'], i['gender'])} " + ("au canon" if L == "fr" else "in canon") + ")"
+        if base.get("gender") and g != base.get("gender"):
+            word += " — " + ("dans ce preset" if L == "fr" else "in this preset") + f" ({GENDER_WORDS[L].get(base['gender'], base['gender'])} " + ("au canon" if L == "fr" else "in canon") + ")"
         out.append(("Genre" if L == "fr" else "Gender") + f": {word}")
     pr = text_in(i.get("pronouns"), lang)
     if pr:

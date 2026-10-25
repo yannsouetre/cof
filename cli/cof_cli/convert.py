@@ -274,7 +274,8 @@ def export_soul(src: Path, preset: str | None = None) -> tuple[str, str]:
     def preset_identity_id(m, q):
         return ((m.get("presets") or {}).get(q) or {}).get("identity") or m.get("default_identity") or next(iter(m.get("identities") or {}), None)
     r = resolved(manifest, pid)
-    ident = preset_identity(manifest, pid) or {}
+    from .cast import identity_view
+    ident = identity_view(manifest, pid) or preset_identity(manifest, pid) or {}
     name = ident.get("name") or manifest.get("name")
     p = first(r, "personality") or {}
     data = json.loads((src / p["card"]).read_text("utf-8")).get("data", {}) if p.get("card") else {}
