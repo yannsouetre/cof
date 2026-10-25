@@ -93,8 +93,8 @@
           "agent-persona",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc3",
-        "computed_at": "2026-10-14T18:29:28Z"
+        "computed_by": "cof-cli/1.1.0",
+        "computed_at": "2026-10-25T22:00:34Z"
       },
       "age_override": {
         "value": 34,
@@ -145,7 +145,7 @@
   },
   "provenance": {
     "created": "2026-10-09T19:40:00Z",
-    "modified": "2026-10-14T18:29:28Z",
+    "modified": "2026-10-25T22:00:34Z",
     "generator": "cof-cli/0.2.0",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/01-clara-text-only"
@@ -183,8 +183,8 @@
       "agent-persona",
       "archive"
     ],
-    "computed_by": "cof-cli/1.0.0rc3",
-    "computed_at": "2026-10-14T18:29:28Z"
+    "computed_by": "cof-cli/1.1.0",
+    "computed_at": "2026-10-25T22:00:34Z"
   },
   "coverage": {
     "elements": [

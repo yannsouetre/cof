@@ -106,8 +106,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.0.0rc3",
-        "computed_at": "2026-10-14T18:29:29Z"
+        "computed_by": "cof-cli/1.1.0",
+        "computed_at": "2026-10-25T22:00:35Z"
       },
       "age_override": {
         "value": 32,
@@ -397,7 +397,7 @@
   },
   "provenance": {
     "created": "2026-10-09T20:30:00Z",
-    "modified": "2026-10-14T18:29:29Z",
+    "modified": "2026-10-25T22:00:35Z",
     "generator": "cof-vector/0.2 sheet_split + edges",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/03-clara-photos"
@@ -434,8 +434,8 @@
       "image-video-gen",
       "archive"
     ],
-    "computed_by": "cof-cli/1.0.0rc3",
-    "computed_at": "2026-10-14T18:29:29Z"
+    "computed_by": "cof-cli/1.1.0",
+    "computed_at": "2026-10-25T22:00:35Z"
   },
   "coverage": {
     "elements": [
@@ -445,6 +445,6 @@
     "presets": 1,
     "identities": 1
   },
-  "thumbnail": "Thumbnails/thumbnail.png",
+  "thumbnail": "elements/appearance/f1/head.front.closeup.jpg",
   "nickname": "Clacla"
 }

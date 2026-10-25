@@ -420,7 +420,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T21:55:40Z"
+        "computed_at": "2026-10-25T22:00:36Z"
       }
     },
     "fr": {
@@ -465,7 +465,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T21:55:40Z"
+        "computed_at": "2026-10-25T22:00:36Z"
       }
     },
     "m1-default": {
@@ -499,7 +499,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T21:55:40Z"
+        "computed_at": "2026-10-25T22:00:36Z"
       },
       "age_override": {
         "value": 40,
@@ -1157,7 +1157,7 @@
   },
   "provenance": {
     "created": "2026-10-11T10:32:23Z",
-    "modified": "2026-10-25T21:55:40Z",
+    "modified": "2026-10-25T22:00:36Z",
     "generator": "cof-cli merge (example 11)",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/10-clara-mercier",
@@ -1236,7 +1236,7 @@
       "archive"
     ],
     "computed_by": "cof-cli/1.1.0",
-    "computed_at": "2026-10-25T21:55:40Z"
+    "computed_at": "2026-10-25T22:00:36Z"
   },
   "coverage": {
     "elements": [
@@ -1251,5 +1251,5 @@
     "presets": 3,
     "identities": 2
   },
-  "thumbnail": "Thumbnails/thumbnail.png"
+  "thumbnail": "elements/appearance/a1/body.front.jpg"
 }

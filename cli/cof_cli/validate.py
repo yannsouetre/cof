@@ -788,8 +788,8 @@ def validate_cof(cof: Path) -> Report:
     limit = {"lite": 20_000_000, "standard": 100_000_000}.get(manifest.get("size_class"))
     if limit and st["compressed"] > limit:
         rep.warnings.append(f"size_class '{manifest.get('size_class')}' exceeded: {st['compressed']/1e6:.1f} MB")
-    if manifest.get("cof") != SPEC_VERSION:
-        rep.warnings.append(f"format version {manifest.get('cof')} (tool: {SPEC_VERSION})")
+    # an older minor (a 1.0 file read by the 1.1 tool) is fully valid and gets no warning (SPEC § 12: 1.x only adds optional
+    # things); a newer minor than the tool is warned about by validate_dir ("newer than this validator")
     return rep
 
 

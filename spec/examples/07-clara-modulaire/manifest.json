@@ -182,7 +182,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T18:00:53Z"
+        "computed_at": "2026-10-25T22:00:35Z"
       },
       "age_override": {
         "value": 34,
@@ -224,7 +224,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-24T18:00:53Z"
+        "computed_at": "2026-10-25T22:00:35Z"
       }
     }
   },
@@ -418,7 +418,7 @@
   },
   "provenance": {
     "created": "2026-10-10T08:30:00Z",
-    "modified": "2026-10-24T18:00:53Z",
+    "modified": "2026-10-25T22:00:35Z",
     "generator": "cof-cli/0.3.0 (assemblage manuel)",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/01-clara-text-only",
@@ -459,7 +459,7 @@
       "archive"
     ],
     "computed_by": "cof-cli/1.1.0",
-    "computed_at": "2026-10-24T18:00:53Z"
+    "computed_at": "2026-10-25T22:00:35Z"
   },
   "coverage": {
     "elements": [
@@ -471,5 +471,5 @@
     "presets": 2,
     "identities": 1
   },
-  "thumbnail": "Thumbnails/thumbnail.png"
+  "thumbnail": "elements/appearance/f1/head.front.closeup.jpg"
 }
