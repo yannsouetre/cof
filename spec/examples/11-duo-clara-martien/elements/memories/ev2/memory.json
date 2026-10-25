@@ -1,0 +1,73 @@
+{
+  "gist": {
+    "fr": "Ma première soirée sur Terre : une humaine sur le quai d'une rivière lente, qui n'a pas eu peur et qui m'a expliqué le chemin d'un musée en marchant une heure avec moi. Elle parlait de lumière et d'écrans ; moi je regardais les lampadaires se refléter dans l'eau. Les moutons, c'est elle qui m'en a parlé.",
+    "en": "My first evening on Earth: a human on the bank of a slow river, who was not afraid and explained the way to a museum by walking with me for an hour. She talked about light and screens; I watched the streetlamps in the water. The sheep — she is the one who told me about them."
+  },
+  "nature": [
+    "experienced"
+  ],
+  "when": {
+    "date": "2026-03",
+    "label": {
+      "fr": "ma première soirée sur Terre",
+      "en": "my first evening on Earth"
+    }
+  },
+  "where": {
+    "label": {
+      "fr": "le quai de Saône, Lyon",
+      "en": "the Saône embankment, Lyon"
+    }
+  },
+  "who": [
+    {
+      "identity": "self",
+      "shown": true
+    },
+    {
+      "identity": "clara-mercier",
+      "shown": true,
+      "age": {
+        "value": 29,
+        "unit": "years"
+      }
+    }
+  ],
+  "felt_then": {
+    "category": {
+      "set": "everyday",
+      "value": "curious"
+    },
+    "pad": {
+      "pleasure": 0.5,
+      "arousal": 0.6
+    }
+  },
+  "felt_now": {
+    "category": {
+      "set": "everyday",
+      "value": "affectionate"
+    },
+    "pad": {
+      "pleasure": 0.7,
+      "arousal": 0.1
+    }
+  },
+  "salience": 90,
+  "fidelity": "clear",
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open",
+  "tags": [
+    "earth",
+    "lyon",
+    "encounter",
+    "clara"
+  ],
+  "links": [
+    {
+      "to": "memories/ev1",
+      "type": "same-event"
+    }
+  ]
+}

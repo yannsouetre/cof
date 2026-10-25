@@ -7,7 +7,7 @@ This note is a courtesy for readers without the specification; **the specificati
 
 ## Reading
 - `manifest.json` is the index. Characters: `clara-mercier` (Clara Mercier), `martien` (Martien). Presets (a consistent way to present a character — age, style, language): `default`, `fr`, `m1-default`; `default_preset` says which to use when nobody chooses.
-- Elements by category (`voice`, `appearance`, `posture`, `personality`, `motion`): each category has `variants`; a preset's `slots` lists the variants it applies, `alternatives` the ones it offers; `extends` inherits from another preset.
+- Elements by category (`voice`, `appearance`, `posture`, `personality`, `motion`, `memories`): each category has `variants`; a preset's `slots` lists the variants it applies, `alternatives` the ones it offers; `extends` inherits from another preset.
 - Every file of the container is declared in `assets` (path, `mediaType`, `sha256`, `license`, `role`); a variant names its files by asset id. Sub-files (`card.json`, `psyche.json`, `profile.json`, `memory.json`) are JSON next to their variant under `elements/<category>/<variant>/`.
 - Short texts that are per language are maps keyed by BCP 47 (`{"fr": …, "en": …}`); pick the preset's personality language, else the identity's `language`, else the first entry.
 - `cof export --format agent --preset <id>` turns a preset into `SOUL.md` + `IDENTITY.md` + `MEMORY.md` for a text agent; the ComfyUI nodes read the file directly.
@@ -17,6 +17,7 @@ This note is a courtesy for readers without the specification; **the specificati
 - **Ages**: a preset's age is the lowest age of what it applies (`age`, `age_override`). A preset under 18 shows nothing nude or intimate, ever; `allowSexualUsage` is an opt-in that a host must ask for explicitly, never a default.
 - **Real persons** (`fictional: false`) come with a consent record; their likeness, voice and memories never travel to another character or another file.
 - **Content flags** (`tags.content`) list what the file holds (`nudity`, `violence`…); `none` means nothing flagged.
+- **Memories** (`elements/memories`, COF 1.1 / RFC 0002): nodes `moment` or `period`, each with a `memory.json` (gist per language, when, where, who, feelings, `fidelity`, links). `disclosure: secret` is never told; `guarded` only when it matters; `visibility: personal` nodes are one user's data and never leave this file without their consent; `explicit` nodes show no media to anyone but an adult preset with the opt-in. Readers order by age, else date, else links.
 
 ## Writing back what the character lives (hosts and agents)
 The canon is read-only for tools. What happens at use time is added as **new memory nodes** with `origin: "lived"`, and `visibility: "personal"` when it concerns one user:

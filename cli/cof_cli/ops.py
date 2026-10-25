@@ -227,7 +227,39 @@ def extract_identity(src: Path, dst: Path, iid: str, notes: list[str] | None = N
     (dst / "manifest.json").write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", "utf-8")
     for vid in strip_foreign_real_media(dst, {iid}, m.get("identities") or {}):
         (notes if notes is not None else []).append(f"memories.{vid}: media showing another real person left behind (gist kept)")
+    for line in relabel_departed_identities(dst, json.loads((dst / "manifest.json").read_text("utf-8")), m.get("identities") or {}):
+        (notes if notes is not None else []).append(line)
     return json.loads((dst / "manifest.json").read_text("utf-8"))
+
+
+def relabel_departed_identities(dst: Path, m: dict, identities: dict) -> list[str]:
+    """After an extract of one character: a `who` entry that named another character of the source file becomes a
+    plain person — its name as label, its age kept, `real: true` when that character was a real person (the
+    consent record did not travel; the file stays honest about who is shown). Returns one line per rewrite."""
+    kept = set(m.get("identities") or {})
+    out = []
+    for vid, v in _memory_variants(m).items():
+        rel = v.get("memory")
+        if not rel or not (dst / rel).is_file():
+            continue
+        try:
+            node = json.loads((dst / rel).read_text("utf-8"))
+        except Exception:
+            continue
+        changed = False
+        for w in node.get("who") or []:
+            i = w.get("identity")
+            if i and i != "self" and i not in kept:
+                src = identities.get(i) or {}
+                w.pop("identity")
+                w.setdefault("label", {(src.get("language") or "en"): src.get("name") or i})
+                if src.get("fictional") is False:
+                    w["real"] = True
+                changed = True
+                out.append(f"memories.{vid}: who: {i} is not in this file any more — kept as a person named {src.get('name') or i}")
+        if changed:
+            (dst / rel).write_text(json.dumps(node, ensure_ascii=False, indent=2) + "\n", "utf-8")
+    return out
 
 
 # ---- memories (RFC 0002 § 5.7, § 5.8, § 4.5) ---------------------------------------------------------------------

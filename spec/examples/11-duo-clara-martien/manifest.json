@@ -40,7 +40,8 @@
             }
           }
         }
-      ]
+      ],
+      "language": "fr"
     },
     "martien": {
       "name": "Martien",
@@ -74,7 +75,8 @@
       "gender_label": {
         "fr": "les Martiens n'ont pas de genre",
         "en": "Martians have no gender"
-      }
+      },
+      "language": "fr"
     }
   },
   "default_identity": "clara-mercier",
@@ -83,6 +85,7 @@
       "adult",
       "en",
       "fr",
+      "has-memories",
       "has-motion",
       "has-voice",
       "human",
@@ -320,6 +323,38 @@
           "identity": "clara-mercier"
         }
       }
+    },
+    "memories": {
+      "variants": {
+        "ev1": {
+          "kind": "moment",
+          "label": "La rencontre avec le Martien / Meeting the Martian",
+          "memory": "elements/memories/ev1/memory.json",
+          "identity": "clara-mercier",
+          "media": [
+            "a-mem-ev1",
+            "a-mem-ev1-dialogue-fr",
+            "a-mem-ev1-dialogue-en"
+          ],
+          "age": {
+            "value": 29,
+            "unit": "years",
+            "basis": "canonical"
+          }
+        },
+        "ev2": {
+          "kind": "moment",
+          "label": "Ma première soirée sur Terre / My first evening on Earth",
+          "memory": "elements/memories/ev2/memory.json",
+          "identity": "martien",
+          "media_from": "memories/ev1",
+          "age": {
+            "value": 40,
+            "unit": "years",
+            "basis": "apparent"
+          }
+        }
+      }
     }
   },
   "presets": {
@@ -350,6 +385,9 @@
         ],
         "motion": [
           "m1"
+        ],
+        "memories": [
+          "ev1"
         ]
       },
       "alternatives": {
@@ -382,7 +420,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T10:28:20Z"
+        "computed_at": "2026-10-25T21:55:40Z"
       }
     },
     "fr": {
@@ -401,6 +439,9 @@
         ],
         "voice": [
           "v1"
+        ],
+        "memories": [
+          "ev1"
         ]
       },
       "completeness": {
@@ -424,7 +465,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T10:28:20Z"
+        "computed_at": "2026-10-25T21:55:40Z"
       }
     },
     "m1-default": {
@@ -434,6 +475,9 @@
           "f1",
           "b1",
           "env-martien"
+        ],
+        "memories": [
+          "ev2"
         ]
       },
       "style": "photo-realistic",
@@ -455,7 +499,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T10:28:20Z"
+        "computed_at": "2026-10-25T21:55:40Z"
       },
       "age_override": {
         "value": 40,
@@ -1041,6 +1085,42 @@
       "source": "a-body-front"
     },
     {
+      "id": "a-mem-ev1",
+      "path": "elements/memories/ev1/ev3.jpg",
+      "role": "memory-media",
+      "mediaType": "image/jpeg",
+      "bytes": 278291,
+      "sha256": "18b7b8d27ea191fdfbe49a16ed8be3250b80bfc970f92de945454770c098cdd4",
+      "license": "CC-BY-4.0",
+      "width": 1536,
+      "height": 1024,
+      "style": "photo-realistic",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "generator": "kept from clara.memories/m3.martien-final.jpg"
+    },
+    {
+      "id": "a-mem-ev1-dialogue-fr",
+      "path": "elements/memories/ev1/m3.dialogue.fr.md",
+      "role": "memory-media",
+      "mediaType": "text/markdown",
+      "bytes": 888,
+      "sha256": "35a8305b302dee3b474abc1deed30c52fcf41a6431d7804271ff1f38c1e545df",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "language": "fr"
+    },
+    {
+      "id": "a-mem-ev1-dialogue-en",
+      "path": "elements/memories/ev1/m3.dialogue.en.md",
+      "role": "memory-media",
+      "mediaType": "text/markdown",
+      "bytes": 835,
+      "sha256": "380f16da9885989524afe0bf92d8e10ddc5033331c99dab7e71dbff1f0c94911",
+      "license": "CC-BY-4.0",
+      "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+      "language": "en"
+    },
+    {
       "id": "thumbnail",
       "path": "Thumbnails/thumbnail.png",
       "role": "derived",
@@ -1077,7 +1157,7 @@
   },
   "provenance": {
     "created": "2026-10-11T10:32:23Z",
-    "modified": "2026-10-25T10:28:20Z",
+    "modified": "2026-10-25T21:55:40Z",
     "generator": "cof-cli merge (example 11)",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/10-clara-mercier",
@@ -1156,7 +1236,7 @@
       "archive"
     ],
     "computed_by": "cof-cli/1.1.0",
-    "computed_at": "2026-10-25T10:28:20Z"
+    "computed_at": "2026-10-25T21:55:40Z"
   },
   "coverage": {
     "elements": [
@@ -1164,9 +1244,10 @@
       "appearance",
       "posture",
       "personality",
-      "motion"
+      "motion",
+      "memories"
     ],
-    "variants": 17,
+    "variants": 19,
     "presets": 3,
     "identities": 2
   },

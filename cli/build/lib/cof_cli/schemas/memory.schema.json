@@ -1,0 +1,358 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yannsouetre.github.io/cof/schemas/1.1/memory.schema.json",
+  "title": "COF memory node (elements/memories/<v>/memory.json)",
+  "description": "A moment or a period of the character's past — RFC 0002. The node file holds the content; the manifest variant holds what tools read without opening it (`memory`, `media[]`, `media_from`, `age`, `nudity`). Node references are always qualified (\"<category>/<variant id>\").",
+  "type": "object",
+  "required": [
+    "gist"
+  ],
+  "properties": {
+    "gist": {
+      "$ref": "#/$defs/text",
+      "description": "Short text the reader always loads; one entry per language (BCP 47); SHOULD stay under 1,000 characters per language."
+    },
+    "nature": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "experienced",
+          "learned",
+          "witnessed",
+          "imagined"
+        ]
+      },
+      "default": [
+        "experienced"
+      ],
+      "description": "experienced = the character was an actor; learned = a work, a place, a context; witnessed = told by others; imagined = a dream, a fantasy, a plan. Combinable."
+    },
+    "when": {
+      "type": "object",
+      "description": "A point for a moment (age and/or date); from / to for a period. Absent = 'I no longer know when'.",
+      "properties": {
+        "age": {
+          "$ref": "#/$defs/age"
+        },
+        "date": {
+          "$ref": "#/$defs/date"
+        },
+        "from": {
+          "$ref": "#/$defs/point"
+        },
+        "to": {
+          "$ref": "#/$defs/point"
+        },
+        "approx": {
+          "type": "boolean"
+        },
+        "label": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "where": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "$ref": "#/$defs/text"
+        },
+        "environment": {
+          "$ref": "#/$defs/ref",
+          "description": "Qualified reference to an environment variant of the same character (appearance/e1, volume3d/env1)."
+        },
+        "geo": {
+          "type": "object",
+          "required": [
+            "lat",
+            "lon"
+          ],
+          "properties": {
+            "lat": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            },
+            "lon": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            }
+          }
+        }
+      }
+    },
+    "who": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "identity": {
+            "type": "string",
+            "minLength": 1,
+            "description": "'self' or a cast identity id."
+          },
+          "label": {
+            "$ref": "#/$defs/text"
+          },
+          "shown": {
+            "type": "boolean",
+            "description": "Appears in a media of this node (absent = only in the story)."
+          },
+          "age": {
+            "$ref": "#/$defs/age",
+            "description": "That person's age at the time (the character's own age is when.age)."
+          },
+          "real": {
+            "type": "boolean",
+            "description": "A real person who is not modelled as an identity (for an identity entry, the identity's `fictional` decides)."
+          }
+        },
+        "anyOf": [
+          {
+            "required": [
+              "identity"
+            ]
+          },
+          {
+            "required": [
+              "label"
+            ]
+          }
+        ]
+      }
+    },
+    "felt_then": {
+      "$ref": "#/$defs/emotion"
+    },
+    "felt_now": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/emotion"
+        }
+      ],
+      "properties": {
+        "as_of": {
+          "$ref": "#/$defs/point",
+          "description": "When this 'now' was felt; default = the character's canonical present."
+        }
+      }
+    },
+    "salience": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "fidelity": {
+      "enum": [
+        "vivid",
+        "clear",
+        "faded",
+        "fragment"
+      ],
+      "default": "clear",
+      "description": "What the character remembers (per node, never per media). Tools needing a number use 1.0 / 0.7 / 0.4 / 0.15."
+    },
+    "factual": {
+      "type": "boolean",
+      "description": "Real-person identities only: did this happen in that person's life. Absent = unknown (warning)."
+    },
+    "explicit": {
+      "enum": [
+        "nudity",
+        "intimate"
+      ],
+      "description": "Media show nudity (no genitals) or intimate content; the variant also carries nudity: true and the file tags.content (RFC 0002 § 5)."
+    },
+    "origin": {
+      "enum": [
+        "authored",
+        "lived"
+      ],
+      "default": "authored"
+    },
+    "visibility": {
+      "enum": [
+        "canon",
+        "personal"
+      ],
+      "default": "canon"
+    },
+    "disclosure": {
+      "enum": [
+        "open",
+        "guarded",
+        "secret"
+      ],
+      "default": "open"
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "to",
+          "type"
+        ],
+        "properties": {
+          "to": {
+            "$ref": "#/$defs/ref"
+          },
+          "type": {
+            "enum": [
+              "after",
+              "part-of",
+              "about",
+              "because",
+              "same-event"
+            ]
+          },
+          "label": {
+            "$ref": "#/$defs/text"
+          }
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9:-]*$"
+      },
+      "description": "Slugs: lowercase ASCII letters, digits, `-` and `:` (as tags.* in 1.0); builders slug what the author types."
+    },
+    "revisions": {
+      "type": "array",
+      "description": "lived nodes only: previous versions of the gist / felt_now, newest first; text only; keep about ten at most.",
+      "items": {
+        "type": "object",
+        "required": [
+          "date",
+          "gist"
+        ],
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "gist": {
+            "$ref": "#/$defs/text"
+          },
+          "felt_now": {
+            "$ref": "#/$defs/emotion"
+          },
+          "by": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "$defs": {
+    "text": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Language-keyed text (BCP 47)."
+    },
+    "ref": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]*/[a-z0-9][a-z0-9.-]*$",
+      "description": "Qualified node reference: <category>/<variant id>."
+    },
+    "age": {
+      "type": "object",
+      "required": [
+        "value"
+      ],
+      "properties": {
+        "value": {
+          "type": "number",
+          "minimum": 0
+        },
+        "unit": {
+          "enum": [
+            "years",
+            "months"
+          ],
+          "default": "years"
+        }
+      }
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^-?[0-9]{1,4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$",
+      "description": "Partial ISO date: YYYY, YYYY-MM or YYYY-MM-DD; precision is read from the shape."
+    },
+    "point": {
+      "type": "object",
+      "properties": {
+        "age": {
+          "$ref": "#/$defs/age"
+        },
+        "date": {
+          "$ref": "#/$defs/date"
+        },
+        "approx": {
+          "type": "boolean",
+          "description": "This bound is approximate."
+        }
+      }
+    },
+    "emotion": {
+      "type": "object",
+      "description": "Same structure as psyche.json baseline_emotion: an EmotionML category and PAD dimensions.",
+      "properties": {
+        "category": {
+          "type": "object",
+          "required": [
+            "set",
+            "value"
+          ],
+          "properties": {
+            "set": {
+              "enum": [
+                "everyday",
+                "big6",
+                "plutchik",
+                "custom"
+              ]
+            },
+            "value": {
+              "type": "string"
+            }
+          }
+        },
+        "pad": {
+          "type": "object",
+          "properties": {
+            "pleasure": {
+              "type": "number",
+              "minimum": -1,
+              "maximum": 1
+            },
+            "arousal": {
+              "type": "number",
+              "minimum": -1,
+              "maximum": 1
+            },
+            "dominance": {
+              "type": "number",
+              "minimum": -1,
+              "maximum": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}
