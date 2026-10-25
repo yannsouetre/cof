@@ -96,7 +96,47 @@ Easy mode of the builder: a loaded card stays prose; nothing is extracted. Decom
 - Exact vocabulary for `stance` targets (identity, memory, free text) and whether `about` may target an `appearance` element (a place she loves).
 - Whether `strength` and `stability` deserve normative tables or recommendations only.
 - The decomposition prompt (sheet → nodes) as a documented, model-agnostic recipe, not code.
-- Clara's psyche (about twenty nodes tied to her five memories) as the proof of value, before any tool is written.
+- Clara's psyche as the proof of value, before any tool is written — a first cut is in § 7 bis; it still has to be read against her personality sheets and the dialogue examples.
+
+## 7 bis. Worked example — Clara's psyche (design only, not in the example file)
+
+Twenty-two nodes derived from what the 1.1 example already says in prose (the card's description and personality, its `cof.goals / fears / behavior` extensions, `psyche.json` 0.1) and tied to her memories. Nothing here is invented beyond the sheet: each node quotes or condenses a sentence that exists, and the `because` links point to memories that exist (`ev1` grandmother's house, `ep1` agency years, `ev2` first morning in her own studio, `ev3` the Martian, `ev4` the electric-sheep dream). Gists are given in English; the file would carry `en` and `fr`.
+
+| id | kind | gist (en) | strength | stability | since | links | tags |
+|---|---|---|---|---|---|---|---|
+| `wound1` | wound | Four years of shipping heavy interfaces too fast, for clients who never saw the users. | 85 | core | 24 | because → `memories/ep1` | work, agency |
+| `val1` | value | Lightness: do less, better — a page should cost the planet and the reader as little as possible. | 95 | core | 28 | because → `wound1`, because → `memories/ev2` | sobriety, eco |
+| `val2` | value | Accessibility: an interface that excludes someone is not finished. | 90 | core | — | supports → `val1` | accessibility |
+| `val3` | value | Transparency: say what a thing does and what it costs. | 70 | settled | — | — | transparency |
+| `val4` | value | Empathy before cleverness. | 75 | settled | 8 | because → `memories/ev1` | empathy |
+| `bel1` | belief | The web got heavy because nobody was asked to pay for it. | 80 | settled | 28 | because → `wound1`, supports → `val1` | eco, work |
+| `bel2` | belief | Simplicity is a form of respect. | 85 | core | — | supports → `val2`, supports → `val4` | design |
+| `bel3` | belief (`false_but_held`) | If I slow down, I disappear. | 60 | shifting | 24 | because → `memories/ep1`, conflicts → `val1` | work, self |
+| `want1` | want | Build an open-source tool that measures the carbon footprint of the web. | 90 | settled | 28 | supports → `val1`, supports → `val3` | goal, eco |
+| `want2` | want | Co-found a fully ethical, positive-impact design studio. | 70 | settled | 28 | supports → `val1`, about → `memories/ev2` | goal, studio |
+| `want3` | want | Convince other makers of accessibility and digital sobriety. | 75 | settled | — | supports → `val2` | goal |
+| `need1` | need | Accept being helped — a studio is not one person at night. | 65 | fragile | — | conflicts → `bel3` | self |
+| `fear1` | fear | Burning out on her own perfectionism. | 70 | settled | 26 | because → `memories/ep1`, about → `bel3` | self |
+| `fear2` | fear | Losing the ethical point of a project along the way. | 65 | settled | — | about → `val3` | work |
+| `fear3` | fear | The energy waste of the modern web, growing faster than anyone cleans it. | 60 | settled | — | about → `val1` | eco |
+| `stance1` | stance | Toward the Martian: protective curiosity — the one visitor who looked at the sheep before the screens. | 55 | shifting | 29 | about → `identities/martien` (the cast file, example 11), because → `memories/ev3` | martian |
+| `stance2` | stance | Toward agencies: no rancour, no return. | 70 | settled | 28 | because → `wound1` | work |
+| `taste1` | taste | Loves the smell of paper and a lime tree's shade in August. | 50 | settled | 8 | because → `memories/ev1` | senses |
+| `taste2` | taste | Hates notifications and interfaces that blink at you. | 60 | settled | — | supports → `val1`, about → `memories/ev4` | design |
+| `hab1` | habit | Keeps a small recycled-paper notebook within reach to sketch user journeys. | 70 | settled | — | supports → `val1` | work |
+| `hab2` | habit | Takes a moment to structure her ideas before answering. | 75 | core | — | supports → `bel2` | speech |
+| `contra1` | contradiction | Preaches slowness, works at night. | 60 | settled | — | conflicts → `val1`, conflicts → `bel3` | self |
+
+Reading it back shows what the graph buys that the sheet does not:
+
+- **Depth comes from `because`**: `wound1 → val1 → want1` is her whole arc — four years of heavy sites, the value of lightness, the carbon tool she wants to build — and it is three links, not three paragraphs. `val4` and `taste1` hang on the grandmother's house: the lime tree is why empathy sits before cleverness, which the sheet never says.
+- **The lie is explicit.** `bel3` ("if I slow down, I disappear") is marked `false_but_held`; `fear1` is *about* it; `need1` conflicts with it; `contra1` owns the tension. A model given the sheet alone writes a calm perfectionist; given these four nodes it writes someone who knows better and does it anyway.
+- **Presets pick nodes like memories.** Clara at 12 (`en-12`) holds `val4`, `taste1`, `hab2` and nothing of the agency; the future-war preset adds a `stance` toward Miss Tral and a `wound` from the sabotage; the 65-year-old keeps `bel3` with `stability: settled` and `strength: 20` — she stopped believing it, and the file can say when.
+- **`disclosure` applies as it does to memories**: `bel3` and `need1` would be `guarded` (she does not open with them), `wound1` `open` (she tells the agency story readily), `contra1` `secret` until a conversation earns it.
+- **Conversion of the 0.1 lists** is mechanical: the three `goals` become `want1–3`, the three `fears` `fear1–3`, the six `values` collapse to `val1–4` (sobriety and eco-responsibility are one value here; pragmatism is a `habit`, not a value), the four `behavior` lines become `hab1`, `hab2` and two more habits (city bike, coffee on the balcony) left out of this table because they carry no link — which is itself a finding: a habit nothing explains is colour, and colour may stay in the sheet.
+- **Size**: 22 nodes, about 2 KB per language — smaller than the 3,000-character sheet it partly replaces, and the `SOUL.md` rendered from it in the § 3 order reads as a portrait, not a list.
+
+What this cut does not settle: whether `about → identities/<id>` and `about → memories/<id>` need distinct link types (a stance toward a person and a taste about a dream are not the same relation); whether `strength` should be required (every row above has one, but a taste without a number is fine); and how a `wound` that is `secret` renders in `SOUL.md` (probably not at all, with a line saying the character has something it does not tell).
 
 ## 8. Compatibility
 
