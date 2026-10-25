@@ -1,3 +1,16 @@
+# Révision du 25 octobre 2026 — COF 1.1 (souvenirs, cast), puis 1.2 (psyché)
+
+*Rédigée sur la branche de travail de la 1.1 ; publiée avec elle.*
+
+**Ce que la 1.1 ajoute** (règle 1.x : seulement de l'optionnel ; tout fichier 1.0 reste valide, tout lecteur 1.0 lit un fichier 1.1 — la catégorie nouvelle lui apparaît comme une bibliothèque, avec un avertissement, depuis cof-cli 1.0.1 et builder 0.11.8) :
+- **RFC 0002 — souvenirs** (`rfcs/0002-memories.md`) : une catégorie `memories` de nœuds `moment` / `période` (gist par langue, quand / où / avec qui, ressentis, clarté, importance, liens typés, trois axes origine / visibilité / confidence), les médias partagés par `media_from`, les règles d'âge et de personne réelle héritées de la 1.0, deux purges (`--all-audiences`, souvenirs personnels), le chemin d'écriture pour les hôtes (`cof memory add`) et `COF.md`, la note par laquelle chaque fichier se décrit. Clara (exemple 10) porte 16 souvenirs et 31 médias.
+- **RFC 0003 — genre, archétype, rôle, relations** (`rfcs/0003-identity-gender-archetype-relations.md`) : `gender` sur l'identité (jamais obligatoire), prénom / nom / surnoms, `identity_override` par preset, archétype (les douze de Mark & Pearson, ou libre) et rôle narratif dans `psyche.json`, relations entre personnages d'un même fichier (déclarées d'un côté, inverses calculées), prompts par défaut d'un preset (scène, première réplique — propres au preset, pas hérités).
+- **Outils** : cof-cli 1.1 (validation, export agent, extraction, `memory add`, 61 tests), builder 0.13.0 (étape Souvenirs, fiches personnage et presets enrichies, tableau du build, purges, six langues), explorateur 1.1 (frise et graphe, onglets LoRA / 3D, fiche détaillée 🔍), ComfyUI-COF 0.6.0 (nœud COF Memories, genre et scène dans le prompt). `docs/IMPLEMENTING.md` § 7 bis résume la 1.1 pour qui implémente ; `docs/design-decisions.md` dit pourquoi le format est ainsi.
+
+**Ensuite — 1.2** : **RFC 0004, la psyché en graphe** (`rfcs/0004-psyche-graph.md`, brouillon) : valeurs, croyances, désirs, besoins, peurs, blessures, positions, goûts, habitudes et contradictions assumées, en nœuds reliés aux souvenirs (`because`) — ce qui donne aux souvenirs leur sens et à la fiche sa profondeur ; la catégorie `personality` garde son nom et la voix ; les listes « objectifs / peurs / valeurs » de la carte deviennent des nœuds à l'ouverture d'un fichier. Dans la foulée : la visionneuse 3D de l'explorateur (GLB / VRM, avec un plafond de taille), l'enregistrement automatique et l'historique du builder si l'adoption le justifie, `until` sur les relations, une date de référence du canon, les langues parlées. Le reste de la feuille de route (thumbnailers, plafonds de taille, scènes à plusieurs, certification) est inchangé.
+
+---
+
 # Points à trancher par Yann (gel du 14 oct.)
 
 La structure 1.0 est **gelée le 14 octobre** (1.0.0rc3) après une relecture à l'aveugle par un autre modèle : 45 remarques, dont 5 bloquantes (toutes sur l'âge), toutes traitées — suivi dans `docs/reviews/2026-10-14-blind-review.md`. Après le gel, seules des corrections sont admises ; ce qui suit est réversible jusqu'à samedi, puis seulement en 2.0 pour ce qui durcit une règle (un validateur 1.x plus strict rendrait invalides des fichiers 1.0 valides).
@@ -54,10 +67,10 @@ La structure 1.0 est **gelée le 14 octobre** (1.0.0rc3) après une relecture à
 
 **Idées pour plus tard (Yann, 14 oct.)** — ajouts optionnels, par RFC, sans casser la 1.0 :
 - *Presets inter-personnages* (danses, duos, trios) : une **scène** liste des rôles (place, rôle, personnage choisi ou « au choix ») et ne porte que des éléments **neutres** — poses, mouvements, lieux, accessoires —, jamais un visage, un corps ni une voix : chaque rôle reprend le preset de son personnage. Les règles d'âge s'appliquent à la scène entière (le plus jeune des presets choisis).
-- *Prompt de preset* : un texte qui guide l'IA d'inférence sur l'usage des éléments combinés (« la guitare se porte en bandoulière », « l'environnement sert d'arrière-plan, pas de décor à décrire ») et des variantes proposées. Distinct de la personnalité, qui dit *qui* est le personnage ; le prompt de preset dit *comment* utiliser ce preset.
+- *Prompt de preset* (en partie fait en 1.1 : `prompts.scene` et `prompts.greeting`, RFC 0003 § 4 bis ; le guide d'usage des éléments combinés reste à faire) : un texte qui guide l'IA d'inférence sur l'usage des éléments combinés (« la guitare se porte en bandoulière », « l'environnement sert d'arrière-plan, pas de décor à décrire ») et des variantes proposées. Distinct de la personnalité, qui dit *qui* est le personnage ; le prompt de preset dit *comment* utiliser ce preset.
 - ✅ *Consentement recommandé* (builder 0.11.4, 14 oct.) : fenêtre d'incitation quand une personne réelle est déclarée — recommander, jamais imposer (cf. point 1 ci-dessus).
 
-**Prochaine catégorie d'éléments (idée du 16 oct.)** — une nouvelle catégorie, additive au sens de la règle 1.x, est à l'étude pour la 1.1 ; RFC dans `rfcs/` quand elle sera prête.
+✅ **Prochaine catégorie d'éléments (idée du 16 oct.)** — c'était les souvenirs : RFC 0002, COF 1.1 (révision du 25 oct. ci-dessus).
 
 **Nœud « .cof → références Ref2VA » (idée du 17 oct., lancement)** — le mode Ref2VA de MiniMax H3 (plusieurs images de référence + audio → vidéo) consomme exactement ce qu'un `.cof` transporte ; un nœud ComfyUI-COF qui sort la feuille de personnage, les vues et l'échantillon de voix dans le format attendu par les nœuds H3 est une après-midi de travail et une démo pour ce public (vu dans le Discord Comfy Org le jour de la release : des utilisateurs assemblent ces feuilles à la main). À faire la semaine du 20 oct.
 
