@@ -3,6 +3,7 @@
 ## Unreleased — 1.1 (RFC 0002 memories, RFC 0003 cast fields, COF.md)
 
 - **Explorer: the gist's other languages** (Yann's B3 test of 26 October: with the interface in French and an English preset, the gist came in English with no way to read the French one). The gist shown is still the preset's language, as RFC 0002 says; under it, a folded line "The gist in other languages: fr" opens the others.
+- **Builder: the link types read in the interface's language** (après, fait partie de, à propos de, à cause de, même événement — six languages); the file still stores the codes.
 
 - **`cof extract --preset` keeps the places its memories point at** (found by the L2 test of 26 October): a kept memory's `where.environment`, and the elements its links name (a garment, an accessory, a place), now travel with the memory whether or not the preset lists them — `extract --preset fr-65` on Clara left `memories.ev2` pointing at the studio, an environment the 65-year-old preset does not list, and the result did not validate. Regression test (62). A full personal purge no longer leaves an empty `elements/memories/` folder behind.
 
