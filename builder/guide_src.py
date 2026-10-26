@@ -5,13 +5,14 @@ G = {}
 
 G["fr"] = [
 ("La version avancée en bref", [
- ("p", "Six étapes, dans l'ordre de la colonne de gauche :"),
+ ("p", "Sept étapes, dans l'ordre de la colonne de gauche :"),
  ("ul", ["<b>1 · Personnage(s)</b> — qui c'est : nom, fictif ou réel, morphologie.",
          "<b>2 · Éléments</b> — tout ce qui le décrit : textes, photos, voix, LoRA, 3D, poses, mouvements, fichiers.",
-         "<b>3 · Presets</b> — les combinaisons prêtes à l'emploi : un look, un âge, un style, une langue.",
-         "<b>4 · Droits</b> — ce que les autres ont le droit d'en faire.",
-         "<b>5 · Contrôles</b> — ce qui manque ou ne colle pas.",
-         "<b>6 · Build</b> — le fichier .cof final."]),
+         "<b>3 · Souvenirs</b> — son passé : des moments et des périodes, avec ce qu'il a ressenti, ce qu'il tait, et quelques traces (une photo, un son).",
+         "<b>4 · Presets</b> — les combinaisons prêtes à l'emploi : un look, un âge, un style, une langue.",
+         "<b>5 · Droits</b> — ce que les autres ont le droit d'en faire.",
+         "<b>6 · Contrôles</b> — ce qui manque ou ne colle pas.",
+         "<b>7 · Build</b> — le fichier .cof final."]),
  ("p", "Seuls le nom, fictif ou réel, la morphologie et les droits sont obligatoires. La version facile ne gère qu'un personnage simple (une fiche, des photos, une voix) : un fichier plus riche reste en version avancée."),
 ]),
 ("Catégories et déclinaisons", [
@@ -25,6 +26,16 @@ G["fr"] = [
          "Vêtements, accessoires, lieux et descriptions n'ont pas d'âge.",
          "Un preset prend l'âge le plus bas de ses déclinaisons.",
          "Une même image ne peut pas servir à la fois à un âge de moins de 18 ans et à un âge adulte."]),
+]),
+("Souvenirs", [
+ ("p", "Le passé du personnage, nœud par nœud. Un <b>moment</b> (● vert, code <code>ev</code>) est un point dans le temps, une <b>période</b> (■ violet, code <code>ep</code>) un intervalle ; un moment peut faire partie d'une période (lien « fait partie de »)."),
+ ("ul", ["<b>Le gist</b> : quelques phrases à la première personne, dans la langue maîtresse du personnage ; les autres langues sont facultatives (un agent anglais lit le gist anglais).",
+         "<b>Quand, où, avec qui</b> : un âge ou une date, un lieu en texte ou un lieu du personnage, les personnes présentes — et qui est <b>montré</b> sur les médias.",
+         "<b>Ressenti alors / aujourd'hui, clarté, importance</b> : ce qui rend un souvenir vivant plutôt qu'une fiche.",
+         "<b>Origine, visibilité, confidence</b> : écrit par l'auteur ou vécu à l'usage ; canon ou personnel (les données d'un utilisateur, jamais partagées sans demande) ; ouvert, réservé ou secret (ce que le personnage ne dit pas).",
+         "<b>Médias</b> : une à trois traces — image, son, courte vidéo, quelques lignes — ou les mêmes médias qu'un autre souvenir (deux personnages, une soirée, une photo).",
+         "<b>Explicite</b> (nudité, intime) : seulement si le souvenir est vécu à 18 ans ou plus, si quelqu'un est déclaré montré, et si toute personne montrée est un adulte d'âge connu. Sinon les cases sont grisées, avec la raison.",
+         "Les <b>presets</b> choisissent leurs souvenirs comme une bibliothèque : une période cochée emporte ses moments. Au build, deux purges : tout public (les médias explicites partent, les textes restent) et sans souvenirs personnels."]),
 ]),
 ("Presets", [
  ("p", "Un preset = un personnage + une combinaison de déclinaisons. Par exemple : « Clara 29 ans, photo », « Clara manga », « Clara 65 ans »."),
@@ -54,13 +65,14 @@ G["fr"] = [
 
 G["en"] = [
 ("The advanced version in short", [
- ("p", "Six steps, in the order of the left column:"),
+ ("p", "Seven steps, in the order of the left column:"),
  ("ul", ["<b>1 · Character(s)</b> — who it is: name, fictional or real, morphology.",
          "<b>2 · Elements</b> — everything that describes it: texts, photos, voice, LoRA, 3D, poses, motion, files.",
-         "<b>3 · Presets</b> — ready-to-use combinations: a look, an age, a style, a language.",
-         "<b>4 · Rights</b> — what others may do with it.",
-         "<b>5 · Checks</b> — what is missing or does not fit.",
-         "<b>6 · Build</b> — the final .cof file."]),
+         "<b>3 · Memories</b> — its past: moments and periods, with what it felt, what it keeps to itself, and a few traces (a photo, a sound).",
+         "<b>4 · Presets</b> — ready-to-use combinations: a look, an age, a style, a language.",
+         "<b>5 · Rights</b> — what others may do with it.",
+         "<b>6 · Checks</b> — what is missing or does not fit.",
+         "<b>7 · Build</b> — the final .cof file."]),
  ("p", "Only the name, fictional or real, the morphology and the rights are required. The easy version handles only a simple character (one card, photos, one voice): a richer file stays in the advanced version."),
 ]),
 ("Categories and variants", [
@@ -74,6 +86,16 @@ G["en"] = [
          "Clothes, accessories, places and descriptions have no age.",
          "A preset takes the lowest age of its variants.",
          "One image can never serve both an age under 18 and an adult age."]),
+]),
+("Memories", [
+ ("p", "The character's past, node by node. A <b>moment</b> (green ●, code <code>ev</code>) is a point in time, a <b>period</b> (purple ■, code <code>ep</code>) a span; a moment can belong to a period (“part-of” link)."),
+ ("ul", ["<b>The gist</b>: a few first-person sentences in the character's primary language; other languages are optional (an English agent reads the English gist).",
+         "<b>When, where, with whom</b>: an age or a date, a place in words or one of the character's places, the people present — and who is <b>shown</b> in the media.",
+         "<b>Felt then / now, fidelity, salience</b>: what makes a memory alive rather than a record.",
+         "<b>Origin, visibility, disclosure</b>: authored or lived during use; canon or personal (a user's data, never shared unless asked); open, guarded or secret (what the character does not say).",
+         "<b>Media</b>: one to three traces — image, sound, a short video, a few lines — or the same media as another memory (two characters, one evening, one photo).",
+         "<b>Explicit</b> (nudity, intimate): only if the memory is lived at 18 or more, someone is declared shown, and every person shown is a known adult. Otherwise the options are greyed out, with the reason.",
+         "<b>Presets</b> pick their memories like a library: a ticked period brings its moments. At build, two purges: all audiences (explicit media leave, texts stay) and without personal memories."]),
 ]),
 ("Presets", [
  ("p", "A preset = one character + a combination of variants. For example: \"Clara 29, photo\", \"Clara manga\", \"Clara 65\"."),
@@ -103,13 +125,14 @@ G["en"] = [
 
 G["de"] = [
 ("Die erweiterte Version kurz erklärt", [
- ("p", "Sechs Schritte, in der Reihenfolge der linken Spalte:"),
+ ("p", "Sieben Schritte, in der Reihenfolge der linken Spalte:"),
  ("ul", ["<b>1 · Figur(en)</b> — wer es ist: Name, fiktiv oder real, Morphologie.",
          "<b>2 · Elemente</b> — alles, was sie beschreibt: Texte, Fotos, Stimme, LoRA, 3D, Posen, Bewegungen, Dateien.",
-         "<b>3 · Presets</b> — fertige Kombinationen: ein Look, ein Alter, ein Stil, eine Sprache.",
-         "<b>4 · Rechte</b> — was andere damit tun dürfen.",
-         "<b>5 · Prüfungen</b> — was fehlt oder nicht passt.",
-         "<b>6 · Build</b> — die fertige .cof-Datei."]),
+         "<b>3 · Erinnerungen</b> — ihre Vergangenheit: Momente und Zeiträume, mit dem, was sie fühlte, was sie für sich behält, und ein paar Spuren (ein Foto, ein Ton).",
+         "<b>4 · Presets</b> — fertige Kombinationen: ein Look, ein Alter, ein Stil, eine Sprache.",
+         "<b>5 · Rechte</b> — was andere damit tun dürfen.",
+         "<b>6 · Prüfungen</b> — was fehlt oder nicht passt.",
+         "<b>7 · Build</b> — die fertige .cof-Datei."]),
  ("p", "Pflicht sind nur Name, fiktiv oder real, Morphologie und Rechte. Die einfache Version kann nur eine einfache Figur (eine Karte, Fotos, eine Stimme): eine reichere Datei bleibt in der erweiterten Version."),
 ]),
 ("Kategorien und Varianten", [
@@ -123,6 +146,16 @@ G["de"] = [
          "Kleidung, Accessoires, Orte und Beschreibungen haben kein Alter.",
          "Ein Preset übernimmt das niedrigste Alter seiner Varianten.",
          "Ein Bild darf nie zugleich einem Alter unter 18 und einem Erwachsenenalter dienen."]),
+]),
+("Erinnerungen", [
+ ("p", "Die Vergangenheit der Figur, Knoten für Knoten. Ein <b>Moment</b> (grünes ●, Code <code>ev</code>) ist ein Zeitpunkt, ein <b>Zeitraum</b> (violettes ■, Code <code>ep</code>) eine Spanne; ein Moment kann zu einem Zeitraum gehören (Verknüpfung „Teil von“)."),
+ ("ul", ["<b>Der Gist</b>: ein paar Sätze in der Ich-Form, in der Hauptsprache der Figur; weitere Sprachen sind optional (ein englischer Agent liest den englischen Gist).",
+         "<b>Wann, wo, mit wem</b>: ein Alter oder ein Datum, ein Ort als Text oder ein Ort der Figur, die anwesenden Personen — und wer auf den Medien <b>gezeigt</b> wird.",
+         "<b>Gefühl damals / heute, Klarheit, Gewicht</b>: was eine Erinnerung lebendig macht statt zu einer Akte.",
+         "<b>Herkunft, Sichtbarkeit, Vertraulichkeit</b>: vom Autor geschrieben oder im Gebrauch erlebt; Kanon oder persönlich (Daten eines Nutzers, nie ohne Nachfrage geteilt); offen, zurückhaltend oder geheim (was die Figur nicht sagt).",
+         "<b>Medien</b>: ein bis drei Spuren — Bild, Ton, kurzes Video, ein paar Zeilen — oder dieselben Medien wie eine andere Erinnerung (zwei Figuren, ein Abend, ein Foto).",
+         "<b>Explizit</b> (Nacktheit, intim): nur wenn die Erinnerung mit 18 oder mehr erlebt wurde, jemand als gezeigt erklärt ist und jede gezeigte Person ein Erwachsener bekannten Alters ist. Sonst sind die Optionen ausgegraut, mit Begründung.",
+         "<b>Presets</b> wählen ihre Erinnerungen wie eine Bibliothek: ein angehakter Zeitraum bringt seine Momente mit. Beim Build zwei Bereinigungen: jugendfrei (explizite Medien gehen, Texte bleiben) und ohne persönliche Erinnerungen."]),
 ]),
 ("Presets", [
  ("p", "Ein Preset = eine Figur + eine Kombination von Varianten. Zum Beispiel: „Clara 29, Foto“, „Clara Manga“, „Clara 65“."),
@@ -152,13 +185,14 @@ G["de"] = [
 
 G["es"] = [
 ("La versión avanzada en breve", [
- ("p", "Seis pasos, en el orden de la columna izquierda:"),
+ ("p", "Siete pasos, en el orden de la columna izquierda:"),
  ("ul", ["<b>1 · Personaje(s)</b> — quién es: nombre, ficticio o real, morfología.",
          "<b>2 · Elementos</b> — todo lo que lo describe: textos, fotos, voz, LoRA, 3D, poses, movimientos, archivos.",
-         "<b>3 · Presets</b> — combinaciones listas para usar: un look, una edad, un estilo, un idioma.",
-         "<b>4 · Derechos</b> — lo que otros pueden hacer con él.",
-         "<b>5 · Controles</b> — lo que falta o no encaja.",
-         "<b>6 · Build</b> — el archivo .cof final."]),
+         "<b>3 · Recuerdos</b> — su pasado: momentos y periodos, con lo que sintió, lo que calla, y algunas huellas (una foto, un sonido).",
+         "<b>4 · Presets</b> — combinaciones listas para usar: un look, una edad, un estilo, un idioma.",
+         "<b>5 · Derechos</b> — lo que otros pueden hacer con él.",
+         "<b>6 · Controles</b> — lo que falta o no encaja.",
+         "<b>7 · Build</b> — el archivo .cof final."]),
  ("p", "Solo son obligatorios el nombre, ficticio o real, la morfología y los derechos. La versión fácil solo gestiona un personaje sencillo (una ficha, fotos, una voz): un archivo más rico se queda en la versión avanzada."),
 ]),
 ("Categorías y variantes", [
@@ -172,6 +206,16 @@ G["es"] = [
          "La ropa, los accesorios, los lugares y las descripciones no tienen edad.",
          "Un preset toma la edad más baja de sus variantes.",
          "Una misma imagen nunca puede servir a la vez para una edad menor de 18 y una edad adulta."]),
+]),
+("Recuerdos", [
+ ("p", "El pasado del personaje, nodo a nodo. Un <b>momento</b> (● verde, código <code>ev</code>) es un punto en el tiempo, un <b>periodo</b> (■ violeta, código <code>ep</code>) un intervalo; un momento puede formar parte de un periodo (enlace «parte de»)."),
+ ("ul", ["<b>El gist</b>: unas frases en primera persona, en el idioma principal del personaje; los demás idiomas son opcionales (un agente inglés lee el gist inglés).",
+         "<b>Cuándo, dónde, con quién</b>: una edad o una fecha, un lugar en texto o un lugar del personaje, las personas presentes — y quién aparece <b>mostrado</b> en los medios.",
+         "<b>Sentido entonces / ahora, nitidez, importancia</b>: lo que hace que un recuerdo esté vivo en lugar de ser una ficha.",
+         "<b>Origen, visibilidad, confidencialidad</b>: escrito por el autor o vivido en el uso; canon o personal (datos de un usuario, nunca compartidos sin pedirlo); abierto, reservado o secreto (lo que el personaje no dice).",
+         "<b>Medios</b>: de una a tres huellas — imagen, sonido, vídeo corto, unas líneas — o los mismos medios que otro recuerdo (dos personajes, una noche, una foto).",
+         "<b>Explícito</b> (desnudez, íntimo): solo si el recuerdo se vivió a los 18 años o más, alguien está declarado como mostrado y toda persona mostrada es un adulto de edad conocida. Si no, las opciones aparecen en gris, con el motivo.",
+         "Los <b>presets</b> eligen sus recuerdos como una biblioteca: un periodo marcado arrastra sus momentos. Al construir, dos purgas: todo público (los medios explícitos se van, los textos se quedan) y sin recuerdos personales."]),
 ]),
 ("Presets", [
  ("p", "Un preset = un personaje + una combinación de variantes. Por ejemplo: «Clara 29, foto», «Clara manga», «Clara 65»."),
@@ -201,13 +245,14 @@ G["es"] = [
 
 G["zh"] = [
 ("高级版速览", [
- ("p", "六个步骤，按左侧栏的顺序："),
+ ("p", "七个步骤，按左侧栏的顺序："),
  ("ul", ["<b>1 · 角色</b>——是谁：名称、虚构或真实、形态。",
          "<b>2 · 元素</b>——描述角色的一切：文本、照片、声音、LoRA、3D、姿势、动作、文件。",
-         "<b>3 · 预设</b>——现成的组合：一种造型、一个年龄、一种风格、一种语言。",
-         "<b>4 · 权利</b>——他人可以怎样使用。",
-         "<b>5 · 检查</b>——缺少什么、哪里不一致。",
-         "<b>6 · 构建</b>——最终的 .cof 文件。"]),
+         "<b>3 · 记忆</b> — 角色的过去：瞬间与时期，当时的感受、不愿说的事，以及几条痕迹（一张照片、一段声音）。",
+         "<b>4 · 预设</b>——现成的组合：一种造型、一个年龄、一种风格、一种语言。",
+         "<b>5 · 权利</b>——他人可以怎样使用。",
+         "<b>6 · 检查</b>——缺少什么、哪里不一致。",
+         "<b>7 · 构建</b>——最终的 .cof 文件。"]),
  ("p", "只有名称、虚构或真实、形态和权利是必填的。简易版只处理简单角色（一张角色卡、照片、一个声音）：内容更丰富的文件留在高级版。"),
 ]),
 ("类别与变体", [
@@ -221,6 +266,16 @@ G["zh"] = [
          "服装、配饰、地点和描述没有年龄。",
          "预设取其变体中最低的年龄。",
          "同一张图片绝不能同时用于未满 18 岁的年龄和成年年龄。"]),
+]),
+("记忆", [
+ ("p", "角色的过去，逐节点记录。<b>瞬间</b>（绿色 ●，代码 <code>ev</code>）是时间上的一点，<b>时期</b>（紫色 ■，代码 <code>ep</code>）是一段区间；一个瞬间可以属于某个时期（“属于”链接）。"),
+ ("ul", ["<b>要旨</b>：以第一人称写的几句话，用角色的主要语言；其他语言可选（英文代理读英文要旨）。",
+         "<b>何时、何地、与谁</b>：年龄或日期，文字描述的地点或角色的某个场所，在场的人——以及媒体中<b>出现</b>的是谁。",
+         "<b>当时 / 如今的感受、清晰度、重要性</b>：让记忆鲜活而不是一份档案。",
+         "<b>来源、可见性、披露</b>：作者所写或使用中经历；正典或个人（用户的数据，未经请求绝不共享）；公开、谨慎或秘密（角色不说的事）。",
+         "<b>媒体</b>：一到三条痕迹——图片、声音、短视频、几行文字——或与另一条记忆共用媒体（两个角色，一个夜晚，一张照片）。",
+         "<b>露骨</b>（裸露、亲密）：仅当记忆发生在 18 岁或以后、有人被声明出现、且所有出现者均为年龄已知的成年人。否则选项灰显，并说明原因。",
+         "<b>预设</b>像图书馆一样挑选记忆：勾选一个时期会带上它的瞬间。构建时有两种清理：全年龄（露骨媒体移除，文字保留）和去除个人记忆。"]),
 ]),
 ("预设", [
  ("p", "预设 = 一个角色 + 一组变体的组合。例如：“Clara 29 岁，照片”、“Clara 漫画风”、“Clara 65 岁”。"),
@@ -250,13 +305,14 @@ G["zh"] = [
 
 G["ja"] = [
 ("詳細版のあらまし", [
- ("p", "左の列の順に、6 つのステップがあります："),
+ ("p", "左の列の順に、7 つのステップがあります："),
  ("ul", ["<b>1 · キャラクター</b> — 誰か：名前、架空か実在か、形態。",
          "<b>2 · 要素</b> — キャラクターを表すすべて：テキスト、写真、声、LoRA、3D、ポーズ、モーション、ファイル。",
-         "<b>3 · プリセット</b> — すぐ使える組み合わせ：見た目、年齢、スタイル、言語。",
-         "<b>4 · 権利</b> — 他の人に許すこと。",
-         "<b>5 · チェック</b> — 足りないもの、合わないもの。",
-         "<b>6 · ビルド</b> — 完成した .cof ファイル。"]),
+         "<b>3 · 記憶</b> — キャラクターの過去：瞬間と期間、そのとき感じたこと、口にしないこと、そしていくつかの痕跡（写真、音）。",
+         "<b>4 · プリセット</b> — すぐ使える組み合わせ：見た目、年齢、スタイル、言語。",
+         "<b>5 · 権利</b> — 他の人に許すこと。",
+         "<b>6 · チェック</b> — 足りないもの、合わないもの。",
+         "<b>7 · ビルド</b> — 完成した .cof ファイル。"]),
  ("p", "必須なのは名前、架空か実在か、形態、権利だけです。かんたん版はシンプルなキャラクター（カード 1 枚、写真、声 1 つ）だけを扱います。より豊かなファイルは詳細版のままです。"),
 ]),
 ("カテゴリーとバリアント", [
@@ -270,6 +326,16 @@ G["ja"] = [
          "衣服、アクセサリー、場所、説明には年齢がありません。",
          "プリセットはバリアントの中で最も低い年齢をとります。",
          "1 枚の画像を 18 歳未満の年齢と成人の年齢の両方に使うことはできません。"]),
+]),
+("記憶", [
+ ("p", "キャラクターの過去を、ノード単位で記述します。<b>瞬間</b>（緑の ●、コード <code>ev</code>）は時間上の一点、<b>期間</b>（紫の ■、コード <code>ep</code>）は区間です。瞬間は期間に属せます（「一部である」リンク）。"),
+ ("ul", ["<b>要旨</b>：キャラクターの主言語で書いた一人称の数文。他の言語は任意（英語のエージェントは英語の要旨を読みます）。",
+         "<b>いつ、どこで、誰と</b>：年齢か日付、文章の場所かキャラクターの場所、居合わせた人々 — そしてメディアに<b>映っている</b>のは誰か。",
+         "<b>当時 / 今の感情、鮮明さ、重要度</b>：記憶を記録ではなく生きたものにする要素。",
+         "<b>由来、可視性、開示</b>：作者が書いたか使用中に経験したか；正典か個人（ユーザーのデータ、求められない限り共有しない）か；公開・控えめ・秘密（キャラクターが語らないこと）。",
+         "<b>メディア</b>：1〜3 つの痕跡 — 画像、音、短い動画、数行の文 — または別の記憶と同じメディア（2 人のキャラクター、1 つの夜、1 枚の写真）。",
+         "<b>露骨</b>（ヌード、親密）：記憶が 18 歳以上の時期のもので、誰かが「映っている」と宣言され、映っている全員が年齢既知の成人である場合のみ。そうでなければ選択肢は理由つきで無効化されます。",
+         "<b>プリセット</b>はライブラリのように記憶を選びます：期間にチェックを入れるとその瞬間も含まれます。ビルド時には 2 つのパージ：全年齢（露骨なメディアを除き、文章は残す）と個人の記憶なし。"]),
 ]),
 ("プリセット", [
  ("p", "プリセット = 1 人のキャラクター + バリアントの組み合わせ。例：「Clara 29 歳、写真」「Clara マンガ」「Clara 65 歳」。"),
