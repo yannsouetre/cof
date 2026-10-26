@@ -332,6 +332,12 @@
       "expect": "must agree"
     },
     {
+      "file": "memory-explicit-lived-as-minor.cof",
+      "rule": "a memory lived as a minor is never explicit, whoever is shown — here only an adult third party is shown",
+      "spec": "RFC 0002 § 5.4",
+      "expect": "age at the time must be known and 18 or more"
+    },
+    {
       "file": "relation-to-oneself.cof",
       "rule": "a relation names another character of the same file",
       "spec": "RFC 0003 § 3 / § 6",

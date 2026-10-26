@@ -70,6 +70,7 @@ validator's error (`expect`) — other implementations only need to reject the f
 | `memory-explicit-nobody-shown.cof` | an explicit media shows someone: an explicit node declares at least one person shown |
 | `memory-borrows-explicit-media.cof` | a node borrowing the media of an explicit node is explicit itself, same value (nothing else is inherited) |
 | `memory-explicit-age-mismatch.cof` | on an explicit node the variant age (read by the minor rules) equals when.age |
+| `memory-explicit-lived-as-minor.cof` | a memory lived as a minor is never explicit, whoever is shown (here only an adult third party) |
 | `relation-to-oneself.cof` | a relation names another character of the same file (RFC 0003) |
 
 Regenerate with `python tests/invalid/build.py` (it also checks every case against the reference validator).

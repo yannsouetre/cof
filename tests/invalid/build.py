@@ -286,6 +286,9 @@ def _(d):
 @case("memory-explicit-age-mismatch", "on an explicit node the variant age (read by the minor rules) equals when.age", "RFC 0002 § 5.2", "must agree")
 def _(d): with_memory(d, node={"explicit": "nudity", "when": {"age": {"value": 15}}, "who": [{"identity": "self", "shown": True}]}, variant={"age": {"value": 34, "unit": "years"}, "nudity": True})
 
+@case("memory-explicit-lived-as-minor", "a memory lived as a minor is never explicit, whoever is shown — here only an adult third party is shown", "RFC 0002 § 5.4", "age at the time must be known and 18 or more")
+def _(d): with_memory(d, node={"explicit": "nudity", "when": {"age": {"value": 15}}, "who": [{"label": {"en": "Sam"}, "shown": True, "age": {"value": 34, "unit": "years"}}]}, variant={"nudity": True})
+
 @case("relation-to-oneself", "a relation names another character of the same file", "RFC 0003 § 3 / § 6", "relation to oneself")
 def _(d):
     m = load(d); m["cof"] = "1.1"

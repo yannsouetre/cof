@@ -25,7 +25,7 @@ COF 1.1 is the first minor version of the format, and it keeps the 1.0 promise: 
 - `docs/IMPLEMENTING.md` § 7 bis: the 1.1 additions in one table, by reader profile.
 - `docs/design-decisions.md`: why the format is the way it is, decision by decision, with the alternative each one rejected.
 - Schemas at `https://yannsouetre.github.io/cof/schemas/1.1/` (`memory.schema.json` is the node file's schema); 1.0 schemas unchanged.
-- Examples: `10-clara-mercier` is the first 1.1 file (16 memories, 31 media, four presentations of one life); `11-duo-clara-martien` is a 1.1 cast file (gender, a relation, two memories of one evening). Negative corpus: 62 files, 16 of them for the 1.1 rules (memories, cast).
+- Examples: `10-clara-mercier` is the first 1.1 file (16 memories, 31 media, four presentations of one life); `11-duo-clara-martien` is a 1.1 cast file (gender, a relation, two memories of one evening). Negative corpus: 63 files, 17 of them for the 1.1 rules (memories, cast).
 
 ## Next
 

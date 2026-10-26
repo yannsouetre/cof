@@ -1190,6 +1190,9 @@ def _memory_rules(manifest: dict, src: Path, rep: "Report") -> None:
                 rep.errors.append(f"{where}: explicit node ({ex}) — tags.content must include {', '.join(sorted(needed))}")
             if self_shown and (va is None or va < ADULT):
                 rep.errors.append(f"{where}: explicit node shows the character at an unknown age or under {ADULT} — forbidden")
+            lived_age = wa if kind == "moment" else _age_value((w.get("from") or {}).get("age"))
+            if lived_age is None or lived_age < ADULT:
+                rep.errors.append(f"{where}: explicit node — the character's age at the time must be known and {ADULT} or more, whoever is shown (RFC 0002 § 5.4)")
             if shown_unknown or shown_minor:
                 rep.errors.append(f"{where}: explicit node — every person shown must have a known age of {ADULT} or more (unknown: {', '.join(shown_unknown[:3]) or '—'}; under {ADULT}: {', '.join(shown_minor[:3]) or '—'})")
             # real persons shown: must be consenting identities
