@@ -154,7 +154,7 @@ T = {
 # ---- droits
 "Permissions (globales ; surcharge possible par preset)": ("Permissions (global; per-preset override possible)","Berechtigungen (global; pro Preset überschreibbar)","Permisos (globales; anulación posible por preset)","许可（全局；可按预设覆盖）","許諾（全体；プリセット単位で上書き可）"),
 "Consentement (personne réelle)": ("Consent (real person)","Einwilligung (reale Person)","Consentimiento (persona real)","同意（真实人物）","同意（実在の人物）"),
-"Une personne réelle est-elle représentée ?": ("Is a real person depicted?","Wird eine reale Person dargestellt?","¿Se representa a una persona real?","是否涉及真实人物？","実在の人物を表現していますか？"),
+"Personne réelle représentée ?": ("Is a real person depicted?","Wird eine reale Person dargestellt?","¿Se representa a una persona real?","是否涉及真实人物？","実在の人物を表現していますか？"),
 "Identité concernée": ("Identity concerned","Betroffene Identität","Identidad afectada","相关身份","対象のアイデンティティ"),
 "Portée accordée": ("Scope granted","Erteilter Umfang","Alcance concedido","授权范围","許諾範囲"),
 "Accordé le": ("Granted on","Erteilt am","Concedido el","授权日期","許諾日"),
