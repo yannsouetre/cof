@@ -28,10 +28,13 @@ img{display:block;max-width:100%}
 .top img{width:28px;height:28px;border-radius:7px}
 .top a{color:inherit;text-decoration:none}
 .top span{opacity:.7}
-.hero{padding:clamp(40px,8vh,90px) clamp(20px,5vw,64px) 10px;max-width:1200px}
-h1{font:400 clamp(20px,3.2vw,40px)/1.3 Michroma,sans-serif;letter-spacing:.2em;text-transform:uppercase;margin:0 0 18px;color:#ece8e0}
+.hero{position:relative;min-height:88vh;display:flex;flex-direction:column;justify-content:flex-start;background:var(--night) url(img/beach.jpg) center 100%/cover no-repeat;isolation:isolate}
+.hero::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,11,18,.86) 0%,rgba(7,11,18,.7) 30%,rgba(7,11,18,.3) 55%,rgba(7,11,18,.1) 75%,rgba(13,19,18,1) 100%);z-index:-1}
+.hero .text{padding:clamp(84px,13vh,130px) clamp(20px,5vw,64px) 0;max-width:1200px}
+.hero .kicker{position:absolute;right:clamp(20px,5vw,64px);top:24px;font:400 11px/1 Michroma,sans-serif;letter-spacing:.3em;color:var(--mint);opacity:.85}
+h1{font:400 clamp(20px,3.2vw,40px)/1.3 Michroma,sans-serif;letter-spacing:.2em;text-transform:uppercase;margin:0 0 18px;color:#ece8e0;text-shadow:0 2px 24px rgba(0,0,0,.7)}
 .rule{width:88px;height:1px;background:var(--mint);opacity:.8;margin:0 0 18px}
-.voice{font:500 clamp(21px,2.4vw,30px)/1.3 Cormorant,Georgia,serif;color:#e4dfd6;margin:0;max-width:720px}
+.voice{font:500 clamp(21px,2.4vw,30px)/1.3 Cormorant,Georgia,serif;color:#e4dfd6;margin:0;max-width:720px;text-shadow:0 1px 14px rgba(0,0,0,.7)}
 .voice small{display:block;font:500 13px/1 PlexMono,monospace;color:var(--mint);letter-spacing:.06em;margin-top:14px;font-style:normal}
 main{max-width:var(--col);margin:0 auto;padding:48px 20px 40px}
 .lede{font-size:clamp(20px,2.2vw,24px);line-height:1.5;color:var(--ink);margin:0 0 28px}
@@ -54,10 +57,10 @@ figure{margin:30px 0 10px;background:var(--panel);border:1px solid var(--line);b
 figure svg{display:block;width:100%;height:auto;font-family:Plex,system-ui,sans-serif}
 figcaption{font-size:14px;color:var(--muted);margin:10px 2px 0}
 .ax{stroke:#2f3b39;stroke-width:1}
-.tk{font:500 11px PlexMono,monospace;fill:#6d7d79}
-.lab{font:400 13.5px Plex,sans-serif;fill:#d9e0dd}
-.sub{font:500 11px PlexMono,monospace;fill:#8a9a96}
-.val{font:500 12px PlexMono,monospace;fill:#bfeee2}
+.tk{font:500 12px PlexMono,monospace;fill:#7d8d89}
+.lab{font:400 14.5px Plex,sans-serif;fill:#d9e0dd}
+.sub{font:500 12px PlexMono,monospace;fill:#97a7a3}
+.val{font:500 13px PlexMono,monospace;fill:#bfeee2}
 /* comparison list */
 .cmp{margin:26px 0 8px;padding:0;list-style:none;border-top:1px solid var(--line)}
 .cmp li{padding:14px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:170px 1fr;gap:18px;font-size:16px}
@@ -79,7 +82,9 @@ td.n{font:500 14px PlexMono,monospace;color:var(--teal);white-space:nowrap}
 .calc input[type=number]{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:500 14px PlexMono,monospace}
 .calc input[type=range]{width:100%;accent-color:var(--teal)}
 .calc .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.calc .g3>div{display:flex;flex-direction:column;justify-content:flex-end}
 .calc .mix{display:grid;grid-template-columns:1fr 70px 80px;gap:8px;align-items:center;font-size:13.5px;color:var(--muted)}
+.calc .mix .h{font:500 11px PlexMono,monospace;color:#6d7d79;letter-spacing:.04em;text-transform:uppercase;align-self:end;padding-bottom:2px}
 .calc .mix i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:7px;vertical-align:-1px}
 .calc .mix small{display:block;font-size:12px;color:#6d7d79}
 .calc .hint{font-size:12.5px;color:#6d7d79;margin:6px 0 0}
@@ -119,16 +124,17 @@ td.n{font:500 14px PlexMono,monospace;color:var(--teal);white-space:nowrap}
 footer{max-width:var(--col);margin:72px auto 0;padding:18px 20px 48px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
 footer a{color:var(--muted)}
 footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:-.02em;margin-bottom:6px}
-@media (max-width:720px){.tiles{grid-template-columns:1fr 1fr}.calc .row{grid-template-columns:1fr}.targets{grid-template-columns:1fr}.cmp li{grid-template-columns:1fr;gap:4px}.bars .b{grid-template-columns:110px 1fr 70px}h1{letter-spacing:.12em}}
+@media (max-width:720px){.hero{min-height:74vh}.top span:last-child{display:none}.tiles{grid-template-columns:1fr 1fr}.calc .row{grid-template-columns:1fr}.targets{grid-template-columns:1fr}.cmp li{grid-template-columns:1fr;gap:4px}.bars .b{grid-template-columns:110px 1fr 70px}h1{letter-spacing:.12em}}
 </style>
 </head>
 <body>
-<div class="top"><img src="../builder/icon/cof-icon-dark.svg" alt=""><a href="../">COF</a><span>·</span><a href="./">memories</a><span>·</span><span>how much does a life weigh?</span></div>
-
 <section class="hero">
+  <div class="top" style="position:absolute;top:0;left:0;right:0"><img src="../builder/icon/cof-icon-dark.svg" alt=""><a href="../">COF</a><span>·</span><a href="./">memories</a><span>·</span><span>how much does a life weigh?</span></div>
+  <div class="text">
   <h1>How much does<br>a life weigh?</h1>
   <div class="rule"></div>
   <p class="voice">“From that year I could tell you maybe a hundred things. The rest, I know happened.”<small>CLARA MERCIER · IF YOU ASKED HER</small></p>
+  </div>
 </section>
 
 <main>
@@ -197,7 +203,7 @@ footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:
       <fieldset><legend>How many</legend>
         <div class="g3">
           <div><label>Age</label><input id="age" type="number" min="1" max="120" value="53"></div>
-          <div><label>First memories at</label><input id="amn" type="number" min="0" max="10" step="0.5" value="3"></div>
+          <div><label>First memory, age</label><input id="amn" type="number" min="0" max="10" step="0.5" value="3"></div>
           <div><label>Memories a year</label><input id="py" type="number" min="1" max="100000" value="100"></div>
         </div>
         <label>Cued and recognised, on top of the unprompted: <b id="cueV">×1</b></label>
@@ -214,10 +220,10 @@ footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:
     <div>
       <fieldset><legend>What a remembered memory carries</legend>
         <div class="mix">
+          <div class="h">memory</div><div class="h">share %</div><div class="h">MB each</div>
           <div><i style="background:var(--c1)"></i>Light<small>one picture</small></div><input id="p1" type="number" min="0" max="100" value="30"><input id="s1" type="number" min="0" step="0.05" value="0.25">
           <div><i style="background:var(--c2)"></i>Standard<small>three pictures, a sound, a few lines</small></div><input id="p2" type="number" min="0" max="100" value="55"><input id="s2" type="number" min="0" step="0.05" value="0.9">
           <div><i style="background:var(--c3)"></i>Rich<small>pictures and a clip, phone quality</small></div><input id="p3" type="number" min="0" max="100" value="15"><input id="s3" type="number" min="0" step="0.05" value="3">
-          <div class="hint">share %</div><div class="hint" style="grid-column:span 2">size, MB each</div>
         </div>
         <div class="err" id="err" aria-live="polite"></div>
         <label>Resolution factor: <b id="resV">×1</b></label>
@@ -309,15 +315,18 @@ svg.innerHTML=s})();
 
 /* ---- figure 2: over a life, with Clara at 65 ---- */
 (function(){
-const svg=$("#life svg");const W=720,L=40,R=700,yb=190,yt=30;
+const svg=$("#life svg");const W=720,L=40,R=700,yb=190,yt=44;
 const x=a=>L+a*(R-L)/70;
 // qualitative profile: amnesia, bump 10–30, routine, recency
 const pts=[[0,0],[3,.02],[6,.25],[10,.6],[14,.9],[18,1],[22,.95],[26,.82],[30,.62],[36,.42],[42,.33],[48,.3],[54,.3],[58,.36],[62,.55],[65,.8],[68,.9],[70,.95]];
 const y=v=>yb-v*(yb-yt);
-let d="";pts.forEach((p,i)=>{d+=(i?" L":"M")+x(p[0]).toFixed(1)+" "+y(p[1]).toFixed(1)});
+const P=pts.map(p=>[x(p[0]),y(p[1])]);let d="M"+P[0][0].toFixed(1)+" "+P[0][1].toFixed(1);
+for(let i=0;i<P.length-1;i++){const p0=P[Math.max(0,i-1)],p1=P[i],p2=P[i+1],p3=P[Math.min(P.length-1,i+2)];
+ const c1=[p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6],c2=[p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6];
+ d+=` C${c1[0].toFixed(1)} ${c1[1].toFixed(1)} ${c2[0].toFixed(1)} ${c2[1].toFixed(1)} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`}
 let s=`<path d="${d} L${x(70)} ${yb} L${x(0)} ${yb} Z" fill="rgba(47,168,142,.12)"/><path d="${d}" fill="none" stroke="#2fa88e" stroke-width="2"/><line class="ax" x1="${L}" y1="${yb}" x2="${R}" y2="${yb}"/>`;
 for(const a of [0,10,20,30,40,50,60,70])s+=`<text class="tk" x="${x(a)}" y="${yb+16}" text-anchor="middle">${a}</text>`;
-s+=`<text class="sub" x="${x(2)}" y="${yb-10}" >infantile amnesia</text><text class="sub" x="${x(18)}" y="${yt+10}" text-anchor="middle">reminiscence bump</text><text class="sub" x="${x(46)}" y="${y(.3)-10}" text-anchor="middle">routine years</text><text class="sub" x="${x(66)}" y="${y(.95)+4}" text-anchor="end">recency</text>`;
+s+=`<text class="sub" x="${x(1)}" y="${y(.9)}">infantile</text><text class="sub" x="${x(1)}" y="${y(.82)}">amnesia</text><text class="sub" x="${x(18)}" y="${yt-8}" text-anchor="middle">reminiscence bump</text><text class="sub" x="${x(47)}" y="${y(.1)}" text-anchor="middle">routine years</text><text class="sub" x="${x(62)}" y="${y(.78)}" text-anchor="end">recency</text>`;
 // Clara at 65: ages of her nine memories (period 24–28 as a bar)
 const clara=[8,28,29,29,31,56,60,63];
 s+=`<rect x="${x(24)}" y="${yb+28}" width="${x(28)-x(24)}" height="6" rx="3" fill="#8a6ad6" opacity=".9"/>`;
