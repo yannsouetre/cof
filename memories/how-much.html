@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How much does a life weigh? — COF memories</title>
+<meta name="description" content="How many memories does a person hold, and how many bytes would they take in a file? What the research says, a calculator to test the hypotheses, and what it means for a near-exhaustive .cof.">
+<meta property="og:title" content="How much does a life weigh?">
+<meta property="og:description" content="A few thousand memories, a few gigabytes: a working hypothesis for AI characters with a past.">
+<meta property="og:image" content="https://yannsouetre.github.io/cof/memories/img/electric-sheep.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="../builder/icon/cof-icon-dark.svg">
+<style>
+@font-face{font-family:"Michroma";src:url(../clip/fonts/michroma-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Cormorant";src:url(../clip/fonts/cormorant-garamond-latin-500-italic.woff2) format("woff2");font-weight:500;font-style:italic;font-display:swap}
+@font-face{font-family:"Bricolage";src:url(../clip/fonts/bricolage-grotesque-latin-700-normal.woff2) format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Plex";src:url(../clip/fonts/ibm-plex-sans-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Plex";src:url(../clip/fonts/ibm-plex-sans-latin-500-normal.woff2) format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"PlexMono";src:url(../clip/fonts/ibm-plex-mono-latin-500-normal.woff2) format("woff2");font-weight:500;font-display:swap}
+:root{--bg:#0d1312;--night:#070b12;--panel:#18201f;--line:#2a3533;--ink:#eef3f1;--muted:#93a39e;--teal:#4cc2a8;--mint:#bfeee2;--violet:#a98ae8;--col:760px;
+ --c1:#2fa88e;--c2:#8a6ad6;--c3:#c4842a;--c4:#3d8bd0}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.65 Plex,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--teal)}
+img{display:block;max-width:100%}
+.top{display:flex;align-items:center;gap:12px;padding:22px clamp(20px,5vw,64px);font:500 14px/1 PlexMono,monospace;color:var(--mint);letter-spacing:.06em}
+.top img{width:28px;height:28px;border-radius:7px}
+.top a{color:inherit;text-decoration:none}
+.top span{opacity:.7}
+.hero{padding:clamp(40px,8vh,90px) clamp(20px,5vw,64px) 10px;max-width:1200px}
+h1{font:400 clamp(20px,3.2vw,40px)/1.3 Michroma,sans-serif;letter-spacing:.2em;text-transform:uppercase;margin:0 0 18px;color:#ece8e0}
+.rule{width:88px;height:1px;background:var(--mint);opacity:.8;margin:0 0 18px}
+.voice{font:500 clamp(21px,2.4vw,30px)/1.3 Cormorant,Georgia,serif;color:#e4dfd6;margin:0;max-width:720px}
+.voice small{display:block;font:500 13px/1 PlexMono,monospace;color:var(--mint);letter-spacing:.06em;margin-top:14px;font-style:normal}
+main{max-width:var(--col);margin:0 auto;padding:48px 20px 40px}
+.lede{font-size:clamp(20px,2.2vw,24px);line-height:1.5;color:var(--ink);margin:0 0 28px}
+p{margin:0 0 22px;color:#d9e0dd}
+h2{font:400 clamp(16px,2vw,20px)/1.4 Michroma,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--mint);margin:84px 0 22px;padding-top:28px;border-top:1px solid var(--line)}
+h3{font:500 21px/1.3 Plex,sans-serif;margin:34px 0 10px;color:var(--ink)}
+code{font:500 .88em PlexMono,monospace;color:var(--teal)}
+.cap{font-size:14px;color:var(--muted);margin:10px 0 30px}
+.quote{font:500 clamp(22px,2.6vw,29px)/1.3 Cormorant,Georgia,serif;color:#e4dfd6;margin:40px 0;padding-left:22px;border-left:2px solid var(--violet)}
+.quote cite{display:block;font:500 13px/1 PlexMono,monospace;color:var(--muted);font-style:normal;margin-top:12px;letter-spacing:.04em}
+/* stat tiles */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:26px 0 8px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 16px 14px}
+.tile b{display:block;font:700 30px/1 Bricolage,sans-serif;color:var(--ink);letter-spacing:-.02em;margin-bottom:8px}
+.tile span{font-size:13.5px;color:var(--muted);line-height:1.4;display:block}
+.tile.hi{border-color:var(--teal)}
+.tile.hi b{color:var(--teal)}
+/* figures */
+figure{margin:30px 0 10px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px 18px 12px}
+figure svg{display:block;width:100%;height:auto;font-family:Plex,system-ui,sans-serif}
+figcaption{font-size:14px;color:var(--muted);margin:10px 2px 0}
+.ax{stroke:#2f3b39;stroke-width:1}
+.tk{font:500 11px PlexMono,monospace;fill:#6d7d79}
+.lab{font:400 13.5px Plex,sans-serif;fill:#d9e0dd}
+.sub{font:500 11px PlexMono,monospace;fill:#8a9a96}
+.val{font:500 12px PlexMono,monospace;fill:#bfeee2}
+/* comparison list */
+.cmp{margin:26px 0 8px;padding:0;list-style:none;border-top:1px solid var(--line)}
+.cmp li{padding:14px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:170px 1fr;gap:18px;font-size:16px}
+.cmp li span{font:500 13px/1.6 PlexMono,monospace;color:var(--mint);letter-spacing:.04em}
+.cmp li em{font-style:normal;color:var(--muted)}
+/* table */
+table{width:100%;border-collapse:collapse;font-size:15px;margin:22px 0 8px}
+th{text-align:left;font:500 12px PlexMono,monospace;color:var(--mint);letter-spacing:.06em;text-transform:uppercase;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:10px 10px;border-bottom:1px solid var(--line);vertical-align:top;color:#d9e0dd}
+td:first-child{color:var(--ink)}
+td.n{font:500 14px PlexMono,monospace;color:var(--teal);white-space:nowrap}
+/* calculator */
+.calc{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;margin:28px 0 10px}
+.calc .row{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.calc fieldset{border:1px solid var(--line);border-radius:12px;padding:12px 14px 14px;margin:0 0 14px;min-width:0}
+.calc legend{font:500 12px PlexMono,monospace;color:var(--mint);letter-spacing:.06em;text-transform:uppercase;padding:0 6px}
+.calc label{display:block;font-size:13.5px;color:var(--muted);margin:8px 0 3px}
+.calc label b{color:var(--ink);font-weight:500}
+.calc input[type=number]{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:500 14px PlexMono,monospace}
+.calc input[type=range]{width:100%;accent-color:var(--teal)}
+.calc .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.calc .mix{display:grid;grid-template-columns:1fr 70px 80px;gap:8px;align-items:center;font-size:13.5px;color:var(--muted)}
+.calc .mix i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:7px;vertical-align:-1px}
+.calc .mix small{display:block;font-size:12px;color:#6d7d79}
+.calc .hint{font-size:12.5px;color:#6d7d79;margin:6px 0 0}
+.calc .err{font-size:12.5px;color:#f07a72;min-height:16px;margin-top:4px}
+.res{background:linear-gradient(135deg,#102a25,#0f1d2b);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:12px}
+.res .t{font:700 44px/1 Bricolage,sans-serif;color:var(--ink);letter-spacing:-.02em}
+.res .s{font-size:13.5px;color:var(--muted);margin-top:8px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.kpi{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.kpi b{display:block;font:700 20px/1.1 Bricolage,sans-serif;color:var(--ink)}
+.kpi span{font-size:12px;color:var(--muted)}
+.stack{display:flex;height:22px;border-radius:7px;overflow:hidden;gap:2px;background:var(--bg)}
+.stack i{display:block;height:100%;transition:width .3s}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--muted);margin:8px 0 0}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.bars .b{display:grid;grid-template-columns:150px 1fr 76px;gap:10px;align-items:center;font-size:13px;color:var(--muted);margin:6px 0}
+.bars .b .t{height:12px;background:var(--bg);border-radius:4px;overflow:hidden}
+.bars .b .f{display:block;height:100%;background:#3a4a47;border-radius:0 4px 4px 0}
+.bars .b.me{color:var(--teal)}
+.bars .b.me .f{background:var(--teal)}
+.bars .b .x{text-align:right;font:500 12px PlexMono,monospace}
+.scen{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+.scen button{font:500 13px Plex,sans-serif;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer}
+.scen button:hover,.scen button.on{border-color:var(--teal);color:var(--teal)}
+/* targets */
+.targets{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:26px 0 8px}
+.targets div{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.targets b{display:block;font:700 28px/1 Bricolage,sans-serif;color:var(--teal);margin-bottom:6px}
+.targets span{font-size:14px;color:var(--muted)}
+/* tools / buttons */
+.btns{display:flex;flex-wrap:wrap;gap:12px;margin:34px 0 0}
+.btn{display:inline-block;padding:13px 20px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);text-decoration:none;font-weight:500}
+.btn:hover,.btn:focus-visible{border-color:var(--teal);outline:none}
+.btn.main{background:var(--teal);border-color:var(--teal);color:#05201b}
+.refs{font-size:14px;color:var(--muted);columns:1}
+.refs p{margin:0 0 8px;color:var(--muted)}
+footer{max-width:var(--col);margin:72px auto 0;padding:18px 20px 48px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+footer a{color:var(--muted)}
+footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:-.02em;margin-bottom:6px}
+@media (max-width:720px){.tiles{grid-template-columns:1fr 1fr}.calc .row{grid-template-columns:1fr}.targets{grid-template-columns:1fr}.cmp li{grid-template-columns:1fr;gap:4px}.bars .b{grid-template-columns:110px 1fr 70px}h1{letter-spacing:.12em}}
+</style>
+</head>
+<body>
+<div class="top"><img src="../builder/icon/cof-icon-dark.svg" alt=""><a href="../">COF</a><span>·</span><a href="./">memories</a><span>·</span><span>how much does a life weigh?</span></div>
+
+<section class="hero">
+  <h1>How much does<br>a life weigh?</h1>
+  <div class="rule"></div>
+  <p class="voice">“From that year I could tell you maybe a hundred things. The rest, I know happened.”<small>CLARA MERCIER · IF YOU ASKED HER</small></p>
+</section>
+
+<main>
+<p class="lede">COF gives AI characters a past. The obvious next question is the size of a past: how many memories does a person hold, and how many bytes would they take if each one were written down with its sensory traces? Nobody has measured either. This page says what the research does know, offers a working hypothesis, lets you test your own, and draws the consequence for a file that would hold a whole life.</p>
+
+<div class="tiles">
+  <div class="tile"><b>10²–10³</b><span>memories you can list unprompted — Galton's own estimate, confirmed by every study since</span></div>
+  <div class="tile hi"><b>≈ 5,000</b><span>the working hypothesis: about a hundred a year, over fifty years</span></div>
+  <div class="tile"><b>× 10</b><span>more when something cues them: a photo, a place, a smell — and more again by recognition</span></div>
+  <div class="tile hi"><b>≈ 5 GB</b><span>what those five thousand would weigh in a file, if each kept a few sensory traces</span></div>
+</div>
+<p class="cap">Orders of magnitude, not measurements. Every figure below says where it comes from.</p>
+
+<h2>How many memories, according to the research</h2>
+<p>Francis Galton asked the question first, in 1879, on a walk: how many episodes of my life can I actually bring back? His answer — <em>hundreds or thousands, certainly not tens of thousands</em> — has held up for a century and a half. The one attempt to measure it directly (Crovitz, Schiffman &amp; Apter, 1991) cued people with words, dated each memory, fitted a power law to how memories thin out with age, and integrated it: <b>224 accessible episodes for the twenty years before the test</b>, a lower bound at the bottom of Galton's range; Dudai, reviewing it, notes that the fitted function most likely underestimates the older memories. Diaries tell the other side of the story: Willem Wagenaar wrote down 2,402 events over six years — about 400 a year he judged worth noting — and when he tested himself, about a fifth seemed gone; but once given the right cue, <em>no event turned out to be completely forgotten</em>. Recognition goes further still: people recognise thousands of pictures they saw once (Standing, 1973). Yigal Dudai's review (1997) puts the ladder in one line: recall of core episodes is counted in <b>thousands</b>, recognition reaches an order of magnitude more, and if you had kept one episode a day you would hold 25,000 by seventy.</p>
+
+<figure id="ladder"><svg viewBox="0 0 760 300" role="img" aria-label="Estimates of the number of autobiographical memories, on a logarithmic scale"></svg>
+<figcaption>Estimates of how many memories a person holds, on a logarithmic scale. Bars are ranges; the working hypothesis of this page sits between what people list unprompted and what cues bring back.</figcaption></figure>
+
+<p>So a hundred memories a year is not a measurement, but it is a defensible place to stand: it is the upper end of what Galton counted, a quarter of what Wagenaar found worth writing down, and the order of magnitude Dudai gives for core episodes. Over fifty years it makes about <b>five thousand</b> — the number this page will carry. With cues, multiply by five or ten; with an exceptional memory (the HSAM cases studied by LePort and colleagues recall nearly every day), by far more.</p>
+
+<h3>They are not spread evenly over a life</h3>
+<p>Two things shape where memories sit. Almost nothing survives from before the age of three or four (infantile amnesia). And a disproportionate share comes from the years between ten and thirty — the reminiscence bump, the most replicated finding in the field (Rubin &amp; Schulkind, 1997). After that, routine years leave few distinct memories, until the last few years, which are still fresh. The nine memories Clara keeps at 65 happen to follow that profile; it is also what a character's presets should follow, and why Clara's childhood preset keeps one memory where her 65-year-old self keeps nine.</p>
+
+<figure id="life"><svg viewBox="0 0 720 240" role="img" aria-label="Distribution of memories over a lifetime, with Clara's nine memories at 65 marked"></svg>
+<figcaption>The typical profile (qualitative, after Rubin &amp; Schulkind) and, as dots, the ages of the nine memories Clara keeps at 65 in the example file: her grandmother's house at 8, the agency years 24–28, the studio at 28, the Martian and the dream at 29, the wedding at 31, then 56, 60 and 63.</figcaption></figure>
+
+<h2>Two ways of remembering — and what weighs</h2>
+<p>Not every memory is the same kind of thing. Endel Tulving separated <em>remembering</em> — travelling back, with images, a sound, the feel of a place — from <em>knowing</em>: being able to say that something happened, and tell it, without seeing it again. The first depends above all on visual imagery (Rubin, Schrauf &amp; Greenberg, 2003); people without mental imagery recall their own past with fewer details and less confidence (Monzel et al., 2024), and in the rare condition called SDAM a person knows the facts of their life yet cannot relive any of it (Palombo et al., 2015). Hearing comes second. Smell is special: odour-cued memories are older, rarer, more intense, less often revisited (Willander &amp; Larsson, 2006). Touch has no numbers at all.</p>
+<p>This matters for weight, because <b>only remembered memories carry sensory traces</b>, and only sensory traces weigh anything. A known memory is a few lines of text: kilobytes. A remembered one is a picture or three, perhaps a sound, perhaps a few seconds of film: hundreds of kilobytes to a few megabytes. No study measures the share of each; the deduction that most of a life is known rather than relived is reasonable, not proven. The calculator below makes the share a slider.</p>
+
+<h3>The same shape as the file</h3>
+<p>Martin Conway's model of autobiographical memory (Conway &amp; Pleydell-Pearce, 2000) describes it as three levels: <em>lifetime periods</em>, <em>general events</em>, and <em>event-specific knowledge</em> — the sensory-perceptual details that make a moment vivid. A COF file holds the same three: periods, moments, and the media attached to a moment. The correspondence was not designed; it fell out of asking what a tool needs. It is reassuring all the same.</p>
+<ul class="cmp">
+  <li><span>lifetime periods</span><div>the agency years, the Alps summers — <em>a COF <code>period</code>, with its span</em></div></li>
+  <li><span>general events</span><div>the first morning in the studio, the evening on the quay — <em>a COF <code>moment</code>, with its gist, when, where, with whom</em></div></li>
+  <li><span>event-specific knowledge</span><div>the light on the desk, the sound of the river — <em>the moment's <code>media</code>: an image, a sound, a clip, a few remembered lines</em></div></li>
+</ul>
+
+<h2>What a memory weighs, measured</h2>
+<p>The one set of memories that exists in the format is Clara's: sixteen nodes, thirty-one media, written for the 1.1 example. Rather than guess, here is what they weigh in the file. Her images are 1248 × 832 JPEGs — about one megapixel, the size generators produce today; her one clip is five seconds at 720p; her one sound is ten seconds.</p>
+<table>
+  <tr><th>Memory, as the file holds it</th><th>What it carries</th><th>Weight</th></tr>
+  <tr><td>The agency years (a period)</td><td>gists in two languages, dates, felt then / now — no media</td><td class="n">1.3 KB</td></tr>
+  <tr><td>Our wedding</td><td>one image</td><td class="n">290 KB</td></tr>
+  <tr><td>My grandmother's house</td><td>three images, the river at night (10 s), a few remembered lines</td><td class="n">870 KB</td></tr>
+  <tr><td>The dream of electric sheep</td><td>three images, a five-second clip with its poster</td><td class="n">1.1 MB</td></tr>
+  <tr><td><b>All sixteen</b></td><td>14 moments with media, 2 periods without</td><td class="n">5.2 MB · mean 330 KB</td></tr>
+</table>
+<p class="cap">Measured on <code>spec/examples/10-clara-mercier</code>, COF 1.1. The whole file, with her faces, voice, 3D model and motions, is 21 MB.</p>
+<p>So in practice a memory with one picture is a quarter of a megabyte; a rich one, three pictures and a clip, is a megabyte. Triple the resolution — a phone photo rather than a generated one, 1080p rather than 720p — and the same memories weigh three times as much. <b>A megabyte per remembered memory</b> is therefore a fair average at today's sizes, with a factor of three either way depending on how much you keep.</p>
+
+<h2>Try your own numbers</h2>
+<p>Every assumption above is a control here. The defaults are the working hypothesis: a hundred memories a year from the age of three, all of them remembered rather than merely known, with a mix of light, standard and rich media sized on Clara's file. Change any of it.</p>
+
+<div class="calc" id="calc">
+  <div class="scen" id="scen">
+    <button data-s="galton">Galton's floor</button>
+    <button data-s="base" class="on">Working hypothesis</button>
+    <button data-s="iceberg">Most of it only known</button>
+    <button data-s="cue">Exhaustive, with cues</button>
+    <button data-s="hsam">Exceptional memory</button>
+  </div>
+  <div class="row">
+    <div>
+      <fieldset><legend>How many</legend>
+        <div class="g3">
+          <div><label>Age</label><input id="age" type="number" min="1" max="120" value="53"></div>
+          <div><label>First memories at</label><input id="amn" type="number" min="0" max="10" step="0.5" value="3"></div>
+          <div><label>Memories a year</label><input id="py" type="number" min="1" max="100000" value="100"></div>
+        </div>
+        <label>Cued and recognised, on top of the unprompted: <b id="cueV">×1</b></label>
+        <input id="cue" type="range" min="1" max="10" step="0.5" value="1">
+        <p class="hint">×1 = what one lists unprompted. ×5–×10 = what photos, places and smells bring back, and what one would recognise.</p>
+      </fieldset>
+      <fieldset><legend>Remembered or known</legend>
+        <label>Share that is <b>remembered</b> — with sensory traces: <b id="remV">100 %</b></label>
+        <input id="rem" type="range" min="0" max="100" step="5" value="100">
+        <label>A <b>known</b> memory, words only (KB)</label><input id="skn" type="number" min="0" step="0.5" value="3">
+        <p class="hint">No study measures this share. Most of a life is probably known rather than relived; the default keeps everything relived, which is the heaviest case.</p>
+      </fieldset>
+    </div>
+    <div>
+      <fieldset><legend>What a remembered memory carries</legend>
+        <div class="mix">
+          <div><i style="background:var(--c1)"></i>Light<small>one picture</small></div><input id="p1" type="number" min="0" max="100" value="30"><input id="s1" type="number" min="0" step="0.05" value="0.25">
+          <div><i style="background:var(--c2)"></i>Standard<small>three pictures, a sound, a few lines</small></div><input id="p2" type="number" min="0" max="100" value="55"><input id="s2" type="number" min="0" step="0.05" value="0.9">
+          <div><i style="background:var(--c3)"></i>Rich<small>pictures and a clip, phone quality</small></div><input id="p3" type="number" min="0" max="100" value="15"><input id="s3" type="number" min="0" step="0.05" value="3">
+          <div class="hint">share %</div><div class="hint" style="grid-column:span 2">size, MB each</div>
+        </div>
+        <div class="err" id="err" aria-live="polite"></div>
+        <label>Resolution factor: <b id="resV">×1</b></label>
+        <input id="res" type="range" min="0.5" max="4" step="0.5" value="1">
+        <p class="hint">×1 = Clara's sizes (1 MP images, 720p clips). ×3 ≈ a phone's photos and 1080p.</p>
+      </fieldset>
+    </div>
+  </div>
+  <div class="res" aria-live="polite"><div class="s">A life's memories, in a file</div><div class="t" id="total">–</div><div class="s" id="totalSub">–</div></div>
+  <div class="kpis"><div class="kpi"><b id="kN">–</b><span>memories</span></div><div class="kpi"><b id="kAvg">–</b><span>on average, each</span></div><div class="kpi"><b id="kY">–</b><span>per year lived</span></div></div>
+  <div class="stack" id="stack"></div>
+  <div class="legend"><span><i style="background:var(--c1)"></i>light</span><span><i style="background:var(--c2)"></i>standard</span><span><i style="background:var(--c3)"></i>rich</span><span><i style="background:var(--c4)"></i>known, words only</span></div>
+  <div class="bars" id="bars" style="margin-top:18px"></div>
+  <p class="hint" style="margin-top:10px">Logarithmic scale. 1 GB = 1,000 MB. Clara's file is the 1.1 example as published.</p>
+</div>
+
+<h2>What it means for a file</h2>
+<p>Take the working hypothesis seriously and the envelope of a <em>near-exhaustive</em> character — a life's worth of memories, at today's media sizes — is a few gigabytes. That is not a problem. It is a DVD, a tenth of a phone, a small fraction of what a single generated video weighs. The format already handles it: a <code>.cof</code> is a ZIP container (zip64 accepted) whose first two entries identify it and hold the manifest, so a reader knows what is inside before extracting anything; media are extracted on demand; the builder keeps a memory to one to three media and a video over 20 MB has to be acknowledged on its memory. The rest of a character — references, voice samples, a 3D model, motion clips — is far lighter than its past.</p>
+<div class="targets">
+  <div><b>≤ 5 GB</b><span><b>memories.</b> About five thousand of them with sensory traces at a megabyte each — or many more if most are known rather than relived. The ceiling we suggest for a near-exhaustive character.</span></div>
+  <div><b>≤ 1 GB</b><span><b>everything else.</b> Faces and references, voice, 3D, motion, documents. Clara's today weigh 16 MB; a character with film-quality references and several voices stays under a gigabyte.</span></div>
+</div>
+<p class="cap">A working envelope, not a rule of the format: COF puts no limit on a file. It is what a platform could plan for: a complete character fits on a phone, with room to spare.</p>
+
+<h2>An open question: a memory as a latent space</h2>
+<p>There is a deeper way to ask the question. A human mind does not file its past as five thousand documents. Memories are reconstructed from dispersed traces, each recall colours the next, and the whole is held in connection weights — a latent space, in today's vocabulary — where what resembles what is the structure itself. If one could gather, reconstruct or author a life's worth of memories, the most faithful form for them might not be an archive at all: it might be a model, a set of weights trained on them, in which every link between memories exists without being declared. That is a research programme in itself, and a fascinating one.</p>
+<p>It is worth being clear about what it would cost. Weights are opaque: you cannot open them and read a memory. They cannot be edited one memory at a time. And they cannot reliably forget — removing one training example from a model is an unsolved problem (Bourtoule et al., 2021), which means a real person who withdrew consent, or a user who asked for a personal memory to be purged, could not be honoured. Everything COF was built to guarantee — reading, editing, purging, carrying one's own data — lives in the archive.</p>
+<p>The brain, as it happens, does not choose. The standard account (McClelland, McNaughton &amp; O'Reilly, 1995) is two complementary systems: a fast episodic store that keeps the day's events separately, and a slow cortical one that integrates them over time into general structure; consolidation is the training. An archive and a latent space, side by side, one feeding the other. COF already carries both kinds of thing for faces — reference images next to the LoRA trained from them — and the same pattern fits memories: the graph as the source of truth, and beside it a <em>consolidation</em> — an adapter trained on the memories — derived, regenerable, discarded and rebuilt when the archive changes, so that a purge is honoured by retraining rather than by hoping.</p>
+<p>So here is the study we would like someone to run. Take a few thousand memories — authored for a fictional character, or reconstructed with consent from a real life — train an adapter on them, and measure three things: whether the model recovers the links the graph declares (<em>after</em>, <em>because</em>, <em>about</em>) without being told; whether it finds links the author did not declare and a reader would accept; and whether retraining after a purge leaves no trace of what was removed. A cheaper first step exists today: an embedding per memory, a vector index carried as a derived file — a latent space you can still read back to its source. If the answers are good, the ultimate form of a character's memory may well be a model. It will still need its archive, for the same reason we need ours: to be able to say what happened.</p>
+
+<div class="btns">
+  <a class="btn main" href="./">Back to the announcement</a>
+  <a class="btn" href="../viewer/#clara">Open Clara's memories</a>
+  <a class="btn" href="https://github.com/yannsouetre/cof/blob/main/rfcs/0002-memories.md">Read RFC 0002</a>
+</div>
+
+<h2>Sources</h2>
+<div class="refs">
+  <p>Galton, F. (1879). Psychometric experiments. <i>Brain</i>, 2, 149–162; (1883) <i>Inquiries into Human Faculty and its Development</i>.</p>
+  <p>Crovitz, H. F., Schiffman, H. &amp; Apter, A. (1991). Galton's number. <i>Bulletin of the Psychonomic Society</i>, 29(4), 331–332.</p>
+  <p>Dudai, Y. (1997). How big is human memory, or on being just useful enough. <i>Learning &amp; Memory</i>, 3, 341–365 — the review that reports Crovitz's 224 and the one-a-day arithmetic.</p>
+  <p>Wagenaar, W. A. (1986). My memory: a study of autobiographical memory over six years. <i>Cognitive Psychology</i>, 18, 225–252.</p>
+  <p>Linton, M. (1978). Real world memory after six years. In Gruneberg, Morris &amp; Sykes (eds), <i>Practical Aspects of Memory</i>.</p>
+  <p>Standing, L. (1973). Learning 10,000 pictures. <i>Quarterly Journal of Experimental Psychology</i>, 25, 207–222.</p>
+  <p>Rubin, D. C. &amp; Schulkind, M. D. (1997). The distribution of autobiographical memories across the lifespan. <i>Memory &amp; Cognition</i>, 25, 859–866.</p>
+  <p>Tulving, E. (1985). Memory and consciousness. <i>Canadian Psychology</i>, 26, 1–12.</p>
+  <p>Conway, M. A. &amp; Pleydell-Pearce, C. W. (2000). The construction of autobiographical memories in the self-memory system. <i>Psychological Review</i>, 107, 261–288.</p>
+  <p>Rubin, D. C., Schrauf, R. W. &amp; Greenberg, D. L. (2003). Belief and recollection of autobiographical memories. <i>Memory &amp; Cognition</i>, 31, 887–901.</p>
+  <p>Willander, J. &amp; Larsson, M. (2006). Smell your way back to childhood: autobiographical odor memory. <i>Psychonomic Bulletin &amp; Review</i>, 13, 240–244.</p>
+  <p>Palombo, D. J. et al. (2015). Severely deficient autobiographical memory (SDAM) in healthy adults. <i>Neuropsychologia</i>, 72, 105–118.</p>
+  <p>LePort, A. K. R. et al. (2016). Highly superior autobiographical memory: quality and quantity of retention over time. <i>Frontiers in Psychology</i>, 6, 2017.</p>
+  <p>Monzel, M. et al. (2024). Hippocampal-occipital connectivity reflects autobiographical memory deficits in aphantasia. <i>eLife</i>, 13.</p>
+  <p>McClelland, J. L., McNaughton, B. L. &amp; O'Reilly, R. C. (1995). Why there are complementary learning systems in the hippocampus and neocortex. <i>Psychological Review</i>, 102, 419–457.</p>
+  <p>Bourtoule, L. et al. (2021). Machine unlearning. <i>IEEE Symposium on Security and Privacy</i>.</p>
+</div>
+</main>
+
+<footer>
+  <div class="mark">COF</div>
+  Character Open File — an open format for AI characters, with their rights. A working hypothesis, October 2026; the figures are orders of magnitude and say where they come from. Clara Mercier is a fictional example character. <a href="https://github.com/yannsouetre/cof">Source on GitHub</a> · <a href="./">The memories announcement</a>
+</footer>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const fmtN=n=>Math.round(n).toLocaleString("en-US");
+function fmtMB(mb){if(!isFinite(mb)||mb<=0)return "0 MB";if(mb<1)return (mb*1000).toLocaleString("en-US",{maximumFractionDigits:0})+" KB";if(mb<1000)return mb.toLocaleString("en-US",{maximumFractionDigits:mb<10?1:0})+" MB";if(mb<1e6)return (mb/1000).toLocaleString("en-US",{maximumFractionDigits:mb<1e4?2:1})+" GB";return (mb/1e6).toLocaleString("en-US",{maximumFractionDigits:2})+" TB"}
+
+/* ---- figure 1: the ladder (log scale) ---- */
+(function(){
+const svg=$("#ladder svg");const W=760,L=300,R=720,y0=34,dy=36;
+const rows=[
+ {lab:"Galton's number, measured",sub:"Crovitz et al. 1991 · 20 years, cued",lo:224,hi:224},
+ {lab:"Galton's own estimate",sub:"1879 · “hundreds or thousands”",lo:300,hi:3000},
+ {lab:"A diary's events",sub:"Wagenaar 1986 · 6 years, 400 a year",lo:2402,hi:2402},
+ {lab:"Working hypothesis",sub:"100 a year · 50 years",lo:5000,hi:5000,me:true},
+ {lab:"Cued, then recognised",sub:"Dudai 1997 · ten times more",lo:10000,hi:50000},
+ {lab:"One episode a day",sub:"Dudai 1997 · over 70 years",lo:25000,hi:25000},
+ {lab:"One an hour",sub:"the ceiling of lived episodes",lo:400000,hi:400000}];
+const lg=v=>Math.log10(v),x=v=>L+(lg(v)-2)*(R-L)/4;
+let s="";
+for(const t of [100,1000,10000,100000,1000000]){s+=`<line class="ax" x1="${x(t)}" y1="${y0-14}" x2="${x(t)}" y2="${y0+rows.length*dy-8}"/><text class="tk" x="${x(t)}" y="${y0-20}" text-anchor="middle">${t>=1e6?"1 M":t>=1000?(t/1000)+" k":t}</text>`}
+rows.forEach((r,i)=>{const y=y0+i*dy;const col=r.me?"#a98ae8":"#2fa88e";const x1=x(r.lo),x2=x(r.hi);
+ s+=`<text class="lab" x="${L-14}" y="${y+4}" text-anchor="end"${r.me?' style="fill:#cbbcf0"':""}>${r.lab}</text><text class="sub" x="${L-14}" y="${y+18}" text-anchor="end">${r.sub}</text>`;
+ if(r.lo===r.hi)s+=`<circle cx="${x1}" cy="${y}" r="6" fill="${col}"/>`;else s+=`<rect x="${x1}" y="${y-5}" width="${x2-x1}" height="10" rx="4" fill="${col}" opacity=".85"/>`;
+ s+=`<text class="val" x="${x2+10}" y="${y+4}">${r.lo===r.hi?fmtN(r.lo):fmtN(r.lo)+"–"+fmtN(r.hi)}</text>`});
+s+=`<text class="sub" x="${(L+R)/2}" y="${y0+rows.length*dy+10}" text-anchor="middle">memories · logarithmic scale</text>`;
+svg.innerHTML=s})();
+
+/* ---- figure 2: over a life, with Clara at 65 ---- */
+(function(){
+const svg=$("#life svg");const W=720,L=40,R=700,yb=190,yt=30;
+const x=a=>L+a*(R-L)/70;
+// qualitative profile: amnesia, bump 10–30, routine, recency
+const pts=[[0,0],[3,.02],[6,.25],[10,.6],[14,.9],[18,1],[22,.95],[26,.82],[30,.62],[36,.42],[42,.33],[48,.3],[54,.3],[58,.36],[62,.55],[65,.8],[68,.9],[70,.95]];
+const y=v=>yb-v*(yb-yt);
+let d="";pts.forEach((p,i)=>{d+=(i?" L":"M")+x(p[0]).toFixed(1)+" "+y(p[1]).toFixed(1)});
+let s=`<path d="${d} L${x(70)} ${yb} L${x(0)} ${yb} Z" fill="rgba(47,168,142,.12)"/><path d="${d}" fill="none" stroke="#2fa88e" stroke-width="2"/><line class="ax" x1="${L}" y1="${yb}" x2="${R}" y2="${yb}"/>`;
+for(const a of [0,10,20,30,40,50,60,70])s+=`<text class="tk" x="${x(a)}" y="${yb+16}" text-anchor="middle">${a}</text>`;
+s+=`<text class="sub" x="${x(2)}" y="${yb-10}" >infantile amnesia</text><text class="sub" x="${x(18)}" y="${yt+10}" text-anchor="middle">reminiscence bump</text><text class="sub" x="${x(46)}" y="${y(.3)-10}" text-anchor="middle">routine years</text><text class="sub" x="${x(66)}" y="${y(.95)+4}" text-anchor="end">recency</text>`;
+// Clara at 65: ages of her nine memories (period 24–28 as a bar)
+const clara=[8,28,29,29,31,56,60,63];
+s+=`<rect x="${x(24)}" y="${yb+28}" width="${x(28)-x(24)}" height="6" rx="3" fill="#8a6ad6" opacity=".9"/>`;
+const seen={};clara.forEach(a=>{seen[a]=(seen[a]||0)+1;s+=`<circle cx="${x(a)}" cy="${yb+31-(seen[a]-1)*9}" r="4.5" fill="#8a6ad6"/>`});
+s+=`<text class="sub" x="${R}" y="${yb+50}" text-anchor="end" style="fill:#cbbcf0">Clara at 65 · her nine memories, by age</text><text class="sub" x="${L}" y="${yb+34}">age</text>`;
+svg.innerHTML=s})();
+
+/* ---- calculator ---- */
+const num=(id,lo,hi,def)=>{let v=parseFloat($("#"+id).value);if(!isFinite(v))v=def;return Math.min(hi,Math.max(lo,v))};
+const REFS=[["Clara's file today",21],["A CD",700],["A DVD",4700],["A 128 GB phone",128000],["A 2 TB drive",2e6]];
+function calc(){
+ const age=num("age",1,120,53),amn=num("amn",0,10,3),py=num("py",1,1e5,100),cue=num("cue",1,10,1),rem=num("rem",0,100,100)/100,skn=num("skn",0,1e5,3)/1000,res=num("res",.5,4,1);
+ $("#cueV").textContent="×"+cue;$("#remV").textContent=Math.round(rem*100)+" %";$("#resV").textContent="×"+res;
+ const years=Math.max(0,age-amn),N=years*py*cue,Nr=N*rem,Nk=N-Nr;
+ let p=[num("p1",0,100,30),num("p2",0,100,55),num("p3",0,100,15)],sz=[num("s1",0,1e4,.25),num("s2",0,1e4,.9),num("s3",0,1e4,3)];
+ let sum=p[0]+p[1]+p[2],err="";if(sum<=0){p=[30,55,15];sum=100;err="Shares cannot all be zero."}else if(Math.abs(sum-100)>.01)err="Shares add up to "+sum+" %; scaled to 100 % for the calculation.";
+ $("#err").textContent=err;
+ const parts=p.map((pp,i)=>Nr*(pp/sum)*sz[i]*res),known=Nk*skn,total=parts[0]+parts[1]+parts[2]+known;
+ $("#total").textContent=fmtMB(total);
+ $("#totalSub").textContent=`${fmtN(years)} years × ${fmtN(py)} a year${cue>1?" × "+cue+" (cued)":""} = ${fmtN(N)} memories, ${Math.round(rem*100)} % of them with sensory traces${res!==1?", media ×"+res:""}`;
+ $("#kN").textContent=fmtN(N);$("#kAvg").textContent=N?fmtMB(total/N):"–";$("#kY").textContent=years?fmtMB(total/years):"–";
+ const cols=["var(--c1)","var(--c2)","var(--c3)","var(--c4)"],vals=[...parts,known];const st=$("#stack");st.innerHTML="";vals.forEach((v,i)=>{const w=total>0?v/total*100:0;if(w>0){const e=document.createElement("i");e.style.width=w+"%";e.style.background=cols[i];e.title=["light","standard","rich","known"][i]+" · "+w.toFixed(1)+" % · "+fmtMB(v);st.appendChild(e)}});
+ const list=REFS.concat([["→ this life",total]]).sort((a,b)=>a[1]-b[1]);const lo=0,hi=Math.log10(Math.max(2e6,total*2));const bars=$("#bars");bars.innerHTML="";
+ list.forEach(r=>{const me=r[0].startsWith("→");const w=Math.max(1.5,Math.min(100,(Math.log10(Math.max(r[1],1))-lo)/(hi-lo)*100));const b=document.createElement("div");b.className="b"+(me?" me":"");b.innerHTML=`<span></span><span class="t"><i class="f" style="width:${w}%"></i></span><span class="x"></span>`;b.firstChild.textContent=r[0];b.lastChild.textContent=fmtMB(r[1]);bars.appendChild(b)})}
+const SCEN={galton:{age:53,amn:3,py:11,cue:1,rem:100,skn:3,p1:30,s1:.25,p2:55,s2:.9,p3:15,s3:3,res:1},
+ base:{age:53,amn:3,py:100,cue:1,rem:100,skn:3,p1:30,s1:.25,p2:55,s2:.9,p3:15,s3:3,res:1},
+ iceberg:{age:53,amn:3,py:100,cue:1,rem:30,skn:3,p1:30,s1:.25,p2:55,s2:.9,p3:15,s3:3,res:1},
+ cue:{age:53,amn:3,py:100,cue:5,rem:30,skn:3,p1:40,s1:.25,p2:50,s2:.9,p3:10,s3:3,res:1},
+ hsam:{age:53,amn:3,py:365,cue:1,rem:60,skn:3,p1:30,s1:.25,p2:50,s2:.9,p3:20,s3:3,res:1}};
+document.querySelectorAll("#scen button").forEach(b=>b.onclick=()=>{const s=SCEN[b.dataset.s];for(const k in s)$("#"+k).value=s[k];document.querySelectorAll("#scen button").forEach(x=>x.classList.toggle("on",x===b));calc()});
+document.querySelectorAll("#calc input").forEach(i=>i.addEventListener("input",()=>{document.querySelectorAll("#scen button").forEach(x=>x.classList.remove("on"));calc()}));
+calc();
+})();
+</script>
+</body>
+</html>

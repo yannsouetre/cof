@@ -2,7 +2,7 @@
 
 **AI characters now have memories.**
 
-▶ [Why it matters](https://yannsouetre.github.io/cof/memories/) · [Explore Clara's memories](https://yannsouetre.github.io/cof/viewer/#clara) · [Build one](https://yannsouetre.github.io/cof/builder/) · [RFC 0002](https://github.com/yannsouetre/cof/blob/main/rfcs/0002-memories.md) · [RFC 0003](https://github.com/yannsouetre/cof/blob/main/rfcs/0003-identity-gender-archetype-relations.md)
+▶ [Why it matters](https://yannsouetre.github.io/cof/memories/) · [How much does a life weigh?](https://yannsouetre.github.io/cof/memories/how-much.html) · [Explore Clara's memories](https://yannsouetre.github.io/cof/viewer/#clara) · [Build one](https://yannsouetre.github.io/cof/builder/) · [RFC 0002](https://github.com/yannsouetre/cof/blob/main/rfcs/0002-memories.md) · [RFC 0003](https://github.com/yannsouetre/cof/blob/main/rfcs/0003-identity-gender-archetype-relations.md)
 
 COF 1.1 is the first minor version of the format, and it keeps the 1.0 promise: **everything it adds is optional**, every 1.0 file stays valid, and every 1.0 tool keeps reading a 1.1 file (the new category appears to it as a library, with a warning). A file that uses any 1.1 addition declares `cof: "1.1"`.
 
