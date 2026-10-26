@@ -399,6 +399,9 @@ def drop_personal_memories(dst: Path) -> list[str]:
             shutil.rmtree(folder)
     if not V:
         m["elements"].pop("memories", None)
+        md = dst / "elements/memories"
+        if md.is_dir() and not any(md.iterdir()):
+            md.rmdir()
     drop_dangling_memory_links(dst, m)
     _prune_assets(dst, m, freed)
     (dst / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
@@ -452,6 +455,25 @@ def extract_presets(src: Path, dst: Path, pids: list[str], tags: list[str] | Non
                 while cur and (cat, cur) not in keep_v:
                     keep_v.add((cat, cur))
                     cur = (m["elements"].get(cat, {}).get("variants", {}).get(cur) or {}).get("derives_from")
+    # what the kept memories point at outside their category (RFC 0002 § 3): the place of a memory (`where.environment`)
+    # and the elements its links name (a garment, an accessory, a place) travel with the memory, whether or not the preset lists them
+    for cat, vid in sorted(keep_v):
+        if cat != "memories":
+            continue
+        rel = (m["elements"]["memories"]["variants"].get(vid) or {}).get("memory")
+        try:
+            node = json.loads((src / rel).read_text("utf-8")) if rel else {}
+        except (OSError, ValueError):
+            node = {}
+        refs = [str((node.get("where") or {}).get("environment") or "")] + [str(l.get("to") or "") for l in node.get("links") or []]
+        for ref in refs:
+            rcat, _, rvid = ref.partition("/")
+            if not rvid or rcat == "memories" or rvid not in (m["elements"].get(rcat, {}).get("variants") or {}):
+                continue
+            cur = rvid
+            while cur and (rcat, cur) not in keep_v:
+                keep_v.add((rcat, cur))
+                cur = (m["elements"][rcat]["variants"].get(cur) or {}).get("derives_from")
     out = json.loads(json.dumps(m))
     out["elements"] = {}
     keep_assets: set[str] = set()

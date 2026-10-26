@@ -1163,3 +1163,17 @@ def test_self_description_and_memory_add(tmp_path):
     assert any(a["id"].startswith(f"a-mem-{vid}") and a["role"] == "memory-media" for a in m2["assets"])
     rep = _val(d); assert rep.ok, rep.errors
     assert "personal memory" in " ".join(rep.warnings)
+
+
+def test_extract_preset_keeps_the_places_its_memories_point_at(tmp_path):
+    """A memory's `where.environment` (and the elements its links name) travel with the memory when a preset is extracted,
+    whether or not the preset lists them — found by Yann's L2 test of 26 October: `cof extract --preset fr-65` on Clara
+    left `memories.ev2` pointing at the studio (`appearance/e1`), which the 65-year-old preset does not list."""
+    from cof_cli.ops import extract_presets
+    d = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/10-clara-mercier", d)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    assert "e1" not in (m["presets"]["fr-65"].get("slots") or {}).get("appearance", []) and "ev2" in m["presets"]["fr-65"]["slots"]["memories"]
+    a = tmp_path / "a"; extract_presets(d, a, ["fr-65"])
+    ma = json.loads((a / "manifest.json").read_text("utf-8"))
+    assert "e1" in ma["elements"]["appearance"]["variants"]
+    rep = Report(); validate_dir(a, rep); assert rep.ok, rep.errors
