@@ -7,9 +7,10 @@
 <meta name="description" content="COF now gives AI characters a past: moments and periods of a life, what they felt, what they keep to themselves, what fades — in the same open file as their face, voice and rights.">
 <meta property="og:title" content="AI characters now have memories">
 <meta property="og:description" content="A character with a past has reasons. COF 1.1 — memories, in one open file.">
-<meta property="og:image" content="https://yannsouetre.github.io/cof/memories/img/electric-sheep.jpg">
-<meta property="og:image:width" content="1248"><meta property="og:image:height" content="832">
+<meta property="og:image" content="https://yannsouetre.github.io/cof/memories/img/og-memories.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://yannsouetre.github.io/cof/memories/img/og-memories.jpg">
 <link rel="icon" type="image/svg+xml" href="../builder/icon/cof-icon-dark.svg">
 <style>
 @font-face{font-family:"Michroma";src:url(../clip/fonts/michroma-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
@@ -228,7 +229,7 @@ footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:
 <h2>Open, like the rest of COF</h2>
 <p>Memories are a public specification, with a reference implementation and three tools that read them today. No account, no platform, no lock-in: the file is yours.</p>
 <div class="tools">
-  <a href="../viewer/#clara"><b>Explorer</b><span>Clara's timeline and graph, in your browser, nothing uploaded</span></a>
+  <a href="../viewer/#clara/memories"><b>Explorer</b><span>Clara's timeline and graph, in your browser, nothing uploaded</span></a>
   <a href="../builder/"><b>Builder</b><span>a Memories step: write the past of your own character</span></a>
   <a href="https://github.com/yannsouetre/cof/blob/main/rfcs/0002-memories.md"><b>RFC 0002</b><span>the specification, with the reasoning behind each choice</span></a>
   <a href="https://github.com/yannsouetre/ComfyUI-COF"><b>ComfyUI nodes</b><span>memories as text and images for your generation workflows</span></a>
@@ -236,7 +237,7 @@ footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:
 <p class="cap" style="margin-top:14px">Hosts write back with one command: <code>cof memory add</code>. Every file also carries a short note, <code>COF.md</code>, that tells a reader without the specification how to read it and how to add to it.</p>
 
 <h2>Next: a psyche</h2>
-<p>Memories are the past. What a character made of it — its values, its beliefs, what it wants, what it fears, the wound it does not talk about, the things it believes about itself that are not true — is the next category, on the same graph. Each conviction linked to the memory it comes from. Without a psyche, memories are anecdotes; without memories, a psyche is a list of slogans. Together they are a character. The draft is written; it comes right after 1.1.</p>
+<p>Memories are the past. What a character made of it — its values, its beliefs, what it wants, what it fears, the wound it does not talk about, the things it believes about itself that are not true — is the next category, on the same graph. Each conviction linked to the memory it comes from. Without a psyche, memories are anecdotes; without memories, a psyche is a list of slogans. Together they are a character. The draft is written; it is the next step.</p>
 
 <h2>How much does a life weigh?</h2>
 <p>A natural question follows: how many memories does a person hold, and how many bytes would they take with their sensory traces? Nobody has measured either, but the research gives an order of magnitude — a few thousand memories one can bring back — and Clara's file gives a price per memory. A hundred memories a year over fifty years, a megabyte each: <b>about five thousand memories, about five gigabytes</b>, a whole life on a phone with room to spare. A companion page says where the figures come from, lets you test your own, and ends with an open question for researchers: whether the ultimate form of a character's memory is an archive, or a latent space — and why it may need both. <a href="how-much.html">How much does a life weigh? →</a></p>
@@ -245,7 +246,7 @@ footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:
 <section class="close">
   <p class="voice">She remembers the lime tree, the river at night, a Martian who wanted to understand why our screens are so heavy. She does not know yet what she will remember of you.</p>
   <div class="btns">
-    <a class="btn main" href="../viewer/#clara">Open Clara's memories</a>
+    <a class="btn main" href="../viewer/#clara/memories">Open Clara's memories</a>
     <a class="btn" href="https://github.com/yannsouetre/cof/blob/main/rfcs/0002-memories.md">Read the specification</a>
     <a class="btn" href="../builder/">Give your character a past</a>
   </div>
@@ -286,11 +287,11 @@ const defs=el("defs",{});M.forEach(m=>{const c=el("clipPath",{id:"c-"+m.id});c.a
 // axis
 const ax=g("in",0);ax.appendChild(el("line",{class:"axis",x1:40,y1:Y,x2:1150,y2:Y}));ax.appendChild(el("path",{class:"axis-head",d:`M1150 ${Y-6} L1162 ${Y} L1150 ${Y+6} Z`}));ax.appendChild(el("text",{class:"lane",x:42,y:PY-34},"PEOPLE SHE REMEMBERS"));ax.appendChild(el("text",{class:"lane",x:42,y:LY-36},"PLACES IN THE FILE"));svg.appendChild(ax);
 // period: the agency years, 24–28, ending where the studio morning begins
-const pe=g("period in",250);pe.appendChild(el("rect",{x:170,y:Y-94,width:150,height:40,rx:20}));pe.appendChild(el("text",{x:245,y:Y-70,"text-anchor":"middle"},"The agency years"));pe.appendChild(el("text",{class:"sub",x:245,y:Y-57,"text-anchor":"middle"},"a period · 24–28"));svg.appendChild(pe);
+const pe=g("period in",250);pe.appendChild(el("rect",{x:166,y:Y-102,width:158,height:50,rx:25}));pe.appendChild(el("text",{x:245,y:Y-80,"text-anchor":"middle"},"The agency years"));pe.appendChild(el("text",{class:"sub",x:245,y:Y-63,"text-anchor":"middle"},"a period · 24–28"));svg.appendChild(pe);
 // threads to people and places (behind the nodes)
 const threads={};M.forEach((m,i)=>{const y=m.y||Y;(m.who||[]).forEach(w=>{const p=P[w];const d=`M${m.x} ${y+R} C ${m.x} ${y+R+80}, ${p.x} ${PY-70}, ${p.x} ${PY-18}`;const t=el("path",{class:"thread in",d});t.style.transitionDelay=(400+i*330)+"ms";t.dataset.mem=m.id;t.dataset.person=w;svg.appendChild(t)});if(m.place){const q=PL[m.place];const t=el("path",{class:"thread in",d:`M${m.x} ${y+R} L${q.x} ${LY-26}`});t.style.transitionDelay=(400+i*330)+"ms";t.dataset.mem=m.id;t.style.strokeDasharray="3 4";svg.appendChild(t)}});
 // links: after (period → studio), about (dream → evening)
-const lk=g("",0);const af=el("path",{class:"link draw",d:`M318 ${Y-74} C 330 ${Y-40}, 330 ${Y-60}, 330 ${Y-R-2}`});af.style.transitionDelay="900ms";lk.appendChild(af);lk.appendChild(Object.assign(el("text",{class:"linklab in",x:352,y:Y-62},"after"),{style:"transition-delay:1300ms"}));
+const lk=g("",0);const af=el("path",{class:"link draw",d:`M322 ${Y-77} C 332 ${Y-40}, 330 ${Y-60}, 330 ${Y-R-2}`});af.style.transitionDelay="900ms";lk.appendChild(af);lk.appendChild(Object.assign(el("text",{class:"linklab in",x:352,y:Y-62},"after"),{style:"transition-delay:1300ms"}));
 const ab=el("path",{class:"link about draw",d:`M${M[3].x-R+4} ${M[3].y+16} C 540 170, 505 200, 494 ${Y-R+4}`});ab.style.transitionDelay="1500ms";lk.appendChild(ab);lk.appendChild(Object.assign(el("text",{class:"linklab in",x:470,y:178,"text-anchor":"end"},"about"),{style:"transition-delay:1900ms"}));svg.appendChild(lk);
 // moments
 M.forEach((m,i)=>{const y=m.y||Y;const grp=g("mem in",300+i*330);grp.dataset.id=m.id;const node=el("g",{class:"node"});node.appendChild(el("circle",{class:"ring",cx:m.x,cy:y,r:R}));node.appendChild(el("image",{href:m.img,x:m.x-R+3,y:y-R+3,width:2*R-6,height:2*R-6,"clip-path":`url(#c-${m.id})`,preserveAspectRatio:"xMidYMid slice"}));grp.appendChild(node);grp.appendChild(el("text",{class:"lab",x:m.x,y:y+R+22},m.lab));grp.appendChild(el("text",{class:"sub",x:m.x,y:y+R+39},m.sub));grp.appendChild(el("text",{class:"tick",x:m.x,y:Y+(m.y?-R-12:-R-12),"text-anchor":"middle"},m.y?"":String(m.age)));svg.appendChild(grp)});

@@ -278,7 +278,7 @@ const drop=document.getElementById("drop");
 ["dragover","dragenter"].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over")}));
 ["dragleave","drop"].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("over")}));
 document.addEventListener("drop",async e=>{const f=e.dataTransfer.files[0];if(f)openBuffer(await f.arrayBuffer())});
-async function sample(name){try{const r=await fetch("samples/"+name);if(!r.ok)throw new Error(r.status);openBuffer(await r.arrayBuffer())}catch(e){const err=document.getElementById("loadErr");err.textContent=tr("download")+e.message;err.hidden=false}}
+async function sample(name,t){try{const r=await fetch("samples/"+name);if(!r.ok)throw new Error(r.status);await openBuffer(await r.arrayBuffer());if(t){const[k,v]=t.split(":");if(["personality","look","lora","v3d","voice","posture","motion","files","memories","rights"].includes(k)){tab=k;if(k==="memories"&&(v==="graph"||v==="list"))memView=v;await renderPreset();document.querySelector("#main .tabs")?.scrollIntoView({behavior:"smooth",block:"start"})}}}catch(e){const err=document.getElementById("loadErr");err.textContent=tr("download")+e.message;err.hidden=false}}
 document.getElementById("btnClara").onclick=()=>sample("clara-mercier.cof");
 document.getElementById("btnDuo").onclick=()=>sample("clara-martien.cof");
 document.getElementById("zoom").onclick=()=>document.getElementById("zoom").close();
@@ -503,7 +503,7 @@ async function renderPreset(){
   main.querySelectorAll("[data-reveal]").forEach(im=>im.onclick=()=>{im.classList.remove("nude");im.removeAttribute("data-reveal");const l=im.nextElementSibling;if(l)l.remove();im.dataset.zoom="";im.onclick=()=>{document.getElementById("zoomImg").src=im.src;document.getElementById("zoom").showModal()}});
 }
 applyLang();
-if(location.hash==="#clara")sample("clara-mercier.cof");else if(location.hash==="#duo")sample("clara-martien.cof");
+{const[h,t]=location.hash.slice(1).split("/");if(h==="clara")sample("clara-mercier.cof",t);else if(h==="duo")sample("clara-martien.cof",t)}
 </script>
 </body>
 </html>
