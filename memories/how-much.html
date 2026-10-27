@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>How much does a life weigh? — COF memories</title>
-<meta name="description" content="How many memories does a person hold, and how many bytes would they take in a file? What the research says, a calculator to test the hypotheses, and what it means for a near-exhaustive .cof.">
-<meta property="og:title" content="How much does a life weigh?">
+<title>How much could a life weigh? — COF memories</title>
+<meta name="description" content="How many autobiographical memories does a person hold, and how many bytes would they take in a file? What the research says, a calculator to test the hypotheses, and what it means for a near-exhaustive .cof.">
+<meta property="og:title" content="How much could a life weigh?">
 <meta property="og:description" content="A few thousand memories, a few gigabytes: a working hypothesis for AI characters with a past.">
 <meta property="og:image" content="https://yannsouetre.github.io/cof/memories/img/og-how-much.jpg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
@@ -131,30 +131,30 @@ footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:
 </head>
 <body>
 <section class="hero">
-  <div class="top" style="position:absolute;top:0;left:0;right:0"><img src="../builder/icon/cof-icon-dark.svg" alt=""><a href="../">COF</a><span>·</span><a href="./">memories</a><span>·</span><span>how much does a life weigh?</span></div>
+  <div class="top" style="position:absolute;top:0;left:0;right:0"><img src="../builder/icon/cof-icon-dark.svg" alt=""><a href="../">COF</a><span>·</span><a href="./">memories</a><span>·</span><span>how much could a life weigh?</span></div>
   <div class="text">
-  <h1>How much does<br>a life weigh?</h1>
+  <h1>How much could<br>a life weigh?</h1>
   <div class="rule"></div>
   <p class="voice">“From that year I could tell you maybe a hundred things. The rest, I know happened.”<small>CLARA MERCIER · IF YOU ASKED HER</small></p>
   </div>
 </section>
 
 <main>
-<p class="lede">COF gives AI characters a past. The obvious next question is the size of a past: how many memories does a person hold, and how many bytes would they take if each one were written down with its sensory traces? Nobody has measured either. This page says what the research does know, offers a working hypothesis, lets you test your own, and draws the consequence for a file that would hold a whole life.</p>
+<p class="lede">COF gives AI characters a past. The obvious next question is the size of a past: how many <b>autobiographical memories</b> does a person hold — the moments of one's own life, not the knowledge one has accumulated — and how many bytes would they take if each one were written down with its sensory traces? Nobody has measured either. This page says what the research does know, offers a working hypothesis, lets you test your own, and draws the consequence for a file that would hold a whole life.</p>
 
 <div class="tiles">
-  <div class="tile"><b>10²–10³</b><span>memories you can list unprompted — Galton's own estimate, confirmed by every study since</span></div>
-  <div class="tile hi"><b>≈ 5,000</b><span>the working hypothesis: about a hundred a year, over fifty years</span></div>
+  <div class="tile"><b>10²–10³</b><span>moments of your life you can list unprompted — Galton's own estimate, confirmed by every study since</span></div>
+  <div class="tile hi"><b>≈ 5 000</b><span>the working hypothesis: about a hundred a year, over fifty years</span></div>
   <div class="tile"><b>× 10</b><span>more when something cues them: a photo, a place, a smell — and more again by recognition</span></div>
   <div class="tile hi"><b>≈ 5 GB</b><span>what those five thousand would weigh in a file, if each kept a few sensory traces</span></div>
 </div>
 <p class="cap">Orders of magnitude, not measurements. Every figure below says where it comes from.</p>
 
-<h2>How many memories, according to the research</h2>
-<p>Francis Galton asked the question first, in 1879, on a walk: how many episodes of my life can I actually bring back? His answer — <em>hundreds or thousands, certainly not tens of thousands</em> — has held up for a century and a half. The one attempt to measure it directly (Crovitz, Schiffman &amp; Apter, 1991) cued people with words, dated each memory, fitted a power law to how memories thin out with age, and integrated it: <b>224 accessible episodes for the twenty years before the test</b>, a lower bound at the bottom of Galton's range; Dudai, reviewing it, notes that the fitted function most likely underestimates the older memories. Diaries tell the other side of the story: Willem Wagenaar wrote down 2,402 events over six years — about 400 a year he judged worth noting — and when he tested himself, about a fifth seemed gone; but once given the right cue, <em>no event turned out to be completely forgotten</em>. Recognition goes further still: people recognise thousands of pictures they saw once (Standing, 1973). Yigal Dudai's review (1997) puts the ladder in one line: recall of core episodes is counted in <b>thousands</b>, recognition reaches an order of magnitude more, and if you had kept one episode a day you would hold 25,000 by seventy.</p>
+<h2>How many autobiographical memories, according to the research</h2>
+<p>Francis Galton asked the question first, in 1879, on a walk: how many episodes of my own life can I actually bring back? (Not what he knew — Latin, the names of plants, the streets of London — but what had happened to him.) His answer — <em>hundreds or thousands, certainly not tens of thousands</em> — has held up for a century and a half. The one attempt to measure it directly (Crovitz, Schiffman &amp; Apter, 1991) cued people with words, dated each memory, fitted a power law to how memories thin out with age, and integrated it: <b>224 accessible episodes for the twenty years before the test</b>, a lower bound at the bottom of Galton's range; Dudai, reviewing it, notes that the fitted function most likely underestimates the older memories. Diaries tell the other side of the story: Willem Wagenaar wrote down 2 402 events over six years — about 400 a year he judged worth noting — and when he tested himself, about a fifth seemed gone; but once given the right cue, <em>no event turned out to be completely forgotten</em>. Recognition goes further still: people recognise thousands of pictures they saw once (Standing, 1973). Yigal Dudai's review (1997) puts the ladder in one line: recall of core episodes is counted in <b>thousands</b>, recognition reaches an order of magnitude more, and if you had kept one episode a day you would hold 25,000 by seventy.</p>
 
 <figure id="ladder"><svg viewBox="0 0 760 300" role="img" aria-label="Estimates of the number of autobiographical memories, on a logarithmic scale"></svg>
-<figcaption>Estimates of how many memories a person holds, on a logarithmic scale. Bars are ranges; the working hypothesis of this page sits between what people list unprompted and what cues bring back.</figcaption></figure>
+<figcaption>Estimates of how many autobiographical memories a person holds, on a logarithmic scale. Bars are ranges; the working hypothesis of this page sits between what people list unprompted and what cues bring back.</figcaption></figure>
 
 <p>So a hundred memories a year is not a measurement, but it is a defensible place to stand: it is the upper end of what Galton counted, a quarter of what Wagenaar found worth writing down, and the order of magnitude Dudai gives for core episodes. Over fifty years it makes about <b>five thousand</b> — the number this page will carry. With cues, multiply by five or ten; with an exceptional memory (the HSAM cases studied by LePort and colleagues recall nearly every day), by far more.</p>
 
@@ -165,11 +165,12 @@ footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:
 <figcaption>The typical profile (qualitative, after Rubin &amp; Schulkind) and, as dots, the ages of the nine memories Clara keeps at 65 in the example file: her grandmother's house at 8, the agency years 24–28, the studio at 28, the Martian and the dream at 29, the wedding at 31, then 56, 60 and 63.</figcaption></figure>
 
 <h2>Two ways of remembering — and what weighs</h2>
-<p>Not every memory is the same kind of thing. Endel Tulving separated <em>remembering</em> — travelling back, with images, a sound, the feel of a place — from <em>knowing</em>: being able to say that something happened, and tell it, without seeing it again. The first depends above all on visual imagery (Rubin, Schrauf &amp; Greenberg, 2003); people without mental imagery recall their own past with fewer details and less confidence (Monzel et al., 2024), and in the rare condition called SDAM a person knows the facts of their life yet cannot relive any of it (Palombo et al., 2015). Hearing comes second. Smell is special: odour-cued memories are older, rarer, more intense, less often revisited (Willander &amp; Larsson, 2006). Touch has no numbers at all.</p>
+<p>Not every autobiographical memory is the same kind of thing. Endel Tulving separated <em>remembering</em> — travelling back, with images, a sound, the feel of a place — from <em>knowing</em>: being able to say that something happened, and tell it, without seeing it again. The first depends above all on visual imagery (Rubin, Schrauf &amp; Greenberg, 2003); people without mental imagery recall their own past with fewer details and less confidence (Monzel et al., 2024), and in the rare condition called SDAM a person knows the facts of their life yet cannot relive any of it (Palombo et al., 2015). Hearing comes second. Smell is special: odour-cued memories are older, rarer, more intense, less often revisited (Willander &amp; Larsson, 2006). Touch has no numbers at all.</p>
 <p>This matters for weight, because <b>only remembered memories carry sensory traces</b>, and only sensory traces weigh anything. A known memory is a few lines of text: kilobytes. A remembered one is a picture or three, perhaps a sound, perhaps a few seconds of film: hundreds of kilobytes to a few megabytes. No study measures the share of each; the deduction that most of a life is known rather than relived is reasonable, not proven. The calculator below makes the share a slider.</p>
 
 <h3>What about the thousand songs you know?</h3>
 <p>Music looks like the exception. Most people can replay hundreds of pieces in their head, some of them almost note for note, and a professional musician holds a repertoire that would dwarf the count above. Two things the research says make it fit. First, a known song is not an autobiographical memory: it is knowledge, stored with the vocabulary and the faces one recognises, and it survives when episodic memory goes — the brain regions that hold long-known music are among the last spared in advanced Alzheimer's disease (Jacobsen et al., 2015). The evening you danced to it is the memory; the song is what the memory points at. Second, a song is stored as structure, not as sound: melody, rhythm and words, pinned to a surprisingly exact key and tempo (people sing familiar recordings within a semitone and within 8 % of the original tempo — Levitin, 1994; Levitin &amp; Cook, 1996), with the rest regenerated from a learned grammar of tonality and metre (Huron, 2006; Pearce, 2018). That is why a musician remembers a structured piece far better than the same notes shuffled (Halpern &amp; Bower, 1982), and why a song compresses so much better than an evening: a melody with its lyrics is a few kilobytes of symbols, a megabyte only as a recording. In a file, then, a piece of music is a reference — a title, a few bars, a ten-second trace like the river at night — attached to the memories it belongs to, not a thousand recordings. The envelope below does not move.</p>
+<p class="cap">The same goes for knowledge in general: COF's memories are autobiographical by design — moments and periods of a character's life — and a character's knowledge of its world lives in its personality and its documents. Nothing forbids an author from writing a piece of knowledge as a memory when the story wants it that way (a secret about its world that only the character holds, learned one night and kept), but that is not what this page counts.</p>
 
 <h3>The same shape as the file</h3>
 <p>Martin Conway's model of autobiographical memory (Conway &amp; Pleydell-Pearce, 2000) describes it as three levels: <em>lifetime periods</em>, <em>general events</em>, and <em>event-specific knowledge</em> — the sensory-perceptual details that make a moment vivid. A COF file holds the same three: periods, moments, and the media attached to a moment. The correspondence was not designed; it fell out of asking what a tool needs. It is reassuring all the same.</p>
@@ -242,7 +243,7 @@ footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:
   <div class="stack" id="stack"></div>
   <div class="legend"><span><i style="background:var(--c1)"></i>light</span><span><i style="background:var(--c2)"></i>standard</span><span><i style="background:var(--c3)"></i>rich</span><span><i style="background:var(--c4)"></i>known, words only</span></div>
   <div class="bars" id="bars" style="margin-top:18px"></div>
-  <p class="hint" style="margin-top:10px">Logarithmic scale. 1 GB = 1,000 MB. Clara's file is the 1.1 example as published.</p>
+  <p class="hint" style="margin-top:10px">Logarithmic scale. 1 GB = 1 000 MB. Clara's file is the 1.1 example as published.</p>
 </div>
 
 <h2>What it means for a file</h2>
@@ -272,7 +273,7 @@ footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:
   <p>Dudai, Y. (1997). How big is human memory, or on being just useful enough. <i>Learning &amp; Memory</i>, 3, 341–365 — the review that reports Crovitz's 224 and the one-a-day arithmetic.</p>
   <p>Wagenaar, W. A. (1986). My memory: a study of autobiographical memory over six years. <i>Cognitive Psychology</i>, 18, 225–252.</p>
   <p>Linton, M. (1978). Real world memory after six years. In Gruneberg, Morris &amp; Sykes (eds), <i>Practical Aspects of Memory</i>.</p>
-  <p>Standing, L. (1973). Learning 10,000 pictures. <i>Quarterly Journal of Experimental Psychology</i>, 25, 207–222.</p>
+  <p>Standing, L. (1973). Learning 10 000 pictures. <i>Quarterly Journal of Experimental Psychology</i>, 25, 207–222.</p>
   <p>Rubin, D. C. &amp; Schulkind, M. D. (1997). The distribution of autobiographical memories across the lifespan. <i>Memory &amp; Cognition</i>, 25, 859–866.</p>
   <p>Tulving, E. (1985). Memory and consciousness. <i>Canadian Psychology</i>, 26, 1–12.</p>
   <p>Conway, M. A. &amp; Pleydell-Pearce, C. W. (2000). The construction of autobiographical memories in the self-memory system. <i>Psychological Review</i>, 107, 261–288.</p>
@@ -300,7 +301,7 @@ footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:
 <script>
 (function(){
 const $=s=>document.querySelector(s);
-const fmtN=n=>Math.round(n).toLocaleString("en-US");
+const fmtN=n=>Math.round(n).toLocaleString("en-US").replace(/,/g,"\u202f");
 function fmtMB(mb){if(!isFinite(mb)||mb<=0)return "0 MB";if(mb<1)return (mb*1000).toLocaleString("en-US",{maximumFractionDigits:0})+" KB";if(mb<1000)return mb.toLocaleString("en-US",{maximumFractionDigits:mb<10?1:0})+" MB";if(mb<1e6)return (mb/1000).toLocaleString("en-US",{maximumFractionDigits:mb<1e4?2:1})+" GB";return (mb/1e6).toLocaleString("en-US",{maximumFractionDigits:2})+" TB"}
 
 /* ---- figure 1: the ladder (log scale) ---- */
