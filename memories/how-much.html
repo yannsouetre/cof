@@ -170,6 +170,8 @@ footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:
 
 <h3>What about the thousand songs you know?</h3>
 <p>Music looks like the exception. Most people can replay hundreds of pieces in their head, some of them almost note for note, and a professional musician holds a repertoire that would dwarf the count above. Two things the research says make it fit. First, a known song is not an autobiographical memory: it is knowledge, stored with the vocabulary and the faces one recognises, and it survives when episodic memory goes — the brain regions that hold long-known music are among the last spared in advanced Alzheimer's disease (Jacobsen et al., 2015). The evening you danced to it is the memory; the song is what the memory points at. Second, a song is stored as structure, not as sound: melody, rhythm and words, pinned to a surprisingly exact key and tempo (people sing familiar recordings within a semitone and within 8 % of the original tempo — Levitin, 1994; Levitin &amp; Cook, 1996), with the rest regenerated from a learned grammar of tonality and metre (Huron, 2006; Pearce, 2018). That is why a musician remembers a structured piece far better than the same notes shuffled (Halpern &amp; Bower, 1982), and why a song compresses so much better than an evening: a melody with its lyrics is a few kilobytes of symbols, a megabyte only as a recording. In a file, then, a piece of music is a reference — a title, a few bars, a ten-second trace like the river at night — attached to the memories it belongs to, not a thousand recordings. The envelope below does not move.</p>
+<figure id="know"><svg viewBox="0 0 720 230" role="img" aria-label="What a character knows and what it remembers: two overlapping sets"></svg>
+<figcaption>What a character <i>knows</i> and what it <i>remembers</i> are two different stores, with a small overlap an author can use on purpose.</figcaption></figure>
 <p class="cap">The same goes for knowledge in general: COF's memories are autobiographical by design — moments and periods of a character's life — and a character's knowledge of its world lives in its personality and its documents. Nothing forbids an author from writing a piece of knowledge as a memory when the story wants it that way (a secret about its world that only the character holds, learned one night and kept), but that is not what this page counts.</p>
 
 <h3>The same shape as the file</h3>
@@ -247,7 +249,7 @@ footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:
 </div>
 
 <h2>What it means for a file</h2>
-<p>Take the working hypothesis seriously and the envelope of a <em>near-exhaustive</em> character — a life's worth of memories, at today's media sizes — is a few gigabytes. That is not a problem. It is a DVD, a tenth of a phone, a small fraction of what a single generated video weighs. The format already handles it: a <code>.cof</code> is a ZIP container (zip64 accepted) whose first two entries identify it and hold the manifest, so a reader knows what is inside before extracting anything; media are extracted on demand; the builder keeps a memory to one to three media and a video over 20 MB has to be acknowledged on its memory. The rest of a character — references, voice samples, a 3D model, motion clips — is far lighter than its past.</p>
+<p>Take the working hypothesis seriously and the envelope of a <em>near-exhaustive</em> character — a life's worth of autobiographical memories, at today's media sizes — is a few gigabytes. That is not a problem. It is a DVD, a tenth of a phone, a small fraction of what a single generated video weighs. The format already handles it: a <code>.cof</code> is a ZIP container (zip64 accepted) whose first two entries identify it and hold the manifest, so a reader knows what is inside before extracting anything; media are extracted on demand; the builder keeps a memory to one to three media and a video over 20 MB has to be acknowledged on its memory. The rest of a character — references, voice samples, a 3D model, motion clips — is far lighter than its past.</p>
 <div class="targets">
   <div><b>≤ 5 GB</b><span><b>memories.</b> About five thousand of them with sensory traces at a megabyte each — or many more if most are known rather than relived. The ceiling we suggest for a near-exhaustive character.</span></div>
   <div><b>≤ 1 GB</b><span><b>everything else.</b> Faces and references, voice, 3D, motion, documents. Clara's today weigh 16 MB; a character with film-quality references and several voices stays under a gigabyte.</span></div>
@@ -344,6 +346,25 @@ const clara=[8,28,29,29,31,56,60,63];
 s+=`<rect x="${x(24)}" y="${yb+28}" width="${x(28)-x(24)}" height="6" rx="3" fill="#8a6ad6" opacity=".9"/>`;
 const seen={};clara.forEach(a=>{seen[a]=(seen[a]||0)+1;s+=`<circle cx="${x(a)}" cy="${yb+31-(seen[a]-1)*9}" r="4.5" fill="#8a6ad6"/>`});
 s+=`<text class="sub" x="${R}" y="${yb+50}" text-anchor="end" style="fill:#cbbcf0">Clara at 65 · her nine memories, by age</text><text class="sub" x="${L}" y="${yb+34}">age</text>`;
+svg.innerHTML=s})();
+
+/* ---- figure 3: knowledge vs autobiographical memory ---- */
+(function(){
+const svg=$("#know svg");const T='font:400 13px Plex,system-ui,sans-serif';
+const s=`
+<ellipse cx="215" cy="112" rx="200" ry="90" fill="rgba(61,139,208,.10)" stroke="#3d8bd0" stroke-width="1.5"/>
+<ellipse cx="505" cy="112" rx="200" ry="90" fill="rgba(47,168,142,.12)" stroke="#2fa88e" stroke-width="1.5"/>
+<text x="150" y="74" text-anchor="middle" style="font:500 14px Plex,system-ui,sans-serif;fill:#9cc8ee">what it knows</text>
+<text x="150" y="98" text-anchor="middle" style="${T};fill:#d9e0dd">its language, its world,</text>
+<text x="150" y="116" text-anchor="middle" style="${T};fill:#d9e0dd">its skills, the thousand songs</text>
+<text x="150" y="150" text-anchor="middle" style="${T};fill:#7d8d89">→ personality, documents</text>
+<text x="570" y="74" text-anchor="middle" style="font:500 14px Plex,system-ui,sans-serif;fill:#9fe0cd">what it remembers</text>
+<text x="570" y="98" text-anchor="middle" style="${T};fill:#d9e0dd">moments and periods of its life,</text>
+<text x="570" y="116" text-anchor="middle" style="${T};fill:#d9e0dd">with their sensory traces</text>
+<text x="570" y="150" text-anchor="middle" style="${T};fill:#7d8d89">→ memories, what this page counts</text>
+<text x="360" y="96" text-anchor="middle" style="${T};fill:#eef3f1">a secret about its world,</text>
+<text x="360" y="114" text-anchor="middle" style="${T};fill:#eef3f1">learned one night and kept</text>
+<text x="360" y="140" text-anchor="middle" style="${T};fill:#7d8d89">→ a memory, by choice</text>`;
 svg.innerHTML=s})();
 
 /* ---- calculator ---- */
