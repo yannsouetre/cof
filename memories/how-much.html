@@ -194,10 +194,12 @@ footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:
   <tr><td><b>All sixteen</b></td><td>14 moments with media, 2 periods without</td><td class="n">5.2 MB · mean 330 KB</td></tr>
 </table>
 <p class="cap">Measured on <code>spec/examples/10-clara-mercier</code>, COF 1.1. The whole character, with her faces, voice and motion clips, is 21 MB unpacked — 15.5 MB as a <code>.cof</code>.</p>
+<figure id="spread"><svg viewBox="0 0 760 250" role="img" aria-label="What a memory weighs: a skewed distribution on a logarithmic scale, from a kilobyte to tens of megabytes, mean about one megabyte, with Clara's sixteen memories marked"></svg>
+<figcaption>What a memory weighs, as we expect it to spread — <b>an extrapolation, not a measurement</b>: a few kilobytes for a memory told in words, a few hundred for one with a picture, tens of megabytes for a long clip. The tail of videos pulls the mean to about a megabyte while most memories weigh far less. Clara's sixteen are the dots.</figcaption></figure>
 <p>So in practice a memory with one picture is a quarter of a megabyte; a rich one, three pictures and a clip, is a megabyte. Triple the resolution — a phone photo rather than a generated one, 1080p rather than 480p — and the same memories weigh three times as much. <b>A megabyte per remembered memory</b> is therefore a fair average at today's sizes, with a factor of three either way depending on how much you keep.</p>
 
 <h2>Try your own numbers</h2>
-<p>Every assumption above is a control here. The defaults are the working hypothesis: a hundred memories a year from the age of three, all of them remembered rather than merely known, with a mix of light, standard and rich media sized on Clara's file. Change any of it.</p>
+<p>Every assumption above is a control here. The defaults are the working hypothesis: a hundred memories a year from the age of three, all of them remembered rather than merely known, with a mix of light, standard and rich media sized on Clara's file and scaled to phone-quality media. Change any of it.</p>
 
 <div class="calc" id="calc">
   <div class="scen" id="scen">
@@ -252,7 +254,7 @@ footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:
 <h2>What it means for a file</h2>
 <p>Take the working hypothesis seriously and the envelope of a <em>near-exhaustive</em> character — a life's worth of autobiographical memories, at today's media sizes — is a few gigabytes. That is not a problem. It is a DVD, a few per cent of a phone. The format already handles it: a <code>.cof</code> is a ZIP container (zip64 accepted) whose first two entries identify it and hold the manifest, so a reader knows what is inside before extracting anything; media are extracted on demand; the builder flags a memory with more than three images, and a video over 20 MB has to be acknowledged on its memory. The rest of a character — references, voice samples, a 3D model, motion clips — is far lighter than its past.</p>
 <div class="targets">
-  <div><b>≤ 5 GB</b><span><b>memories.</b> About five thousand of them with sensory traces at a megabyte each — or many more if most are known rather than relived. The ceiling we suggest for a near-exhaustive character.</span></div>
+  <div><b>≈ 5 GB</b><span><b>memories.</b> About five thousand of them with sensory traces at a megabyte each — or many more if most are known rather than relived. The order of magnitude we suggest for a near-exhaustive character.</span></div>
   <div><b>≤ 1 GB</b><span><b>everything else.</b> Faces and references, voice, 3D, motion, documents. Clara's today weigh 16 MB unpacked; a character with film-quality references and several voices stays under a gigabyte.</span></div>
 </div>
 <p class="cap">A working envelope, not a rule of the format: COF puts no limit on a file. It is what a platform could plan for: a complete character fits on a phone, with room to spare.</p>
@@ -348,6 +350,26 @@ const clara=[8,28,29,29,31,56,60,63];
 s+=`<rect x="${x(24)}" y="${yb+28}" width="${x(28)-x(24)}" height="6" rx="3" fill="#8a6ad6" opacity=".9"/>`;
 const seen={};clara.forEach(a=>{seen[a]=(seen[a]||0)+1;s+=`<circle cx="${x(a)}" cy="${yb+31-(seen[a]-1)*9}" r="4.5" fill="#8a6ad6"/>`});
 s+=`<text class="sub" x="${R}" y="${yb+50}" text-anchor="end" style="fill:#cbbcf0">Clara at 65 · her nine memories, by age</text><text class="sub" x="${L}" y="${yb+34}">age</text>`;
+svg.innerHTML=s})();
+
+/* ---- figure 2 bis: the spread of a memory's weight (log-normal, log scale) — an extrapolation anchored on Clara ---- */
+(function(){
+const svg=$("#spread svg");const W=760,L=56,R=724,T=26,B=196;
+const CLARA=[1199,1296,185503,201880,210097,210130,254314,279786,281601,289470,289773,298056,313412,404367,867036,1135131];   // bytes per node: memory.json + its media (example 10)
+const med=300e3,mean=1e6;const mu=Math.log(med),sg=Math.sqrt(2*Math.log(mean/med));   // log-normal: median 300 KB, mean 1 MB (the page's hypothesis)
+const lo=1e3,hi=1e8;const x=v=>L+(Math.log10(v)-3)*(R-L)/5;
+const pdf=v=>Math.exp(-((Math.log(v)-mu)**2)/(2*sg*sg))/(v*sg*Math.sqrt(2*Math.PI))*v;   // density per log-unit (what a log axis shows)
+let top=0;const pts=[];for(let i=0;i<=200;i++){const v=lo*Math.pow(hi/lo,i/200);const d=pdf(v);top=Math.max(top,d);pts.push([v,d])}
+const y=d=>B-(d/top)*(B-T);
+let path="";pts.forEach(([v,d],i)=>{path+=(i?"L":"M")+x(v).toFixed(1)+" "+y(d).toFixed(1)+" "});
+let s=`<path d="${path}L${R} ${B} L${L} ${B}Z" fill="rgba(47,168,142,.14)"/><path d="${path}" fill="none" stroke="#2fa88e" stroke-width="2"/>`;
+for(const [v,l] of [[1e3,"1 KB"],[1e4,"10 KB"],[1e5,"100 KB"],[1e6,"1 MB"],[1e7,"10 MB"],[1e8,"100 MB"]])s+=`<line class="ax" x1="${x(v)}" y1="${B}" x2="${x(v)}" y2="${B+6}"/><text class="tk" x="${x(v)}" y="${B+22}" text-anchor="middle">${l}</text>`;
+s+=`<line class="ax" x1="${L}" y1="${B}" x2="${R}" y2="${B}"/>`;
+const mark=(v,lab,col,dyl)=>{s+=`<line x1="${x(v)}" y1="${T-6}" x2="${x(v)}" y2="${B}" stroke="${col}" stroke-width="1.2" stroke-dasharray="4 4"/><text x="${x(v)+6}" y="${T+dyl}" style="font:500 13px Plex,system-ui,sans-serif;fill:${col}">${lab}</text>`};
+mark(med,"median · 300 KB","#9fe0cd",6);mark(mean,"mean · 1 MB","#a98ae8",24);
+s+=`<text class="sub" x="${x(2e3)}" y="${B-10}" style="fill:#7d8d89">a memory in words</text><text class="sub" x="${x(2.2e7)}" y="${B-10}" style="fill:#7d8d89">a long clip</text>`;
+CLARA.forEach(v=>{s+=`<circle cx="${x(v)}" cy="${B-7}" r="4.5" fill="#c4842a" opacity=".9"><title>${(v/1e3).toFixed(0)} KB</title></circle>`});
+s+=`<text class="sub" x="${(L+R)/2}" y="${B+42}" text-anchor="middle">weight of one memory · logarithmic scale · dots: Clara's sixteen</text>`;
 svg.innerHTML=s})();
 
 /* ---- figure 3: knowledge vs autobiographical memory ---- */

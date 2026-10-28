@@ -4,7 +4,7 @@
 - Author: Yann Souetre (with Claude)
 - Date: 2026-10-25 (draft)
 - Target: COF 1.2 — additive only; every 1.0 and 1.1 file stays valid and every earlier reader keeps working (§ 8)
-- Companion note (French, private): "COF — Psyché : conception"
+- Design journal: kept by the author, not published; this document is the only text to review
 
 ## 1. Motivation — and the objection first
 

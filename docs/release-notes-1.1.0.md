@@ -40,4 +40,4 @@ See `CITATION.cff`; this release is archived with a DOI on Zenodo.
 
 Code MIT; specification, documentation and examples CC BY 4.0; schemas and vocabularies CC0.
 
-Full history: `CHANGELOG.md`. Feedback: GitHub issues — format changes go through a public RFC (14 days).
+Full history: `CHANGELOG.md`. Feedback: GitHub issues. RFC 0002 and RFC 0003 open with this release and take comments until 14 November 2026: 1.1 is additive only, so what the comments change will ship in 1.1.1 rather than hold the release.
