@@ -4,7 +4,7 @@
 - Author: Yann Souetre (with Claude)
 - Date: 2026-10-24 (draft)
 - Target: COF **1.1** — additive only; every 1.0 file stays valid and every 1.0 reader keeps working (§ 7)
-- Reference implementation (same branch): `cof-cli` 1.1.0 (validator, `export --agent`, `extract` purges), explorer 1.1 (timeline), builder 0.13.0 (Memories step), ComfyUI-COF 0.6.0 (COF Memories node and preview workflow), example 10, the seed pipeline `tools/seed/memories.py`, fixture and negative corpus (§ 10)
+- Reference implementation (same branch): `cof-cli` 1.1.0 (validator, `export --format agent`, `extract` purges), explorer 1.1 (timeline), builder 0.13.0 (Memories step), ComfyUI-COF 0.6.0 (COF Memories node and preview workflow), example 10, the seed pipeline `tools/seed/memories.py`, fixture and negative corpus (§ 10)
 
 ## 1. Motivation
 
@@ -16,7 +16,7 @@ What is new here is not episodic memory for agents (Generative Agents, 2023; Mem
 
 ## 2. What already exists, and the boundary
 
-- **`files` / `kind: memory`** (1.0, SPEC § 7 bis) carries an agent's memory file **in the host's own format** (`MEMORY.md`, dated notes): opaque, copied as-is by `cof export --agent`. It stays. The new category is the **structured, portable** form; a file may hold both. The agent export combines them (§ 6.4).
+- **`files` / `kind: memory`** (1.0, SPEC § 7 bis) carries an agent's memory file **in the host's own format** (`MEMORY.md`, dated notes): opaque, copied as-is by `cof export --format agent`. It stays. The new category is the **structured, portable** form; a file may hold both. The agent export combines them (§ 6.4).
 - **`personality/psyche.json`** (typed traits, goals, fears, values) describes the character *now*. It is untouched. A later RFC — **RFC 0004, "psyche graph", targeted at COF 1.2 shortly after 1.1** — will add the inner life (values, beliefs, wants, needs, fears, wounds, stances) as nodes of the same mechanism, linked `because` to memories; this RFC defines the mechanism so that the two categories link to each other.
 - **`appearance` / `volume3d` `environment`** are the places a character is tied to. A memory points to one (§ 4.6); it does not define places. A hierarchy of places (room ⊂ house ⊂ town) is world knowledge, left to a future "world" category built on the same mechanism (§ 9).
 - The emotion structure of `psyche.json` (`baseline_emotion`: an EmotionML category and PAD dimensions) is reused as-is for feelings (§ 4.8). No new vocabulary.
@@ -183,7 +183,7 @@ The preset bundle gains the gists (ordered) and the thumbnails of memory media, 
 Memories do not enter the completeness score in 1.1 (a new layer would change every 1.0 score). They appear in `coverage`, and in the automatic tag `has-memories`.
 
 ### 6.4 Exports
-- `cof export --agent`: `MEMORY.md` = the host memory file of `files/memory` when present, followed by a section "Memories" listing the canon gists in timeline order with their age/date, `disclosure` and fidelity as markers (`factual` marked for a real person's memories only; `secret` and `guarded` gists are exported with their marker — the workspace file is the agent's context, the rule of § 3.3 is about what it says in a reply); a `memories/<id>/` folder with the media of non-explicit nodes, minus the media that show another real person (the § 4.5 guard applies to the export as to the extract: the agent workspace carries no consent record at all). `personal` nodes are not exported unless `--keep-personal`.
+- `cof export --format agent`: `MEMORY.md` = the host memory file of `files/memory` when present, followed by a section "Memories" listing the canon gists in timeline order with their age/date, `disclosure` and fidelity as markers (`factual` marked for a real person's memories only; `secret` and `guarded` gists are exported with their marker — the workspace file is the agent's context, the rule of § 3.3 is about what it says in a reply); a `memories/<id>/` folder with the media of non-explicit nodes, minus the media that show another real person (the § 4.5 guard applies to the export as to the extract: the agent workspace carries no consent record at all). `personal` nodes are not exported unless `--keep-personal`.
 - `cof extract`: § 4.5 and § 5.7–5.8.
 - The explorer shows a timeline by age (undated apart), the gist in the preset's language, media on click (explicit never; nude only on opt-in on an adult preset). Its tabs follow the builder's categories, in the builder's order and with its icons (personality, look, identity weights, 3D, voice, postures, motions, skills and files, memories, rights); a 🔍 on every element and every memory opens every parameter read-only (the manifest entry, then the node file or sub-file). The graph labels a membership computed by dates "during".
 

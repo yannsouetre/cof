@@ -3,6 +3,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import zipfile
+import shutil
+import math
+import re
 import sys
 import tempfile
 from pathlib import Path
@@ -161,6 +165,11 @@ def cmd_import(a):
     return _print_report(rep, a.json)
 
 
+def _fname(manifest: dict) -> str:
+    """A default output name from the character's name: a plain file name, never a path."""
+    return re.sub(r"[^A-Za-z0-9._-]+", "-", str(manifest.get("name") or "character")).strip("-.") or "character"
+
+
 def cmd_export(a):
     src = Path(a.src)
     with tempfile.TemporaryDirectory() as td:
@@ -182,7 +191,7 @@ def cmd_export(a):
                 png = (d / head).read_bytes()
             else:
                 png = _placeholder_png(d / head if head else None)
-            out = out or Path(f"{manifest['name']}.png")
+            out = out or Path(f"{_fname(manifest)}.png")
             out.write_bytes(write_card_to_png(png, card))
         elif fmt == "soul":
             soul, identity = export_soul(d, pid)
@@ -192,14 +201,14 @@ def cmd_export(a):
             (out / "IDENTITY.md").write_text(identity, "utf-8")
         elif fmt == "agent":
             from .convert import export_agent
-            out = out or Path(f"{manifest['name']}-agent")
+            out = out or Path(f"{_fname(manifest)}-agent")
             done = export_agent(d, out, pid, keep_personal=getattr(a, "keep_personal", False))
             print(f"skills: {', '.join(done['skills']) or '—'} · memory files: {len(done['memories'])} · memories (nodes): {done.get('memory_nodes', 0)} · documents: {len(done['documents'])}")
             if done.get("personal_dropped"):
                 print(f"personal memories not exported: {done['personal_dropped']} (--keep-personal exports them)")
         elif fmt == "card":
             card = json.loads((d / card_path).read_text("utf-8"))
-            out = out or Path(f"{manifest['name']}.card.json")
+            out = out or Path(f"{_fname(manifest)}.card.json")
             out.write_text(json.dumps(card, ensure_ascii=False, indent=2), "utf-8")
         else:
             print(f"unsupported format: {fmt}", file=sys.stderr)
@@ -210,13 +219,14 @@ def cmd_export(a):
 
 def cmd_merge(a):
     dirs = []
-    for src in a.sources:
-        p = Path(src)
-        if p.is_file():
-            td = Path(tempfile.mkdtemp()); unpack(p, td); dirs.append(td)
-        else:
-            dirs.append(p)
-    merge_dirs(dirs, Path(a.out))
+    with tempfile.TemporaryDirectory(prefix="cof-merge-") as td:
+        for i, src in enumerate(a.sources):
+            p = Path(src)
+            if p.is_file():
+                d = Path(td) / str(i); unpack(p, d); dirs.append(d)
+            else:
+                dirs.append(p)
+        merge_dirs(dirs, Path(a.out))
     rep = Report(); validate_dir(Path(a.out), rep, recompute=True)
     Path(a.out, "manifest.json").write_text(json.dumps(json.loads(Path(a.out, "manifest.json").read_text("utf-8")) | {}, ensure_ascii=False, indent=2) + "\n", "utf-8")
     print(f"merged into: {a.out}")
@@ -232,11 +242,18 @@ def cmd_memory_add(a):
             print("ERROR  --gist expects LANG=TEXT (e.g. fr=\"…\")", file=sys.stderr); return 2
         k, v = g.split("=", 1); gists[k.strip()] = v.strip()
     src = Path(a.src)
+    if not src.exists():
+        print(f"ERROR  {src}: no such file or folder", file=sys.stderr); return 2
+    if a.age is not None and not (math.isfinite(a.age) and 0 <= a.age <= 200):
+        print("ERROR  --age must be a number of years between 0 and 200", file=sys.stderr); return 2
     is_file = src.is_file()
-    work = Path(tempfile.mkdtemp(prefix="cof-mem-")) / "x" if is_file else src
+    tmp = tempfile.TemporaryDirectory(prefix="cof-mem-")             # a folder is edited through a copy: nothing lands in it unless the result validates
+    work = Path(tmp.name) / "x"
     try:
         if is_file:
             unpack(src, work)
+        else:
+            shutil.copytree(src, work)
         vid = memory_add(work, identity=a.identity, kind=a.kind, gists=gists, label=a.label, age=a.age, date=a.date, approx=a.approx, where=a.where,
                          who=a.who, tags=a.tag, personal=a.personal, origin=a.origin, disclosure=a.disclosure, fidelity=a.fidelity, salience=a.salience,
                          media=[Path(x) for x in (a.media or [])], presets=a.preset, self_shown=a.self_shown)
@@ -252,12 +269,15 @@ def cmd_memory_add(a):
             pack(work, out)
             print(f"added {vid} → {out}")
         else:
-            print(f"added {vid} in {work}")
+            shutil.copytree(work, src, dirs_exist_ok=True)
+            print(f"added {vid} in {src}")
         for w in rep.warnings:
             print(f"WARN   {w}")
         return 0
     except (ValueError, ContainerError) as e:
         print(f"ERROR  {e}", file=sys.stderr); return 2
+    finally:
+        tmp.cleanup()
 
 
 def cmd_extract(a):
@@ -358,8 +378,14 @@ def main(argv=None) -> int:
     a = ap.parse_args(argv)
     try:
         return a.fn(a)
-    except (ContainerError, ValueError) as e:
+    except (ContainerError, ValueError) as e:                    # ValueError covers JSONDecodeError
         print(f"ERROR  {e}", file=sys.stderr)
+        return 1
+    except zipfile.BadZipFile as e:
+        print(f"ERROR  not a .cof archive: {e}", file=sys.stderr)
+        return 1
+    except OSError as e:
+        print(f"ERROR  {e.strerror or e}: {e.filename or ''}".rstrip(": "), file=sys.stderr)
         return 1
 
 

@@ -37,6 +37,8 @@ def compute_preset(manifest: dict, pid: str | None, src: Path | None = None) -> 
     if p and p.get("kind") == "card" and p.get("card"):
         s += 30
         card = _load(src, p["card"]); d = (card or {}).get("data", {})
+        if not isinstance(d, dict):
+            d = {}
         if card is None and src is None:
             s += 25
         s += 10 * bool(d.get("description")) + 10 * bool(d.get("personality")) + 5 * bool(d.get("scenario")) + 10 * bool(d.get("first_mes")) + 10 * bool(d.get("mes_example"))

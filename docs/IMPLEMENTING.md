@@ -113,7 +113,7 @@ def resolve(m, pid=None):
 
 | Profile | Read | Map to |
 |---|---|---|
-| **chat** (companion, roleplay, assistant) | `personality` variant: `kind: card` → `card.json` (Character Card V3, fully compatible with SillyTavern/Chub); `kind: description` → `text`; optional `psyche.json` | system prompt / persona fields. A `.cof` with a card can be exported back to a PNG card (`cof export --png`) |
+| **chat** (companion, roleplay, assistant) | `personality` variant: `kind: card` → `card.json` (Character Card V3, fully compatible with SillyTavern/Chub); `kind: description` → `text`; optional `psyche.json` | system prompt / persona fields. A `.cof` with a card can be exported back to a PNG card (`cof export --format png`) |
 | **visual** (image/video generation) | `appearance` variants: `face`, `body`, `character-sheet`, `reference-set` images (with `subject`/`angle`/`framing`), `hair.json`/`body.json` codes, `style` + `style_tags`; `identity_weights` → `weights.json` (`base_model` is REQUIRED, `trigger_words`, `recommended_weight`, `covers`); `kind: reference-latent` = a pre-encoded reference (e.g. MiniMax H3 RefMod) — load it only when `base_model` matches your model, otherwise fall back to the images listed in `encoding.sources` (re-encode them if you can) | reference images (IP-Adapter, PuLID, InstantID…), LoRA / RefMod loading, prompt fragments (`renderings.prompt`). Honour `priorities.visual` / `priorities.by_target` when several representations exist |
 | **voice** (TTS, cloning) | `voice` variant: `samples` (assets with optional `transcript`, `emotion`, `language`) or `described`; `profile.json` (`canonical`, `prompt_renderings`, `ssml_template`) | zero-shot cloning from samples (only if `allowVoiceCloning` and, for a real person, `consent.scope ∋ voice-synthesis`), or a described voice via `prompt_renderings` |
 | **3d** (engines, VTubing, XR) | `volume3d` `mesh` (VRM 1.0 / GLB, `rig`), `face-mesh` (`blendshapes`), `motion` clips (BVH/VRMA) + `visemes.json`, `attitude.json` (LMA movement signature) | avatar import, animation library, lip-sync vocabulary (ARKit-52, Oculus-15…) |
@@ -199,7 +199,7 @@ Purges a host may apply at import: `cof extract --all-audiences` (intimate and n
 ## 10. Conformance testing
 
 - **Reference validator**: `pip install "git+https://github.com/yannsouetre/cof#subdirectory=cli"` (MIT; PyPI package `cof-cli` after 1.0.0) → `cof validate file.cof` (schemas + rules + completeness; `--json` for CI).
-- **Test vectors**: `spec/examples/` (text-only, appearance, multi-preset, robot, medieval, modular, mixed adult/minor, agent with skills, flagship bilingual, cast of two characters…) — each MUST validate. A negative corpus ships in `tests/invalid/`: 46 files, one rule violated per file, each listed in `cases.json` with the rule and the spec section — a conformant validator rejects every one of them, and accepts `_base.cof`.
+- **Test vectors**: `spec/examples/` (text-only, a schoolgirl, appearance, a Martian, medieval, modular, agent with skills, flagship bilingual with memories, cast of two characters) — each MUST validate. A negative corpus ships in `tests/invalid/`: 63 files, one rule violated per file, each listed in `cases.json` with the rule and the spec section — a conformant validator rejects every one of them, and accepts `_base.cof`.
 - **Builder**: `builder/index.html`, offline, zero dependencies — a reference *writer*.
 - A reader SHOULD at least open every positive vector without error and refuse every negative vector that concerns its classes.
 

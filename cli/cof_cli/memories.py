@@ -1,6 +1,6 @@
 """Reading the `memories` category (RFC 0002): node files, timeline order, gist language, effective media.
 
-Shared by the validator, `cof export --agent`, `cof extract` and the coherence checks. Nothing here writes a file.
+Shared by the validator, `cof export --format agent`, `cof extract` and the coherence checks. Nothing here writes a file.
 """
 from __future__ import annotations
 

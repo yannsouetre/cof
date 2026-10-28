@@ -139,7 +139,7 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 <body>
 <header>
   <div class="brand"><svg class="logo" viewBox="0 0 64 64" width="30" height="30" aria-hidden="true"><circle cx="32" cy="17.5" r="13" fill="currentColor"/><path d="M5.5 60a26.5 26 0 0 1 53 0Z" fill="currentColor"/><circle cx="32" cy="47" r="7" fill="var(--panel)"/></svg>
-  <h1>COF Explorer <span>· Character Open File 1.0 · <span id="ver">explorer 1.1</span></span></h1></div>
+  <h1>COF Explorer <span>· Character Open File 1.1 · <span id="ver">explorer 1.1</span></span></h1></div>
   <span class="muted tagline" data-i="tagline">Read-only. Your file never leaves your browser.</span>
   <span class="spacer"></span>
   <button id="btnOpen" class="primary" data-i="open">Open a .cof</button>
@@ -266,11 +266,11 @@ function charDefault(iid){const d=(ids()[iid]||{}).default_preset;if(d&&P()[d])r
 async function openBuffer(buf){
   const err=document.getElementById("loadErr");err.hidden=true;
   try{
-    Z=await zipRead(buf);const mf=await jsonAt("manifest.json");if(!mf)throw new Error("manifest.json missing");
+    const Z0=Z;Z=await zipRead(buf);let mf=null;try{mf=await jsonAt("manifest.json")}finally{if(!mf)Z=Z0}if(!mf)throw new Error("manifest.json missing or not valid JSON");
     for(const u of urls.values())URL.revokeObjectURL(u);urls.clear();
     M=mf;_A=null;memNodes.clear();filter={};tab="look";curChar=charIds()[0];curPreset=charDefault(curChar);
     document.getElementById("drop").hidden=true;document.getElementById("app").hidden=false;render();
-  }catch(e){err.textContent=tr("badFile")+e.message;err.hidden=false}
+  }catch(e){err.textContent=tr("badFile")+e.message;err.hidden=false;if(document.getElementById("drop").hidden)alert(err.textContent)}
 }
 document.getElementById("btnOpen").onclick=()=>document.getElementById("file").click();
 document.getElementById("file").onchange=async e=>{const f=e.target.files[0];if(f)openBuffer(await f.arrayBuffer())};
@@ -314,12 +314,14 @@ function memTimeline(vids,nodes){
   const by=[];for(const v of vids){const [a,y]=nodePoint(resolveVariant("memories",v).kind,nodes[v]);if(a!==null&&y!==null)by.push(y-a)}
   const birth=by.length?by.sort((x,y)=>x-y)[Math.floor(by.length/2)]:null;const key={};
   for(const v of vids){let [a,y]=nodePoint(resolveVariant("memories",v).kind,nodes[v]);if(a===null&&y!==null)a=birth!==null?y-birth:10000+y;if(a!==null)key[v]=a}
-  for(let i=0;i<vids.length;i++){let ch=false;for(const v of vids){if(v in key)continue;for(const l of nodes[v].links||[]){const [c,,tg]=String(l.to||"").split(/\/(.*)/);if(c==="memories"&&tg in key){key[v]=key[tg]+0.001;ch=true;break}}}if(!ch)break}
+  for(let i=0;i<vids.length;i++){let ch=false;for(const v of vids){if(v in key)continue;for(const l of nodes[v].links||[]){const [c,tg]=String(l.to||"").split(/\/(.*)/);if(c==="memories"&&tg&&Object.prototype.hasOwnProperty.call(key,tg)){key[v]=key[tg]+0.001;ch=true;break}}}if(!ch)break}
   const dated=vids.filter(v=>v in key).sort((x,y)=>key[x]-key[y]||vids.indexOf(x)-vids.indexOf(y));return [...dated,...vids.filter(v=>!(v in key))]}
-function textIn(o,lang){if(!o||typeof o!=="object")return "";const low={};for(const [k,v] of Object.entries(o))low[k.toLowerCase()]=v;return low[lang.toLowerCase()]||low[lang.split("-")[0].toLowerCase()]||Object.values(o)[0]||""}
-function gistLang(pid,vid,n){const g=n.gist||{};if(!Object.keys(g).length)return ["",""];const want=[];const pers=(resolved(slots(pid)).personality||[])[0];if(pers&&pers.language)want.push(pers.language);const il=(ids()[variantOwner("memories",vid)]||{}).language;if(il)want.push(il);want.push(LANG);const low={};for(const k of Object.keys(g))low[k.toLowerCase()]=k;for(const w of want){const k=low[w.toLowerCase()]||Object.keys(low).find(x=>x.split("-")[0]===w.toLowerCase().split("-")[0]);if(k)return [low[k],g[low[k]]]}const k=Object.keys(g)[0];return [k,g[k]]}
-function whenLabel(kind,n,lang){const w=n.when||{};const lab=textIn(w.label,lang);let fig="";if(kind==="period"){const f=w.from||{},t=w.to||{};const fa=ageYears(f.age),ta=ageYears(t.age);fig=(fa!==null||ta!==null)?(ta===null?`${tr("age")} ${fa}`:fa===null?`→ ${tr("age")} ${ta}`:`${tr("age")} ${fa}–${ta}`):[f.date,t.date].filter(Boolean).join(" – ")}else{const a=ageYears(w.age);fig=a!==null?`${w.approx?"~":""}${tr("age")} ${a}`:"";if(w.date)fig=fig?`${fig}, ${w.date}`:w.date}return lab&&fig?`${lab} (${fig})`:(lab||fig)}
+function textIn(o,lang){if(!o||typeof o!=="object")return "";lang=String(lang||"");const low={};for(const [k,v] of Object.entries(o))low[k.toLowerCase()]=v;return low[lang.toLowerCase()]||low[lang.split("-")[0].toLowerCase()]||Object.values(o)[0]||""}
+function gistLang(pid,vid,n){const g=n.gist||{};if(!Object.keys(g).length)return ["",""];const want=[];const pers=(resolved(slots(pid)).personality||[])[0];if(pers&&pers.language)want.push(pers.language);const il=(ids()[variantOwner("memories",vid)]||{}).language;if(il)want.push(il);want.push(LANG);const low={};for(const k of Object.keys(g))low[k.toLowerCase()]=k;for(const w of want){const k=low[w.toLowerCase()]||low[Object.keys(low).find(x=>x.split("-")[0]===w.toLowerCase().split("-")[0])];if(k)return [k,g[k]]}const k=Object.keys(g)[0];return [k,g[k]]}
+function whenLabel(kind,n,lang){const w=n.when||{};const lab=textIn(w.label,lang);let fig="";if(kind==="period"){const f=w.from||{},t=w.to||{};const fa=ageYears(f.age),ta=ageYears(t.age);fig=(fa!==null||ta!==null)?(ta===null?`${tr("age")} ${+fa.toFixed(1)}`:fa===null?`→ ${tr("age")} ${+ta.toFixed(1)}`:`${tr("age")} ${+fa.toFixed(1)}–${+ta.toFixed(1)}`):[f.date,t.date].filter(Boolean).join(" – ")}else{const a=ageYears(w.age);fig=a!==null?`${w.approx?"~":""}${tr("age")} ${+a.toFixed(1)}`:"";if(w.date)fig=fig?`${fig}, ${w.date}`:w.date}return lab&&fig?`${lab} (${fig})`:(lab||fig)}
 function effMedia(vid){const seen=new Set();let c=vid;while(c&&!seen.has(c)){seen.add(c);const v=resolveVariant("memories",c)||{};if(v.media&&v.media.length)return v.media;c=String(v.media_from||"").split("/")[1]}return []}
+/* explicit media (RFC 0002 § 5.3): the node's `explicit`, the variant's 1.0 `nudity` flag, or those of the node the media are borrowed from — a borrower never shows more than its lender */
+async function memExplicit(vid,n){if(n&&n.explicit)return true;const seen=new Set();let c=vid;while(c&&!seen.has(c)){seen.add(c);const v=resolveVariant("memories",c)||{};if(v.nudity===true)return true;if(c!==vid){const x=await memNode(c);if(x&&x.explicit)return true}if(v.media&&v.media.length)return false;c=String(v.media_from||"").split("/")[1]}return false}
 let memView="graph";const memCollapsed=new Set();
 function memCard(pid,vid,n,rv,memIds,nodes,lang,gist,parents){const kind=rv.kind;const wl=whenLabel(kind,n,lang);
   const marks=[...(n.nature||[]).filter(x=>x!=="experienced"),...(n.disclosure&&n.disclosure!=="open"?[n.disclosure]:[]),...(n.fidelity&&n.fidelity!=="clear"?[n.fidelity]:[]),...(n.origin==="lived"?["lived"]:[]),...(n.visibility==="personal"?["personal"]:[]),...(n.factual===true?["factual"]:[])];
@@ -334,7 +336,7 @@ function memCard(pid,vid,n,rv,memIds,nodes,lang,gist,parents){const kind=rv.kind
   const links=(n.links||[]).map(l=>{const [c,tg]=String(l.to||"").split(/\/(.*)/);const lab=textIn(l.label,lang);const tl=c==="memories"&&V("memories")[tg]?(resolveVariant("memories",tg).label||tg):String(l.to);return c==="memories"&&memIds.includes(tg)?`<a class="lk" href="#mem-${esc(tg)}">${esc(linkWord(l.type))} → ${esc(tl)}</a>${lab?`<span class="muted" style="font-size:.82rem">${esc(lab)}</span> `:""}`:`<span class="lk muted">${esc(linkWord(l.type))} → ${esc(tl)}</span>`});
   if(links.length)t+=`<div class="ctx">${links.join("")}</div>`;
   return t}
-async function memMedia(vid,n,rv,lang){if(n.explicit)return `<p class="note">${tr("memExplicit")}</p>`;let t="";
+async function memMedia(vid,n,rv,lang){if(await memExplicit(vid,n))return `<p class="note">${tr("memExplicit")}</p>`;let t="";
   const med=effMedia(vid).map(a=>A()[a]).filter(Boolean);
   const imgs=med.filter(a=>String(a.mediaType||"").startsWith("image/")&&!a.derived_from);
   if(imgs.length)t+=`<div class="gallery">${await gallery(imgs.map(a=>a.id),rv.label)}</div>`;
@@ -345,7 +347,7 @@ async function memMedia(vid,n,rv,lang){if(n.explicit)return `<p class="note">${t
 /* membership of a moment in a period: by dates when both bounds and the point sit on the same axis (RFC 0002 § 3.2 — "membership by dates is computed; the link is for exceptions"), else by an explicit part-of link */
 function memInPeriod(n,pn){const w=n.when||{},pw=pn.when||{};if(!pw.from||!pw.to)return false;const a=ageYears(w.age),fa=ageYears(pw.from.age),ta=ageYears(pw.to.age);if(a!==null&&fa!==null&&ta!==null)return a>=fa&&a<=ta;const y=yearOf(w.date),fy=yearOf(pw.from.date),ty=yearOf(pw.to.date);if(y!==null&&fy!==null&&ty!==null)return y>=fy&&y<=ty;return false}
 function memParents(vid,n,memIds,nodes){const isP=x=>(resolveVariant("memories",x)||{}).kind==="period";const explicit=(n.links||[]).filter(l=>l.type==="part-of").map(l=>String(l.to||"").split("/")[1]).filter(x=>memIds.includes(x)&&isP(x));if(explicit.length||!nodes||(resolveVariant("memories",vid)||{}).kind==="period")return explicit;const after=new Set((n.links||[]).filter(l=>l.type==="after").map(l=>String(l.to||"").split("/")[1]));return memIds.filter(x=>x!==vid&&isP(x)&&!after.has(x)&&nodes[x]&&memInPeriod(n,nodes[x]))}
-async function memThumb(vid,n){if(n.explicit)return null;const med=effMedia(vid).map(a=>A()[a]).filter(Boolean);const im=med.find(a=>String(a.mediaType||"").startsWith("image/")&&!a.derived_from&&!nudeSet().has(a.id));return im?await urlOf(im.id):null}
+async function memThumb(vid,n){if(await memExplicit(vid,n))return null;const med=effMedia(vid).map(a=>A()[a]).filter(Boolean);const im=med.find(a=>String(a.mediaType||"").startsWith("image/")&&!a.derived_from&&!nudeSet().has(a.id));return im?await urlOf(im.id):null}
 async function renderMemories(pid,memIds,app){
   const nodes={};for(const v of memIds)nodes[v]=await memNode(v);
   const order=memTimeline(memIds,nodes);const info={};for(const vid of memIds){const rv=resolveVariant("memories",vid)||{},n=nodes[vid];const [lang,gist]=gistLang(pid,vid,n);const parents=memParents(vid,n,memIds,nodes).sort((a,b)=>order.indexOf(a)-order.indexOf(b));info[vid]={rv,n,lang,gist,parents}}
@@ -379,7 +381,7 @@ async function memGraph(pid,memIds,nodes,order,info){const _lab={};const linkLab
   for(const v of order){const u=await memThumb(v,info[v].n);if(u)g+=`<clipPath id="cp-${esc(v)}"><circle cx="${pos[v].x}" cy="${pos[v].y}" r="${pos[v].r-2}"/></clipPath>`}
   elist.forEach((e,i)=>{if(e.thumb)g+=`<clipPath id="cpe-${i}"><circle cx="${e.x}" cy="${e.y}" r="${e.r-2}"/></clipPath>`});
   g+=`</defs><line x1="${x0-40}" y1="160" x2="${W-30}" y2="160" stroke="var(--line)" stroke-width="2" marker-end="url(#arr)"/>`;
-  for(const v of order){const {n}=info[v];for(const l of n.links||[]){const tg=String(l.to||"").split("/")[1];if(!pos[tg])continue;const a=pos[v],b=pos[tg];const dash=l.type==="part-of"?"":l.type==="after"?"6 4":"2 4";const stroke=l.type==="part-of"?"var(--offer)":"var(--accent)";g+=`<path d="M${a.x} ${a.y} Q ${(a.x+b.x)/2} ${(a.y+b.y)/2-30} ${b.x} ${b.y}" fill="none" stroke="${stroke}" stroke-width="1.6" ${dash?`stroke-dasharray="${dash}"`:""}/>`+linkLabel(a,b,linkWord(l.type))}}
+  for(const v of order){const {n}=info[v];for(const l of n.links||[]){const tg=String(l.to||"").split("/")[1];if(!Object.prototype.hasOwnProperty.call(pos,tg))continue;const a=pos[v],b=pos[tg];const dash=l.type==="part-of"?"":l.type==="after"?"6 4":"2 4";const stroke=l.type==="part-of"?"var(--offer)":"var(--accent)";g+=`<path d="M${a.x} ${a.y} Q ${(a.x+b.x)/2} ${(a.y+b.y)/2-30} ${b.x} ${b.y}" fill="none" stroke="${stroke}" stroke-width="1.6" ${dash?`stroke-dasharray="${dash}"`:""}/>`+linkLabel(a,b,linkWord(l.type))}}
   for(const v of order){const {n,parents}=info[v];const explicit=new Set((n.links||[]).filter(l=>l.type==="part-of").map(l=>String(l.to||"").split("/")[1]));for(const tg of parents||[]){if(explicit.has(tg)||!pos[tg])continue;const a=pos[v],b=pos[tg];g+=`<path d="M${a.x} ${a.y} Q ${(a.x+b.x)/2} ${(a.y+b.y)/2-30} ${b.x} ${b.y}" fill="none" stroke="var(--offer)" stroke-width="1.2" opacity=".55"/>`+linkLabel(a,b,tr("during"))}}
   for(const p of plist)for(const v of p.nodes)if(pos[v])g+=`<line x1="${p.x}" y1="${p.y}" x2="${pos[v].x}" y2="${pos[v].y}" stroke="var(--line)" stroke-width="1.2"/>`;
   for(const v of order){const {rv,n}=info[v],P=pos[v];const u=await memThumb(v,n);const kw=(n.tags||[])[0]||(rv.label||v).slice(0,10);

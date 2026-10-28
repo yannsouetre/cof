@@ -7,6 +7,7 @@ import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 
+from .container import copy_rel, safe_rel
 from .convert import ulid_like
 from .model import preset_alternatives, resolve_preset_slots
 
@@ -43,12 +44,12 @@ def _copy_tree_assets(src: Path, dst: Path, m: dict, prefix: str, taken_assets: 
             if (dst / newp).exists():
                 parts = newp.split("/"); parts[-1] = f"{prefix}-{parts[-1]}"; newp = "/".join(parts)
             if (src / a["path"]).is_file():
-                (dst / newp).parent.mkdir(parents=True, exist_ok=True); shutil.copy(src / a["path"], dst / newp)
+                copy_rel(src, a["path"], dst, newp)
             if a.get("transcript") and (src / a["transcript"]).is_file():
                 t = a["transcript"]
                 if (dst / t).exists():
                     parts = t.split("/"); parts[-1] = f"{prefix}-{parts[-1]}"; t = "/".join(parts)
-                (dst / t).parent.mkdir(parents=True, exist_ok=True); shutil.copy(src / a["transcript"], dst / t); a["transcript"] = t
+                copy_rel(src, a["transcript"], dst, t); a["transcript"] = t
             a["path"] = newp
         taken_assets[a.get("sha256") or new_id] = a
         aid_map[old_id] = new_id
@@ -62,9 +63,9 @@ def _copy_variant_files(src: Path, dst: Path, v: dict, prefix: str):
             newrel = rel
             if (dst / rel).exists():
                 parts = rel.split("/"); parts[-1] = f"{prefix}-{parts[-1]}"; newrel = "/".join(parts)
-            (dst / newrel).parent.mkdir(parents=True, exist_ok=True); shutil.copy(src / rel, dst / newrel); v[fld] = newrel
+            copy_rel(src, rel, dst, newrel); v[fld] = newrel
     if isinstance(v.get("mesh"), dict) and (src / v["mesh"]["path"]).is_file():
-        rel = v["mesh"]["path"]; (dst / rel).parent.mkdir(parents=True, exist_ok=True); shutil.copy(src / rel, dst / rel)
+        copy_rel(src, v["mesh"]["path"], dst)
 
 
 def merge_dirs(sources: list[Path], dst: Path) -> dict:
@@ -109,7 +110,7 @@ def merge_dirs(sources: list[Path], dst: Path) -> dict:
                 nv = json.loads(json.dumps(v))
                 new_vid = vid if vid not in out["elements"].get(cat, {"variants": {}})["variants"] else f"{prefix}-{vid}"
                 vid_map[(cat, vid)] = new_vid
-                for lst in ("images", "derived", "samples", "clips", "videos"):
+                for lst in ("images", "derived", "samples", "clips", "videos", "media", "files"):
                     if nv.get(lst):
                         nv[lst] = [aid_map.get(x, x) for x in nv[lst]]
                 if not v.get("derives_from"):          # every element names its character (inherited by derived ones)
@@ -118,10 +119,30 @@ def merge_dirs(sources: list[Path], dst: Path) -> dict:
                     nv["identity"] = id_map.get(nv["identity"], nv["identity"])
                 _copy_variant_files(src, dst, nv, prefix)
                 out["elements"].setdefault(cat, {"variants": {}})["variants"][new_vid] = nv
+        ref_map = {f"{c}/{v0}": f"{c}/{v1}" for (c, v0), v1 in vid_map.items() if v0 != v1}   # qualified refs of this file's renamed variants
         for cat, e in out["elements"].items():   # fix derives_from after renames
             for vid, v in e["variants"].items():
                 if v.get("derives_from") and (cat, v["derives_from"]) in vid_map:
                     v["derives_from"] = vid_map[(cat, v["derives_from"])]
+        for (cat, vid0), vid1 in vid_map.items():        # memory nodes of this file: media_from, links, where, who follow the renames (RFC 0002 § 3)
+            if cat != "memories":
+                continue
+            v = out["elements"]["memories"]["variants"][vid1]
+            if v.get("media_from") in ref_map:
+                v["media_from"] = ref_map[v["media_from"]]
+            rel = v.get("memory")
+            if ref_map and isinstance(rel, str) and (dst / rel).is_file():
+                node = json.loads((dst / rel).read_text("utf-8"))
+                for ln in node.get("links") or []:
+                    if isinstance(ln, dict) and ln.get("to") in ref_map:
+                        ln["to"] = ref_map[ln["to"]]
+                w = node.get("where")
+                if isinstance(w, dict) and w.get("environment") in ref_map:
+                    w["environment"] = ref_map[w["environment"]]
+                for who in node.get("who") or []:
+                    if isinstance(who, dict) and who.get("identity") not in (None, "self") and who["identity"] in id_map:
+                        who["identity"] = id_map[who["identity"]]
+                (dst / rel).write_text(json.dumps(node, ensure_ascii=False, indent=2) + "\n", "utf-8")
         pid_map = {}
         for pid, p in (m.get("presets") or {}).items():
             np_ = json.loads(json.dumps(p))
@@ -219,7 +240,7 @@ def extract_identity(src: Path, dst: Path, iid: str, notes: list[str] | None = N
     dp = ((m.get("identities") or {}).get(iid) or {}).get("default_preset")
     if dp in pids:
         pids.remove(dp); pids.insert(0, dp)
-    out = extract_presets(src, dst, pids)
+    out = extract_presets(src, dst, pids, cast_cleanup=False)
     out["default_preset"] = pids[0]
     from .cast import drop_foreign_relations
     for line in drop_foreign_relations(out):                      # RFC 0003 § 6: a relation to a character that leaves the file
@@ -421,7 +442,10 @@ def extract_tag(src: Path, dst: Path, tids: list[str]) -> dict:
     return extract_presets(src, dst, pids, tags=tids)
 
 
-def extract_presets(src: Path, dst: Path, pids: list[str], tags: list[str] | None = None) -> dict:
+def extract_presets(src: Path, dst: Path, pids: list[str], tags: list[str] | None = None, cast_cleanup: bool = True) -> dict:
+    """Keep what the presets reference. On a cast file, the characters no preset keeps leave the file: their relations are
+    dropped and the `who` entries that named them become plain persons (as `extract --identity` does; `cast_cleanup=False`
+    lets that caller do it itself and report it)."""
     m = json.loads((src / "manifest.json").read_text("utf-8"))
     for pid in pids:
         if pid not in (m.get("presets") or {}):
@@ -533,7 +557,7 @@ def extract_presets(src: Path, dst: Path, pids: list[str], tags: list[str] | Non
             out["assets"].append(a)
             for fld in ("path", "transcript"):
                 if a.get(fld) and (src / a[fld]).is_file():
-                    (dst / a[fld]).parent.mkdir(parents=True, exist_ok=True); shutil.copy(src / a[fld], dst / a[fld])
+                    copy_rel(src, a[fld], dst)
     for d in ("rights",):
         if (src / d).is_dir():
             shutil.copytree(src / d, dst / d, dirs_exist_ok=True)
@@ -545,6 +569,12 @@ def extract_presets(src: Path, dst: Path, pids: list[str], tags: list[str] | Non
         out.pop(k, None)
     (dst / "manifest.json").write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", "utf-8")
     drop_dangling_memory_links(dst, out)
+    if cast_cleanup and m.get("identities") and set(out.get("identities") or {}) < set(m["identities"]):
+        from .cast import drop_foreign_relations
+        drop_foreign_relations(out)
+        (dst / "manifest.json").write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", "utf-8")
+        relabel_departed_identities(dst, out, m["identities"])
+        out = json.loads((dst / "manifest.json").read_text("utf-8"))
     return out
 
 

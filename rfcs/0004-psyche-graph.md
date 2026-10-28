@@ -136,7 +136,7 @@ The converted lists are **deprecated but read** from 1.2 on: a builder that open
 
 ## 3 quinquies. Rendering and selection (readers)
 
-- **`SOUL.md`** (`cof export --agent`) gains a section "Who she is" rendered deterministically from the nodes, in the fixed order wound → values → beliefs (lies marked) → wants and needs → fears → stances → tastes → habits → contradictions, one line per node (`strength` ≥ 70 in full, below as a short clause), `secret` nodes omitted with one line saying there are things the character does not tell, `guarded` ones kept with a marker. The personality sheet keeps the voice; the psyche section gives the substance.
+- **`SOUL.md`** (`cof export --format agent`) gains a section "Who she is" rendered deterministically from the nodes, in the fixed order wound → values → beliefs (lies marked) → wants and needs → fears → stances → tastes → habits → contradictions, one line per node (`strength` ≥ 70 in full, below as a short clause), `secret` nodes omitted with one line saying there are things the character does not tell, `guarded` ones kept with a marker. The personality sheet keeps the voice; the psyche section gives the substance.
 - **Selection at use time**: a host that injects only part of the file picks nodes by `tags`, by `about` (the identity or the memory the conversation touches) and by `strength`, and always includes `core` nodes. Recommendation: the whole psyche of a 20–60 node character fits in 2–6 KB per language; selection matters for big casts, not for one character.
 - **Constellations**: a reader groups nodes by the memory or the identity they hang on (`because` / `about`), which gives the explorer's view and the ComfyUI node's "what she thinks of X" text. No hierarchy is stored.
 
@@ -149,7 +149,7 @@ Warnings: a `wound` with no `because`; a `want` and a `fear` on the same subject
 
 - **Explorer**: a **Constellation** view (force graph: nodes by kind, `because` edges to the memories — the past visibly pulling on the present); click → card; the same component as the memories graph; a list view too.
 - **Builder**: a "Psyche" step with the grammar of the Memories step (cards, chips, 🔍), a link picker to memories and characters; "Decompose the sheet into nodes" (model-assisted, optional, reviewed) and "Write SOUL.md" (deterministic).
-- **cof-cli**: `export --agent` recomposes `SOUL.md`; `coherence` compares psyche ↔ memories ↔ sheet (a `wound` without `because` → info; a `want` and a `fear` that contradict each other without a `contradiction` → finding; a `false_but_held` belief never contradicted by a memory → nothing, that is life).
+- **cof-cli**: `export --format agent` recomposes `SOUL.md`; `coherence` compares psyche ↔ memories ↔ sheet (a `wound` without `because` → info; a `want` and a `fear` that contradict each other without a `contradiction` → finding; a `false_but_held` belief never contradicted by a memory → nothing, that is life).
 - **ComfyUI**: a COF Psyche node (text per constellation: "what she thinks of X").
 - **Platforms**: at use time, new `lived` nodes and revisions; `visibility: personal` purged at export like memories; the user takes away "what the character became with them".
 - **COF-Vector**: one embedding per node → character similarity, casting by contrast, duplicate detection.

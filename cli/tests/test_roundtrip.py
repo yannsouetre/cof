@@ -1177,3 +1177,109 @@ def test_extract_preset_keeps_the_places_its_memories_point_at(tmp_path):
     ma = json.loads((a / "manifest.json").read_text("utf-8"))
     assert "e1" in ma["elements"]["appearance"]["variants"]
     rep = Report(); validate_dir(a, rep); assert rep.ok, rep.errors
+
+
+# ---------- review of 28 October (autonomous audit): container hardening, paths from manifests, merge / extract parity ----------
+
+def test_archive_duplicate_and_directory_entries(tmp_path):
+    """A second entry of the same name is an error (readers disagree on which one wins); a directory entry (zip -r) is
+    skipped by unpack instead of crashing; a structurally unsafe archive is not opened further."""
+    from cof_cli.container import inspect
+    d = tmp_path / "c"; shutil.copytree(EXAMPLE, d)
+    src = tmp_path / "a.cof"; pack(d, src)
+    dup = tmp_path / "dup.cof"
+    with zipfile.ZipFile(src) as zi, zipfile.ZipFile(dup, "w") as zo:
+        for i in zi.infolist():
+            zo.writestr(i, zi.read(i.filename))
+        zo.writestr("manifest.json", json.dumps({"cof": "1.0", "name": "Other"}))
+    assert any("duplicate entry: manifest.json" in e for e in inspect(dup)["errors"])
+    rep = validate_cof(dup); assert not rep.ok and any("duplicate entry" in e for e in rep.errors)
+    dirs = tmp_path / "dirs.cof"
+    with zipfile.ZipFile(src) as zi, zipfile.ZipFile(dirs, "w") as zo:
+        for i in zi.infolist():
+            zo.writestr(i, zi.read(i.filename))
+            if i.filename == "manifest.json":
+                zo.writestr("elements/", b"")
+    unpack(dirs, tmp_path / "u")
+    rep = validate_cof(dirs); assert rep.ok, rep.errors
+
+
+def test_manifest_paths_never_leave_the_output(tmp_path):
+    """Names and paths read from a manifest are data: a skill `name` with `..`, an asset path outside the folder or a
+    character name shaped like a path never write outside the output (export, extract, merge)."""
+    from cof_cli.convert import export_agent
+    from cof_cli.ops import extract_presets
+    from cof_cli.cli import _fname
+    d = tmp_path / "s"; shutil.copytree(ROOT / "spec/examples/08-agent-skills", d)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    sk = next(v for v in m["elements"]["files"]["variants"].values() if v.get("kind") == "skill")
+    sk["name"] = "../../escaped"; sk.pop("entry", None); _write(d, m)
+    out = tmp_path / "out"
+    with pytest.raises(ValueError):
+        export_agent(d, out)
+    assert not (tmp_path / "escaped").exists() and not (tmp_path.parent / "escaped").exists()
+    assert _fname({"name": "../../ESCAPED"}) == "ESCAPED" and _fname({"name": "Clara Mercier"}) == "Clara-Mercier"
+    d2 = tmp_path / "t"; shutil.copytree(ROOT / "spec/examples/03-clara-photos", d2)
+    m2 = json.loads((d2 / "manifest.json").read_text("utf-8"))
+    (tmp_path / "secret.txt").write_text("x", "utf-8")
+    m2["assets"][0]["path"] = "../secret.txt"; _write(d2, m2)
+    with pytest.raises(ContainerError):
+        extract_presets(d2, tmp_path / "x", [m2["default_preset"]])
+
+
+def test_merge_keeps_memories_whole(tmp_path):
+    """Merging files with memories remaps `media` asset ids (deduplicated bytes included) and, when variant ids collide,
+    the memory nodes' links, where.environment and media_from — the result validates and no reference dangles."""
+    from cof_cli.ops import merge_dirs
+    C = ROOT / "spec/examples/10-clara-mercier"
+    out = tmp_path / "m1"; merge_dirs([C], out)
+    rep = Report(); validate_dir(out, rep); assert rep.ok, rep.errors
+    out2 = tmp_path / "m2"; merge_dirs([C, C], out2)
+    rep2 = Report(); validate_dir(out2, rep2); assert rep2.ok, rep2.errors
+    m = json.loads((out2 / "manifest.json").read_text("utf-8"))
+    V = m["elements"]["memories"]["variants"]
+    assert "m1-ev4" in V
+    n = json.loads((out2 / V["m1-ev4"]["memory"]).read_text("utf-8"))
+    assert all(l["to"].startswith("memories/m1-") for l in n["links"])
+
+
+def test_extract_preset_of_a_cast_relabels_the_departed(tmp_path):
+    """`extract --preset` / `--tag` on a cast file: the characters no kept preset owns leave the file, their relations are
+    dropped and the `who` entries naming them become plain persons — as `extract --identity` already did."""
+    from cof_cli.ops import extract_presets
+    D = ROOT / "spec/examples/11-duo-clara-martien"
+    for pid in ("default", "m1-default"):
+        out = tmp_path / pid; extract_presets(D, out, [pid])
+        rep = Report(); validate_dir(out, rep); assert rep.ok, (pid, rep.errors)
+        m = json.loads((out / "manifest.json").read_text("utf-8"))
+        assert len(m["identities"]) == 1
+        for v in m["elements"].get("memories", {}).get("variants", {}).values():
+            n = json.loads((out / v["memory"]).read_text("utf-8"))
+            assert all(w.get("identity") in (None, "self") for w in n.get("who") or [])
+
+
+def test_memory_add_cli_is_atomic_and_rejects_odd_ages(tmp_path):
+    """A refused `cof memory add` on a folder leaves it untouched; nan / infinite / absurd ages are refused before anything is written."""
+    from cof_cli.cli import main
+    d = tmp_path / "c"; shutil.copytree(EXAMPLE, d)
+    before = sorted(str(p.relative_to(d)) for p in d.rglob("*"))
+    assert main(["memory", "add", str(d), "--gist", "en=x", "--date", "2025-13"]) == 1
+    assert main(["memory", "add", str(d), "--gist", "en=x", "--age", "nan"]) == 2
+    assert main(["memory", "add", str(d), "--gist", "en=x", "--age", "1000"]) == 2
+    assert sorted(str(p.relative_to(d)) for p in d.rglob("*")) == before
+    assert main(["memory", "add", str(d), "--gist", "en=ok", "--date", "2025-10"]) == 0
+    assert (d / "elements/memories/ev1/memory.json").is_file()
+    assert main(["info", str(tmp_path / "nope.cof")]) == 1          # a clean error line, no traceback
+
+
+def test_validator_survives_wrongly_typed_subfiles(tmp_path):
+    """Schema-invalid node files and sub-files are reported, never raised: the semantic rules only read a valid shape."""
+    d = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/10-clara-mercier", d)
+    p = d / "elements/memories/ev2/memory.json"; n = json.loads(p.read_text("utf-8"))
+    n["where"] = "the garden"; n["links"] = True; p.write_text(json.dumps(n), "utf-8")
+    rep = Report(); validate_dir(d, rep); assert not rep.ok and any("memory.schema" in e for e in rep.errors)
+    d2 = tmp_path / "w"; shutil.copytree(ROOT / "spec/examples/07-clara-modulaire", d2)
+    m = json.loads((d2 / "manifest.json").read_text("utf-8"))
+    spec = next(v["spec"] for v in m["elements"]["identity_weights"]["variants"].values() if v.get("spec"))
+    (d2 / spec).write_text(json.dumps({"base_model": "x", "file": {}}), "utf-8")
+    rep2 = Report(); validate_dir(d2, rep2); assert not rep2.ok

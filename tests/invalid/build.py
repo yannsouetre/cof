@@ -226,6 +226,9 @@ def with_memory(d, node=None, variant=None):
     nd = {"gist": {"en": "The summer I was eight: the house and the garden."}, "when": {"age": {"value": 8}}, "fidelity": "faded"}
     if node:
         nd.update(node)
+    if nd.get("explicit") and "when" not in (node or {}):     # an explicit case tests its own rule: lived as an adult (34) unless the case says otherwise
+        nd["when"] = {"age": {"value": (variant or {}).get("age", {}).get("value", 34)}}
+        nd["gist"] = {"en": "The night of my thirty-fourth birthday."}
     (d / "elements/memories/m1").mkdir(parents=True, exist_ok=True)
     (d / "elements/memories/m1/memory.json").write_text(json.dumps(nd), "utf-8")
     v = {"kind": "moment", "label": "Grandmother's house", "memory": "elements/memories/m1/memory.json"}
@@ -233,6 +236,9 @@ def with_memory(d, node=None, variant=None):
         v.update(variant)
     m["elements"]["memories"] = {"variants": {"m1": v}}
     m["presets"]["default"]["slots"]["memories"] = ["m1"]
+    for pid, p in m["presets"].items():                 # the minor preset inherits nothing of it: each case tests one rule
+        if pid != "default" and p.get("extends") == "default":
+            p.setdefault("slots", {})["memories"] = []
     save(d, m); return m
 
 @case("memory-in-a-1.0-file", "a file declares the lowest minor that defines what it uses: memories need cof 1.1", "RFC 0002 § 7", "declare cof")
@@ -253,8 +259,8 @@ def _(d): with_memory(d, variant={"kind": "period"})
 @case("memory-explicit-without-nudity-flag", "an explicit node also carries the 1.0 flag nudity: true and the file tags.content", "RFC 0002 § 5.3", "nudity: true")
 def _(d): with_memory(d, node={"explicit": "nudity", "who": [{"identity": "self", "shown": True}]}, variant={"age": {"value": 34, "unit": "years"}})
 
-@case("memory-explicit-shows-minor", "every person shown in an explicit node has a known age of 18 or more", "RFC 0002 § 5.4", "under 18")
-def _(d): with_memory(d, node={"explicit": "nudity", "who": [{"identity": "self", "shown": True}]}, variant={"age": {"value": 8, "unit": "years"}, "nudity": True})
+@case("memory-explicit-shows-minor", "every person shown in an explicit node has a known age of 18 or more — here a third party of 12", "RFC 0002 § 5.4", "under 18")
+def _(d): with_memory(d, node={"explicit": "nudity", "who": [{"identity": "self", "shown": True}, {"label": {"en": "a cousin"}, "shown": True, "age": {"value": 12, "unit": "years"}}]}, variant={"age": {"value": 34, "unit": "years"}, "nudity": True})
 
 @case("memory-explicit-shown-unknown-age", "an unknown age never counts as adult: an explicit node needs every shown person's age", "RFC 0002 § 5.4", "known age of 18")
 def _(d): with_memory(d, node={"explicit": "nudity", "who": [{"identity": "self", "shown": True}, {"label": {"en": "a friend"}, "shown": True}]}, variant={"age": {"value": 34, "unit": "years"}, "nudity": True})
@@ -273,7 +279,7 @@ def _(d):
 def _(d): with_memory(d, node={"who": [{"identity": "self", "shown": True}]}, variant={"age": {"value": 8, "unit": "years", "basis": "canonical"}})
 
 @case("memory-explicit-nobody-shown", "an explicit media shows someone: an explicit node declares at least one person shown", "RFC 0002 § 5.4", "nobody declared shown")
-def _(d): with_memory(d, node={"explicit": "nudity"}, variant={"nudity": True})
+def _(d): with_memory(d, node={"explicit": "nudity"}, variant={"nudity": True, "age": {"value": 34, "unit": "years"}})
 
 @case("memory-borrows-explicit-media", "a node borrowing the media of an explicit node is explicit itself, same value (nothing else is inherited)", "RFC 0002 § 4.5 / § 5.3", "borrows the media")
 def _(d):
@@ -284,7 +290,7 @@ def _(d):
     m["presets"]["default"]["slots"]["memories"] = ["m1", "m2"]; save(d, m)
 
 @case("memory-explicit-age-mismatch", "on an explicit node the variant age (read by the minor rules) equals when.age", "RFC 0002 § 5.2", "must agree")
-def _(d): with_memory(d, node={"explicit": "nudity", "when": {"age": {"value": 15}}, "who": [{"identity": "self", "shown": True}]}, variant={"age": {"value": 34, "unit": "years"}, "nudity": True})
+def _(d): with_memory(d, node={"explicit": "nudity", "when": {"age": {"value": 20}}, "who": [{"identity": "self", "shown": True}]}, variant={"age": {"value": 34, "unit": "years"}, "nudity": True})
 
 @case("memory-explicit-lived-as-minor", "a memory lived as a minor is never explicit, whoever is shown — here only an adult third party is shown", "RFC 0002 § 5.4", "age at the time must be known and 18 or more")
 def _(d): with_memory(d, node={"explicit": "nudity", "when": {"age": {"value": 15}}, "who": [{"label": {"en": "Sam"}, "shown": True, "age": {"value": 34, "unit": "years"}}]}, variant={"nudity": True})

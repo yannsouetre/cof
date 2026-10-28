@@ -13,7 +13,7 @@ Thanks for helping! COF is an open format; the most valuable contributions are *
 Normative changes go through an RFC: copy `rfcs/0000-template.md`, open a PR, 14-day comment period. Keep 1.x backward compatible: add optional fields, never change the meaning of an existing one.
 
 ## Code
-- `cli/` — Python ≥ 3.11, `pip install -e cli && pytest cli/tests` must pass; regenerate the negative corpus with `python tests/invalid/build.py` when you touch a rule.
+- `cli/` — Python ≥ 3.10, `pip install -e cli && pytest cli/tests` must pass; regenerate the negative corpus with `python tests/invalid/build.py` when you touch a rule.
 - `builder/` — a single offline HTML page, plain JavaScript, no framework, no network call at runtime; every interface string goes through `t()` (six languages).
 - One concern per PR; tests for every converter and every new rule.
 

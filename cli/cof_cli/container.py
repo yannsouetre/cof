@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import zipfile
 from pathlib import Path
 
@@ -157,6 +158,22 @@ def read_manifest(cof: str | os.PathLike) -> dict:
         return json.loads(z.read("manifest.json").decode("utf-8"))
 
 
+def safe_rel(rel) -> str:
+    """A relative path read from a manifest, about to touch the filesystem: the container grammar (SPEC § 1 — no leading
+    '/', no '..'), whatever the archive or folder it came from said."""
+    if not isinstance(rel, str) or not SAFE_PATH.match(rel):
+        raise ContainerError(f"non-conformant path in manifest: {rel!r}")
+    return rel
+
+
+def copy_rel(src: Path, rel: str, dst: Path, newrel: str | None = None) -> Path:
+    """Copies src/rel to dst/newrel (default: same path), both paths checked by safe_rel."""
+    safe_rel(rel); newrel = safe_rel(newrel or rel)
+    (dst / newrel).parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy(src / rel, dst / newrel)
+    return dst / newrel
+
+
 def inspect(cof: str | os.PathLike) -> dict:
     """Structural checks on the archive itself (no schema): returns {'errors': [...], 'warnings': [...], 'entries': n}."""
     errors, warnings = [], []
@@ -170,8 +187,12 @@ def inspect(cof: str | os.PathLike) -> dict:
         if len(names) > 1 and names[1] != "manifest.json":
             warnings.append("manifest.json is not the second entry (slower partial reads)")
         total_u = total_c = 0
+        seen: set[str] = set()
         for i in infos:
             n = i.filename
+            if n in seen:                                   # a second entry of the same name: readers disagree on which one wins
+                errors.append(f"duplicate entry: {n}")
+            seen.add(n)
             if n != "mimetype" and not SAFE_PATH.match(n):
                 errors.append(f"non-conformant path: {n}")
             if n.endswith("/"):
@@ -196,7 +217,7 @@ def unpack(cof: str | os.PathLike, dest: str | os.PathLike) -> Path:
     with zipfile.ZipFile(cof) as z:
         for info in z.infolist():
             n = info.filename
-            if n == "mimetype":
+            if n == "mimetype" or n.endswith("/"):           # directory entries (zip -r) carry nothing
                 continue
             if not SAFE_PATH.match(n):
                 raise ContainerError(f"non-conformant path: {n}")
@@ -205,7 +226,7 @@ def unpack(cof: str | os.PathLike, dest: str | os.PathLike) -> Path:
                 raise ContainerError(f"zip-slip detected: {n}")
             target.parent.mkdir(parents=True, exist_ok=True)
             with z.open(info) as s, open(target, "wb") as d:
-                d.write(s.read())
+                shutil.copyfileobj(s, d, 1 << 20)
     return dest
 
 
@@ -222,9 +243,12 @@ def verify_hashes(cof: str | os.PathLike, manifest: dict) -> list[str]:
                 if not a.get("uri"):
                     errs.append(f"declared asset missing from archive: {rel}")
                 continue
-            data = z.read(rel)
-            if a.get("bytes") is not None and a["bytes"] != len(data):
-                errs.append(f"size mismatch: {rel} ({a['bytes']} declared, {len(data)} actual)")
-            if a.get("sha256") and a["sha256"] != hashlib.sha256(data).hexdigest():
+            h, n = hashlib.sha256(), 0
+            with z.open(rel) as s:                          # streamed: a declared asset is never held whole in memory
+                for chunk in iter(lambda: s.read(1 << 20), b""):
+                    h.update(chunk); n += len(chunk)
+            if a.get("bytes") is not None and a["bytes"] != n:
+                errs.append(f"size mismatch: {rel} ({a['bytes']} declared, {n} actual)")
+            if a.get("sha256") and a["sha256"] != h.hexdigest():
                 errs.append(f"sha256 mismatch: {rel}")
     return errs

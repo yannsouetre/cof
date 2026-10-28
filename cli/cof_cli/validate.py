@@ -405,9 +405,11 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                         rep.errors.append(f"{where}.images: {aid} is a derived asset — list it in 'derived', not in 'images'")
             if etype == "identity_weights" and rv.get("spec"):
                 w = json.loads((src / rv["spec"]).read_text("utf-8")) if (src / rv["spec"]).is_file() else {}
-                if not (w.get("base_model") or {}).get("name"):
+                if not isinstance(w, dict):
+                    w = {}
+                if not (isinstance(w.get("base_model"), dict) and w["base_model"].get("name")):
                     rep.errors.append(f"{where}: weights.json without base_model.name (a LoRA without its base model is unusable)")
-                if w.get("file") and w["file"] not in A:
+                if isinstance(w.get("file"), str) and w["file"] not in A:
                     rep.errors.append(f"{where}: unknown weights asset {w['file']}")
                 if rv.get("kind") == "reference-latent":
                     srcs = (w.get("encoding") or {}).get("sources") or []
@@ -772,6 +774,8 @@ def validate_cof(cof: Path) -> Report:
     rep.warnings += st["warnings"]
     rep.info["entries"] = st["entries"]
     rep.info["bytes"] = st["compressed"]
+    if st["errors"]:                                        # a structurally unsafe archive (bomb, duplicate, bad path) is not opened further
+        return rep
     try:
         manifest = read_manifest(cof)
     except ContainerError as e:
@@ -1052,6 +1056,8 @@ def _memory_rules(manifest: dict, src: Path, rep: "Report") -> None:
             continue
         if not isinstance(node, dict):
             rep.errors.append(f"{where}: node file {rel} must hold a JSON object")
+            continue
+        if any(True for _ in sub_validator("memory").iter_errors(node)):     # reported by the sub-file pass: the rules below read a valid shape only
             continue
         nodes[vid] = node
     if not nodes:

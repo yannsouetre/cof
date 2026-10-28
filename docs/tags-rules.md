@@ -2,7 +2,7 @@
 
 | Slot | Written by | Rules |
 |---|---|---|
-| `tags.auto` | the builder / `cof validate` (regenerable) | morphology (`humanoid`…), age bracket from the lowest age (`child` < 13, `teen` < 18, `adult`, `elder` ≥ 65 — human-shaped characters only: `human`, `humanoid`, `anthropomorphic-animal`), languages (ISO 639-1), layers present (`has-voice`, `has-3d`, `has-motion`, `has-weights`), `multi-preset` if ≥ 2 presets, `style-<style>` of the default preset, `imported-ccv3` on import |
+| `tags.auto` | the builder / `cof validate` (regenerable) | morphology (`humanoid`…), age bracket from the lowest age (`child` < 13, `teen` < 18, `adult`, `elder` ≥ 65 — human-shaped characters only: `human`, `humanoid`, `anthropomorphic-animal`), languages (ISO 639-1), layers present (`has-voice`, `has-3d`, `has-motion`, `has-weights`, `has-skills`, `has-memory` for a host memory file, `has-memories` for the 1.1 category), `has-minor-preset` when a preset is under 18 (the age bracket itself ignores the ages memories carry — RFC 0002 § 5.2), `multi-preset` if ≥ 2 presets, `style-<style>` of the default preset, `imported-ccv3` on import |
 | `tags.manual` | the author | ≤ 30, lowercase, `[a-z0-9-]` |
 | `tags.content` | the author (suggested by the builder from permissions and descriptions) | closed vocabulary: `none`, `nudity`, `sexual`, `violence`, `gore`, `drugs`, `profanity`, `horror`, `political`, `religious`; `allowSexualUsage: true` or an `intimate` element ⇒ the builder suggests `sexual`/`nudity` |
 | `tags.ip` | the author | `original: true`, otherwise a named `franchise` / `based_on`; the builder warns on matches against `vocabularies/franchises.txt` (contributed list, not exhaustive) |

@@ -10,3 +10,5 @@ Thumbs.db
 *.egg-info/
 .tmpdocs/
 !viewer/samples/*.cof
+!tests/invalid/*.cof
+cli/build/

@@ -9,6 +9,8 @@ import zlib
 from datetime import datetime, timezone
 from pathlib import Path
 
+from .container import copy_rel, safe_rel
+
 PNG_SIG = b"\x89PNG\r\n\x1a\n"
 
 
@@ -409,7 +411,7 @@ def export_agent(src: Path, out: Path, preset: str | None = None, keep_personal:
     A = asset_index(manifest)
     av = next((l.split(": ", 1)[1] for l in identity.splitlines() if l.startswith("- Avatar: ")), "")
     if av and (src / av).is_file():
-        dst = out / ("avatar" + Path(av).suffix.lower()); shutil.copy(src / av, dst)
+        dst = out / ("avatar" + Path(av).suffix.lower()); shutil.copy(src / safe_rel(av), dst)
         identity = identity.replace(f"- Avatar: {av}", f"- Avatar: {dst.name}")
     (out / "SOUL.md").write_text(soul, "utf-8"); (out / "IDENTITY.md").write_text(identity, "utf-8")
     done = {"skills": [], "memories": [], "documents": []}
@@ -425,15 +427,17 @@ def export_agent(src: Path, out: Path, preset: str | None = None, keep_personal:
                 mm = _re.search(r"^name:\s*([A-Za-z0-9._-]+)\s*$", entry.read_text("utf-8", errors="replace"), _re.M)
                 if mm:
                     name = mm.group(1)
+            if not re.fullmatch(r"[A-Za-z0-9._-]+", name) or name in (".", ".."):     # the folder name comes from the file: never a path
+                raise ValueError(f"files.{v['_id']}: skill name {name!r} is not a plain folder name")
             root = out / "skills" / name
             for a in files:
                 rel = a["path"][len(base):] if a["path"].startswith(base) else Path(a["path"]).name
-                (root / rel).parent.mkdir(parents=True, exist_ok=True); shutil.copy(src / a["path"], root / rel)
+                copy_rel(src, a["path"], root, rel)
             done["skills"].append(name)
         else:
             dest = out if kind == "memory" else out / "docs"
             for a in files:
-                dest.mkdir(parents=True, exist_ok=True); shutil.copy(src / a["path"], dest / Path(a["path"]).name)
+                dest.mkdir(parents=True, exist_ok=True); shutil.copy(src / safe_rel(a["path"]), dest / Path(a["path"]).name)
                 done["memories" if kind == "memory" else "documents"].append(Path(a["path"]).name)
     # memories category (1.1): MEMORY.md = host memory file (if any) + the canon gists; media of non-explicit nodes
     section, kept, dropped = memory_section(src, manifest, pid, keep_personal)
@@ -456,8 +460,8 @@ def export_agent(src: Path, out: Path, preset: str | None = None, keep_personal:
                 continue
             for a in media_assets(manifest, vid):
                 if a.get("path") and (src / a["path"]).is_file():
-                    d_ = out / "memories" / vid; d_.mkdir(parents=True, exist_ok=True)
-                    shutil.copy(src / a["path"], d_ / Path(a["path"]).name)
+                    d_ = out / "memories" / safe_rel(vid); d_.mkdir(parents=True, exist_ok=True)
+                    shutil.copy(src / safe_rel(a["path"]), d_ / Path(a["path"]).name)
     perms = effective_permissions(manifest, pid)
     ident = preset_identity(manifest, pid) or {}
     note = [f"# COF.md — {ident.get('name') or manifest.get('name')} (preset `{pid}`)", "",

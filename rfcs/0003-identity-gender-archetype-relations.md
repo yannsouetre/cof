@@ -4,7 +4,7 @@
 - Author: Yann Souetre (with Claude)
 - Date: 2026-10-25 (draft)
 - Target: COF **1.1** — additive only; every 1.0 file stays valid and every 1.0 reader keeps working (§ 6)
-- Reference implementation (same branch): `cof-cli` 1.1.0 (validator, coherence, `export --agent`, `extract --identity`, `COF.md` at pack, `cof memory add`), explorer 1.1, builder 0.13.0, examples 10 and 11
+- Reference implementation (same branch): `cof-cli` 1.1.0 (validator, coherence, `export --format agent`, `extract --identity`, `COF.md` at pack, `cof memory add`), explorer 1.1, builder 0.13.0, examples 10 and 11
 
 ## 1. Motivation
 

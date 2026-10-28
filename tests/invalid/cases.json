@@ -279,7 +279,7 @@
     },
     {
       "file": "memory-explicit-shows-minor.cof",
-      "rule": "every person shown in an explicit node has a known age of 18 or more",
+      "rule": "every person shown in an explicit node has a known age of 18 or more — here a third party of 12",
       "spec": "RFC 0002 § 5.4",
       "expect": "under 18"
     },

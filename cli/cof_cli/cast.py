@@ -191,6 +191,8 @@ def cast_rules(manifest: dict, src: Path, rep) -> None:
                 prof = json.loads((src / v["profile"]).read_text("utf-8"))
             except Exception:
                 continue
+            if not isinstance(prof, dict) or not isinstance(prof.get("canonical"), dict):
+                continue
             gp = str(((prof.get("canonical") or {}).get("gender_presentation") or "")).lower()
             vg = VOICE_TO_GENDER.get(gp)
             if vg and vg != g and g in ("female", "male"):      # only female × masculine and male × feminine are conflicts
