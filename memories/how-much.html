@@ -354,7 +354,7 @@ svg.innerHTML=s})();
 
 /* ---- figure 2 bis: the spread of a memory's weight (log-normal, log scale) — an extrapolation anchored on Clara ---- */
 (function(){
-const svg=$("#spread svg");const W=760,L=56,R=724,T=26,B=196;
+const svg=$("#spread svg");const W=760,L=56,R=724,T=44,B=196;
 const CLARA=[1199,1296,185503,201880,210097,210130,254314,279786,281601,289470,289773,298056,313412,404367,867036,1135131];   // bytes per node: memory.json + its media (example 10)
 const med=300e3,mean=1e6;const mu=Math.log(med),sg=Math.sqrt(2*Math.log(mean/med));   // log-normal: median 300 KB, mean 1 MB (the page's hypothesis)
 const lo=1e3,hi=1e8;const x=v=>L+(Math.log10(v)-3)*(R-L)/5;
@@ -365,8 +365,8 @@ let path="";pts.forEach(([v,d],i)=>{path+=(i?"L":"M")+x(v).toFixed(1)+" "+y(d).t
 let s=`<path d="${path}L${R} ${B} L${L} ${B}Z" fill="rgba(47,168,142,.14)"/><path d="${path}" fill="none" stroke="#2fa88e" stroke-width="2"/>`;
 for(const [v,l] of [[1e3,"1 KB"],[1e4,"10 KB"],[1e5,"100 KB"],[1e6,"1 MB"],[1e7,"10 MB"],[1e8,"100 MB"]])s+=`<line class="ax" x1="${x(v)}" y1="${B}" x2="${x(v)}" y2="${B+6}"/><text class="tk" x="${x(v)}" y="${B+22}" text-anchor="middle">${l}</text>`;
 s+=`<line class="ax" x1="${L}" y1="${B}" x2="${R}" y2="${B}"/>`;
-const mark=(v,lab,col,dyl)=>{s+=`<line x1="${x(v)}" y1="${T-6}" x2="${x(v)}" y2="${B}" stroke="${col}" stroke-width="1.2" stroke-dasharray="4 4"/><text x="${x(v)+6}" y="${T+dyl}" style="font:500 13px Plex,system-ui,sans-serif;fill:${col}">${lab}</text>`};
-mark(med,"median · 300 KB","#9fe0cd",6);mark(mean,"mean · 1 MB","#a98ae8",24);
+const mark=(v,lab,col,dyl,anchor)=>{s+=`<line x1="${x(v)}" y1="${T-26}" x2="${x(v)}" y2="${B}" stroke="${col}" stroke-width="1.2" stroke-dasharray="4 4"/><text x="${x(v)+(anchor==="end"?-6:6)}" y="${dyl}" text-anchor="${anchor||"start"}" style="font:500 13px Plex,system-ui,sans-serif;fill:${col}">${lab}</text>`};
+mark(med,"median · 300 KB","#9fe0cd",16,"end");mark(mean,"mean · 1 MB","#a98ae8",16,"start");
 s+=`<text class="sub" x="${x(2e3)}" y="${B-10}" style="fill:#7d8d89">a memory in words</text><text class="sub" x="${x(2.2e7)}" y="${B-10}" style="fill:#7d8d89">a long clip</text>`;
 CLARA.forEach(v=>{s+=`<circle cx="${x(v)}" cy="${B-7}" r="4.5" fill="#c4842a" opacity=".9"><title>${(v/1e3).toFixed(0)} KB</title></circle>`});
 s+=`<text class="sub" x="${(L+R)/2}" y="${B+42}" text-anchor="middle">weight of one memory · logarithmic scale · dots: Clara's sixteen</text>`;
