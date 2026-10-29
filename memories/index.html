@@ -31,7 +31,7 @@ img{display:block;max-width:100%}
 .hero::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,11,18,.78) 0%,rgba(7,11,18,.55) 26%,rgba(7,11,18,0) 48%,rgba(7,11,18,0) 78%,rgba(13,19,18,1) 100%);z-index:-1}
 .hero .top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:12px;padding:22px clamp(20px,5vw,64px);font:500 14px/1 PlexMono,monospace;color:var(--mint);letter-spacing:.06em}
 .hero .top img{width:28px;height:28px;border-radius:7px}
-.hero .top a{color:inherit;text-decoration:none}
+.hero .top a{color:inherit;text-decoration:none}.share{margin-left:auto;position:relative;letter-spacing:0}.share summary{list-style:none;cursor:pointer;font:500 12px/1 PlexMono,monospace;letter-spacing:.06em;color:var(--mint);opacity:.75;padding:6px 8px;border:1px solid transparent;border-radius:8px}.share summary::-webkit-details-marker{display:none}.share summary:hover,.share[open] summary{opacity:1;border-color:rgba(255,255,255,.18)}.share menu{position:absolute;right:0;top:calc(100% + 6px);margin:0;padding:6px;list-style:none;background:#0d1312;border:1px solid rgba(255,255,255,.14);border-radius:10px;min-width:11em;z-index:5;box-shadow:0 8px 24px rgba(0,0,0,.4)}.share menu a,.share menu button{display:block;width:100%;text-align:left;font:500 12px/1 PlexMono,monospace;letter-spacing:.04em;color:#dfe7e4;background:none;border:0;padding:8px 10px;border-radius:6px;text-decoration:none;cursor:pointer}.share menu a:hover,.share menu button:hover{background:rgba(255,255,255,.08);color:#fff}
 .hero .top span{opacity:.7}
 .hero .text{padding:clamp(84px,13vh,130px) clamp(20px,5vw,64px) 0;max-width:1200px}
 h1{font:400 clamp(21px,3.6vw,46px)/1.25 Michroma,sans-serif;letter-spacing:.22em;text-transform:uppercase;margin:0 0 18px;color:#ecE8e0;text-shadow:0 2px 24px rgba(0,0,0,.6)}
@@ -153,7 +153,7 @@ footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:
 <body>
 
 <header class="hero">
-  <div class="top"><img src="../builder/icon/cof-icon-dark.svg" alt=""><a href="../">COF</a><span>· Character Open File · 1.1</span></div>
+  <div class="top"><img src="../builder/icon/cof-icon-dark.svg" alt=""><a href="../">COF</a><span>· Character Open File · 1.1</span><details class="share" data-share><summary aria-label="Share this page">share ↗</summary><menu><li><button type="button" data-copy>copy link</button></li><li><a data-net="x" target="_blank" rel="noopener">X / Twitter</a></li><li><a data-net="linkedin" target="_blank" rel="noopener">LinkedIn</a></li><li><a data-net="bluesky" target="_blank" rel="noopener">Bluesky</a></li><li><a data-net="reddit" target="_blank" rel="noopener">Reddit</a></li><li><a data-net="mail">Email</a></li></menu></details></div>
   <div class="text">
     <h1>AI characters now have memories</h1>
     <div class="rule"></div>
@@ -312,5 +312,9 @@ if("IntersectionObserver" in window){const io=new IntersectionObserver(es=>{if(e
 setTimeout(start,6000);
 })();
 </script>
+<script>(function(){const d=document.querySelector("[data-share]");if(!d)return;const url=(document.querySelector('link[rel=canonical]')||{}).href||location.href.split("#")[0],title=document.title,u=encodeURIComponent(url),t=encodeURIComponent(title);
+const H={x:"https://twitter.com/intent/tweet?url="+u+"&text="+t,linkedin:"https://www.linkedin.com/sharing/share-offsite/?url="+u,bluesky:"https://bsky.app/intent/compose?text="+t+"%20"+u,reddit:"https://www.reddit.com/submit?url="+u+"&title="+t,mail:"mailto:?subject="+t+"&body="+u};
+d.querySelectorAll("[data-net]").forEach(a=>a.href=H[a.dataset.net]);const c=d.querySelector("[data-copy]");c.onclick=async()=>{try{await navigator.clipboard.writeText(url);c.textContent="copied ✓"}catch(e){prompt("Copy this link:",url)}setTimeout(()=>{c.textContent="copy link";d.open=false},1200)};
+document.addEventListener("click",e=>{if(!d.contains(e.target))d.open=false});document.addEventListener("keydown",e=>{if(e.key==="Escape")d.open=false})})();</script>
 </body>
 </html>
