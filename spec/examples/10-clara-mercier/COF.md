@@ -1,13 +1,13 @@
 # COF.md — how to read this file (Clara Mercier)
 
-This is a **Character Open File** (COF 1.1, a ZIP with `manifest.json` at its root; MIME `application/vnd.cof.character+zip`).
+This is a **Character Open File** (COF 1.2, a ZIP with `manifest.json` at its root; MIME `application/vnd.cof.character+zip`).
 It carries one or more AI characters: their personality, looks, voice, body, past and rights, in one portable container.
 Specification, schemas and tools: https://github.com/yannsouetre/cof — `pip install cof-cli` gives `cof validate`, `cof info`, `cof export`, `cof extract`, `cof memory add`.
 This note is a courtesy for readers without the specification; **the specification and `manifest.json` win** whenever they differ.
 
 ## Reading
 - `manifest.json` is the index. Characters: `id1` (Clara Mercier). Presets (a consistent way to present a character — age, style, language): `default`, `en-manga`, `en-12`, `en-65`, `en-future`, `en-agent`, `fr`, `fr-manga`, `fr-12`, `fr-65`, `fr-futur`, `fr-agent`; `default_preset` says which to use when nobody chooses.
-- Elements by category (`personality`, `appearance`, `voice`, `posture`, `files`, `motion`, `memories`): each category has `variants`; a preset's `slots` lists the variants it applies, `alternatives` the ones it offers; `extends` inherits from another preset.
+- Elements by category (`personality`, `appearance`, `voice`, `posture`, `files`, `motion`, `memories`, `psyche`): each category has `variants`; a preset's `slots` lists the variants it applies, `alternatives` the ones it offers; `extends` inherits from another preset.
 - Every file of the container is declared in `assets` (path, `mediaType`, `sha256`, `license`, `role`); a variant names its files by asset id. Sub-files (`card.json`, `psyche.json`, `profile.json`, `memory.json`) are JSON next to their variant under `elements/<category>/<variant>/`.
 - Short texts that are per language are maps keyed by BCP 47 (`{"fr": …, "en": …}`); pick the preset's personality language, else the identity's `language`, else the first entry.
 - `cof export --format agent --preset <id>` turns a preset into `SOUL.md` + `IDENTITY.md` + `MEMORY.md` for a text agent; the ComfyUI nodes read the file directly.

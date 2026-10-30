@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://yannsouetre.github.io/cof/schemas/1.1/manifest.schema.json",
+  "$id": "https://yannsouetre.github.io/cof/schemas/1.2/manifest.schema.json",
   "title": "COF manifest.json (1.0)",
   "type": "object",
   "required": [
@@ -22,7 +22,7 @@
     "cof": {
       "type": "string",
       "pattern": "^1\\.[0-9]+$",
-      "description": "format version: 1.0 or 1.1; readers accept any 1.x (later minors only add optional fields). A file declares the lowest minor that defines everything it uses."
+      "description": "format version: 1.0, 1.1 or 1.2; readers accept any 1.x (later minors only add optional fields). A file declares the lowest minor that defines everything it uses."
     },
     "id": {
       "type": "string",
@@ -115,7 +115,9 @@
               "profanity",
               "horror",
               "political",
-              "religious"
+              "religious",
+              "psyche-inappropriate",
+              "psyche-dangerous"
             ]
           }
         },
@@ -151,7 +153,7 @@
       "type": "object",
       "description": "Categories (by media nature) → variants; each variant declares its `kind`.",
       "propertyNames": {
-        "pattern": "^(personality|appearance|identity_weights|volume3d|voice|posture|motion|files|memories|x-[a-z0-9-]+)$"
+        "pattern": "^(personality|appearance|identity_weights|volume3d|voice|posture|motion|files|memories|psyche|x-[a-z0-9-]+)$"
       },
       "additionalProperties": {
         "type": "object",
@@ -835,6 +837,16 @@
           "type": "string",
           "pattern": "^memories/[a-z0-9][a-z0-9.-]*$",
           "description": "memories: the node whose media this node reuses — inherits nothing else (RFC 0002 § 4.5)."
+        },
+        "node": {
+          "$ref": "#/$defs/path",
+          "description": "psyche: the node file elements/psyche/<v>/psyche-node.json (RFC 0004, 1.2)"
+        },
+        "strength": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "psyche: the node's strength (0–100), mirrored from psyche-node.json so a reader can rank without opening files; equal to the node's value when both are present (RFC 0004 § 3 bis)."
         }
       },
       "required": [
@@ -860,7 +872,7 @@
         "slots": {
           "type": "object",
           "propertyNames": {
-            "pattern": "^(personality|appearance|identity_weights|volume3d|voice|posture|motion|files|memories|x-[a-z0-9-]+)$"
+            "pattern": "^(personality|appearance|identity_weights|volume3d|voice|posture|motion|files|memories|psyche|x-[a-z0-9-]+)$"
           },
           "additionalProperties": {
             "type": "array",
@@ -1959,6 +1971,19 @@
       "memories": [
         "moment",
         "period"
+      ],
+      "psyche": [
+        "value",
+        "belief",
+        "want",
+        "need",
+        "fear",
+        "wound",
+        "stance",
+        "taste",
+        "habit",
+        "contradiction",
+        "rule"
       ]
     }
   }

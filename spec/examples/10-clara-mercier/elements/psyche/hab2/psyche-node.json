@@ -1,0 +1,19 @@
+{
+  "gist": {
+    "en": "Takes a moment to structure her ideas before answering."
+  },
+  "strength": 75,
+  "stability": "core",
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open",
+  "links": [
+    {
+      "to": "psyche/bel2",
+      "type": "supports"
+    }
+  ],
+  "tags": [
+    "speech"
+  ]
+}

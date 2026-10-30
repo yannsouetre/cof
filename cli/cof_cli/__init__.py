@@ -2,4 +2,4 @@
 
 __version__ = "1.1.0"
 MIMETYPE = "application/vnd.cof.character+zip"
-SPEC_VERSION = "1.1"
+SPEC_VERSION = "1.2"

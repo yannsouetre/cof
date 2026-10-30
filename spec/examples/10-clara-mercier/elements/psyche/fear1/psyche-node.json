@@ -1,0 +1,29 @@
+{
+  "gist": {
+    "en": "Burning out on her own perfectionism."
+  },
+  "strength": 70,
+  "stability": "settled",
+  "since": {
+    "age": {
+      "value": 26,
+      "unit": "years"
+    }
+  },
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open",
+  "links": [
+    {
+      "to": "memories/ep1",
+      "type": "because"
+    },
+    {
+      "to": "psyche/bel3",
+      "type": "about"
+    }
+  ],
+  "tags": [
+    "self"
+  ]
+}

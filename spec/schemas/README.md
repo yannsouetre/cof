@@ -1,4 +1,6 @@
-# JSON Schemas (draft 2020-12) — COF 1.1
+# JSON Schemas (draft 2020-12) — COF 1.2
+
+1.2 adds to 1.1, by addition only (RFC 0004): the `psyche` category (kinds `value`, `belief`, `want`, `need`, `fear`, `wound`, `stance`, `taste`, `habit`, `contradiction`, `rule`), the variant fields `node` and `strength`, the content tags `psyche-inappropriate` and `psyche-dangerous`, and `psyche-node.schema.json`. The 1.1 schemas stay published under `schemas/1.1/`.
 
 1.1 adds to 1.0, by addition only (RFC 0002): the `memories` category (kinds `moment`, `period`), the variant fields `memory`, `media`, `media_from`, the asset role `memory-media` and flag `as_remembered`, `identities.<id>.language`, and `memory.schema.json`. The 1.0 schemas stay published under `schemas/1.0/`.
 
@@ -16,6 +18,7 @@
 | `body.schema.json` | `elements/appearance/<v>/body.json` | `variant.params` (kind `body`) | height, build, ISO 7250 measurements, Anny phenotypes, SMPL-X β, skin tone (Monk / Fitzpatrick), `estimated` + `confidence` |
 | `consent.schema.json` | `rights/consent.json`, `identities.<id>.consent` | — | real person: `scope[]` (including `intimate`), dates, jurisdictions, proofs (sha256 required if a file is attached), subject age ≥ 18 |
 | `memory.schema.json` | `elements/memories/<v>/memory.json` | `variant.memory` | a node of the character's past (RFC 0002): multilingual `gist` (required), `nature`, `when` / `where` / `who`, feelings (same structure as the psyche's baseline emotion), `salience`, `fidelity`, `factual`, `explicit`, `origin` / `visibility` / `disclosure`, qualified `links`, `tags`, `revisions` |
+| `psyche-node.schema.json` | `elements/psyche/<v>/psyche-node.json` | `variant.node` | a node of the character's psyche (RFC 0004): multilingual `gist` (required), `strength`, `stability`, `since`, `risk`, `false_but_held` (belief), `about` (stance), `origin` / `visibility` / `disclosure`, qualified `links` (`because`, `about`, `supports`, `conflicts`), `tags`, `revisions` |
 | `visemes.schema.json` | `elements/motion/<v>/visemes.json` | `variant.visemes` | viseme vocabulary of the clips (ARKit-52, Oculus-15, Preston Blair, Unified Expressions, custom + mapping) |
 
 Rule: `cof validate` validates every sub-file referenced by a variant against its schema (error, not warning: these files are produced by the builder or the CLI). Sub-files not listed (e.g. `outfit.json`, `voice.vec.json`, `face.mesh`) are not schematized yet — see `docs/design-notes-phase0.md`.

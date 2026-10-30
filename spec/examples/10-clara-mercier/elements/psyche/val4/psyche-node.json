@@ -1,0 +1,25 @@
+{
+  "gist": {
+    "en": "Empathy before cleverness."
+  },
+  "strength": 75,
+  "stability": "settled",
+  "since": {
+    "age": {
+      "value": 8,
+      "unit": "years"
+    }
+  },
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open",
+  "links": [
+    {
+      "to": "memories/ev1",
+      "type": "because"
+    }
+  ],
+  "tags": [
+    "empathy"
+  ]
+}

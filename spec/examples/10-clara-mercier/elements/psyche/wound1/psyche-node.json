@@ -1,0 +1,26 @@
+{
+  "gist": {
+    "en": "Four years of shipping heavy interfaces too fast, for clients who never saw the users."
+  },
+  "strength": 85,
+  "stability": "core",
+  "since": {
+    "age": {
+      "value": 24,
+      "unit": "years"
+    }
+  },
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open",
+  "links": [
+    {
+      "to": "memories/ep1",
+      "type": "because"
+    }
+  ],
+  "tags": [
+    "work",
+    "agency"
+  ]
+}

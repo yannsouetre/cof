@@ -344,6 +344,66 @@
       "expect": "relation to oneself"
     },
     {
+      "file": "psyche-node-missing.cof",
+      "rule": "a psyche variant names its node file",
+      "spec": "RFC 0004 § 3 bis",
+      "expect": "names its node file"
+    },
+    {
+      "file": "psyche-link-dangling.cof",
+      "rule": "a link points to an existing node or identity",
+      "spec": "RFC 0004 § 3 sexies",
+      "expect": "unknown node or identity"
+    },
+    {
+      "file": "psyche-supports-not-psyche.cof",
+      "rule": "`supports` and `conflicts` link psyche nodes only",
+      "spec": "RFC 0004 § 3 bis",
+      "expect": "targets a psyche node only"
+    },
+    {
+      "file": "psyche-contradiction-links.cof",
+      "rule": "a contradiction carries exactly two `conflicts` links",
+      "spec": "RFC 0004 § 3 bis",
+      "expect": "exactly two `conflicts`"
+    },
+    {
+      "file": "psyche-false-but-held-kind.cof",
+      "rule": "`false_but_held` (the lie) is on a belief only",
+      "spec": "RFC 0004 § 3 bis",
+      "expect": "`false_but_held` is for a belief only"
+    },
+    {
+      "file": "psyche-about-kind.cof",
+      "rule": "the `about` field is on a stance only (other kinds use a link `about`)",
+      "spec": "RFC 0004 § 3 bis",
+      "expect": "the `about` field is for a stance only"
+    },
+    {
+      "file": "psyche-because-cycle.cof",
+      "rule": "`because` links between psyche nodes have no cycle",
+      "spec": "RFC 0004 § 3 sexies",
+      "expect": "`because` cycle"
+    },
+    {
+      "file": "psyche-strength-mirror.cof",
+      "rule": "the variant's `strength` mirrors the node's",
+      "spec": "RFC 0004 § 3 bis",
+      "expect": "differs from the node's"
+    },
+    {
+      "file": "psyche-risk-tag-missing.cof",
+      "rule": "a node of risk `dangerous` makes the file carry tags.content `psyche-dangerous`",
+      "spec": "RFC 0004 § 3 septies",
+      "expect": "must include 'psyche-dangerous'"
+    },
+    {
+      "file": "psyche-cof-version.cof",
+      "rule": "a file using the psyche category declares cof 1.2",
+      "spec": "RFC 0004 § 3 ter / § 8",
+      "expect": "uses 1.2 additions"
+    },
+    {
       "file": "mimetype-not-first.cof",
       "rule": "`mimetype` is the first entry",
       "spec": "§ 1.1",

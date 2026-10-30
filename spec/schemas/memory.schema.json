@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://yannsouetre.github.io/cof/schemas/1.1/memory.schema.json",
+  "$id": "https://yannsouetre.github.io/cof/schemas/1.2/memory.schema.json",
   "title": "COF memory node (elements/memories/<v>/memory.json)",
   "description": "A moment or a period of the character's past — RFC 0002. The node file holds the content; the manifest variant holds what tools read without opening it (`memory`, `media[]`, `media_from`, `age`, `nudity`). Node references are always qualified (\"<category>/<variant id>\").",
   "type": "object",

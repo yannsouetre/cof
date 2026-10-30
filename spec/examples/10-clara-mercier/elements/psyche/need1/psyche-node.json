@@ -1,0 +1,19 @@
+{
+  "gist": {
+    "en": "Accept being helped — a studio is not one person at night."
+  },
+  "strength": 65,
+  "stability": "fragile",
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open",
+  "links": [
+    {
+      "to": "psyche/bel3",
+      "type": "conflicts"
+    }
+  ],
+  "tags": [
+    "self"
+  ]
+}

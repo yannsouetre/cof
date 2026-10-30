@@ -1,0 +1,19 @@
+{
+  "gist": {
+    "en": "Keeps a small recycled-paper notebook within reach to sketch user journeys."
+  },
+  "strength": 70,
+  "stability": "settled",
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open",
+  "links": [
+    {
+      "to": "psyche/val1",
+      "type": "supports"
+    }
+  ],
+  "tags": [
+    "work"
+  ]
+}

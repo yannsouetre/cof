@@ -57,7 +57,7 @@ def _copy_tree_assets(src: Path, dst: Path, m: dict, prefix: str, taken_assets: 
 
 
 def _copy_variant_files(src: Path, dst: Path, v: dict, prefix: str):
-    for fld in ("card", "psyche", "story", "lorebook", "params", "code", "spec", "profile", "vec", "visemes", "path", "skeleton", "memory"):
+    for fld in ("card", "psyche", "story", "lorebook", "params", "code", "spec", "profile", "vec", "visemes", "path", "skeleton", "memory", "node"):
         rel = v.get(fld)
         if isinstance(rel, str) and (src / rel).is_file():
             newrel = rel
@@ -142,6 +142,20 @@ def merge_dirs(sources: list[Path], dst: Path) -> dict:
                 for who in node.get("who") or []:
                     if isinstance(who, dict) and who.get("identity") not in (None, "self") and who["identity"] in id_map:
                         who["identity"] = id_map[who["identity"]]
+                (dst / rel).write_text(json.dumps(node, ensure_ascii=False, indent=2) + "\n", "utf-8")
+        id_refs = {f"identities/{i0}": f"identities/{i1}" for i0, i1 in id_map.items() if i0 != i1}
+        for (cat, vid0), vid1 in vid_map.items():        # psyche nodes (RFC 0004): links and a stance's `about` follow the renames
+            rel = out["elements"]["psyche"]["variants"][vid1].get("node") if cat == "psyche" else None
+            if (ref_map or id_refs) and isinstance(rel, str) and (dst / rel).is_file():
+                node = json.loads((dst / rel).read_text("utf-8"))
+                for ln in node.get("links") or []:
+                    if isinstance(ln, dict) and ln.get("to") in {**ref_map, **id_refs}:
+                        ln["to"] = {**ref_map, **id_refs}[ln["to"]]
+                a = node.get("about")
+                if isinstance(a, dict) and a.get("node") in ref_map:
+                    a["node"] = ref_map[a["node"]]
+                if isinstance(a, dict) and a.get("identity") in id_map:
+                    a["identity"] = id_map[a["identity"]]
                 (dst / rel).write_text(json.dumps(node, ensure_ascii=False, indent=2) + "\n", "utf-8")
         pid_map = {}
         for pid, p in (m.get("presets") or {}).items():
@@ -315,11 +329,13 @@ def _unlist_variant(m: dict, cat: str, vid: str) -> None:
 
 def drop_dangling_memory_links(dst: Path, m: dict) -> list[str]:
     """Links whose target node is no longer in the file are removed from the node files (an extract of one character
-    loses the `same-event` links to the others'). Returns "vid → target" for each dropped link."""
+    loses the `same-event` links to the others'); psyche nodes (RFC 0004) likewise, `identities/<id>` targets included.
+    Returns "vid → target" for each dropped link."""
     E = m.get("elements") or {}
+    ids = m.get("identities") or {}
     dropped = []
-    for vid, v in _memory_variants(m).items():
-        rel = v.get("memory")
+    for vid, v, fld in [(k, x, "memory") for k, x in _memory_variants(m).items()] + [(k, x, "node") for k, x in (((E.get("psyche") or {}).get("variants")) or {}).items()]:
+        rel = v.get(fld)
         if not rel or not (dst / rel).is_file():
             continue
         try:
@@ -329,7 +345,7 @@ def drop_dangling_memory_links(dst: Path, m: dict) -> list[str]:
         keep = []
         for ln in node.get("links") or []:
             cat, _, tgt = str(ln.get("to", "")).partition("/")
-            if tgt in (((E.get(cat) or {}).get("variants") or {})):
+            if tgt in (ids if cat == "identities" else ((E.get(cat) or {}).get("variants") or {})):
                 keep.append(ln)
             else:
                 dropped.append(f"{vid} → {ln.get('to')}")

@@ -502,6 +502,10 @@ def test_published_schemas_match_spec():
         assert (ROOT / "cli/cof_cli/schemas" / f.name).read_bytes() == f.read_bytes(), f.name
         sid = json.loads(f.read_text("utf-8")).get("$id")
         assert sid is None or sid == f"https://yannsouetre.github.io/cof/schemas/{SPEC_VERSION}/{f.name}"
+    for old in ("1.0", "1.1"):                      # earlier minors stay published as they were (their $id names their folder)
+        for f in (ROOT / "schemas" / old).glob("*.json"):
+            assert json.loads(f.read_text("utf-8")).get("$id") == f"https://yannsouetre.github.io/cof/schemas/{old}/{f.name}", f
+    assert not (ROOT / "schemas/1.1/psyche-node.schema.json").exists()
 
 
 def test_negative_corpus():
@@ -1283,3 +1287,146 @@ def test_validator_survives_wrongly_typed_subfiles(tmp_path):
     spec = next(v["spec"] for v in m["elements"]["identity_weights"]["variants"].values() if v.get("spec"))
     (d2 / spec).write_text(json.dumps({"base_model": "x", "file": {}}), "utf-8")
     rep2 = Report(); validate_dir(d2, rep2); assert not rep2.ok
+
+
+# ---------------------------------------------------------------- psyche (RFC 0004, 1.2) ----------------------------------------------------------------
+
+def _psy(tmp_path, nodes=None):
+    """The memories fixture (cof 1.2) with a small psyche: a wound because of a memory, a value because of the wound, a
+    belief (the lie) and the contradiction between them, a stance toward the user. `nodes` overrides node fields."""
+    d, m = _mem_copy(tmp_path)
+    N = {"wound1": ("wound", {"gist": {"fr": "Les années d'agence.", "en": "The agency years."}, "strength": 85, "stability": "core", "links": [{"to": "memories/p1", "type": "because"}]}),
+         "val1": ("value", {"gist": {"fr": "La légèreté.", "en": "Lightness."}, "strength": 95, "since": {"age": {"value": 28, "unit": "years"}}, "links": [{"to": "psyche/wound1", "type": "because"}]}),
+         "bel1": ("belief", {"gist": {"fr": "Si je ralentis, je disparais.", "en": "If I slow down, I disappear."}, "strength": 60, "false_but_held": True}),
+         "contra1": ("contradiction", {"gist": {"fr": "Prône la lenteur, travaille la nuit.", "en": "Preaches slowness, works at night."}, "strength": 60,
+                                       "links": [{"to": "psyche/val1", "type": "conflicts"}, {"to": "psyche/bel1", "type": "conflicts"}]}),
+         "stance1": ("stance", {"gist": {"fr": "Envers l'utilisateur : une collègue.", "en": "Toward the user: a colleague."}, "strength": 50, "about": {"user": True}})}
+    V = {}
+    for vid, (kind, nd) in N.items():
+        nd = {**nd, **((nodes or {}).get(vid) or {})}
+        (d / f"elements/psyche/{vid}").mkdir(parents=True, exist_ok=True)
+        (d / f"elements/psyche/{vid}/psyche-node.json").write_text(json.dumps({k: x for k, x in nd.items() if x is not None}), "utf-8")
+        V[vid] = {"kind": kind, "label": vid, "node": f"elements/psyche/{vid}/psyche-node.json", "identity": "id1"} | ({"strength": nd["strength"]} if nd.get("strength") is not None else {})
+    m["cof"] = "1.2"; m["elements"]["psyche"] = {"variants": V}; m["presets"]["default"]["slots"]["psyche"] = list(N)
+    _write(d, m)
+    return d, m
+
+
+def _pnode(d, vid, **kw):
+    p = d / f"elements/psyche/{vid}/psyche-node.json"; n = json.loads(p.read_text("utf-8")); n.update(kw)
+    p.write_text(json.dumps({k: x for k, x in n.items() if x is not None}), "utf-8")
+
+
+def test_example_10_psyche_is_valid(tmp_path):
+    """Clara's 22 nodes (RFC 0004 § 7 bis) in the flagship example: valid, listed by presets like memories; an extract keeps
+    what the preset holds and drops the links to nodes left behind."""
+    src = ROOT / "spec/examples/10-clara-mercier"
+    rep = Report(); m = validate_dir(src, rep, recompute=False)
+    assert rep.ok, rep.errors
+    assert m["cof"] == "1.2" and len(m["elements"]["psyche"]["variants"]) == 22
+    assert not [w for w in rep.warnings if "psyche" in w and "primary language" not in w], rep.warnings
+    from cof_cli.model import resolve_preset_slots
+    assert len(resolve_preset_slots(m, "default")["psyche"]) == 22 and len(resolve_preset_slots(m, "fr")["psyche"]) == 22
+    assert resolve_preset_slots(m, "en-12")["psyche"] == ["val4", "taste1", "hab2"]
+    from cof_cli.validate import auto_tags
+    assert "has-psyche" in auto_tags(m)
+    from cof_cli.ops import extract_presets
+    out = tmp_path / "x"; extract_presets(src, out, ["en-12"])
+    assert sorted(p.name for p in (out / "elements/psyche").iterdir()) == ["hab2", "taste1", "val4"]
+    assert "links" not in json.loads((out / "elements/psyche/hab2/psyche-node.json").read_text("utf-8"))   # supports → bel2, left behind
+    rep = Report(); validate_dir(out, rep, recompute=False); assert rep.ok, rep.errors
+
+
+def test_psyche_fixture_and_structural_rules(tmp_path):
+    d, m = _psy(tmp_path)
+    rep = _val(d); assert rep.ok, rep.errors
+    assert not rep.warnings and not rep.info.get("notes"), (rep.warnings, rep.info.get("notes"))
+    assert "has-psyche" in rep.manifest["tags"]["auto"] and "psyche" in rep.manifest["coverage"]["elements"]
+    errs = lambda: _val(d).errors
+    _pnode(d, "bel1", links=[{"to": "psyche/zz", "type": "because"}, {"to": "identities/nobody", "type": "about"}])
+    assert sum("unknown node or identity" in e for e in errs()) == 2
+    _pnode(d, "bel1", links=[{"to": "memories/m1", "type": "supports"}]); assert any("targets a psyche node only" in e for e in errs())
+    _pnode(d, "bel1", links=[{"to": "identities/id1", "type": "about"}]); assert not errs()
+    _pnode(d, "contra1", links=[{"to": "psyche/val1", "type": "conflicts"}]); assert any("exactly two `conflicts`" in e and "found 1" in e for e in errs())
+    _pnode(d, "contra1", links=[{"to": "psyche/val1", "type": "conflicts"}, {"to": "psyche/bel1", "type": "conflicts"}])
+    _pnode(d, "val1", false_but_held=True); assert any("`false_but_held` is for a belief only" in e for e in errs())
+    _pnode(d, "val1", false_but_held=None, about={"label": {"en": "x"}}); assert any("`about` field is for a stance only" in e for e in errs())
+    _pnode(d, "val1", about=None)
+    _pnode(d, "stance1", about={"identity": "nobody"}); assert any("about.identity 'nobody'" in e for e in errs())
+    _pnode(d, "stance1", about={"node": "memories/zz"}); assert any("about.node memories/zz" in e for e in errs())
+    _pnode(d, "stance1", about={"node": "memories/m1"}); assert not errs()
+    _pnode(d, "wound1", links=[{"to": "psyche/val1", "type": "because"}]); assert any("`because` cycle" in e for e in errs())
+    _pnode(d, "wound1", links=[{"to": "memories/p1", "type": "because"}])
+    m["elements"]["psyche"]["variants"]["val1"]["strength"] = 10; _write(d, m)
+    assert any("manifest strength 10 differs" in e for e in errs())
+    m["elements"]["psyche"]["variants"]["val1"]["strength"] = 95; _write(d, m)
+    _pnode(d, "val1", strength=150); assert any("psyche-node.schema" in e for e in errs())         # the sub-file pass
+    _pnode(d, "val1", strength=95)
+    m["elements"]["psyche"]["variants"]["val1"].pop("node"); _write(d, m); assert any("names its node file" in e for e in errs())
+    m["elements"]["psyche"]["variants"]["val1"]["node"] = "elements/psyche/val1/psyche-node.json"
+    m["elements"]["psyche"]["variants"]["val1"]["kind"] = "opinion"; _write(d, m); assert any("unknown kind 'opinion'" in e for e in errs())
+    m["elements"]["psyche"]["variants"]["val1"]["kind"] = "value"; _write(d, m)
+    assert _val(d).ok
+
+
+def test_psyche_information_and_warnings(tmp_path):
+    d, m = _psy(tmp_path)
+    _pnode(d, "wound1", links=None)
+    _pnode(d, "stance1", about=None)
+    m["elements"]["psyche"]["variants"]["rule1"] = {"kind": "rule", "label": "rule", "node": "elements/psyche/rule1/psyche-node.json"}
+    (d / "elements/psyche/rule1").mkdir(); (d / "elements/psyche/rule1/psyche-node.json").write_text(json.dumps({"gist": {"fr": "Ne jamais…", "en": "Never…"}, "stability": "shifting", "visibility": "personal"}), "utf-8")
+    m["presets"]["default"]["slots"]["psyche"].append("rule1")
+    m["presets"]["default"]["age_override"] = {"value": 20, "unit": "years", "basis": "declared"}                 # younger than val1's since (28)
+    _write(d, m)
+    rep = _val(d); assert rep.ok, rep.errors
+    W, I = rep.warnings, rep.info.get("notes") or []
+    assert any("psyche.wound1: a wound with no `because`" in n for n in I), I
+    assert not any("strength unset" in n for n in I)                       # 1 of 6 unset
+    assert any("psyche.stance1: a stance with no `about`" in w for w in W) and any("psyche.rule1: a rule that is not `core`" in w for w in W), W
+    assert any("psyche.rule1: personal node" in w for w in W) and any("presets.default: psyche.val1 appeared at 28" in w for w in W), W
+    for vid in ("wound1", "val1", "bel1"):
+        _pnode(d, vid, strength=None); m["elements"]["psyche"]["variants"][vid].pop("strength")
+    _write(d, m)
+    assert any("strength unset on 4 of 6" in n for n in (_val(d).info.get("notes") or []))
+    _pnode(d, "val1", gist={"en": "Lightness."})
+    assert any("psyche of id1: 1 node(s) without a gist in the character's primary language (fr): val1" in w for w in _val(d).warnings)
+    from cof_cli.cli import _print_report
+    assert _print_report(_val(d), False) == 0
+
+
+def test_psyche_version_gate_and_risk_tags(tmp_path):
+    d, m = _psy(tmp_path)
+    m["cof"] = "1.1"; _write(d, m)
+    assert any("uses 1.2 additions (elements.psyche)" in e and 'declare cof "1.2"' in e for e in _val(d).errors)
+    m["cof"] = "1.2"; _write(d, m)
+    _pnode(d, "bel1", risk="dangerous"); _pnode(d, "stance1", risk="inappropriate")
+    errs = _val(d).errors
+    assert any("must include 'psyche-dangerous'" in e for e in errs) and any("must include 'psyche-inappropriate'" in e for e in errs), errs
+    m["tags"]["content"] = ["psyche-inappropriate", "psyche-dangerous"]; _write(d, m)
+    assert _val(d).ok
+    _pnode(d, "bel1", risk=None)
+    assert any("'psyche-dangerous' without any psyche node of risk 'dangerous'" in e for e in _val(d).errors)
+    m["elements"].pop("psyche"); m["cof"] = "1.1"; m["tags"]["content"] = ["psyche-inappropriate"]
+    m["presets"]["default"]["slots"].pop("psyche"); _write(d, m)
+    errs = _val(d).errors
+    assert any("uses 1.2 additions (tags.content 'psyche-inappropriate')" in e for e in errs) and any("without any psyche node" in e for e in errs), errs
+    m["cof"] = "1.3"; m["tags"]["content"] = ["none"]; _write(d, m)                     # a later minor than the tool: warned, never refused
+    rep = _val(d); assert rep.ok and any("newer than this validator (1.2)" in w for w in rep.warnings), rep.errors
+
+
+def test_psyche_in_a_cast_hangs_on_its_own_past(tmp_path):
+    d, _ = _psy(tmp_path)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    m["identities"]["id2"] = {"name": "Léo", "fictional": True, "morphology": {"class": "human"}}
+    m["presets"]["leo"] = {"label": "Léo", "identity": "id2", "slots": {"psyche": ["leo1"]}, "age_override": {"value": 20, "unit": "years", "basis": "declared"}}
+    m["elements"]["psyche"]["variants"]["leo1"] = {"kind": "fear", "label": "leo1", "node": "elements/psyche/leo1/psyche-node.json"}
+    (d / "elements/psyche/leo1").mkdir()
+    (d / "elements/psyche/leo1/psyche-node.json").write_text(json.dumps({"gist": {"en": "Losing his mother's attention."}, "strength": 40, "links": [{"to": "memories/m1", "type": "because"}]}), "utf-8")
+    _write(d, m)
+    errs = _val(d).errors
+    assert any("elements.psyche.leo1: no `identity`" in e for e in errs), errs
+    m["elements"]["psyche"]["variants"]["leo1"]["identity"] = "id2"; _write(d, m)
+    errs = _val(d).errors
+    assert any("psyche.leo1: `because` memories/m1 is a memory of id1" in e for e in errs), errs
+    (d / "elements/psyche/leo1/psyche-node.json").write_text(json.dumps({"gist": {"en": "Losing his mother's attention."}, "strength": 40, "links": [{"to": "identities/id1", "type": "about"}]}), "utf-8")
+    rep = _val(d); assert rep.ok, rep.errors

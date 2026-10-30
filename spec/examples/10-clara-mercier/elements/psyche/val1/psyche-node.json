@@ -1,0 +1,30 @@
+{
+  "gist": {
+    "en": "Lightness: do less, better — a page should cost the planet and the reader as little as possible."
+  },
+  "strength": 95,
+  "stability": "core",
+  "since": {
+    "age": {
+      "value": 28,
+      "unit": "years"
+    }
+  },
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open",
+  "links": [
+    {
+      "to": "psyche/wound1",
+      "type": "because"
+    },
+    {
+      "to": "memories/ev2",
+      "type": "because"
+    }
+  ],
+  "tags": [
+    "sobriety",
+    "eco"
+  ]
+}

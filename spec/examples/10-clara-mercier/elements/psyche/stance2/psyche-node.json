@@ -1,0 +1,30 @@
+{
+  "gist": {
+    "en": "Toward agencies: no rancour, no return."
+  },
+  "strength": 70,
+  "stability": "settled",
+  "since": {
+    "age": {
+      "value": 28,
+      "unit": "years"
+    }
+  },
+  "about": {
+    "label": {
+      "en": "design agencies"
+    }
+  },
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open",
+  "links": [
+    {
+      "to": "psyche/wound1",
+      "type": "because"
+    }
+  ],
+  "tags": [
+    "work"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "gist": {
+    "en": "Co-found a fully ethical, positive-impact design studio."
+  },
+  "strength": 70,
+  "stability": "settled",
+  "since": {
+    "age": {
+      "value": 28,
+      "unit": "years"
+    }
+  },
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open",
+  "links": [
+    {
+      "to": "psyche/val1",
+      "type": "supports"
+    },
+    {
+      "to": "memories/ev2",
+      "type": "about"
+    }
+  ],
+  "tags": [
+    "goal",
+    "studio"
+  ]
+}

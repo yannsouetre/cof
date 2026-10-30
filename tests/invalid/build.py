@@ -303,6 +303,57 @@ def _(d):
         iid = "id1"; m["default_identity"] = iid; m["identities"] = {iid: {k: m[k] for k in ("name", "fictional", "morphology", "summary") if k in m}}
     m["identities"][iid]["relations"] = [{"to": iid, "type": "friend"}]; save(d, m)
 
+# ---------- psyche (RFC 0004, 1.2): the base gains three nodes, then one rule is violated per file ----------
+PSY = {"val1": ("value", {"gist": {"en": "Craft before speed."}, "strength": 80, "stability": "core"}),
+       "bel1": ("belief", {"gist": {"en": "Nobody notices a careful job."}, "strength": 60, "links": [{"to": "psyche/val1", "type": "supports"}]}),
+       "contra1": ("contradiction", {"gist": {"en": "Values care, doubts anyone sees it."}, "strength": 50,
+                                     "links": [{"to": "psyche/val1", "type": "conflicts"}, {"to": "psyche/bel1", "type": "conflicts"}]})}
+
+def with_psyche(d, nodes=None, variants=None):
+    """Add val1, bel1 and the contradiction between them to the base (cof 1.2), strength mirrored on the variants; the
+    default preset lists them and the minor preset inherits them (a psyche never enters the minor rules, § 3 ter).
+    `nodes` / `variants`: {vid: {field: value}} merged into the node file / the manifest variant (None removes the field)."""
+    m = load(d); m["cof"] = "1.2"; V_ = {}
+    for vid, (kind, nd) in PSY.items():
+        nd = {**json.loads(json.dumps(nd)), **((nodes or {}).get(vid) or {})}
+        v = {"kind": kind, "label": vid, "node": f"elements/psyche/{vid}/psyche-node.json", "strength": PSY[vid][1]["strength"], **((variants or {}).get(vid) or {})}
+        (d / f"elements/psyche/{vid}").mkdir(parents=True, exist_ok=True)
+        (d / f"elements/psyche/{vid}/psyche-node.json").write_text(json.dumps({k: x for k, x in nd.items() if x is not None}), "utf-8")
+        V_[vid] = {k: x for k, x in v.items() if x is not None}
+    m["elements"]["psyche"] = {"variants": V_}
+    m["presets"]["default"]["slots"]["psyche"] = list(PSY)
+    save(d, m); return m
+
+@case("psyche-node-missing", "a psyche variant names its node file", "RFC 0004 § 3 bis", "names its node file")
+def _(d): with_psyche(d, variants={"val1": {"node": None}})
+
+@case("psyche-link-dangling", "a link points to an existing node or identity", "RFC 0004 § 3 sexies", "unknown node or identity")
+def _(d): with_psyche(d, nodes={"bel1": {"links": [{"to": "psyche/zz", "type": "because"}]}})
+
+@case("psyche-supports-not-psyche", "`supports` and `conflicts` link psyche nodes only", "RFC 0004 § 3 bis", "targets a psyche node only")
+def _(d): with_psyche(d, nodes={"bel1": {"links": [{"to": "personality/p1", "type": "supports"}]}})
+
+@case("psyche-contradiction-links", "a contradiction carries exactly two `conflicts` links", "RFC 0004 § 3 bis", "exactly two `conflicts`")
+def _(d): with_psyche(d, nodes={"contra1": {"links": [{"to": "psyche/val1", "type": "conflicts"}]}})
+
+@case("psyche-false-but-held-kind", "`false_but_held` (the lie) is on a belief only", "RFC 0004 § 3 bis", "`false_but_held` is for a belief only")
+def _(d): with_psyche(d, nodes={"val1": {"false_but_held": True}})
+
+@case("psyche-about-kind", "the `about` field is on a stance only (other kinds use a link `about`)", "RFC 0004 § 3 bis", "the `about` field is for a stance only")
+def _(d): with_psyche(d, nodes={"val1": {"about": {"label": {"en": "craft"}}}})
+
+@case("psyche-because-cycle", "`because` links between psyche nodes have no cycle", "RFC 0004 § 3 sexies", "`because` cycle")
+def _(d): with_psyche(d, nodes={"val1": {"links": [{"to": "psyche/bel1", "type": "because"}]}, "bel1": {"links": [{"to": "psyche/val1", "type": "because"}]}})
+
+@case("psyche-strength-mirror", "the variant's `strength` mirrors the node's", "RFC 0004 § 3 bis", "differs from the node's")
+def _(d): with_psyche(d, variants={"val1": {"strength": 10}})
+
+@case("psyche-risk-tag-missing", "a node of risk `dangerous` makes the file carry tags.content `psyche-dangerous`", "RFC 0004 § 3 septies", "must include 'psyche-dangerous'")
+def _(d): with_psyche(d, nodes={"bel1": {"risk": "dangerous"}})
+
+@case("psyche-cof-version", "a file using the psyche category declares cof 1.2", "RFC 0004 § 3 ter / § 8", "uses 1.2 additions")
+def _(d): m = with_psyche(d); m["cof"] = "1.1"; save(d, m)
+
 # ---------- archive-level cases (pack the valid base, then tamper) ----------
 def rewrite(src: Path, dst: Path, entries):
     with zipfile.ZipFile(dst, "w") as z:

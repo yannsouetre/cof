@@ -113,7 +113,7 @@ def _npy_has_objects(data: bytes) -> bool:
     hl = int.from_bytes(data[8:10], "little") if major == 1 else int.from_bytes(data[8:12], "little")
     header = data[10 if major == 1 else 12:(10 if major == 1 else 12) + hl].decode("latin1")
     return "'|O'" in header or "'O'" in header or "object" in header
-PATH_FIELDS = ("card", "psyche", "story", "lorebook", "params", "code", "spec", "profile", "vec", "visemes", "path", "skeleton", "memory")
+PATH_FIELDS = ("card", "psyche", "story", "lorebook", "params", "code", "spec", "profile", "vec", "visemes", "path", "skeleton", "memory", "node")
 
 
 @dataclass
@@ -121,6 +121,10 @@ class Report:
     errors: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     info: dict = field(default_factory=dict)
+
+    def note(self, msg: str) -> None:
+        """Information: neither an error nor a warning (RFC 0004 § 3 bis, § 7: "flag (information)"); kept in info["notes"]."""
+        self.info.setdefault("notes", []).append(msg)
 
     @property
     def ok(self) -> bool:
@@ -148,7 +152,7 @@ SUBFILE_SCHEMAS = {
     ("identity_weights", None, "spec"): "weights", ("voice", None, "profile"): "voice-profile",
     ("posture", "attitude", "spec"): "attitude", ("motion", "attitude", "spec"): "attitude",
     ("posture", None, "pose"): "pose", ("appearance", "hair", "code"): "hair", ("appearance", "body", "params"): "body",
-    ("motion", None, "visemes"): "visemes", ("memories", None, "memory"): "memory",
+    ("motion", None, "visemes"): "visemes", ("memories", None, "memory"): "memory", ("psyche", None, "node"): "psyche-node",
 }
 
 
@@ -272,6 +276,11 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
         used += uses_1_1_fields(manifest, src)
         if used:
             rep.errors.append(f"cof 1.0 declared but the file uses 1.1 additions ({', '.join(used)}): declare cof \"1.1\" — a file declares the lowest minor that defines everything it uses (SPEC § 12)")
+    if str(manifest.get("cof")) in ("1.0", "1.1"):              # 1.2 additions (RFC 0004): the psyche category and its two content tags
+        used12 = ["elements.psyche"] if (manifest.get("elements") or {}).get("psyche") else []
+        used12 += [f"tags.content '{t_}'" for t_ in PSYCHE_TAGS.values() if t_ in set(((manifest.get("tags") or {}).get("content")) or [])]
+        if used12:
+            rep.errors.append(f"cof {manifest.get('cof')} declared but the file uses 1.2 additions ({', '.join(used12)}): declare cof \"1.2\" — a file declares the lowest minor that defines everything it uses (SPEC § 12, RFC 0004 § 3 ter)")
     lang = (manifest.get("languages") or ["en"])[0]
     A = asset_index(manifest)
     elements = manifest.get("elements", {}) or {}
@@ -320,7 +329,7 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                           "likeness-image" if cat == "identity_weights" or (cat == "appearance" and k in ("face", "body", "character-sheet", "reference-set", "hair")) else
                           "likeness-3d" if cat == "volume3d" and k not in ("environment", "other") and not is_neutral(cat, rv) else
                           "voice-synthesis" if cat == "voice" and k in ("samples", "embedding") else
-                          "conversational-persona" if cat in ("personality", "memories") or (cat == "files" and k == "memory") else
+                          "conversational-persona" if cat in ("personality", "memories", "psyche") or (cat == "files" and k == "memory") else
                           "motion-capture" if cat == "motion" and k in ("clips", "video") and not is_neutral(cat, rv) else None)
                     if sc and sc not in scope:
                         need.setdefault(sc, []).append(f"{cat}.{vid}")
@@ -615,6 +624,8 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
 
     # memories (RFC 0002, 1.1): node files, references, explicit nodes, real persons, personal nodes
     _memory_rules(manifest, src, rep)
+    # psyche (RFC 0004, 1.2): node files, links, kinds' own fields, because-cycles, strength mirror, declared risk
+    _psyche_rules(manifest, src, rep)
     # cast (RFC 0003, 1.1): relations between characters, gender vs voice (coherence)
     from .cast import cast_rules
     cast_rules(manifest, src, rep)
@@ -856,6 +867,8 @@ def auto_tags(manifest: dict) -> list[str]:
         at.add("has-memory")
     if ((E.get("memories") or {}).get("variants")):
         at.add("has-memories")
+    if ((E.get("psyche") or {}).get("variants")):
+        at.add("has-psyche")
     if len(P) > 1:
         at.add("multi-preset")
     if len(ids) > 1:
@@ -1264,3 +1277,129 @@ def _memory_rules(manifest: dict, src: Path, rep: "Report") -> None:
         ys = sorted(set(y for _, y in L_))
         if ys and ys[-1] - ys[0] > 1:
             rep.warnings.append(f"memories of {iid_ or 'the character'} imply different birth years ({', '.join(f'{v}: {y}' for v, y in L_[:4])}) — ages and dates disagree")
+
+
+# ---------------------------------------------------------------- psyche (RFC 0004) ----------------------------------------------------------------
+
+PSYCHE_TAGS = {"inappropriate": "psyche-inappropriate", "dangerous": "psyche-dangerous"}     # node risk → file-level tags.content (§ 3 septies)
+
+
+def _psyche_rules(manifest: dict, src: Path, rep: "Report") -> None:
+    """RFC 0004 § 3 bis, § 3 sexies, § 3 septies. The node file is validated against psyche-node.schema.json by the
+    sub-file mechanism; this function holds the semantic rules: links and their targets, the fields reserved to one kind,
+    because-cycles, the strength mirror, the declared risk and its file-level tags. Psyche nodes carry no media and no
+    age: the minor rules never apply to them (§ 3 ter)."""
+    E = manifest.get("elements") or {}
+    psy = (E.get("psyche") or {}).get("variants") or {}
+    ids = manifest.get("identities") or {}
+    content = set((manifest.get("tags") or {}).get("content") or [])
+    nodes: dict[str, dict] = {}
+    for vid in psy:
+        where = f"psyche.{vid}"
+        rel = (resolve_variant(manifest, "psyche", vid) or {}).get("node")
+        if not rel:
+            rep.errors.append(f"{where}: a psyche variant names its node file (`node`: elements/psyche/<v>/psyche-node.json)")
+            continue
+        try:
+            node = json.loads((src / rel).read_text("utf-8"))
+        except Exception as e:
+            rep.errors.append(f"{where}: node file {rel} unreadable ({e})")
+            continue
+        if not isinstance(node, dict):
+            rep.errors.append(f"{where}: node file {rel} must hold a JSON object")
+            continue
+        if any(True for _ in sub_validator("psyche-node").iter_errors(node)):    # reported by the sub-file pass: the rules below read a valid shape only
+            continue
+        nodes[vid] = node
+    owner = lambda cat, vid: variant_owner(manifest, cat, vid)
+
+    def target(ref: str):
+        """(category, id, exists) of a qualified reference: <category>/<variant id> or identities/<id>."""
+        cat_, _, tgt = str(ref).partition("/")
+        ok = tgt in ids if cat_ == "identities" else bool(tgt) and tgt in (((E.get(cat_) or {}).get("variants")) or {})
+        return cat_, tgt, ok
+
+    no_lang: dict[tuple, list[str]] = {}
+    for vid, node in nodes.items():
+        where = f"psyche.{vid}"
+        rv = resolve_variant(manifest, "psyche", vid) or {}
+        kind, me = rv.get("kind"), owner("psyche", vid)
+        links = node.get("links") or []
+        for ln in links:
+            ty = ln.get("type")
+            cat_, tgt, ok = target(ln.get("to"))
+            if not ok:
+                rep.errors.append(f"{where}: link {ty} to {ln.get('to')}: unknown node or identity")
+            elif ty in ("supports", "conflicts") and cat_ != "psyche":
+                rep.errors.append(f"{where}: a `{ty}` link targets a psyche node only ({ln.get('to')} is not one)")
+            elif ty in ("because", "about") and cat_ == "memories" and ids and owner("memories", tgt) != me:
+                rep.errors.append(f"{where}: `{ty}` {ln.get('to')} is a memory of {owner('memories', tgt)} — a character's psyche hangs on its own past")
+        if kind == "contradiction" and sum(1 for ln in links if ln.get("type") == "conflicts") != 2:
+            rep.errors.append(f"{where}: a contradiction carries exactly two `conflicts` links (found {sum(1 for ln in links if ln.get('type') == 'conflicts')}) — it owns a tension between two nodes")
+        if kind == "wound" and not any(ln.get("type") == "because" and str(ln.get("to", "")).startswith("memories/") for ln in links):
+            rep.note(f"{where}: a wound with no `because` link to a memory — a wound is almost always because of something lived")
+        if "false_but_held" in node and kind != "belief":
+            rep.errors.append(f"{where}: `false_but_held` is for a belief only (this node is a {kind})")
+        a = node.get("about")
+        if a is not None and kind != "stance":
+            rep.errors.append(f"{where}: the `about` field is for a stance only (this node is a {kind}) — use a link of type `about`")
+        elif isinstance(a, dict):
+            if "identity" in a and a["identity"] not in ids:
+                rep.errors.append(f"{where}: about.identity {a['identity']!r}: unknown identity" + ("" if ids else " (a file without an `identities` table has none — use about.label)"))
+            if "node" in a:
+                cat_, tgt, ok = target(a["node"])
+                if not ok:
+                    rep.errors.append(f"{where}: about.node {a['node']}: unknown node")
+                elif cat_ == "memories" and ids and owner("memories", tgt) != me:
+                    rep.errors.append(f"{where}: about.node {a['node']} is a memory of {owner('memories', tgt)} — a character's psyche hangs on its own past")
+        elif kind == "stance":
+            rep.warnings.append(f"{where}: a stance with no `about` — say what it bears on (an identity, a node, the user or a label)")
+        if kind == "rule" and node.get("stability", "settled") != "core":
+            rep.warnings.append(f"{where}: a rule that is not `core` (stability {node.get('stability', 'settled')}) — a rule is kept whatever the pressure")
+        if "strength" in rv and "strength" in node and rv["strength"] != node["strength"]:
+            rep.errors.append(f"{where}: manifest strength {rv['strength']} differs from the node's ({node['strength']}) — the variant mirrors psyche-node.json")
+        if node.get("visibility") == "personal":
+            rep.warnings.append(f"{where}: personal node (a user's data) — do not share this file as is")
+        if node.get("origin", "authored") == "authored" and node.get("revisions"):
+            rep.warnings.append(f"{where}: revisions on an authored node — tools only rewrite lived nodes")
+        pl = (((ids.get(me) or {}).get("language")) or "").lower() if me else ""
+        if pl and pl not in {k.lower() for k in node.get("gist") or {}}:
+            no_lang.setdefault((me, pl), []).append(vid)
+    for (iid_, pl), L_ in no_lang.items():                     # as memories (RFC 0002 § 3 reading rule), one line per character
+        rep.warnings.append(f"psyche of {iid_}: {len(L_)} node(s) without a gist in the character's primary language ({pl}): {', '.join(L_[:6])}{'…' if len(L_) > 6 else ''}")
+
+    # because-cycles among psyche nodes: a conviction cannot be its own cause
+    graph = {vid: [str(ln.get("to")).partition("/")[2] for ln in n.get("links") or [] if ln.get("type") == "because" and str(ln.get("to", "")).startswith("psyche/")] for vid, n in nodes.items()}
+    state: dict[str, int] = {}
+    cyc: list[str] = []
+
+    def visit(v, path):
+        state[v] = 1
+        for w in graph.get(v, []):
+            if state.get(w) == 1:
+                cyc.append(" → ".join(path[path.index(w):] + [w]) if w in path else w)
+            elif w in graph and not state.get(w):
+                visit(w, path + [w])
+        state[v] = 2
+    for v in graph:
+        if not state.get(v):
+            visit(v, [v])
+    for c in cyc:
+        rep.errors.append(f"psyche: `because` cycle {c} — a node cannot be its own cause")
+    unset = [vid for vid, n in nodes.items() if "strength" not in n]
+    if nodes and len(unset) * 2 > len(nodes):
+        rep.note(f"psyche: strength unset on {len(unset)} of {len(nodes)} nodes (default 50) — set it node by node for a finished psyche")
+    # a preset younger than a node's `since` (coherence, § 3 ter)
+    for pid in preset_ids(manifest):
+        pa = preset_age(manifest, pid)
+        for vid in resolve_preset_slots(manifest, pid).get("psyche") or []:
+            sa = _age_value(((nodes.get(vid) or {}).get("since") or {}).get("age"))
+            if pa is not None and sa is not None and sa > pa:
+                rep.warnings.append(f"presets.{pid}: psyche.{vid} appeared at {sa:g}, after the age this preset shows ({pa:g}) (coherence)")
+    # declared risk ↔ file-level tags.content (§ 3 septies): both ways
+    risks = {(n.get("risk") or "none") for n in nodes.values()}
+    for r, tag in PSYCHE_TAGS.items():
+        if r in risks and tag not in content:
+            rep.errors.append(f"psyche: node(s) of risk '{r}' ({', '.join(v for v, n in nodes.items() if n.get('risk') == r)}) — tags.content must include '{tag}'")
+        elif tag in content and r not in risks and not (set(psy) - set(nodes)):
+            rep.errors.append(f"tags.content: '{tag}' without any psyche node of risk '{r}' — the tag says what the nodes declare")

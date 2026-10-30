@@ -1,0 +1,31 @@
+{
+  "gist": {
+    "en": "If I slow down, I disappear."
+  },
+  "strength": 60,
+  "stability": "shifting",
+  "since": {
+    "age": {
+      "value": 24,
+      "unit": "years"
+    }
+  },
+  "false_but_held": true,
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open",
+  "links": [
+    {
+      "to": "memories/ep1",
+      "type": "because"
+    },
+    {
+      "to": "psyche/val1",
+      "type": "conflicts"
+    }
+  ],
+  "tags": [
+    "work",
+    "self"
+  ]
+}

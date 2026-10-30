@@ -1,0 +1,19 @@
+{
+  "gist": {
+    "en": "Losing the ethical point of a project along the way."
+  },
+  "strength": 65,
+  "stability": "settled",
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open",
+  "links": [
+    {
+      "to": "psyche/val3",
+      "type": "about"
+    }
+  ],
+  "tags": [
+    "work"
+  ]
+}

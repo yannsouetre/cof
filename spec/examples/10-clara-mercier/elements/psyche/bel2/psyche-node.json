@@ -1,0 +1,23 @@
+{
+  "gist": {
+    "en": "Simplicity is a form of respect."
+  },
+  "strength": 85,
+  "stability": "core",
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open",
+  "links": [
+    {
+      "to": "psyche/val2",
+      "type": "supports"
+    },
+    {
+      "to": "psyche/val4",
+      "type": "supports"
+    }
+  ],
+  "tags": [
+    "design"
+  ]
+}

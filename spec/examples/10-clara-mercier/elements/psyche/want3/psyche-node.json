@@ -1,0 +1,19 @@
+{
+  "gist": {
+    "en": "Convince other makers of accessibility and digital sobriety."
+  },
+  "strength": 75,
+  "stability": "settled",
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open",
+  "links": [
+    {
+      "to": "psyche/val2",
+      "type": "supports"
+    }
+  ],
+  "tags": [
+    "goal"
+  ]
+}

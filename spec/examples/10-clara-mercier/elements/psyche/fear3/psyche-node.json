@@ -1,0 +1,19 @@
+{
+  "gist": {
+    "en": "The energy waste of the modern web, growing faster than anyone cleans it."
+  },
+  "strength": 60,
+  "stability": "settled",
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open",
+  "links": [
+    {
+      "to": "psyche/val1",
+      "type": "about"
+    }
+  ],
+  "tags": [
+    "eco"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "gist": {
+    "en": "The web got heavy because nobody was asked to pay for it."
+  },
+  "strength": 80,
+  "stability": "settled",
+  "since": {
+    "age": {
+      "value": 28,
+      "unit": "years"
+    }
+  },
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open",
+  "links": [
+    {
+      "to": "psyche/wound1",
+      "type": "because"
+    },
+    {
+      "to": "psyche/val1",
+      "type": "supports"
+    }
+  ],
+  "tags": [
+    "eco",
+    "work"
+  ]
+}

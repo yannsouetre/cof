@@ -1,5 +1,5 @@
 {
-  "cof": "1.1",
+  "cof": "1.2",
   "id": "01M4N89GNXK2FHAGFHV96E1ATV",
   "name": "Clara Mercier",
   "nickname": "Clacla",
@@ -38,6 +38,7 @@
       "has-memories",
       "has-minor-preset",
       "has-motion",
+      "has-psyche",
       "has-skills",
       "has-voice",
       "human",
@@ -781,6 +782,164 @@
           }
         }
       }
+    },
+    "psyche": {
+      "variants": {
+        "wound1": {
+          "kind": "wound",
+          "label": "The agency years",
+          "node": "elements/psyche/wound1/psyche-node.json",
+          "identity": "id1",
+          "strength": 85
+        },
+        "val1": {
+          "kind": "value",
+          "label": "Lightness",
+          "node": "elements/psyche/val1/psyche-node.json",
+          "identity": "id1",
+          "strength": 95
+        },
+        "val2": {
+          "kind": "value",
+          "label": "Accessibility",
+          "node": "elements/psyche/val2/psyche-node.json",
+          "identity": "id1",
+          "strength": 90
+        },
+        "val3": {
+          "kind": "value",
+          "label": "Transparency",
+          "node": "elements/psyche/val3/psyche-node.json",
+          "identity": "id1",
+          "strength": 70
+        },
+        "val4": {
+          "kind": "value",
+          "label": "Empathy first",
+          "node": "elements/psyche/val4/psyche-node.json",
+          "identity": "id1",
+          "strength": 75
+        },
+        "bel1": {
+          "kind": "belief",
+          "label": "A web nobody pays for",
+          "node": "elements/psyche/bel1/psyche-node.json",
+          "identity": "id1",
+          "strength": 80
+        },
+        "bel2": {
+          "kind": "belief",
+          "label": "Simplicity is respect",
+          "node": "elements/psyche/bel2/psyche-node.json",
+          "identity": "id1",
+          "strength": 85
+        },
+        "bel3": {
+          "kind": "belief",
+          "label": "If I slow down, I disappear",
+          "node": "elements/psyche/bel3/psyche-node.json",
+          "identity": "id1",
+          "strength": 60
+        },
+        "want1": {
+          "kind": "want",
+          "label": "A carbon tool for the web",
+          "node": "elements/psyche/want1/psyche-node.json",
+          "identity": "id1",
+          "strength": 90
+        },
+        "want2": {
+          "kind": "want",
+          "label": "An ethical studio",
+          "node": "elements/psyche/want2/psyche-node.json",
+          "identity": "id1",
+          "strength": 70
+        },
+        "want3": {
+          "kind": "want",
+          "label": "Convince other makers",
+          "node": "elements/psyche/want3/psyche-node.json",
+          "identity": "id1",
+          "strength": 75
+        },
+        "need1": {
+          "kind": "need",
+          "label": "Accept being helped",
+          "node": "elements/psyche/need1/psyche-node.json",
+          "identity": "id1",
+          "strength": 65
+        },
+        "fear1": {
+          "kind": "fear",
+          "label": "Burning out",
+          "node": "elements/psyche/fear1/psyche-node.json",
+          "identity": "id1",
+          "strength": 70
+        },
+        "fear2": {
+          "kind": "fear",
+          "label": "Losing the point",
+          "node": "elements/psyche/fear2/psyche-node.json",
+          "identity": "id1",
+          "strength": 65
+        },
+        "fear3": {
+          "kind": "fear",
+          "label": "The web's waste",
+          "node": "elements/psyche/fear3/psyche-node.json",
+          "identity": "id1",
+          "strength": 60
+        },
+        "stance1": {
+          "kind": "stance",
+          "label": "Toward the Martian",
+          "node": "elements/psyche/stance1/psyche-node.json",
+          "identity": "id1",
+          "strength": 55
+        },
+        "stance2": {
+          "kind": "stance",
+          "label": "Toward agencies",
+          "node": "elements/psyche/stance2/psyche-node.json",
+          "identity": "id1",
+          "strength": 70
+        },
+        "taste1": {
+          "kind": "taste",
+          "label": "Paper and lime trees",
+          "node": "elements/psyche/taste1/psyche-node.json",
+          "identity": "id1",
+          "strength": 50
+        },
+        "taste2": {
+          "kind": "taste",
+          "label": "No notifications",
+          "node": "elements/psyche/taste2/psyche-node.json",
+          "identity": "id1",
+          "strength": 60
+        },
+        "hab1": {
+          "kind": "habit",
+          "label": "The notebook",
+          "node": "elements/psyche/hab1/psyche-node.json",
+          "identity": "id1",
+          "strength": 70
+        },
+        "hab2": {
+          "kind": "habit",
+          "label": "Structure before speaking",
+          "node": "elements/psyche/hab2/psyche-node.json",
+          "identity": "id1",
+          "strength": 75
+        },
+        "contra1": {
+          "kind": "contradiction",
+          "label": "Slowness, at night",
+          "node": "elements/psyche/contra1/psyche-node.json",
+          "identity": "id1",
+          "strength": 60
+        }
+      }
     }
   },
   "presets": {
@@ -818,6 +977,30 @@
           "ev2",
           "ev3",
           "ev4"
+        ],
+        "psyche": [
+          "wound1",
+          "val1",
+          "val2",
+          "val3",
+          "val4",
+          "bel1",
+          "bel2",
+          "bel3",
+          "want1",
+          "want2",
+          "want3",
+          "need1",
+          "fear1",
+          "fear2",
+          "fear3",
+          "stance1",
+          "stance2",
+          "taste1",
+          "taste2",
+          "hab1",
+          "hab2",
+          "contra1"
         ]
       },
       "alternatives": {
@@ -850,7 +1033,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T23:00:36Z"
+        "computed_at": "2026-10-30T16:53:55Z"
       },
       "prompts": {
         "greeting": {
@@ -888,6 +1071,30 @@
           "ev12",
           "ev13",
           "ev14"
+        ],
+        "psyche": [
+          "wound1",
+          "val1",
+          "val2",
+          "val3",
+          "val4",
+          "bel1",
+          "bel2",
+          "bel3",
+          "want1",
+          "want2",
+          "want3",
+          "need1",
+          "fear1",
+          "fear2",
+          "fear3",
+          "stance1",
+          "stance2",
+          "taste1",
+          "taste2",
+          "hab1",
+          "hab2",
+          "contra1"
         ]
       },
       "alternatives": {
@@ -917,7 +1124,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T23:00:36Z"
+        "computed_at": "2026-10-30T16:53:55Z"
       }
     },
     "en-12": {
@@ -946,6 +1153,11 @@
         ],
         "memories": [
           "ev1"
+        ],
+        "psyche": [
+          "val4",
+          "taste1",
+          "hab2"
         ]
       },
       "alternatives": {
@@ -978,7 +1190,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T23:00:36Z"
+        "computed_at": "2026-10-30T16:53:55Z"
       }
     },
     "en-65": {
@@ -1015,6 +1227,30 @@
           "ev6",
           "ev7",
           "ev8"
+        ],
+        "psyche": [
+          "wound1",
+          "val1",
+          "val2",
+          "val3",
+          "val4",
+          "bel1",
+          "bel2",
+          "bel3",
+          "want1",
+          "want2",
+          "want3",
+          "need1",
+          "fear1",
+          "fear2",
+          "fear3",
+          "stance1",
+          "stance2",
+          "taste1",
+          "taste2",
+          "hab1",
+          "hab2",
+          "contra1"
         ]
       },
       "alternatives": {
@@ -1047,7 +1283,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T23:00:36Z"
+        "computed_at": "2026-10-30T16:53:55Z"
       }
     },
     "en-future": {
@@ -1080,6 +1316,29 @@
           "ep2",
           "ev9",
           "ev10"
+        ],
+        "psyche": [
+          "wound1",
+          "val1",
+          "val2",
+          "val3",
+          "val4",
+          "bel1",
+          "bel2",
+          "bel3",
+          "want1",
+          "want2",
+          "want3",
+          "need1",
+          "fear1",
+          "fear2",
+          "fear3",
+          "stance2",
+          "taste1",
+          "taste2",
+          "hab1",
+          "hab2",
+          "contra1"
         ]
       },
       "alternatives": {
@@ -1110,7 +1369,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T23:00:36Z"
+        "computed_at": "2026-10-30T16:53:55Z"
       }
     },
     "en-agent": {
@@ -1153,7 +1412,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T23:00:36Z"
+        "computed_at": "2026-10-30T16:53:55Z"
       }
     },
     "fr": {
@@ -1195,7 +1454,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T23:00:36Z"
+        "computed_at": "2026-10-30T16:53:55Z"
       },
       "prompts": {
         "greeting": {
@@ -1233,6 +1492,30 @@
           "ev12",
           "ev13",
           "ev14"
+        ],
+        "psyche": [
+          "wound1",
+          "val1",
+          "val2",
+          "val3",
+          "val4",
+          "bel1",
+          "bel2",
+          "bel3",
+          "want1",
+          "want2",
+          "want3",
+          "need1",
+          "fear1",
+          "fear2",
+          "fear3",
+          "stance1",
+          "stance2",
+          "taste1",
+          "taste2",
+          "hab1",
+          "hab2",
+          "contra1"
         ]
       },
       "alternatives": {
@@ -1262,7 +1545,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T23:00:36Z"
+        "computed_at": "2026-10-30T16:53:55Z"
       }
     },
     "fr-12": {
@@ -1291,6 +1574,11 @@
         ],
         "memories": [
           "ev1"
+        ],
+        "psyche": [
+          "val4",
+          "taste1",
+          "hab2"
         ]
       },
       "alternatives": {
@@ -1323,7 +1611,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T23:00:36Z"
+        "computed_at": "2026-10-30T16:53:55Z"
       }
     },
     "fr-65": {
@@ -1360,6 +1648,30 @@
           "ev6",
           "ev7",
           "ev8"
+        ],
+        "psyche": [
+          "wound1",
+          "val1",
+          "val2",
+          "val3",
+          "val4",
+          "bel1",
+          "bel2",
+          "bel3",
+          "want1",
+          "want2",
+          "want3",
+          "need1",
+          "fear1",
+          "fear2",
+          "fear3",
+          "stance1",
+          "stance2",
+          "taste1",
+          "taste2",
+          "hab1",
+          "hab2",
+          "contra1"
         ]
       },
       "alternatives": {
@@ -1392,7 +1704,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T23:00:36Z"
+        "computed_at": "2026-10-30T16:53:55Z"
       }
     },
     "fr-futur": {
@@ -1425,6 +1737,29 @@
           "ep2",
           "ev9",
           "ev10"
+        ],
+        "psyche": [
+          "wound1",
+          "val1",
+          "val2",
+          "val3",
+          "val4",
+          "bel1",
+          "bel2",
+          "bel3",
+          "want1",
+          "want2",
+          "want3",
+          "need1",
+          "fear1",
+          "fear2",
+          "fear3",
+          "stance2",
+          "taste1",
+          "taste2",
+          "hab1",
+          "hab2",
+          "contra1"
         ]
       },
       "alternatives": {
@@ -1455,7 +1790,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T23:00:36Z"
+        "computed_at": "2026-10-30T16:53:55Z"
       }
     },
     "fr-agent": {
@@ -1498,7 +1833,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-25T23:00:36Z"
+        "computed_at": "2026-10-30T16:53:55Z"
       }
     }
   },
@@ -3060,7 +3395,7 @@
   },
   "provenance": {
     "created": "2026-10-11T10:32:23Z",
-    "modified": "2026-10-25T23:00:36Z",
+    "modified": "2026-10-30T16:53:55Z",
     "generator": "cof-builder/0.7.1",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/10-clara-mercier",
@@ -3209,7 +3544,7 @@
       "archive"
     ],
     "computed_by": "cof-cli/1.1.0",
-    "computed_at": "2026-10-25T23:00:36Z"
+    "computed_at": "2026-10-30T16:53:55Z"
   },
   "coverage": {
     "elements": [
@@ -3219,9 +3554,10 @@
       "posture",
       "files",
       "motion",
-      "memories"
+      "memories",
+      "psyche"
     ],
-    "variants": 70,
+    "variants": 92,
     "presets": 12,
     "identities": 1
   }

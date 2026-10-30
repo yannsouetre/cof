@@ -1,0 +1,31 @@
+{
+  "gist": {
+    "en": "Toward the Martian: protective curiosity — the one visitor who looked at the sheep before the screens."
+  },
+  "strength": 55,
+  "stability": "shifting",
+  "since": {
+    "age": {
+      "value": 29,
+      "unit": "years"
+    }
+  },
+  "about": {
+    "label": {
+      "en": "the Martian",
+      "fr": "le Martien"
+    }
+  },
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open",
+  "links": [
+    {
+      "to": "memories/ev3",
+      "type": "because"
+    }
+  ],
+  "tags": [
+    "martian"
+  ]
+}

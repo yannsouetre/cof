@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 from importlib import resources
 
-CATEGORIES = ["personality", "appearance", "identity_weights", "volume3d", "voice", "posture", "motion", "files", "memories"]
+CATEGORIES = ["personality", "appearance", "identity_weights", "volume3d", "voice", "posture", "motion", "files", "memories", "psyche"]
 KINDS = {
     "personality": ["card", "description"],
     "appearance": ["reference-set", "character-sheet", "face", "body", "hair", "clothing", "accessory", "intimate", "pilosity", "feature", "environment", "description"],
@@ -15,9 +15,10 @@ KINDS = {
     "motion": ["clips", "video", "attitude", "description"],   # 'attitude' (movement signature) is allowed here AND in posture
     "files": ["skill", "memory", "document", "other"],          # free files: agent skills, memories, documents — library
     "memories": ["moment", "period"],                           # the character's past (RFC 0002, 1.1) — library
+    "psyche": ["value", "belief", "want", "need", "fear", "wound", "stance", "taste", "habit", "contradiction", "rule"],   # inner life as nodes (RFC 0004, 1.2) — library
 }
 # categories that are LIBRARIES in a preset: several variants of any kind, none mandatory at inference
-LIBRARY_CATEGORIES = {"posture", "motion", "files", "memories"}
+LIBRARY_CATEGORIES = {"posture", "motion", "files", "memories", "psyche"}
 
 
 def is_library(cat: str) -> bool:

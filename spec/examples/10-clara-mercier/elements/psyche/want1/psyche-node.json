@@ -1,0 +1,30 @@
+{
+  "gist": {
+    "en": "Build an open-source tool that measures the carbon footprint of the web."
+  },
+  "strength": 90,
+  "stability": "settled",
+  "since": {
+    "age": {
+      "value": 28,
+      "unit": "years"
+    }
+  },
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open",
+  "links": [
+    {
+      "to": "psyche/val1",
+      "type": "supports"
+    },
+    {
+      "to": "psyche/val3",
+      "type": "supports"
+    }
+  ],
+  "tags": [
+    "goal",
+    "eco"
+  ]
+}

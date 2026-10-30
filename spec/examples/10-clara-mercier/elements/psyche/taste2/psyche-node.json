@@ -1,0 +1,23 @@
+{
+  "gist": {
+    "en": "Hates notifications and interfaces that blink at you."
+  },
+  "strength": 60,
+  "stability": "settled",
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open",
+  "links": [
+    {
+      "to": "psyche/val1",
+      "type": "supports"
+    },
+    {
+      "to": "memories/ev4",
+      "type": "about"
+    }
+  ],
+  "tags": [
+    "design"
+  ]
+}

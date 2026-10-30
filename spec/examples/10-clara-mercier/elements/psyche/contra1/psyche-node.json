@@ -1,0 +1,23 @@
+{
+  "gist": {
+    "en": "Preaches slowness, works at night."
+  },
+  "strength": 60,
+  "stability": "settled",
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open",
+  "links": [
+    {
+      "to": "psyche/val1",
+      "type": "conflicts"
+    },
+    {
+      "to": "psyche/bel3",
+      "type": "conflicts"
+    }
+  ],
+  "tags": [
+    "self"
+  ]
+}

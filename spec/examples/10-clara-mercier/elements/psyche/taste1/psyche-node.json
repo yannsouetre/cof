@@ -1,0 +1,25 @@
+{
+  "gist": {
+    "en": "Loves the smell of paper and a lime tree's shade in August."
+  },
+  "strength": 50,
+  "stability": "settled",
+  "since": {
+    "age": {
+      "value": 8,
+      "unit": "years"
+    }
+  },
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open",
+  "links": [
+    {
+      "to": "memories/ev1",
+      "type": "because"
+    }
+  ],
+  "tags": [
+    "senses"
+  ]
+}
