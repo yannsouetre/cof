@@ -82,7 +82,7 @@ On the manifest variant (`elements.psyche.variants.<id>`):
 | `node` | **yes** | `elements/psyche/<id>/psyche-node.json` |
 | `strength` | no | 0–100, mirrored from the node so a reader can rank without opening files (as `age` is mirrored for memories) |
 
-Variant ids: free; the builder names them by kind, `val1`, `bel2`, `want1`, `need1`, `fear1`, `wound1`, `stance1`, `taste1`, `hab1`, `contra1` (prefixes no other category uses).
+Variant ids: free; the builder names them by kind, `val1`, `bel2`, `want1`, `need1`, `fear1`, `wound1`, `stance1`, `taste1`, `hab1`, `contra1`, `rule1` (prefixes no other category uses).
 
 In `psyche-node.json`:
 
@@ -143,8 +143,11 @@ The converted lists are **deprecated but read** from 1.2 on: a builder that open
 
 ## 3 sexies. Checks (`cof validate` 1.2)
 
-Errors: node file missing or invalid; unresolved link or `about` target; a `supports` / `conflicts` link to something that is not a psyche node; a `contradiction` with a number of `conflicts` links other than two; `false_but_held` on a kind other than `belief`; `about` field on a kind other than `stance`; `revisions` on an `authored` node with media (none allowed); a file using the category and declaring `cof: "1.1"` or lower.
-Warnings: a `wound` with no `because`; a `want` and a `fear` on the same subject (`about`) with no `contradiction` naming them; a `stance` with no `about`; a `belief` marked `false_but_held` that no memory or node contradicts (information, not a warning — "that is life"); `since` later than a preset's age (coherence); `personal` nodes present.
+Errors: node file missing or invalid; unresolved link or `about` target; a `supports` / `conflicts` link to something that is not a psyche node; a `contradiction` with a number of `conflicts` links other than two; `false_but_held` on a kind other than `belief`; `about` field on a kind other than `stance`; a `because` cycle among psyche nodes; a manifest `strength` mirror that differs from the node's; `tags.content` out of step with the nodes' `risk` (a `dangerous` node without `psyche-dangerous`, or the tag without such a node; same for `inappropriate`); in a cast file, a `because` / `about` link from a node of one character to a memory of another (a character's psyche hangs on its own past); a file using the category and declaring `cof: "1.1"` or lower.
+Warnings: a `rule` whose stability is not `core`; a `stance` with no `about`; `revisions` on an `authored` node; `since` later than a preset's age (coherence); `personal` nodes present; a gist missing the character's primary language.
+Information: a `wound` with no `because` link to a memory; more than half the nodes without `strength` (« set it node by node for a finished psyche »). Not checked by the validator (coherence findings for an AI check, § 4): a `want` and a `fear` on the same subject with no `contradiction` naming them; a `belief` marked `false_but_held` that nothing contradicts — "that is life".
+
+Extraction (`cof extract --preset`): a node whose `because` / `about` target is a memory the preset does not list follows the memory's `derives_from` when the preset lists a copy of it (the manga copies), else the link is dropped; a `contradiction` whose two sides are not both kept is dropped — the same rule as the risk purge.
 
 ## 3 septies. Declared risk (proposed, 30 October 2026 — to confirm with Yann)
 
@@ -179,7 +182,7 @@ Rules (draft): a **declaration**, by the author or by an AI check that the autho
 1. A `psyche` category of nodes (not a richer single `psyche.json`): it reuses all of RFC 0002 (builder, explorer, cof-cli, purges) and lets presets pick different nodes (Clara at 12 does not hold the same nodes).
 2. `goals / fears / values` of the card and of psyche 0.1 are read and converted when a file is opened; written only as nodes from 1.2 on.
 3. The `personality` category keeps its name, in the format **and** on screen ("Personnalité" / "Personality"): a visible word that does not match the technical one is a trap for an AI reading `manifest.json` and for a team implementing. "Persona" may appear in texts as a synonym, never as a label.
-4. The ten kinds above; the "lie" as a `belief` with a flag.
+4. The eleven kinds above (ten on 25 October; `rule` added on 30 October); the "lie" as a `belief` with a flag.
 5. A separate RFC, published after the 1.1 launch, announced now (RFC 0002 § 2); implementation in the week that follows.
 
 ## 7. Open points (to settle with Yann before implementation)
@@ -191,7 +194,8 @@ Rules (draft): a **declaration**, by the author or by an AI check that the autho
 - ~~A stance toward the user~~ **Decided (30 October): `about: {"user": true}`** is the reserved subject for the person interacting (§ 3 bis).
 - ~~A `rule` kind?~~ **Decided (30 October): eleventh kind `rule`** (§ 3) — a boundary kept whatever the pressure; the validator warns when a `rule` is not `core`.
 - The decomposition prompt (sheet → nodes): a documented, model-agnostic recipe — read the sheet and the memories; list candidate nodes by kind with one sentence each; for each, name the memory or node it comes from or say "none"; mark contradictions the sheet contains; propose `strength` and `stability`; the author reviews every node before anything is written. The recipe lives in `docs/`, not in the format.
-- Clara's psyche (§ 7 bis) read against her sheets and dialogue examples before it becomes the example file.
+- Clara's psyche (§ 7 bis) read against her sheets and dialogue examples before it becomes the example file. *30 October: in the example file (cof-cli part A), English gists only — the French gists are to be written; `stance1` carries a label in the one-character file (the identity form is for the cast file, example 11).*
+- **Per-preset variation of a node** (§ 7 bis has Clara at 65 keep `bel3` at strength 20, and the near-future preset add nodes): the model has no per-preset override. Recommendation: none in 1.2 — a preset **selects** nodes, it does not alter them; a node that differs with age is a second node (`bel3-65`, `derives_from: bel3`, its own `since`). To confirm.
 
 ## 7 bis. Worked example — Clara's psyche (design only, not in the example file)
 
