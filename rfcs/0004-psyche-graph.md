@@ -1,6 +1,6 @@
 # RFC 0004 — `psyche`: the character's inner life, as a graph of nodes
 
-- Status: **draft, design only** (announced in RFC 0002 § 2; targeted at COF **1.2**, shortly after 1.1 — no implementation yet; § 3 bis to § 3 sexies are the normative draft to review, § 7 lists what is still open)
+- Status: **proposed** (30 October 2026: structure validated on four psyches — Clara, the Martian, a game character, an agent — with `tools/psyche/`; implementation of 1.2 under way on a private branch; announced in RFC 0002 § 2; targeted at COF **1.2**; § 3 bis to § 3 sexies are the normative draft to review, § 7 lists what is still open)
 - Author: Yann Souetre (with Claude)
 - Date: 2026-10-25 (draft)
 - Target: COF 1.2 — additive only; every 1.0 and 1.1 file stays valid and every earlier reader keeps working (§ 8)
@@ -48,7 +48,7 @@ Easy mode of the builder: a loaded card stays prose; nothing is extracted. Decom
 | `stability` `core | settled | shifting | fragile` | the counterpart of `fidelity`: a `core` node does not move at use time; `fragile` is what one conversation can turn (normative table for engines, like fidelity's) |
 | `since` (optional; age or date) | when it appeared, placing the node *relative to the memories* without making it an event |
 
-**Kinds** (closed list, extension by RFC), chosen to cover the narrative and psychological models without aping them:
+**Kinds** (closed list of eleven, extension by RFC), chosen to cover the narrative and psychological models without aping them:
 
 | kind | what it is | Clara |
 |---|---|---|
@@ -62,6 +62,7 @@ Easy mode of the builder: a loaded card stays prose; nothing is extracted. Decom
 | `taste` | likes and dislikes (small, many, useful to agents) | "hates notifications; loves the smell of paper" |
 | `habit` | an observable recurring behaviour (replaces `cof.behavior`) | "tidies her desk before thinking" |
 | `contradiction` | an owned tension between two nodes (`links: conflicts` ×2) | "wants slowness, works at night" |
+| `rule` | a boundary the character keeps whatever the pressure — what it will not do, or always does, as a matter of principle (agents first: their self-imposed limits); naturally `core`, and the natural counterpart of a `risk` node | "does not send a message nobody asked for" |
 
 **Links** (same rules as RFC 0002; five types reused, two added): `because` (this node follows from… — a memory, a relation, another node: **the link that gives depth**), `about` (bears on…), `supports` / `conflicts` (between psyche nodes; a `contradiction` points two `conflicts`). `same-event`, `after`, `part-of` are meaningless here: no hierarchy — **constellations** are computed from links and tags, not folders.
 
@@ -75,7 +76,7 @@ On the manifest variant (`elements.psyche.variants.<id>`):
 
 | Field | Required | Meaning |
 |---|---|---|
-| `kind` | **yes** | one of the ten kinds of § 3 |
+| `kind` | **yes** | one of the eleven kinds of § 3 |
 | `label` | **yes** | a short name, as every variant |
 | `identity` | in a cast file | the character, as every element |
 | `node` | **yes** | `elements/psyche/<id>/psyche-node.json` |
@@ -103,7 +104,7 @@ In `psyche-node.json`:
 | `stability` | no | `core` \| `settled` \| `shifting` \| `fragile` (default `settled`) |
 | `since` | no | a point as in RFC 0002 `when` (age and/or date): when it appeared in the character's life |
 | `false_but_held` | no | `belief` only: the character holds it and the author says it is false (the "lie") |
-| `about` | no | `stance` only: `{ "identity": <cast id> }`, `{ "node": "<category>/<id>" }` or `{ "label": {…} }` — what the stance bears on (a link `about` carries the same thing for other kinds; `stance` has it as a field because it is its subject, not a side reference) |
+| `about` | no | `stance` only: `{ "identity": <cast id> }`, `{ "node": "<category>/<id>" }`, `{ "user": true }` (the person interacting with the character — the player, the user — who is no identity of the file; hosts read these nodes first) or `{ "label": {…} }` — what the stance bears on (a link `about` carries the same thing for other kinds; `stance` has it as a field because it is its subject, not a side reference) |
 | `origin`, `visibility`, `disclosure` | no | the three axes of RFC 0002 § 3.3, same values, same defaults, same purges |
 | `links[]` | no | `because`, `about`, `supports`, `conflicts`, typed and qualified (RFC 0002 § 3.1–3.2); `because` and `about` may target a memory, a psyche node or an identity (`identities/<id>`); `supports` and `conflicts` target psyche nodes only |
 | `tags[]` | no | slugs, as memory tags |
@@ -187,8 +188,8 @@ Rules (draft): a **declaration**, by the author or by an AI check that the autho
 - ~~One `about` or two~~ **Decided (30 October): one link type `about`**, the target says what it bears on; the `about` field of a `stance` carries the subject. A `toward` type may be added by a later RFC if it proves useful — adding a type never invalidates files.
 - ~~`strength` required~~ **Decided (30 October): optional (default 50)**; the builder and `cof validate` flag (information) a psyche where most nodes leave it unset, and the builder shows a note under the slider — for memories' `salience` too (1.1.1). ~~Stability numbers~~ **Decided: the levels and their write-back rules are normative, the numbers are dropped** (§ 3 bis).
 - **`risk` (§ 3 septies)** — **agreed in principle (30 October)**: COF stays permissive (an antagonist is allowed; the only hard limits remain minors / nudity and the rights of real or protected persons), the field and the file-level tags exist so that hosts can decide; purges kept separate. Wording of the three values to confirm on the validation psyches.
-- **A stance toward the user** (found on the validation psyches): a game character or an agent holds stances toward *the person interacting*, who is no identity of the file — the draft writes `about: {"label": {"en": "the player"}}`; a reserved form `about: {"user": true}` would let hosts find these nodes. To decide.
-- **A `rule` kind?** (found on the agent psyche): an agent's self-imposed boundaries (« does not write to production », « does not send a message it was not asked to send ») had to be filed as a `belief`; they are neither a belief nor a habit. Either an eleventh kind `rule` (a boundary the character keeps whatever the pressure — naturally `core`), or `habit` with a tag. To decide.
+- ~~A stance toward the user~~ **Decided (30 October): `about: {"user": true}`** is the reserved subject for the person interacting (§ 3 bis).
+- ~~A `rule` kind?~~ **Decided (30 October): eleventh kind `rule`** (§ 3) — a boundary kept whatever the pressure; the validator warns when a `rule` is not `core`.
 - The decomposition prompt (sheet → nodes): a documented, model-agnostic recipe — read the sheet and the memories; list candidate nodes by kind with one sentence each; for each, name the memory or node it comes from or say "none"; mark contradictions the sheet contains; propose `strength` and `stability`; the author reviews every node before anything is written. The recipe lives in `docs/`, not in the format.
 - Clara's psyche (§ 7 bis) read against her sheets and dialogue examples before it becomes the example file.
 

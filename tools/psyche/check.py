@@ -4,7 +4,7 @@ DIR holds psyche-variants.json and elements/psyche/<id>/psyche-node.json. Prints
 import json, sys
 from pathlib import Path
 
-KINDS = {"value","belief","want","need","fear","wound","stance","taste","habit","contradiction"}
+KINDS = {"value","belief","want","need","fear","wound","stance","taste","habit","contradiction","rule"}
 
 def check(root: Path, memories=set(), identities=set(), schema_path=None):
     import jsonschema
@@ -28,6 +28,7 @@ def check(root: Path, memories=set(), identities=set(), schema_path=None):
         if "false_but_held" in node and k != "belief": out["errors"].append(f"{vid}: false_but_held on a {k}")
         if "about" in node and k != "stance": out["errors"].append(f"{vid}: about field on a {k}")
         if k == "stance" and "about" not in node: out["info"].append(f"{vid}: stance without a subject")
+        if k == "rule" and node.get("stability", "settled") != "core": out["info"].append(f"{vid}: a rule that is not core")
         a = node.get("about", {})
         if "identity" in a and identities and a["identity"] not in identities: out["errors"].append(f"{vid}: stance about unknown identity {a['identity']}")
         if "strength" in variants[vid] and variants[vid]["strength"] != node.get("strength", 50): out["errors"].append(f"{vid}: manifest strength differs from the node")

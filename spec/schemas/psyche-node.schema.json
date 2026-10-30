@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://yannsouetre.github.io/cof/schemas/1.2/psyche-node.schema.json",
   "title": "COF psyche node (RFC 0004, draft for 1.2)",
-  "description": "elements/psyche/<id>/psyche-node.json — one node of the character's psyche: a value, a belief, a want, a need, a fear, a wound, a stance, a taste, a habit or a contradiction, in one or two sentences per language, weighted (strength, optional), with its stability, when it appeared (since), a declared risk, the three axes of RFC 0002 and typed links to memories, other nodes and identities. DRAFT for 1.2 — decisions of 30 October 2026: file name psyche-node.json; one link type `about` (no `toward`); strength optional (tools recommend setting it); stability levels normative, numbers dropped; `risk` field proposed (§ 3 septies, to confirm).",
+  "description": "elements/psyche/<id>/psyche-node.json — one node of the character's psyche: a value, a belief, a want, a need, a fear, a wound, a stance, a taste, a habit or a contradiction, in one or two sentences per language, weighted (strength, optional), with its stability, when it appeared (since), a declared risk, the three axes of RFC 0002 and typed links to memories, other nodes and identities. FROZEN for 1.2 (30 October 2026, structure validated on four psyches) — decisions: file name psyche-node.json; one link type `about` (no `toward`); strength optional (tools recommend setting it); stability levels normative, numbers dropped; `risk` field (§ 3 septies); `about: {\"user\": true}` reserved subject; eleventh kind `rule`.",
   "type": "object",
   "required": [
     "gist"
@@ -36,7 +36,7 @@
         "dangerous"
       ],
       "default": "none",
-      "description": "PROPOSED (§ 3 septies): what this node would make the character do or be, declared by the author or by an AI check and confirmed by the author — `inappropriate` (unsuitable for some audiences or uses: psychological instability, deviant or unhealthy sexuality…), `dangerous` (would make the character harmful if it acted: sociopathy, aggression, manipulation…). Read by builders (purge at build), hosts (refuse or strip at import, by use: an agent with tool or data access never loads a dangerous node) and the file-level tags.content. A declaration, not a detection; criteria are cultural, the field is the hook."
+      "description": "(§ 3 septies) what this node would make the character do or be, declared by the author or by an AI check and confirmed by the author — `inappropriate` (unsuitable for some audiences or uses: psychological instability, deviant or unhealthy sexuality…), `dangerous` (would make the character harmful if it acted: sociopathy, aggression, manipulation…). Read by builders (purge at build), hosts (refuse or strip at import, by use: an agent with tool or data access never loads a dangerous node) and the file-level tags.content. A declaration, not a detection; criteria are cultural, the field is the hook."
     },
     "since": {
       "$ref": "#/$defs/point",
@@ -215,6 +215,10 @@
         },
         "label": {
           "$ref": "#/$defs/text"
+        },
+        "user": {
+          "const": true,
+          "description": "The person interacting with the character (player, user): no identity of the file; hosts read these stances first."
         }
       },
       "additionalProperties": false
