@@ -27,4 +27,6 @@ jobs:
         if: ${{ env.HF_TOKEN != '' }}
         run: |
           python -m pip install --upgrade "huggingface_hub[cli]"
-          huggingface-cli upload yannsouetre/cof-explorer viewer . --repo-type space --commit-message "Sync explorer from github.com/yannsouetre/cof@${GITHUB_SHA::7}"
+          # huggingface_hub 1.0 replaced `huggingface-cli` by `hf`; keep the old name as a fallback
+          if command -v hf >/dev/null 2>&1; then HFCLI=hf; else HFCLI=huggingface-cli; fi
+          $HFCLI upload yannsouetre/cof-explorer viewer . --repo-type space --commit-message "Sync explorer from github.com/yannsouetre/cof@${GITHUB_SHA::7}"
