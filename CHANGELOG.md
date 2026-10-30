@@ -2,6 +2,8 @@
 
 ## 1.1.0 — 2026-10-30 (RFC 0002 memories, RFC 0003 cast fields, COF.md)
 
+- **READMEs after the release (30 October, afternoon)**: the hero animation and the landing-page clip are the 60-second 1.1 recap (the launch clip followed by the memories scenes — « A memory, not a paragraph », « Memories are multimodal », « What it lives with you, it keeps »), rendered for the README at 15 fps, 1280 px, WebP q85 with a key frame every 10 frames; two **article buttons** under the app buttons (« Read · AI characters now have memories », « Read · How much could a life weigh? », mint outline so they read as articles, EN and FR); a section **« A past, not just a description »** with the explorer's graph of Clara at 65; the `elements/` row lists the eighth category.
+
 ### Review of 28 October (autonomous audit by independent agents: cof-cli, builder, explorer, pages, ComfyUI-COF — every finding re-verified before a fix)
 
 - **cof-cli: names and paths read from a manifest never leave the output.** A skill `name` with `..`, an asset `path` outside the folder or a character name shaped like a path could write outside the output of `export --format agent`, `extract`, `merge` and the default output names of `export`; every copy now goes through one guard (`container.safe_rel` / `copy_rel`), a skill name must be a plain folder name, and default output names are slugged. Regression test.

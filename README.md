@@ -1,4 +1,4 @@
-<p align="center"><a href="https://yannsouetre.github.io/cof/#clip"><img src="docs/img/cof-hero.webp" alt="Animation: the many files of an AI character — cards, photos, LoRA, voice, avatar, 3D — come together into one .cof file" width="100%"></a></p>
+<p align="center"><a href="https://yannsouetre.github.io/cof/#clip"><img src="docs/img/cof-hero.webp" alt="Animation: the many files of an AI character — cards, photos, LoRA, voice, avatar, 3D, memories — come together into one .cof file" width="100%"></a></p>
 
 <h1 align="center">COF — Character Open File</h1>
 
@@ -9,8 +9,12 @@
 <a href="https://yannsouetre.github.io/cof/builder/"><img src="docs/img/btn-build.png" alt="Build in your browser" width="250"></a>&nbsp;&nbsp;&nbsp;
 <a href="https://github.com/yannsouetre/ComfyUI-COF"><img src="docs/img/btn-comfyui.png" alt="ComfyUI nodes" width="250"></a>
 </p>
+<p align="center">
+<a href="https://yannsouetre.github.io/cof/memories/"><img src="docs/img/btn-read-memories.png" alt="Read: AI characters now have memories" width="330"></a>&nbsp;&nbsp;
+<a href="https://yannsouetre.github.io/cof/memories/how-much.html"><img src="docs/img/btn-read-howmuch.png" alt="Read: How much could a life weigh?" width="330"></a>
+</p>
 
-<p align="center"><a href="https://yannsouetre.github.io/cof/#clip">▶ Watch the 38-second clip, with sound</a> · <a href="README.fr.md">Français</a></p>
+<p align="center"><a href="https://yannsouetre.github.io/cof/#clip">▶ Watch the 60-second clip, with sound</a> · <a href="README.fr.md">Français</a></p>
 <p align="center"><a href="https://doi.org/10.5281/zenodo.23434045"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.23434045.svg" alt="DOI"></a> <a href="https://pypi.org/project/cof-cli/"><img src="https://img.shields.io/pypi/v/cof-cli?label=cof-cli" alt="cof-cli on PyPI"></a> <a href="https://github.com/yannsouetre/cof/releases/latest"><img src="https://img.shields.io/github/v/release/yannsouetre/cof?label=release" alt="Latest release"></a> <a href="https://huggingface.co/spaces/yannsouetre/cof-explorer"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Space-cof--explorer-yellow" alt="Hugging Face Space"></a></p>
 
 COF is an open file format (`.cof`, a ZIP container) that bundles everything that defines an AI character: personality, appearance (photos, vector code, description), voice, 3D body, motion — **and** its rights, consent and provenance. The same file opens in a chat app, an image or video generator, a game engine, Blender, or serves as the "soul" of an agent.
@@ -30,7 +34,7 @@ A `.cof` is a ZIP archive with a `mimetype` entry first and a `manifest.json` se
 | Part | Content |
 |---|---|
 | `manifest.json` | Identities, element variants, presets, tags, permissions, provenance, completeness KPI |
-| `elements/` | 7 media categories — personality (Character Card V3, psyche, free text), appearance (face/body views, character sheets, loose photos, hair/body codes), identity weights (LoRA), 3D, voice (samples + profile), postures, motion — plus a `files` library (agent skills, memories) |
+| `elements/` | 8 categories — personality (Character Card V3, psyche, free text), appearance (face/body views, character sheets, loose photos, hair/body codes), identity weights (LoRA), 3D, voice (samples + profile), postures, motion, **memories** (moments and periods of the character's life, with their media — COF 1.1) — plus a `files` library (agent skills, documents) |
 | `rights/` | Consent record and proofs when a real person is depicted |
 | Presets | Named combinations of variants (e.g. adult / young, realistic / anime), each with its own depicted age and coherence report |
 
@@ -40,6 +44,11 @@ See [`spec/SPEC.md`](spec/SPEC.md) for the full definition.
 <p align="center"><img src="docs/img/cof-presets.jpg" alt="Clara Mercier at 29, in manga style, at 65 and as a near-future combatant: four presets of one file, switched by language, age and style" width="100%"></p>
 
 A **preset** is a ready-to-use combination: one personality, one look, one voice, one age. Switch the language or the age, and the rest follows. Tools open the default preset; the [explorer](https://yannsouetre.github.io/cof/viewer/) lets you switch in one click.
+
+## A past, not just a description
+<p align="center"><a href="https://yannsouetre.github.io/cof/viewer/#clara/memories:graph"><img src="docs/img/cof-memories.jpg" alt="The explorer's memory graph of Clara at 65: a period, nine moments on a time axis, the people and places they link to" width="100%"></a></p>
+
+Since 1.1, a character can carry **memories**: moments and periods of its life, each with a short text per language, when / where / with whom, how it felt then and now, how clearly it comes back, a few sensory traces (images, sound, a short video), and what the character would rather not tell. What the character lives with a user is written back into the same file as new memories — and leaves with it. Read [why it matters](https://yannsouetre.github.io/cof/memories/) and [how much a life could weigh](https://yannsouetre.github.io/cof/memories/how-much.html); the rules are in [RFC 0002](rfcs/0002-memories.md).
 
 ## Its rights travel with it
 <p align="center"><img src="docs/img/cof-rights.jpg" alt="A rights card: voice cloning no, training no, redistribution no, commercial use personal and non-profit, AI disclosure yes" width="100%"></p>

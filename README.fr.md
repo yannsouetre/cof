@@ -1,4 +1,4 @@
-<p align="center"><a href="https://yannsouetre.github.io/cof/#clip"><img src="docs/img/cof-hero.webp" alt="Animation : les nombreux fichiers d'un personnage IA — cartes, photos, LoRA, voix, avatar, 3D — se réunissent en un seul fichier .cof" width="100%"></a></p>
+<p align="center"><a href="https://yannsouetre.github.io/cof/#clip"><img src="docs/img/cof-hero.webp" alt="Animation : les nombreux fichiers d'un personnage IA — cartes, photos, LoRA, souvenirs, voix, avatar, 3D — se réunissent en un seul fichier .cof" width="100%"></a></p>
 
 <h1 align="center">COF — Character Open File</h1>
 
@@ -9,8 +9,12 @@
 <a href="https://yannsouetre.github.io/cof/builder/"><img src="docs/img/btn-build-fr.png" alt="Créer dans le navigateur" width="250"></a>&nbsp;&nbsp;&nbsp;
 <a href="https://github.com/yannsouetre/ComfyUI-COF"><img src="docs/img/btn-comfyui-fr.png" alt="Nœuds ComfyUI" width="250"></a>
 </p>
+<p align="center">
+<a href="https://yannsouetre.github.io/cof/memories/"><img src="docs/img/btn-read-memories-fr.png" alt="Lire : les personnages IA ont des souvenirs" width="330"></a>&nbsp;&nbsp;
+<a href="https://yannsouetre.github.io/cof/memories/how-much.html"><img src="docs/img/btn-read-howmuch-fr.png" alt="Lire : combien pèse une vie ?" width="330"></a>
+</p>
 
-<p align="center"><a href="https://yannsouetre.github.io/cof/#clip">▶ Voir le clip de 38 secondes, avec le son</a> · <a href="README.md">English</a></p>
+<p align="center"><a href="https://yannsouetre.github.io/cof/#clip">▶ Voir le clip de 60 secondes, avec le son</a> · <a href="README.md">English</a></p>
 <p align="center"><a href="https://doi.org/10.5281/zenodo.23434045"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.23434045.svg" alt="DOI"></a> <a href="https://pypi.org/project/cof-cli/"><img src="https://img.shields.io/pypi/v/cof-cli?label=cof-cli" alt="cof-cli on PyPI"></a> <a href="https://github.com/yannsouetre/cof/releases/latest"><img src="https://img.shields.io/github/v/release/yannsouetre/cof?label=release" alt="Latest release"></a> <a href="https://huggingface.co/spaces/yannsouetre/cof-explorer"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Space-cof--explorer-yellow" alt="Hugging Face Space"></a></p>
 
 COF est un format de fichier ouvert (`.cof`, conteneur ZIP) qui réunit tout ce qui définit un personnage IA : personnalité, apparence (photos, code vectoriel, descriptif), voix, corps 3D, mouvement — **et** ses droits, son consentement et sa provenance. Un même fichier s'ouvre dans un chat, un générateur d'images ou de vidéo, un moteur de jeu, Blender, ou sert d'« âme » à un agent.
@@ -33,6 +37,11 @@ Un `.cof` est une archive ZIP : une entrée `mimetype` en premier, `manifest.jso
 <p align="center"><img src="docs/img/cof-presets.jpg" alt="Clara Mercier à 29 ans, en manga, à 65 ans et en combattante du futur : quatre presets d'un même fichier, choisis par langue, âge et style" width="100%"></p>
 
 Un **preset** est une combinaison prête à l'emploi : une personnalité, une apparence, une voix, un âge. Changez de langue ou d'âge, le reste suit. Les outils ouvrent le preset par défaut ; l'[explorateur](https://yannsouetre.github.io/cof/viewer/) permet d'en changer d'un clic.
+
+## Un passé, pas seulement une description
+<p align="center"><a href="https://yannsouetre.github.io/cof/viewer/#clara/memories:graph"><img src="docs/img/cof-memories.jpg" alt="Le graphe des souvenirs de Clara à 65 ans dans l'explorateur : une période, neuf moments sur l'axe du temps, les personnes et les lieux qu'ils relient" width="100%"></a></p>
+
+Depuis la 1.1, un personnage peut porter des **souvenirs** : des moments et des périodes de sa vie, chacun avec un court texte par langue, quand / où / avec qui, ce qu'il a ressenti alors et ce qu'il ressent aujourd'hui, la clarté avec laquelle ça lui revient, quelques traces sensorielles (images, son, un court clip), et ce qu'il préfère taire. Ce que le personnage vit avec un utilisateur s'écrit dans le même fichier, en nouveaux souvenirs — et part avec lui. Lire [pourquoi ça compte](https://yannsouetre.github.io/cof/memories/) et [combien pèse une vie](https://yannsouetre.github.io/cof/memories/how-much.html) (pages en anglais) ; les règles sont dans la [RFC 0002](rfcs/0002-memories.md).
 
 ## Ses droits voyagent avec lui
 <p align="center"><img src="docs/img/cof-rights.jpg" alt="Une carte de droits : clonage de voix non, entraînement non, redistribution non, usage commercial personnel et non lucratif, mention IA oui" width="100%"></p>
