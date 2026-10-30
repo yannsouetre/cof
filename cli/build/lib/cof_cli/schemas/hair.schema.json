@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yannsouetre.github.io/cof/schemas/1.1/hair.schema.json",
+  "title": "elements/appearance/<v>/hair.json — COF-HAIR-1 code",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "model": {
+      "const": "COF-HAIR-1"
+    },
+    "length": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9,
+      "description": "0 bald · 1 buzzed · 2 short · 3 ears · 4 chin · 5 shoulders · 6 shoulder blades · 7 mid-back · 8 waist · 9 beyond"
+    },
+    "curl": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9,
+      "description": "0 straight · 3 wavy · 6 curly · 9 coily (Andre 1a–4c scale, projected)"
+    },
+    "density": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9
+    },
+    "thickness": {
+      "enum": [
+        "fine",
+        "medium",
+        "coarse",
+        null
+      ]
+    },
+    "color_base_hex": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^#[0-9a-fA-F]{6}$"
+    },
+    "color_secondary_hex": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^#[0-9a-fA-F]{6}$"
+    },
+    "grey_pct": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 100
+    },
+    "style": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "loose, bob, braids, bun, ponytail, undercut, mohawk, locs, afro…"
+    },
+    "parting": {
+      "enum": [
+        "left",
+        "right",
+        "middle",
+        "none",
+        null
+      ]
+    },
+    "fringe": {
+      "enum": [
+        "none",
+        "straight",
+        "side",
+        "curtain",
+        null
+      ]
+    },
+    "renderings": {
+      "type": "object",
+      "properties": {
+        "prompt": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "required": [
+    "model"
+  ]
+}

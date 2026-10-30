@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yannsouetre.github.io/cof/schemas/1.2/psyche-node.schema.json",
+  "title": "COF psyche node (RFC 0004, draft for 1.2)",
+  "description": "elements/psyche/<id>/node.json — one node of the character's psyche: a value, a belief, a want, a need, a fear, a wound, a stance, a taste, a habit or a contradiction, in one or two sentences per language, weighted (strength), with its stability, when it appeared (since), the three axes of RFC 0002 and typed links to memories, other nodes and identities. DRAFT: the field set follows RFC 0004 § 3 bis; the open points of § 7 are marked with 'x-open'.",
+  "type": "object",
+  "required": ["gist"],
+  "properties": {
+    "gist": {"$ref": "#/$defs/text", "description": "The node in one or two sentences (100–300 characters per language). Reading rule of RFC 0002 § 3."},
+    "strength": {"type": "integer", "minimum": 0, "maximum": 100, "default": 50, "description": "Weight in decisions (counterpart of a memory's salience). x-open: required or optional (§ 7)."},
+    "stability": {"enum": ["core", "settled", "shifting", "fragile"], "default": "settled", "description": "What an engine may change at use time: core never; settled only through a lived node that declares it; shifting with evidence (previous value kept in revisions); fragile within one conversation. x-open: whether the numbers 1.0 / 0.8 / 0.5 / 0.2 are normative (§ 7)."},
+    "since": {"$ref": "#/$defs/point", "description": "When the node appeared in the character's life (age and/or date) — places it relative to the memories without making it an event."},
+    "false_but_held": {"type": "boolean", "description": "belief only: the character holds it and the author says it is false (the 'lie')."},
+    "about": {"$ref": "#/$defs/subject", "description": "stance only: what the stance bears on — a cast identity, a node of any category, or a free label."},
+    "origin": {"enum": ["authored", "lived"], "default": "authored"},
+    "visibility": {"enum": ["canon", "personal"], "default": "canon"},
+    "disclosure": {"enum": ["open", "guarded", "secret"], "default": "open"},
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object", "required": ["to", "type"],
+        "properties": {
+          "to": {"$ref": "#/$defs/ref", "description": "psyche/<id>, memories/<id> or identities/<id>. supports and conflicts target psyche nodes only (checked by the validator)."},
+          "type": {"enum": ["because", "about", "supports", "conflicts"]},
+          "label": {"$ref": "#/$defs/text"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "tags": {"type": "array", "items": {"type": "string", "pattern": "^[a-z0-9][a-z0-9:-]*$"}},
+    "revisions": {
+      "type": "array", "description": "lived nodes only: previous versions of the gist / strength / stability, newest first; keep about ten at most.",
+      "items": {"type": "object", "required": ["date", "gist"], "properties": {"date": {"type": "string", "format": "date-time"}, "gist": {"$ref": "#/$defs/text"}, "strength": {"type": "integer", "minimum": 0, "maximum": 100}, "stability": {"enum": ["core", "settled", "shifting", "fragile"]}, "by": {"type": "string"}}, "additionalProperties": false}
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "text": {"type": "object", "minProperties": 1, "propertyNames": {"pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$"}, "additionalProperties": {"type": "string", "minLength": 1}, "description": "Language-keyed text (BCP 47)."},
+    "ref": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*/[a-z0-9][a-z0-9.-]*$", "description": "Qualified reference: <category>/<variant id>, or identities/<id>."},
+    "age": {"type": "object", "required": ["value"], "properties": {"value": {"type": "number", "minimum": 0}, "unit": {"enum": ["years", "months"], "default": "years"}}},
+    "date": {"type": "string", "pattern": "^-?[0-9]{1,4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$"},
+    "point": {"type": "object", "properties": {"age": {"$ref": "#/$defs/age"}, "date": {"$ref": "#/$defs/date"}, "approx": {"type": "boolean"}}},
+    "subject": {"type": "object", "minProperties": 1, "maxProperties": 1, "properties": {"identity": {"type": "string", "pattern": "^[a-z0-9][a-z0-9.-]*$"}, "node": {"$ref": "#/$defs/ref"}, "label": {"$ref": "#/$defs/text"}}, "additionalProperties": false}
+  }
+}
