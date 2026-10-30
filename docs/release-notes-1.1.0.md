@@ -1,4 +1,4 @@
-# COF 1.1.0 — release notes (draft — date to set on the day)
+# COF 1.1.0 — release notes (30 October 2026)
 
 **AI characters now have memories.**
 

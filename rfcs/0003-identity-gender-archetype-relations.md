@@ -1,6 +1,6 @@
 # RFC 0003 — gender, archetype, narrative role, relations between characters
 
-- Status: **open for comments until 14 November 2026** — published with COF 1.1.0 on 31 October 2026, which implements it, together with RFC 0002; what the comments change ships in 1.1.1
+- Status: **open for comments until 14 November 2026** — published with COF 1.1.0 on 30 October 2026, which implements it, together with RFC 0002; what the comments change ships in 1.1.1
 - Author: Yann Souetre (with Claude)
 - Date: 2026-10-25 (draft)
 - Target: COF **1.1** — additive only; every 1.0 file stays valid and every 1.0 reader keeps working (§ 6)

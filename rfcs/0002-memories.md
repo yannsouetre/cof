@@ -1,6 +1,6 @@
 # RFC 0002 — `memories`: the character's past, as a graph of nodes
 
-- Status: **open for comments until 14 November 2026** — published with COF 1.1.0 on 31 October 2026, which implements it; what the comments change ships in 1.1.1 (the first minor opens with its RFC: see GOVERNANCE)
+- Status: **open for comments until 14 November 2026** — published with COF 1.1.0 on 30 October 2026, which implements it; what the comments change ships in 1.1.1 (the first minor opens with its RFC: see GOVERNANCE)
 - Author: Yann Souetre (with Claude)
 - Date: 2026-10-24 (draft)
 - Target: COF **1.1** — additive only; every 1.0 file stays valid and every 1.0 reader keeps working (§ 7)
