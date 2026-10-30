@@ -1,5 +1,7 @@
 # Révision du 25 octobre 2026 — COF 1.1 (souvenirs, cast), puis 1.2 (psyché)
 
+> **COF 1.1.0 publiée le 30 octobre 2026** — release [v1.1.0](https://github.com/yannsouetre/cof/releases/tag/v1.1.0), cof-cli 1.1.0 sur PyPI, ComfyUI-COF 0.6.0 (registre Comfy), DOI 10.5281/zenodo.23805416. RFC 0002 et 0003 ouvertes aux commentaires jusqu'au 14 novembre 2026.
+
 *Rédigée sur la branche de travail de la 1.1 ; publiée avec elle.*
 
 **Ce que la 1.1 ajoute** (règle 1.x : seulement de l'optionnel ; tout fichier 1.0 reste valide, tout lecteur 1.0 lit un fichier 1.1 — la catégorie nouvelle lui apparaît comme une bibliothèque, avec un avertissement, depuis cof-cli 1.0.1 et builder 0.11.8) :

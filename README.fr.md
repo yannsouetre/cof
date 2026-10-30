@@ -81,7 +81,7 @@ Un `.cof` contient une Character Card V3 valide et s'exporte en carte PNG `ccv3`
 
 ## Citer
 
-Chaque version est archivée sur Zenodo. DOI de concept (toutes versions) : [10.5281/zenodo.23434045](https://doi.org/10.5281/zenodo.23434045) · version 1.0.0 : [10.5281/zenodo.23434046](https://doi.org/10.5281/zenodo.23434046). Métadonnées de citation : [`CITATION.cff`](CITATION.cff).
+Chaque version est archivée sur Zenodo. DOI de concept (toutes versions) : [10.5281/zenodo.23434045](https://doi.org/10.5281/zenodo.23434045) · version 1.1.0 : [10.5281/zenodo.23805416](https://doi.org/10.5281/zenodo.23805416) · version 1.0.0 : [10.5281/zenodo.23434046](https://doi.org/10.5281/zenodo.23434046). Métadonnées de citation : [`CITATION.cff`](CITATION.cff).
 
 ## Licences
 Code MIT · Spécifications CC BY 4.0 · Vocabulaires CC0 — voir `LICENSES.md`.

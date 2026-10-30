@@ -112,7 +112,7 @@ A `.cof` contains a valid Character Card V3 and exports to a `ccv3` PNG card, a 
 
 ## Cite
 
-Each release is archived on Zenodo. Concept DOI (all versions): [10.5281/zenodo.23434045](https://doi.org/10.5281/zenodo.23434045) · version 1.0.0: [10.5281/zenodo.23434046](https://doi.org/10.5281/zenodo.23434046). Citation metadata: [`CITATION.cff`](CITATION.cff).
+Each release is archived on Zenodo. Concept DOI (all versions): [10.5281/zenodo.23434045](https://doi.org/10.5281/zenodo.23434045) · version 1.1.0: [10.5281/zenodo.23805416](https://doi.org/10.5281/zenodo.23805416) · version 1.0.0: [10.5281/zenodo.23434046](https://doi.org/10.5281/zenodo.23434046). Citation metadata: [`CITATION.cff`](CITATION.cff).
 
 ## License
 | Part | License |
