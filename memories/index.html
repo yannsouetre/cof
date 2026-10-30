@@ -82,7 +82,7 @@ code{font:500 .88em PlexMono,monospace;color:var(--teal)}
 /* closing */
 .close{margin:96px auto 0;max-width:var(--col);padding:0 20px}
 .close .voice{color:#e4dfd6;max-width:none}
-.btns{display:flex;flex-wrap:wrap;gap:12px;margin:34px 0 0}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin:34px 0 0}.btns.row3 .btn{padding:13px 16px;white-space:nowrap}
 .btn{display:inline-block;padding:13px 20px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);text-decoration:none;font-weight:500}
 .btn:hover,.btn:focus-visible{border-color:var(--teal);outline:none}
 .btn.main{background:var(--teal);border-color:var(--teal);color:#05201b}
@@ -240,12 +240,13 @@ footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:
 <p>Memories are the past. What a character made of it — its values, its beliefs, what it wants, what it fears, the wound it does not talk about, the things it believes about itself that are not true — is the next category, on the same graph. Each conviction linked to the memory it comes from. Without a psyche, memories are anecdotes; without memories, a psyche is a list of slogans. Together they are a character. The draft is written; it is the next step.</p>
 
 <h2>How much could a life weigh?</h2>
-<p>A natural question follows: how many autobiographical memories does a person hold — the moments of a life, not everything one knows — and how many bytes would they take with their sensory traces? Nobody has measured either, but the research gives an order of magnitude — a few thousand memories one can bring back — and Clara's file gives a price per memory. A hundred memories a year over fifty years, a megabyte each: <b>about five thousand memories, about five gigabytes</b> — a whole life's worth of moments on a phone, with room to spare. A companion page says where the figures come from, lets you test your own, and ends with an open question for researchers: whether the ultimate form of a character's memory is an archive, or a latent space — and why it may need both. <a href="how-much.html">How much could a life weigh? →</a></p>
+<p>A natural question follows: how many autobiographical memories does a person hold — the moments of a life, not everything one knows — and how many bytes would they take with their sensory traces? Nobody has measured either, but the research gives an order of magnitude — a few thousand memories one can bring back — and Clara's file gives a price per memory. A hundred memories a year over fifty years, a megabyte each: <b>about five thousand memories, about five gigabytes</b> — a whole life's worth of moments on a phone, with room to spare. A companion page says where the figures come from, lets you test your own, and ends with an open question for researchers: whether the ultimate form of a character's memory is an archive, or a latent space — and why it may need both.</p>
+<p class="btns" style="margin:18px 0 0"><a class="btn main" href="how-much.html">How much could a life weigh? →</a></p>
 </main>
 
 <section class="close">
   <p class="voice">She remembers the lime tree, the river at night, a Martian who wanted to understand why our screens are so heavy. She does not know yet what she will remember of you.</p>
-  <div class="btns">
+  <div class="btns row3">
     <a class="btn main" href="../viewer/#clara/memories">Open Clara's memories</a>
     <a class="btn" href="https://github.com/yannsouetre/cof/blob/main/rfcs/0002-memories.md">Read the specification</a>
     <a class="btn" href="../builder/">Give your character a past</a>
