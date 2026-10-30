@@ -40,7 +40,7 @@ Easy mode of the builder: a loaded card stays prose; nothing is extracted. Decom
 
 ## 3. The model (normative draft) — maximal reuse of RFC 0002
 
-**Category `psyche`**, variants = nodes, node file `node.json` per variant (`elements/psyche/<id>/node.json` — not `psyche.json`, which is the 1.0 trait sheet of a personality variant and would be read for it by mistake), same conventions as memories: `label`, `identity`, a multilingual gist (the node in one sentence), `links[]` typed to `<category>/<id>`, the three axes `origin / visibility / disclosure` (identical), `tags`, `revisions[]` on `lived` nodes. No `when` (no timeline); instead two measures and one anchor:
+**Category `psyche`**, variants = nodes, node file `psyche-node.json` per variant (`elements/psyche/<id>/psyche-node.json` — not `psyche.json`, which is the 1.0 trait sheet of a personality variant and would be read for it by mistake), same conventions as memories: `label`, `identity`, a multilingual gist (the node in one sentence), `links[]` typed to `<category>/<id>`, the three axes `origin / visibility / disclosure` (identical), `tags`, `revisions[]` on `lived` nodes. No `when` (no timeline); instead two measures and one anchor:
 
 | Field | Meaning |
 |---|---|
@@ -78,12 +78,12 @@ On the manifest variant (`elements.psyche.variants.<id>`):
 | `kind` | **yes** | one of the ten kinds of § 3 |
 | `label` | **yes** | a short name, as every variant |
 | `identity` | in a cast file | the character, as every element |
-| `node` | **yes** | `elements/psyche/<id>/node.json` |
+| `node` | **yes** | `elements/psyche/<id>/psyche-node.json` |
 | `strength` | no | 0–100, mirrored from the node so a reader can rank without opening files (as `age` is mirrored for memories) |
 
 Variant ids: free; the builder names them by kind, `val1`, `bel2`, `want1`, `need1`, `fear1`, `wound1`, `stance1`, `taste1`, `hab1`, `contra1` (prefixes no other category uses).
 
-In `node.json`:
+In `psyche-node.json`:
 
 ```jsonc
 { "gist": { "en": "Lightness: do less, better — a page should cost the planet and the reader as little as possible.",
@@ -111,7 +111,7 @@ In `node.json`:
 
 A `contradiction` node carries exactly two `conflicts` links (error otherwise): it is the owned tension, not a third opinion. A `wound` SHOULD carry at least one `because` to a memory (information otherwise). `strength` of a `contradiction` says how much the tension costs the character, not which side wins.
 
-Stability is normative for engines the way fidelity is: `core` — never changed at use time, a `lived` node may only comment on it (`about`); `settled` — changes only through a `lived` node that declares it (`revisions`), never silently; `shifting` — may move with evidence, the engine keeps the previous value in `revisions`; `fragile` — may move within one conversation. Numbers for tools that need them: 1.0 / 0.8 / 0.5 / 0.2 (the probability that the node still holds after a conversation that pushes against it).
+Stability is normative for engines the way fidelity is: `core` — never changed at use time, a `lived` node may only comment on it (`about`); `settled` — changes only through a `lived` node that declares it (`revisions`), never silently; `shifting` — may move with evidence, the engine keeps the previous value in `revisions`; `fragile` — may move within one conversation. The levels and these rules are normative; the RFC gives no numbers (an earlier draft proposed 1.0 / 0.8 / 0.5 / 0.2 — dropped on 30 October 2026: a per-conversation probability is not measurable, and the rules above are what a validator can check on the file a host writes back).
 
 ## 3 ter. Presets, purges, compatibility
 
@@ -145,6 +145,18 @@ The converted lists are **deprecated but read** from 1.2 on: a builder that open
 Errors: node file missing or invalid; unresolved link or `about` target; a `supports` / `conflicts` link to something that is not a psyche node; a `contradiction` with a number of `conflicts` links other than two; `false_but_held` on a kind other than `belief`; `about` field on a kind other than `stance`; `revisions` on an `authored` node with media (none allowed); a file using the category and declaring `cof: "1.1"` or lower.
 Warnings: a `wound` with no `because`; a `want` and a `fear` on the same subject (`about`) with no `contradiction` naming them; a `stance` with no `about`; a `belief` marked `false_but_held` that no memory or node contradicts (information, not a warning — "that is life"); `since` later than a preset's age (coherence); `personal` nodes present.
 
+## 3 septies. Declared risk (proposed, 30 October 2026 — to confirm with Yann)
+
+Memories have `explicit`; psyche nodes need an equivalent for what a node would make the character *do or be*. A per-node field `risk`:
+
+| value | meaning | examples |
+|---|---|---|
+| `none` (default) | nothing to declare | |
+| `inappropriate` | unsuitable for some audiences or uses, not harmful in itself | psychological instability, deviant or unhealthy sexuality, self-destructive traits |
+| `dangerous` | would make the character harmful if it acted on it | sociopathy, aggression, manipulation, contempt for others' safety |
+
+Rules (draft): a **declaration**, by the author or by an AI check that the author confirms — never a detection the format promises; **file level**: a file with at least one `dangerous` node carries `tags.content: ["psyche-dangerous"]`, with at least one `inappropriate` node `["psyche-inappropriate"]`, so a host decides without opening the nodes; **purges**: `cof extract --all-audiences` and the builder's « all audiences » purge drop `inappropriate` and `dangerous` nodes (a contradiction that loses one side is dropped too); the **agent export** (`cof export --format agent`) drops `dangerous` nodes unless `--keep-dangerous` is given, because an agent acts; **hosts**: a host that gives the character tools or data access (an agent runtime, a support bot with records) MUST NOT load `dangerous` nodes, SHOULD warn on `inappropriate`; a fiction host (chat, game, video) MAY load everything and SHOULD tell the user. Fiction needs villains: `dangerous` is not a ban, it is a gate by use. Criteria are cultural and the RFC does not fix them: the field is the hook, the tools carry the judgement (the builder's AI check proposes a value and says why; the author decides).
+
 ## 4. What it enables (the leverage)
 
 - **Explorer**: a **Constellation** view (force graph: nodes by kind, `because` edges to the memories — the past visibly pulling on the present); click → card; the same component as the memories graph; a list view too.
@@ -171,9 +183,10 @@ Warnings: a `wound` with no `because`; a `want` and a `fear` on the same subject
 
 ## 7. Open points (to settle with Yann before implementation)
 
-- The node file name: `node.json` (§ 3) rather than `psyche.json` — to confirm, since RFC 0002 chose a kind-specific name (`memory.json`).
-- Whether `about → identities/<id>` and `about → memories/<id>` are one relation or two (a stance toward a person, a taste about a dream); the draft keeps one link type and lets the target say which.
-- Whether `strength` is required (the draft says optional, default 50) and whether the stability numbers are normative or a recommendation.
+- ~~The node file name~~ **Decided (Yann, 30 October 2026): `psyche-node.json`** — no collision with the 1.0 `psyche.json`, and the file still names the category (hyphen, like `voice-profile.json`).
+- ~~One `about` or two~~ **Decided (30 October): one link type `about`**, the target says what it bears on; the `about` field of a `stance` carries the subject. A `toward` type may be added by a later RFC if it proves useful — adding a type never invalidates files.
+- ~~`strength` required~~ **Decided (30 October): optional (default 50)**; the builder and `cof validate` flag (information) a psyche where most nodes leave it unset, and the builder shows a note under the slider — for memories' `salience` too (1.1.1). ~~Stability numbers~~ **Decided: the levels and their write-back rules are normative, the numbers are dropped** (§ 3 bis).
+- **`risk` (§ 3 septies)** — proposed, to confirm: the three values, the file-level tags, the purges and the host rule.
 - The decomposition prompt (sheet → nodes): a documented, model-agnostic recipe — read the sheet and the memories; list candidate nodes by kind with one sentence each; for each, name the memory or node it comes from or say "none"; mark contradictions the sheet contains; propose `strength` and `stability`; the author reviews every node before anything is written. The recipe lives in `docs/`, not in the format.
 - Clara's psyche (§ 7 bis) read against her sheets and dialogue examples before it becomes the example file.
 

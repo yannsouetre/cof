@@ -1,6 +1,6 @@
 """Clara's psyche — the 22 nodes of RFC 0004 § 7 bis as node files, for the structure validation of 1.2.
 
-    python tools/psyche/clara_nodes.py OUTDIR      # writes OUTDIR/elements/psyche/<id>/node.json + OUTDIR/psyche-variants.json
+    python tools/psyche/clara_nodes.py OUTDIR      # writes OUTDIR/elements/psyche/<id>/psyche-node.json + OUTDIR/psyche-variants.json
 
 Nothing here is invented beyond the RFC table: gists are its sentences, links its links. Design input, not yet the example file."""
 import json, sys
@@ -43,8 +43,8 @@ def main(out: Path):
         if links: node["links"] = [{"to": t, "type": ty} for ty, t in links]
         node["tags"] = tags
         d = out / "elements" / "psyche" / nid; d.mkdir(parents=True, exist_ok=True)
-        (d / "node.json").write_text(json.dumps(node, ensure_ascii=False, indent=2) + "\n", "utf-8")
-        variants[nid] = {"kind": kind, "label": LABEL[nid], "node": f"elements/psyche/{nid}/node.json", "strength": strength}
+        (d / "psyche-node.json").write_text(json.dumps(node, ensure_ascii=False, indent=2) + "\n", "utf-8")
+        variants[nid] = {"kind": kind, "label": LABEL[nid], "node": f"elements/psyche/{nid}/psyche-node.json", "strength": strength}
     (out / "psyche-variants.json").write_text(json.dumps({"psyche": {"variants": variants}}, ensure_ascii=False, indent=2) + "\n", "utf-8")
     print(f"{len(N)} nodes → {out}")
 
