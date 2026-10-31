@@ -29,6 +29,8 @@ def _print_report(rep: Report, as_json: bool) -> int:
             print(f"ERROR  {e}")
         for w in rep.warnings:
             print(f"WARN   {w}")
+        for n in rep.info.get("notes") or []:
+            print(f"INFO   {n}")
         c = rep.info.get("completeness")
         if c:
             print(f"completeness: {c['score']}/100 (level {c['level']}) — " + ", ".join(f"{k} {v}" for k, v in c["layers"].items()))

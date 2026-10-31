@@ -1062,6 +1062,10 @@ def _memory_rules(manifest: dict, src: Path, rep: "Report") -> None:
         nodes[vid] = node
     if not nodes:
         return
+    if len(nodes) >= 20000:
+        rep.warnings.append(f"{len(nodes)} memories: beyond 20 000 the reference tools no longer guarantee fluid reading and search (no limit in the format)")
+    elif len(nodes) >= 5000:
+        rep.info.setdefault("notes", []).append(f"{len(nodes)} memories: the reference tools are tuned for up to about 5 000 (the explorer and the builder open such files in optimized views)")
     owner = lambda vid: variant_owner(manifest, "memories", vid)
 
     def primary_lang(iid):
