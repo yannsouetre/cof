@@ -474,7 +474,7 @@ async function memGraph(pid,memIds,nodes,order,info){const T0=performance.now();
   const prop=dg.length>1&&isFinite(sc)&&x0+sc*(dg[dg.length-1].d-dg[0].d)+dg[dg.length-1].w+x0<=packW*1.25;
   if(prop){let r=x0;for(const g of gs)if(g.d!==null){g.x=x0+sc*(g.d-dg[0].d);r=g.x+g.w}else{g.x=r+GAP;r=g.x+g.w}}
   const pos={},groupOf={};for(const g of gs){g.cx=g.x+g.w/2;const off=g.x+(g.w-g.nc*CX)/2;g.m.forEach((v,i)=>{pos[v]={x:Math.round(off+CX/2+Math.floor(i/k)*CX),y:Y0+(i%k)*RY,r:26};groupOf[v]=g.id});if(g.real)pos[g.id]={x:Math.round(g.cx),y:PY,r:44}}
-  const rows=Math.max(1,...gs.map(g=>g.rows)),yB=Y0+(rows-1)*RY+44,right=Math.max(x0,...gs.map(g=>g.x+g.w));
+  const rows=Math.max(1,...gs.map(g=>g.rows)),yB=Y0+(rows-1)*RY+62,right=Math.max(x0,...gs.map(g=>g.x+g.w));
   /* hubs: people (by label) and places (an element — environment or linked element — or a `where` label), with the memories they appear in */
   const lang0=(info[order[0]]||{}).lang,hubs=new Map(),mh={};const hub=(hk,v,mk)=>{if(!hubs.has(hk))hubs.set(hk,{...mk(),nodes:[],o:oi.get(v)});const h=hubs.get(hk);if(!h.nodes.includes(v)){h.nodes.push(v);mh[v].push(hk)}};
   for(const v of drawn){const n=info[v].n,lang=info[v].lang;mh[v]=[];
@@ -496,7 +496,7 @@ async function memGraph(pid,memIds,nodes,order,info){const T0=performance.now();
   for(const v of drawn)if(th[v])s+=`<clipPath id="cp-${esc(v)}"><circle cx="${pos[v].x}" cy="${pos[v].y}" r="${pos[v].r-2}"/></clipPath>`;
   elist.forEach((e,i)=>{if(e.thumb)s+=`<clipPath id="cpe-${i}"><circle cx="${e.x}" cy="${e.y}" r="${e.r-2}"/></clipPath>`});
   s+=`</defs><line x1="${x0-20}" y1="${AX}" x2="${W-30}" y2="${AX}" stroke="var(--line)" stroke-width="2" marker-end="url(#arr)"/>`;
-  for(const g of gs)if(g.m.length)s+=`<rect x="${g.x+4}" y="${Y0-42}" width="${g.w-8}" height="${(g.rows-1)*RY+86}" rx="14" fill="${g.real?"var(--offer-soft)":"none"}" fill-opacity=".4" stroke="${g.real?"var(--offer)":"var(--line)"}" stroke-opacity=".6"${g.real?"":' stroke-dasharray="5 4"'}/>`;
+  for(const g of gs)if(g.m.length)s+=`<rect x="${g.x+4}" y="${Y0-42}" width="${g.w-8}" height="${(g.rows-1)*RY+104}" rx="14" fill="${g.real?"var(--offer-soft)":"none"}" fill-opacity=".4" stroke="${g.real?"var(--offer)":"var(--line)"}" stroke-opacity=".6"${g.real?"":' stroke-dasharray="5 4"'}/>`;
   const adj={};const ad=(a,b,t)=>{(adj[a]=adj[a]||[]).push([b,t]);(adj[b]=adj[b]||[]).push([a,t])};
   for(const v of drawn){const {n,parents}=info[v];const ex=new Set();for(const l of n.links||[]){const [c,tg]=String(l.to||"").split(/\/(.*)/);if(l.type==="part-of")ex.add(tg);if(c!=="memories"||!pos[tg]||tg===v||(l.type==="part-of"&&groupOf[v]===tg))continue;ad(v,tg,l.type);if(full)s+=mgLink(pos[v],pos[tg],l.type,linkWord(l.type),_lab,false,v,tg)}
     if(full)for(const tg of parents||[]){if(ex.has(tg)||!pos[tg]||groupOf[v]===tg)continue;s+=mgLink(pos[v],pos[tg],"part-of",tr("during"),_lab,true,v,tg)}}
