@@ -31,6 +31,7 @@ for i in range(N):
         from PIL import Image, ImageDraw
         im = Image.radial_gradient("L").resize((1024, 683)).convert("RGB"); d = ImageDraw.Draw(im)
         for _ in range(40): x, y = random.randint(0, 1024), random.randint(0, 683); d.ellipse([x, y, x + random.randint(20, 200), y + random.randint(20, 200)], fill=tuple(random.randint(0, 255) for _ in range(3)))
+        noise = Image.effect_noise((1024, 683), 48).convert("RGB"); im = Image.blend(im, noise, .45)   # fine grain: a real scene's weight (≈ 250 KB at 0.7 MP, like a phone JPEG), not a flat drawing's
         pf = out / f"photo{i}.jpg"; im.save(pf, "JPEG", quality=88); media = [pf]
     vid = memory_add(out, identity=None, kind="moment", gists={"fr": f"Souvenir {i+1}.", "en": f"Memory {i+1}."}, label=lab + " / " + lab.lower(), age=age, who=who, where=where, approx=random.random() < .3, lang="fr", fidelity=random.choice(["vivid", "clear", "faded"]), media=media, salience=random.randint(10, 95), tags=[random.choice(W)])
     moments.append((vid, age))
