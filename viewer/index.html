@@ -487,7 +487,7 @@ async function memGraph(pid,memIds,nodes,order,info){const T0=performance.now();
   let plist=[],elist=[];const yPe=yB+64;let yE=yB+64;
   if(full){plist=[...hubs.entries()].filter(([hk])=>hk[0]==="w").map(([,h])=>h);plist.forEach(p=>{const xs=p.nodes.map(v=>pos[v].x);p.x=xs.reduce((a,b)=>a+b,0)/xs.length;p.y=yPe;p.r=16});plist.sort((a,b)=>a.x-b.x);for(let i=1;i<plist.length;i++)if(plist[i].x-plist[i-1].x<70)plist[i].x=plist[i-1].x+70;
     elist=[...hubs.values()].filter(h=>h.cat);yE=plist.length?yPe+110:yB+64;elist.forEach(e=>{const xs=e.nodes.map(v=>pos[v].x);e.x=xs.reduce((a,b)=>a+b,0)/xs.length;e.y=yE;e.r=18});elist.sort((a,b)=>a.x-b.x);for(let i=1;i<elist.length;i++)if(elist[i].x-elist[i-1].x<80)elist[i].x=elist[i-1].x+80}
-  const W=Math.round(Math.max(700,right+x0,...plist.map(p=>p.x+70),...elist.map(e=>e.x+80))),H=full&&elist.length?yE+70:full&&plist.length?yPe+60:yB+16;
+  const W=Math.round(Math.max(700,right+x0,...plist.map(p=>p.x+70),...elist.map(e=>e.x+80))),H=full&&elist.length?yE+70:full&&plist.length?yPe+60:yB+16+90;   // optimized view: room under the last row for the fan of people and places revealed around a bubble (radius 86)
   const tL=performance.now()-T0;
   const th={};for(const v of drawn)if(memImgAsset(v,info[v].n))th[v]=1;   // the bubbles are drawn at once; their images (128 px copies) are resolved after the graph is on screen, eight at a time — see memGraphBind
   for(const e of elist){const im=(e.rv.images||[]).map(a=>A()[a]).find(a=>a&&String(a.mediaType||"").startsWith("image/")&&!nudeSet().has(a.id));e.thumb=im?await tinyOf(im.id):null}
