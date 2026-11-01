@@ -1487,7 +1487,7 @@ function memBindCard(d){const sel_=d.querySelector("[data-memfs]");if(!sel_)retu
     if(r.kind==="moment"){const v=r.vid,ps=[...new Set(memParents(v))];if(E.has(v)){cur.delete(v);for(const p of ps)if(cur.has(p)){cur.delete(p);for(const x of memChildren(p))if(x!==v)cur.add(x)}}   // unticked inside a ticked period: the period gives way, its other moments stay ticked
       else{cur.add(v);for(const p of ps)if(memChildren(p).every(x=>cur.has(x)))cur.add(p)}}   // all the moments of a period ticked: the period is
     else{const ids=r.kind==="period"?[r.vid,...r.ids]:r.ids;if(c.dataset.state==="def")ids.forEach(v=>cur.delete(v));else ids.forEach(v=>cur.add(v))}
-    S.memPresets[pid]=memOrder([...cur].filter(v=>S.memories[v]));renderPresets()});
+    S.memPresets[pid]=memCompact(memOrder([...cur].filter(v=>S.memories[v])));renderPresets()});
   const tg=d.querySelector("[data-mperonly]");if(tg)tg.onclick=()=>{S._memPerOnly=!S._memPerOnly;for(const k of Object.keys(S._page))if(k.endsWith(":memories"))S._page[k]=1;renderPresets()};
   const cl=d.querySelector("[data-mclear]");if(cl)cl.onclick=()=>{S.memPresets[pid]=[];renderPresets()};subBind(d,pid)}
 function memInjectPresets(){const cards=$$("#presetList .variant");const pids=Object.keys(S.presets).filter(pid=>!multiId()||ownerP(pid)===curId());cards.forEach((d,i)=>{const pid=d.dataset.pid||pids[i];if(!pid||!S.presets[pid])return;d.dataset.pid=pid;d.setAttribute("data-qhay",presetHay(pid));const html=memPresetFieldset(pid);if(!html)return;const tmp=document.createElement("div");tmp.innerHTML=html;const fs=tmp.firstElementChild;fs.dataset.pid=pid;const anchor=[...d.querySelectorAll(":scope > fieldset")].pop();if(anchor)anchor.after(fs);else d.appendChild(fs)});memBindPresets();
