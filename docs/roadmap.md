@@ -1,6 +1,6 @@
 # Révision du 25 octobre 2026 — COF 1.1 (souvenirs, cast), puis 1.2 (psyché)
 
-> **COF 1.1.0 publiée le 30 octobre 2026** — release [v1.1.0](https://github.com/yannsouetre/cof/releases/tag/v1.1.0), cof-cli 1.1.0 sur PyPI, ComfyUI-COF 0.6.0 (registre Comfy), DOI 10.5281/zenodo.23805416. RFC 0002 et 0003 ouvertes aux commentaires jusqu'au 14 novembre 2026. **1.1.1 publiée le 2 novembre 2026** (outils seulement, aucun changement de format) : le graphe des souvenirs à l'échelle d'une vie, des pages dans toutes les listes, le builder ouvre 5 000 souvenirs en quelques secondes — `docs/release-notes-1.1.1.md`.
+> **COF 1.1.0 publiée le 30 octobre 2026** — release [v1.1.0](https://github.com/yannsouetre/cof/releases/tag/v1.1.0), cof-cli 1.1.0 sur PyPI, ComfyUI-COF 0.6.0 (registre Comfy), DOI 10.5281/zenodo.23805416. RFC 0002 et 0003 ouvertes aux commentaires jusqu'au 14 novembre 2026. **1.1.1 publiée le 2 novembre 2026** (outils seulement, aucun changement de format) : le graphe des souvenirs à l'échelle d'une vie, des pages dans toutes les listes, le builder ouvre 5 000 souvenirs en quelques secondes — release [v1.1.1](https://github.com/yannsouetre/cof/releases/tag/v1.1.1) (fichiers de stress en pièces jointes), cof-cli 1.1.1 sur PyPI, DOI 10.5281/zenodo.23879507, `docs/release-notes-1.1.1.md`.
 
 *Rédigée sur la branche de travail de la 1.1 ; publiée avec elle.*
 
