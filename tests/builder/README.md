@@ -23,3 +23,19 @@ HTTP and drives the builder: the 22 nodes of Clara in step 4 (kind chips, filter
 stance about the user and a contradiction added, a node derived and one deleted, a preset's Psyché subsection ticked, the
 checks on a deliberately broken node, every purge choice built and re-validated with `cof validate`, the conversion of
 the 1.0 lists. Needs `python` with cof-cli importable from `cli/`.
+
+## Psyche converter (docs/psyche-propose.md)
+
+```
+node tests/builder/psyche_propose_test.js [repo-root] [work-dir]
+```
+
+No network: the fetch to the configured gateway (`<base>/chat/completions`) is intercepted with Playwright's `page.route` and
+answered with `tests/fixtures/psyche-propose/clara-proposal.json`. On Clara 1.2: « Proposer une psyché depuis la personnalité »
+without a gateway says so and offers the paste; with one, the request carries the bundle of the contract; the review panel shows
+six rows, all unticked, the duplicate of `val1` flagged; nothing is added until rows are ticked; a contradiction without its side
+is refused; the four ticked rows become `taste3`, `bel4`, `contra2`, `stance3` (links mapped, risk tag, the presets holding the
+personality read list them, the others keep their list) and the built file validates; a pasted proposal that breaks the contract
+is refused. The inverse: « Texte depuis la psyché » renders exactly the « Who she is » section of `cof export --format agent`
+for `fr-agent`, `default` and `en-12`, and « append » appends it to the card's personality. Also: the date inputs of a psyche
+and a memory card sit on one line; the buttons and dialogs in the six languages.
