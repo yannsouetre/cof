@@ -1620,3 +1620,135 @@ def test_psyche_add(tmp_path):
     assert main(["psyche", "add", str(f), "--kind", "rule", "--gist", "fr=Ne jamais envoyer un message que personne n'a demandé.", "--stability", "core", "--strength", "90", "--canon", "--origin", "authored"]) == 0
     mf = json.loads((f / "manifest.json").read_text("utf-8"))
     assert mf["cof"] == "1.2" and mf["presets"]["default"]["slots"]["psyche"] == ["rule1"] and "has-psyche" in mf["tags"]["auto"]
+
+
+PROPOSAL = ROOT / "tests" / "fixtures" / "psyche-propose" / "clara-proposal.json"
+
+
+def test_psyche_propose_contract_and_table(tmp_path):
+    """docs/psyche-propose.md: the bundle of Clara, the fixture proposal normalised and validated, the duplicate c1 ≈ val1
+    flagged, the table printed; a bad kind, a missing gist, an unknown memory id, a one-sided contradiction, `about` off
+    a stance and a bad source are refused (no network anywhere)."""
+    from cof_cli import propose as P
+    src = ROOT / "spec/examples/10-clara-mercier"
+    m = json.loads((src / "manifest.json").read_text("utf-8"))
+    b = P.build_bundle(src, m, "fr-agent")
+    assert b["contract"] == P.CONTRACT and b["character"] == {"id": "id1", "name": "Clara Mercier", "gender": "female", "age": 29, "language": "fr", "summary": b["character"]["summary"]}
+    assert b["languages"] == ["fr", "en"] and b["preset"] == "fr-agent" and b["cast"] == []
+    assert [p["variant"] for p in b["personality"]] == ["p2", "p6"] and b["personality"][0]["kind"] == "card" and b["personality"][0]["personality"] and b["personality"][1]["text"]
+    assert len(b["lists"]["goals"]) == 3 and len(b["lists"]["values"]) == 6 and len(b["lists"]["behavior"]) == 4
+    assert [x["id"] for x in b["memories"]] == ["ev1", "ep1", "ev2", "ev3", "ev4", "ev5", "ev6", "ev7", "ev8", "ep2", "ev9", "ev10"]   # the manga copies left out
+    assert b["memories"][1]["kind"] == "period" and b["memories"][1]["when"] and "agence" in b["memories"][1]["gist"].lower()
+    assert len(b["psyche"]) == 22 and b["psyche"][0] == {"id": "wound1", "kind": "wound", "gist": b["psyche"][0]["gist"], "strength": 85} and "livrer" in b["psyche"][0]["gist"]
+    prop = P.normalize(json.loads(PROPOSAL.read_text("utf-8")))
+    errors, notes = P.validate(prop, b)
+    assert errors == [], errors
+    assert not any("gist[" in n for n in notes), notes
+    assert P.duplicates(prop, b) == {"c1": "psyche/val1"}
+    tbl = P.table(prop, b, notes)
+    assert "c1     value           90  core      none          card.personality       psyche/val1" in tbl and "c3     belief (lie)" in tbl
+    assert "between c3 ⇄ psyche/val1" in tbl and "risk inappropriate: a bluntness" in tbl and "about: the user" in tbl and "Nothing is written" in tbl
+    # tolerated shapes: a bare list, missing ids, risk as a string, because as a string, strength as a float
+    loose = P.normalize([{"kind": "Taste", "gist": {"fr": "x" * 120}, "risk": "dangerous", "because": "memories/ev1, memories/ev2", "strength": 61.0, "source": "memory ev1", "tags": ["Vie Quotidienne"]}])
+    assert loose["nodes"][0]["id"] == "c1" and loose["nodes"][0]["kind"] == "taste" and loose["nodes"][0]["risk"] == {"value": "dangerous", "why": ""}
+    assert loose["nodes"][0]["because"] == ["memories/ev1", "memories/ev2"] and loose["nodes"][0]["strength"] == 61 and loose["nodes"][0]["tags"] == ["vie-quotidienne"]
+    e, n = P.validate(loose, b); assert e == [] and any("no reason" in x for x in n)
+    # refusals
+    def bad(**kw):
+        node = {"id": "x1", "kind": "value", "gist": {"fr": "y" * 120, "en": "y" * 120}, "source": "inferred", **kw}
+        return P.validate(P.normalize({"nodes": [node]}), b)[0]
+    assert any("unknown kind 'opinion'" in x for x in bad(kind="opinion"))
+    assert any("gist must be" in x for x in bad(gist={}))
+    assert any("unknown memory 'ev99'" in x for x in bad(because=["memories/ev99"]))
+    assert any("names a memory the character does not have" in x for x in bad(source="memory ev99"))
+    assert any("exactly two" in x for x in bad(kind="contradiction", between=["psyche/val1"]))
+    assert any("unknown psyche node 'nope'" in x for x in bad(kind="contradiction", between=["psyche/val1", "psyche/nope"]))
+    assert any("about is for a stance only" in x for x in bad(about={"user": True}))
+    assert any("not a character of the file" in x for x in bad(kind="stance", about={"identity": "martien"}))
+    assert any("false_but_held is for a belief" in x for x in bad(false_but_held=True))
+    assert any("source must name" in x for x in bad(source="my head"))
+    assert any("strength must be" in x for x in bad(strength=140))
+    assert any("stability must be" in x for x in bad(stability="solid"))
+    assert any("risk must be" in x for x in bad(risk={"value": "bad"}))
+    assert any("a node cannot point at itself" in x for x in bad(supports=["x1"]))
+    assert P.validate(P.normalize({"nodes": "no"}), b)[0] == ["the proposal is not an object with a `nodes` list"]
+    # the answer of a chat completion is unwrapped; a non-JSON answer is refused
+    assert P.parse_answer({"choices": [{"message": {"content": "Here you are:\n```json\n{\"nodes\": []}\n```"}}]}) == {"nodes": []}
+    with pytest.raises(ValueError):
+        P.parse_answer({"choices": [{"message": {"content": "I cannot."}}]})
+
+
+def test_psyche_propose_cli_rules_zodiac_and_accept(tmp_path):
+    """`cof psyche propose`: --rules on example 01 (the 1.0 lists as a proposal), --zodiac virgo (four candidates, tag
+    zodiac:virgo, strength 50, shifting, bilingual), --from-file on Clara printed and saved with --out, --apply refused
+    without --accept, a contradiction refused without its side, --accept writing exactly the chosen nodes (ids by kind,
+    links mapped, risk tag, listed by the presets holding the personality read), the file validating; a .cof too."""
+    from cof_cli.cli import main
+    from cof_cli import propose as P
+    from cof_cli.zodiac import candidates, normalize_sign, SIGNS, TABLE
+    assert normalize_sign("Vierge") == "virgo" and normalize_sign("VIRGO") == "virgo" and normalize_sign("Bélier") == "aries" and normalize_sign("ox") is None
+    assert set(TABLE) == set(SIGNS) and all(3 <= len(v) <= 4 and all(k in ("value", "taste", "habit") and set(g) == {"en", "fr"} for k, g in v) for v in TABLE.values())
+    z = candidates("virgo", ["fr", "en"])
+    assert len(z) == 4 and z[0] == {"id": "z1", "kind": "value", "gist": z[0]["gist"], "strength": 50, "stability": "shifting", "tags": ["zodiac:virgo"], "source": "zodiac"} and z[0]["gist"]["fr"].startswith("L'exactitude")
+    assert candidates("virgo", ["de"])[0]["gist"] == {"de": TABLE["virgo"][0][1]["en"]}
+    ex1 = ROOT / "spec/examples/01-clara-text-only"
+    m1 = json.loads((ex1 / "manifest.json").read_text("utf-8"))
+    r = P.rules_proposal(ex1, m1, None)
+    assert [(n["kind"], n.get("strength"), n["source"]) for n in r["nodes"]] == [("value", None, "list values[0]"), ("value", None, "list values[1]"), ("value", None, "list values[2]"), ("want", 70, "list goals[0]"), ("fear", 70, "list fears[0]"), ("habit", None, "list behavior[0]"), ("habit", None, "list behavior[1]"), ("habit", None, "list behavior[2]")]
+    assert next(iter(r["nodes"][0]["gist"].values())) == "Sobriété." and P.validate(r, P.build_bundle(ex1, m1))[0] == []
+    out = tmp_path / "p01.json"
+    assert main(["psyche", "propose", str(ex1), "--rules", "--zodiac", "virgo", "--out", str(out)]) == 0
+    saved = json.loads(out.read_text("utf-8"))
+    assert [n["id"] for n in saved["nodes"]] == ["l1", "l2", "l3", "l4", "l5", "l6", "l7", "l8", "z1", "z2", "z3", "z4"] and saved["contract"] == P.CONTRACT
+    assert main(["psyche", "propose", str(ex1), "--zodiac", "ox"]) == 1
+    assert main(["psyche", "propose", str(ex1)]) == 2                                   # no source of proposal
+    assert main(["psyche", "propose", str(ex1), "--provider", "openai-compatible"]) == 2   # no URL / model: refused before any call
+    # Clara: the fixture reviewed, saved, applied for a selection only
+    d = tmp_path / "c10"; shutil.copytree(ROOT / "spec/examples/10-clara-mercier", d)
+    before = sorted(str(p.relative_to(d)) for p in d.rglob("*"))
+    bo = tmp_path / "bundle.json"; po = tmp_path / "prop.json"
+    assert main(["psyche", "propose", str(d), "--preset", "fr-agent", "--from-file", str(PROPOSAL), "--out", str(po), "--bundle-out", str(bo)]) == 0
+    assert sorted(str(p.relative_to(d)) for p in d.rglob("*")) == before                  # reviewed, nothing written
+    assert json.loads(bo.read_text("utf-8"))["prompt"] == P.PROMPT and json.loads(bo.read_text("utf-8"))["bundle"]["character"]["id"] == "id1"
+    assert main(["psyche", "propose", str(d), "--from-file", str(po), "--apply"]) == 2                              # --apply without --accept
+    assert main(["psyche", "propose", str(d), "--preset", "fr-agent", "--from-file", str(po), "--apply", "--accept", "c4"]) == 2   # a contradiction without its side
+    assert main(["psyche", "propose", str(d), "--preset", "fr-agent", "--from-file", str(po), "--apply", "--accept", "c9"]) == 2   # unknown id
+    assert sorted(str(p.relative_to(d)) for p in d.rglob("*")) == before
+    bad = tmp_path / "bad.json"; bad.write_text(json.dumps({"nodes": [{"id": "c1", "kind": "opinion", "gist": {"fr": "x"}, "source": "inferred"}]}), "utf-8")
+    assert main(["psyche", "propose", str(d), "--from-file", str(bad)]) == 1
+    assert main(["psyche", "propose", str(d), "--preset", "fr-agent", "--from-file", str(po), "--apply", "--accept", "c2,c3,c4,c5"]) == 0
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    V = m["elements"]["psyche"]["variants"]
+    assert [v for v in V][-4:] == ["taste3", "bel4", "contra2", "stance3"] and "c1" not in str(V) and len(V) == 26
+    n = lambda v: json.loads((d / f"elements/psyche/{v}/psyche-node.json").read_text("utf-8"))
+    assert n("bel4")["false_but_held"] is True and n("bel4")["since"] == {"age": {"value": 24}} and n("bel4")["links"] == [{"to": "memories/ep1", "type": "because"}] and n("bel4")["origin"] == "authored" and n("bel4")["visibility"] == "canon"
+    assert n("contra2")["links"] == [{"to": "psyche/bel4", "type": "conflicts"}, {"to": "psyche/val1", "type": "conflicts"}]
+    assert n("stance3")["about"] == {"user": True} and n("stance3")["risk"] == "inappropriate" and m["tags"]["content"] == ["psyche-inappropriate"]
+    assert V["stance3"]["strength"] == 50 and V["taste3"]["label"].startswith("Aime le silence") and V["taste3"]["identity"] == "id1"
+    from cof_cli.model import resolve_preset_slots
+    assert resolve_preset_slots(m, "fr-agent")["psyche"][-4:] == ["taste3", "bel4", "contra2", "stance3"] and resolve_preset_slots(m, "default")["psyche"][-4:] == ["taste3", "bel4", "contra2", "stance3"]
+    assert m["presets"]["en-manga"]["slots"]["psyche"][-4:] == ["taste3", "bel4", "contra2", "stance3"]                          # holds p6 through extends
+    assert resolve_preset_slots(m, "en-12")["psyche"] == ["val4", "taste1", "hab2"] and "bel4" not in resolve_preset_slots(m, "fr-65")["psyche"]   # other personalities: untouched
+    rep = _val(d); assert rep.ok, rep.errors
+    # idempotence of the review: the same proposal now flags its own candidates as duplicates of what was written
+    b2 = P.build_bundle(d, m, "fr-agent"); dups = P.duplicates(P.normalize(json.loads(po.read_text("utf-8"))), b2)
+    assert dups["c2"] == "psyche/taste3" and dups["c3"] == "psyche/bel4"
+    # on a .cof, with --accept all (c1 included: the author's choice) and --out-cof
+    cof = tmp_path / "c.cof"; pack(d, cof)
+    out_cof = tmp_path / "d.cof"
+    assert main(["psyche", "propose", str(cof), "--preset", "fr-agent", "--from-file", str(po), "--apply", "--accept", "all", "--out-cof", str(out_cof)]) == 0
+    u = tmp_path / "u"; unpack(out_cof, u)
+    mu = json.loads((u / "manifest.json").read_text("utf-8"))
+    assert len(mu["elements"]["psyche"]["variants"]) == 32 and validate_cof(out_cof).ok
+    # the inverse: `psyche text` prints the section, --into-card appends it to the card (never replaces)
+    import io, contextlib
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        assert main(["psyche", "text", str(d), "--preset", "fr-agent"]) == 0
+    txt = buf.getvalue()
+    assert txt.startswith("## Qui elle est") and "### Contradictions" in txt and "Défend un web qui ne presse personne" in txt and "une franchise un peu brusque" in txt
+    card_before = json.loads((d / "elements/personality/p2/card.json").read_text("utf-8"))["data"]["personality"]
+    assert main(["psyche", "text", str(d), "--preset", "fr-agent", "--into-card"]) == 0
+    after = json.loads((d / "elements/personality/p2/card.json").read_text("utf-8"))["data"]["personality"]
+    assert after.startswith(card_before.rstrip()) and after.rstrip().endswith(txt.strip()[-40:])
+    assert main(["psyche", "text", str(ex1)]) == 1                                         # no node: nothing to render

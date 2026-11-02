@@ -311,6 +311,106 @@ def cmd_psyche_add(a):
         personal=not a.canon, disclosure=a.disclosure, presets=a.preset))
 
 
+def cmd_psyche_propose(a):
+    """personality → psyche as a proposal (docs/psyche-propose.md): the bundle, a proposal from the gateway / a file /
+    the rules / the zodiac table, validated against the contract, printed as a table; written only with --apply --accept."""
+    from . import propose as P
+    src = Path(a.src)
+    if not src.exists():
+        print(f"ERROR  {src}: no such file or folder", file=sys.stderr); return 2
+    if a.apply and not a.accept:
+        print("ERROR  --apply writes nothing without --accept <id,id> or --accept all", file=sys.stderr); return 2
+    langs = [x.strip() for x in (a.lang or "").split(",") if x.strip()] or None
+    with tempfile.TemporaryDirectory(prefix="cof-propose-") as td:
+        d = src if src.is_dir() else unpack(src, td)
+        manifest = json.loads((d / "manifest.json").read_text("utf-8"))
+        bundle = P.build_bundle(d, manifest, a.preset, a.identity, langs)
+        iid = bundle["character"]["id"]
+        if a.bundle_out:
+            Path(a.bundle_out).write_text(json.dumps({"system": P.SYSTEM_PROMPT, "prompt": P.PROMPT, "bundle": bundle}, ensure_ascii=False, indent=2) + "\n", "utf-8")
+            print(f"bundle and prompt written: {a.bundle_out} (give them to any model; save its answer and come back with --from-file)")
+        parts = []
+        if a.from_file:
+            parts.append(P.parse_answer(json.loads(Path(a.from_file).read_text("utf-8"))))
+        if a.rules:
+            parts.append(P.rules_proposal(d, manifest, iid, bundle["languages"]))
+        if a.zodiac:
+            parts.append(P.zodiac_proposal(a.zodiac, bundle["languages"]))
+        if a.provider:
+            if a.provider != "openai-compatible":
+                print(f"ERROR  unknown provider {a.provider!r} (openai-compatible)", file=sys.stderr); return 2
+            if not a.base_url or not a.model:
+                print("ERROR  --provider needs --base-url and --model (the key comes from the environment: COF_AI_KEY)", file=sys.stderr); return 2
+            print(f"asking {a.model} at {a.base_url}…", file=sys.stderr)
+            try:
+                parts.append(P.call_gateway(a.base_url, a.model, bundle, P.key_from_env()))
+            except Exception as e:                              # a network or a parse failure: nothing to review
+                print(f"ERROR  the gateway did not answer with a proposal: {e}", file=sys.stderr); return 1
+        if not parts:
+            if a.bundle_out:
+                return 0
+            print("ERROR  no proposal: give --from-file <proposal.json>, --rules, --zodiac <sign>, or --provider openai-compatible --base-url … --model … (or --bundle-out to take the bundle to a model yourself)", file=sys.stderr); return 2
+        proposal = P.normalize(P.merge(*[P.normalize(p) for p in parts]))
+        errors, notes = P.validate(proposal, bundle)
+        if errors:
+            for e in errors:
+                print(f"ERROR  {e}")
+            print(f"proposal refused: {len(errors)} contract error(s) (docs/psyche-propose.md).", file=sys.stderr)
+            return 1
+        print(P.table(proposal, bundle, notes, a.accept if a.apply else None))
+        if a.out:
+            Path(a.out).write_text(json.dumps(proposal, ensure_ascii=False, indent=2) + "\n", "utf-8")
+            print(f"proposal written: {a.out}")
+        if not a.apply:
+            return 0
+    class _A:                                                   # the shared atomic write path: a copy edited, validated, then written back
+        pass
+    aa = _A(); aa.src = a.src; aa.out = a.out_cof
+    def add(work):
+        written, wnotes = P.apply(work, proposal, a.accept, iid, bundle)
+        for n in wnotes:
+            print(f"NOTE   {n}")
+        return ", ".join(written)
+    return _add_node(aa, "Psyche nodes", add)
+
+
+def cmd_psyche_text(a):
+    """The inverse: nodes → the « Who she is » text (SOUL.md's section, RFC 0004 § 3 quinquies), printed or appended to
+    the card's personality field (never replacing it)."""
+    from .psyche import load_nodes, soul_section
+    src = Path(a.src)
+    if not src.exists():
+        print(f"ERROR  {src}: no such file or folder", file=sys.stderr); return 2
+    with tempfile.TemporaryDirectory(prefix="cof-text-") as td:
+        d = src if src.is_dir() else unpack(src, td)
+        manifest = json.loads((d / "manifest.json").read_text("utf-8"))
+        pid = a.preset or default_preset_id(manifest)
+        text, stats = soul_section(manifest, load_nodes(d, manifest), pid, keep_personal=a.keep_personal, keep_dangerous=a.keep_dangerous)
+    if not text:
+        print("no psyche node to render for this preset", file=sys.stderr); return 1
+    if a.out:
+        Path(a.out).write_text(text, "utf-8"); print(f"written: {a.out} ({stats['rendered']} node(s))")
+    elif not a.into_card:
+        print(text, end="")
+    if not a.into_card:
+        return 0
+    class _A:
+        pass
+    aa = _A(); aa.src = a.src; aa.out = a.out_cof
+    def add(work):
+        from .model import first, resolved
+        m = json.loads((work / "manifest.json").read_text("utf-8"))
+        p = first(resolved(m, pid), "personality") or {}
+        if not p.get("card"):
+            raise ValueError("--into-card needs a preset whose personality is a card (card.json)")
+        cp = work / p["card"]; card = json.loads(cp.read_text("utf-8"))
+        data = card.setdefault("data", {})
+        data["personality"] = (str(data.get("personality") or "").rstrip() + "\n\n" + text.strip()).strip() + "\n"
+        cp.write_text(json.dumps(card, ensure_ascii=False, indent=2) + "\n", "utf-8")
+        return f"the « Who she is » text to {p['card']} › personality"
+    return _add_node(aa, "Psyche text", add)
+
+
 def cmd_extract(a):
     src = Path(a.src)
     with tempfile.TemporaryDirectory() as td:
@@ -409,7 +509,7 @@ def main(argv=None) -> int:
     ma.add_argument("--disclosure", choices=["open", "guarded", "secret"], default="open"); ma.add_argument("--fidelity", choices=["vivid", "clear", "faded", "fragment"], default="clear"); ma.add_argument("--salience", type=int)
     ma.add_argument("--media", action="append", help="image / audio / video / short text file; repeat"); ma.add_argument("--preset", action="append", help="preset(s) that may recall it (default: the character's presets)")
     ma.add_argument("-o", "--out", help="output .cof (default: in place)"); ma.set_defaults(fn=cmd_memory_add)
-    s = sub.add_parser("psyche", help="psyche: `psyche add` appends a lived node (RFC 0004, the write path of COF.md)")
+    s = sub.add_parser("psyche", help="psyche (RFC 0004): `psyche add` appends a lived node (the write path of COF.md); `psyche propose` turns a personality into candidate nodes to review; `psyche text` renders the nodes as text")
     ps_ = s.add_subparsers(dest="pcmd", required=True)
     pa = ps_.add_parser("add", help="append one psyche node"); pa.add_argument("src", help=".cof file or character folder")
     pa.add_argument("--identity", help="character id (default: the file's default character)")
@@ -425,6 +525,22 @@ def main(argv=None) -> int:
     pa.add_argument("--personal", action="store_true", help="visibility: personal (the default; kept for symmetry with memory add)")
     pa.add_argument("--disclosure", choices=["open", "guarded", "secret"], default="open"); pa.add_argument("--preset", action="append", help="preset(s) that hold it (default: the character's presets)")
     pa.add_argument("-o", "--out", help="output .cof (default: in place)"); pa.set_defaults(fn=cmd_psyche_add)
+    pp = ps_.add_parser("propose", help="personality → psyche: candidate nodes from a model, the 1.0 lists or a zodiac sign, reviewed in a table, written only for the ids you accept (docs/psyche-propose.md)")
+    pp.add_argument("src", help=".cof file or character folder"); pp.add_argument("--preset", help="the preset whose personality and language are read (default: the character's)"); pp.add_argument("--identity", help="character id in a cast (default: the file's default character)")
+    pp.add_argument("--lang", help="languages a gist must come in, comma-separated (default: the preset's, then the file's)")
+    pp.add_argument("--provider", choices=["openai-compatible"], help="ask a model through an OpenAI-compatible gateway (key from the environment: COF_AI_KEY, never an argument)")
+    pp.add_argument("--base-url", help="the gateway's base URL (https://api.openai.com/v1, http://localhost:11434/v1…)"); pp.add_argument("--model", help="the model name")
+    pp.add_argument("--from-file", help="a proposal JSON produced elsewhere (a model's answer, the builder's export, a file saved with --out)")
+    pp.add_argument("--rules", action="store_true", help="the rule-based conversion of the 1.0 lists (goals, fears, values, behaviours), as a proposal")
+    pp.add_argument("--zodiac", metavar="SIGN", help="a handful of value / taste / habit candidates typical of a sun sign (aries … pisces, or the French names), to review")
+    pp.add_argument("--bundle-out", help="write the bundle and the prompt to this JSON file, to take to any model by hand")
+    pp.add_argument("--out", help="save the validated proposal to this JSON file (reviewable later with --from-file)")
+    pp.add_argument("--apply", action="store_true", help="write the accepted candidates (requires --accept)"); pp.add_argument("--accept", metavar="ID,ID|all", help="the candidate ids to write (nothing is written otherwise)")
+    pp.add_argument("--out-cof", help="output .cof when applying (default: in place)"); pp.set_defaults(fn=cmd_psyche_propose)
+    pt = ps_.add_parser("text", help="psyche → text: the « Who she is » section rendered from the preset's nodes (the inverse of propose); --into-card appends it to the card's personality field")
+    pt.add_argument("src"); pt.add_argument("--preset"); pt.add_argument("--keep-personal", action="store_true"); pt.add_argument("--keep-dangerous", action="store_true")
+    pt.add_argument("--out", help="write the markdown here instead of printing it"); pt.add_argument("--into-card", action="store_true", help="append the text to the personality field of the preset's card (never replaces it)")
+    pt.add_argument("--out-cof", help="output .cof with --into-card (default: in place)"); pt.set_defaults(fn=cmd_psyche_text)
     s = sub.add_parser("unpack", help=".cof → folder"); s.add_argument("cof"); s.add_argument("-o", "--out"); s.set_defaults(fn=cmd_unpack)
     s = sub.add_parser("info", help="summary of a .cof"); s.add_argument("cof"); s.set_defaults(fn=cmd_info)
     s = sub.add_parser("tokens", help="token estimate per block"); s.add_argument("path"); s.set_defaults(fn=cmd_tokens)

@@ -379,7 +379,6 @@ def migrate_psyche(src: Path) -> dict:
     E = m.setdefault("elements", {})
     P = m.get("presets") or {}
     ids = m.get("identities") or {}
-    pers = ((E.get("personality") or {}).get("variants")) or {}
     existing = ((E.get("psyche") or {}).get("variants")) or {}
     # what the nodes already say, by kind: (identity, normalised text) for every language of every gist
     known: set[tuple[str, str | None, str]] = set()
@@ -391,40 +390,7 @@ def migrate_psyche(src: Path) -> dict:
             node = {}
         for t in (node.get("gist") or {}).values():
             known.add((v.get("kind"), variant_owner(m, "psyche", vid), _norm(t)))
-    # candidates per character: kind → list of {"lang": text, ...} items, merged by id / text / position
-    per_char: dict[str | None, dict[str, list[dict]]] = {}
-    sources: dict[str | None, dict[str, dict[int, set[str]]]] = {}   # character → kind → item index → personality variants it came from
-    for pvid, pv in pers.items():
-        if pv.get("derives_from"):
-            continue
-        lists = _lists_of(src, m, pvid, pv)
-        owner = variant_owner(m, "personality", pvid)
-        lang = pv.get("language") or (ids.get(owner or "") or {}).get("language") or (m.get("languages") or ["en"])[0]
-        for kind, entries in lists.items():
-            if not entries:
-                continue
-            items = per_char.setdefault(owner, {}).setdefault(kind, [])
-            srcs = sources.setdefault(owner, {}).setdefault(kind, {})
-            # an earlier variant whose list of this kind has the same length and no entry in this language: positions
-            # align (a card written twice, once per language)
-            aligned: dict[int, int] = {}
-            for b in dict.fromkeys(it["_batch"] for it in items):
-                bi = [k for k, it in enumerate(items) if it["_batch"] == b]
-                if len(bi) == len(entries) and all(lang not in items[k] for k in bi):
-                    aligned = {pos: k for pos, k in enumerate(bi)}
-                    break
-            for pos, (eid, text) in enumerate(entries):
-                hit = next((k for k, it in enumerate(items) if (eid and it.get("_id") == eid)
-                            or any(_norm(t) == _norm(text) for kk, t in it.items() if not kk.startswith("_"))), None)
-                if hit is None:
-                    hit = aligned.get(pos)
-                if hit is None:
-                    items.append({"_batch": pvid, "_id": eid, lang: text}); hit = len(items) - 1
-                else:
-                    items[hit].setdefault(lang, text)
-                    if eid and not items[hit].get("_id"):
-                        items[hit]["_id"] = eid
-                srcs.setdefault(hit, set()).add(pvid)
+    per_char, sources = list_items(src, m)
     # write the nodes
     from .psyche import ID_PREFIX
     from .selfdesc import _next_id
@@ -489,3 +455,49 @@ def migrate_psyche(src: Path) -> dict:
         m.setdefault("provenance", {})["modified"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     mpath.write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
     return {"written": written, "skipped": skipped, "untouched": untouched, "manifest": m}
+
+
+def list_items(src: Path, m: dict) -> tuple[dict, dict]:
+    """The 1.0 list entries of every (non-derived) personality variant, merged per character and kind into items — one
+    item per entry, a text per language: entries sharing a `psyche.json` id, repeating a text, or sitting at the same
+    position in lists of equal length written in different languages are one item. Returns (per_char, sources):
+    per_char: character → kind → [{"<lang>": text, "_batch": variant, "_id": psyche.json id}];
+    sources: character → kind → item index → the personality variants it came from. Shared by `migrate --psyche` and
+    `psyche propose --rules`."""
+    from .model import variant_owner
+    ids = m.get("identities") or {}
+    pers = (((m.get("elements") or {}).get("personality") or {}).get("variants")) or {}
+    per_char: dict[str | None, dict[str, list[dict]]] = {}
+    sources: dict[str | None, dict[str, dict[int, set[str]]]] = {}   # character → kind → item index → personality variants it came from
+    for pvid, pv in pers.items():
+        if pv.get("derives_from"):
+            continue
+        lists = _lists_of(src, m, pvid, pv)
+        owner = variant_owner(m, "personality", pvid)
+        lang = pv.get("language") or (ids.get(owner or "") or {}).get("language") or (m.get("languages") or ["en"])[0]
+        for kind, entries in lists.items():
+            if not entries:
+                continue
+            items = per_char.setdefault(owner, {}).setdefault(kind, [])
+            srcs = sources.setdefault(owner, {}).setdefault(kind, {})
+            # an earlier variant whose list of this kind has the same length and no entry in this language: positions
+            # align (a card written twice, once per language)
+            aligned: dict[int, int] = {}
+            for b in dict.fromkeys(it["_batch"] for it in items):
+                bi = [k for k, it in enumerate(items) if it["_batch"] == b]
+                if len(bi) == len(entries) and all(lang not in items[k] for k in bi):
+                    aligned = {pos: k for pos, k in enumerate(bi)}
+                    break
+            for pos, (eid, text) in enumerate(entries):
+                hit = next((k for k, it in enumerate(items) if (eid and it.get("_id") == eid)
+                            or any(_norm(t) == _norm(text) for kk, t in it.items() if not kk.startswith("_"))), None)
+                if hit is None:
+                    hit = aligned.get(pos)
+                if hit is None:
+                    items.append({"_batch": pvid, "_id": eid, lang: text}); hit = len(items) - 1
+                else:
+                    items[hit].setdefault(lang, text)
+                    if eid and not items[hit].get("_id"):
+                        items[hit]["_id"] = eid
+                srcs.setdefault(hit, set()).add(pvid)
+    return per_char, sources
