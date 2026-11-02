@@ -208,7 +208,7 @@ Object.assign(EN,{psyche:"Psyche",psyNote:"What the character holds — values, 
   psyKind:{value:"value",belief:"belief",want:"want",need:"need",fear:"fear",wound:"wound",stance:"stance",taste:"taste",habit:"habit",contradiction:"contradiction",rule:"rule",other:"other"},
   psyKindN:{value:"Values",belief:"Beliefs",want:"Wants",need:"Needs",fear:"Fears",wound:"Wounds",stance:"Stances",taste:"Tastes",habit:"Habits",contradiction:"Contradictions",rule:"Rules",other:"Other"},
   psyStab:{core:"core",settled:"settled",shifting:"shifting",fragile:"fragile"},psyRisk:{inappropriate:"inappropriate",dangerous:"dangerous"},
-  heldTrue:"held as true",towardUser:"toward the user",userW:"the user",strengthW:"strength",stabilityW:"stability",riskW:"risk",sinceD:"since {d}",
+  heldTrue:"false but held",towardUser:"toward the user",userW:"the user",strengthW:"strength",stabilityW:"stability",riskW:"risk",sinceD:"since {d}",
   psyIncoming1:"1 node links here",psyIncomingN:"{n} nodes link here",psyIncomingNote:"links declared by other nodes towards this one",
   psyHang1:"1 psyche node hangs on it",psyHangN:"{n} psyche nodes hang on it",psyHangNote:"nodes of the psyche that follow from this memory or bear on it (because / about) — click to open them in the Psyche tab",
   psyLine:"{n} nodes, {k} core",psySearch:"Search the psyche…",psyFree:"free",psyFreeLong:"nodes hung on no memory and no person",psyNodeW1:"node",psyNodeWn:"nodes",
@@ -217,12 +217,12 @@ Object.assign(EN,{psyche:"Psyche",psyNote:"What the character holds — values, 
   psyLegendLines:"solid: because · dotted: about · green dashes: supports · red dashes: conflicts · double ring: core · dashed ring: fragile or shifting",
   psyCmdsRows:[["Open a node","<b>Click a bubble</b>: its card opens (<kbd>Escape</kbd> closes it)."],["Open a memory","<b>Click a hub</b> (the big bubble above a column): the memory's card opens."],["Reveal","<b>Hover</b> a node or a hub: its links and neighbours light up; <b>click</b> keeps them until the next click; <b>click on the background</b> or <kbd>Escape</kbd> clears."],["Kinds and lines","One colour per kind (legend under the graph); the ring thickens with the strength; a double ring: a core node; a dashed ring: fragile or shifting. Solid line: because; dotted: about; green dashes: supports; red dashes: conflicts."]],
   psyMarkRow:["Psyche","A <b>ψ n</b> mark on a bubble: n nodes of the psyche hang on this memory; its card lists them and opens them in the Psyche tab."],
-  contentPsyDang:"psyche: dangerous nodes",contentPsyInap:"psyche: inappropriate nodes"});Object.assign(EN.linkWords,{supports:"supports",conflicts:"conflicts with"});
+  contentPsyDang:"psyche: dangerous nodes",contentPsyInap:"psyche: inappropriate nodes"});Object.assign(EN.linkWords,{supports:"supports",conflicts:"conflicts"});
 Object.assign(T.fr,{psyche:"Psyché",psyNote:"Ce que le personnage porte en lui — valeurs, croyances, désirs, peurs, blessures… — en nœuds accrochés à ses souvenirs. Un nœud « secret » n'est jamais cité ; « réservé », seulement quand cela compte.",
   psyKind:{value:"valeur",belief:"croyance",want:"désir",need:"besoin",fear:"peur",wound:"blessure",stance:"position",taste:"goût",habit:"habitude",contradiction:"contradiction",rule:"règle",other:"autre"},
   psyKindN:{value:"Valeurs",belief:"Croyances",want:"Désirs",need:"Besoins",fear:"Peurs",wound:"Blessures",stance:"Positions",taste:"Goûts",habit:"Habitudes",contradiction:"Contradictions",rule:"Règles",other:"Autres"},
   psyStab:{core:"noyau",settled:"établi",shifting:"mouvant",fragile:"fragile"},psyRisk:{inappropriate:"inapproprié",dangerous:"dangereux"},
-  heldTrue:"tenue pour vraie",towardUser:"envers l'utilisateur",userW:"l'utilisateur",strengthW:"force",stabilityW:"stabilité",riskW:"risque",sinceD:"depuis {d}",
+  heldTrue:"fausse mais tenue",towardUser:"envers l'utilisateur",userW:"l'utilisateur",strengthW:"force",stabilityW:"stabilité",riskW:"risque",sinceD:"depuis {d}",
   psyIncoming1:"1 nœud y renvoie",psyIncomingN:"{n} nœuds y renvoient",psyIncomingNote:"liens déclarés par d'autres nœuds vers celui-ci",
   psyHang1:"1 nœud de la psyché s'y accroche",psyHangN:"{n} nœuds de la psyché s'y accrochent",psyHangNote:"nœuds qui découlent de ce souvenir ou portent sur lui (à cause de / à propos de) — cliquer pour les ouvrir dans l'onglet Psyché",
   psyLine:"{n} nœuds, {k} de noyau",psySearch:"Chercher dans la psyché…",psyFree:"libres",psyFreeLong:"nœuds accrochés à aucun souvenir ni personne",psyNodeW1:"nœud",psyNodeWn:"nœuds",
@@ -231,12 +231,12 @@ Object.assign(T.fr,{psyche:"Psyché",psyNote:"Ce que le personnage porte en lui 
   psyLegendLines:"trait plein : à cause de · pointillés : à propos de · tirets verts : soutient · tirets rouges : en conflit avec · double anneau : noyau · anneau en tirets : fragile ou mouvant",
   psyCmdsRows:[["Ouvrir un nœud","<b>Cliquer une bulle</b> : sa fiche s'ouvre (<kbd>Échap</kbd> la ferme)."],["Ouvrir un souvenir","<b>Cliquer un pivot</b> (la grande bulle au-dessus d'une colonne) : la fiche du souvenir s'ouvre."],["Révéler","<b>Survoler</b> un nœud ou un pivot : ses liens et ses voisins s'allument ; <b>cliquer</b> les garde jusqu'au clic suivant ; <b>clic sur le fond</b> ou <kbd>Échap</kbd> efface."],["Types et traits","Une couleur par type (légende sous le graphe) ; l'anneau s'épaissit avec la force ; double anneau : nœud de noyau ; anneau en tirets : fragile ou mouvant. Trait plein : à cause de ; pointillés : à propos de ; tirets verts : soutient ; tirets rouges : en conflit avec."]],
   psyMarkRow:["Psyché","Une marque <b>ψ n</b> sur une bulle : n nœuds de la psyché s'accrochent à ce souvenir ; sa fiche les liste et les ouvre dans l'onglet Psyché."],
-  contentPsyDang:"psyché : nœuds dangereux",contentPsyInap:"psyché : nœuds inappropriés"});Object.assign(T.fr.linkWords,{supports:"soutient",conflicts:"en conflit avec"});Object.assign(T.fr.gloss,{node:"fichier du nœud",strength:"force",stability:"stabilité",risk:"risque",false_but_held:"tenue pour vraie (fausse)"});
+  contentPsyDang:"psyché : nœuds dangereux",contentPsyInap:"psyché : nœuds inappropriés"});Object.assign(T.fr.linkWords,{supports:"soutient",conflicts:"contredit"});Object.assign(T.fr.gloss,{node:"fichier du nœud",strength:"force",stability:"stabilité",risk:"risque",false_but_held:"tenue pour vraie (fausse)"});
 Object.assign(T.de,{psyche:"Psyche",psyNote:"Was die Figur in sich trägt — Werte, Überzeugungen, Wünsche, Ängste, Wunden … — als Knoten, die an ihren Erinnerungen hängen. Ein „geheimer“ Knoten wird nie zitiert; ein „zurückhaltender“ nur, wenn es darauf ankommt.",
   psyKind:{value:"Wert",belief:"Überzeugung",want:"Wunsch",need:"Bedürfnis",fear:"Angst",wound:"Wunde",stance:"Haltung",taste:"Vorliebe",habit:"Gewohnheit",contradiction:"Widerspruch",rule:"Regel",other:"andere"},
   psyKindN:{value:"Werte",belief:"Überzeugungen",want:"Wünsche",need:"Bedürfnisse",fear:"Ängste",wound:"Wunden",stance:"Haltungen",taste:"Vorlieben",habit:"Gewohnheiten",contradiction:"Widersprüche",rule:"Regeln",other:"Andere"},
   psyStab:{core:"Kern",settled:"gefestigt",shifting:"im Wandel",fragile:"fragil"},psyRisk:{inappropriate:"unangemessen",dangerous:"gefährlich"},
-  heldTrue:"für wahr gehalten",towardUser:"gegenüber dem Nutzer",userW:"der Nutzer",strengthW:"Stärke",stabilityW:"Stabilität",riskW:"Risiko",sinceD:"seit {d}",
+  heldTrue:"falsch, aber festgehalten",towardUser:"gegenüber dem Nutzer",userW:"der Nutzer",strengthW:"Stärke",stabilityW:"Stabilität",riskW:"Risiko",sinceD:"seit {d}",
   psyIncoming1:"1 Knoten verweist hierher",psyIncomingN:"{n} Knoten verweisen hierher",psyIncomingNote:"von anderen Knoten zu diesem erklärte Verknüpfungen",
   psyHang1:"1 Knoten der Psyche hängt daran",psyHangN:"{n} Knoten der Psyche hängen daran",psyHangNote:"Knoten der Psyche, die aus dieser Erinnerung folgen oder sich auf sie beziehen (weil / über) — anklicken öffnet sie im Tab Psyche",
   psyLine:"{n} Knoten, {k} im Kern",psySearch:"Psyche durchsuchen…",psyFree:"frei",psyFreeLong:"Knoten, die an keiner Erinnerung und keiner Person hängen",psyNodeW1:"Knoten",psyNodeWn:"Knoten",
@@ -245,12 +245,12 @@ Object.assign(T.de,{psyche:"Psyche",psyNote:"Was die Figur in sich trägt — We
   psyLegendLines:"durchgezogen: weil · gepunktet: über · grün gestrichelt: stützt · rot gestrichelt: im Konflikt mit · Doppelring: Kern · gestrichelter Ring: fragil oder im Wandel",
   psyCmdsRows:[["Knoten öffnen","<b>Eine Blase anklicken</b>: ihre Karte öffnet sich (<kbd>Escape</kbd> schließt sie)."],["Erinnerung öffnen","<b>Einen Drehpunkt anklicken</b> (die große Blase über einer Spalte): die Karte der Erinnerung öffnet sich."],["Zeigen","<b>Überfahren</b> eines Knotens oder Drehpunkts: seine Verknüpfungen und Nachbarn leuchten; ein <b>Klick</b> hält sie bis zum nächsten Klick; <b>Klick auf den Hintergrund</b> oder <kbd>Escape</kbd> löscht."],["Arten und Linien","Eine Farbe je Art (Legende unter dem Graphen); der Ring wird mit der Stärke dicker; Doppelring: Kernknoten; gestrichelter Ring: fragil oder im Wandel. Durchgezogen: weil; gepunktet: über; grün gestrichelt: stützt; rot gestrichelt: im Konflikt mit."]],
   psyMarkRow:["Psyche","Eine Marke <b>ψ n</b> auf einer Blase: n Knoten der Psyche hängen an dieser Erinnerung; ihre Karte listet sie und öffnet sie im Tab Psyche."],
-  contentPsyDang:"Psyche: gefährliche Knoten",contentPsyInap:"Psyche: unangemessene Knoten"});Object.assign(T.de.linkWords,{supports:"stützt",conflicts:"im Konflikt mit"});Object.assign(T.de.gloss,{node:"Knotendatei",strength:"Stärke",stability:"Stabilität",risk:"Risiko",false_but_held:"für wahr gehalten (falsch)"});
+  contentPsyDang:"Psyche: gefährliche Knoten",contentPsyInap:"Psyche: unangemessene Knoten"});Object.assign(T.de.linkWords,{supports:"stützt",conflicts:"widerspricht"});Object.assign(T.de.gloss,{node:"Knotendatei",strength:"Stärke",stability:"Stabilität",risk:"Risiko",false_but_held:"für wahr gehalten (falsch)"});
 Object.assign(T.es,{psyche:"Psique",psyNote:"Lo que el personaje lleva dentro — valores, creencias, deseos, miedos, heridas… — en nodos colgados de sus recuerdos. Un nodo «secreto» nunca se cita; uno «reservado», solo cuando importa.",
   psyKind:{value:"valor",belief:"creencia",want:"deseo",need:"necesidad",fear:"miedo",wound:"herida",stance:"postura",taste:"gusto",habit:"hábito",contradiction:"contradicción",rule:"regla",other:"otro"},
   psyKindN:{value:"Valores",belief:"Creencias",want:"Deseos",need:"Necesidades",fear:"Miedos",wound:"Heridas",stance:"Posturas",taste:"Gustos",habit:"Hábitos",contradiction:"Contradicciones",rule:"Reglas",other:"Otros"},
   psyStab:{core:"núcleo",settled:"asentado",shifting:"cambiante",fragile:"frágil"},psyRisk:{inappropriate:"inapropiado",dangerous:"peligroso"},
-  heldTrue:"tenida por cierta",towardUser:"hacia el usuario",userW:"el usuario",strengthW:"fuerza",stabilityW:"estabilidad",riskW:"riesgo",sinceD:"desde {d}",
+  heldTrue:"falsa pero sostenida",towardUser:"hacia el usuario",userW:"el usuario",strengthW:"fuerza",stabilityW:"estabilidad",riskW:"riesgo",sinceD:"desde {d}",
   psyIncoming1:"1 nodo enlaza aquí",psyIncomingN:"{n} nodos enlazan aquí",psyIncomingNote:"enlaces declarados por otros nodos hacia este",
   psyHang1:"1 nodo de la psique cuelga de él",psyHangN:"{n} nodos de la psique cuelgan de él",psyHangNote:"nodos de la psique que derivan de este recuerdo o tratan sobre él (porque / sobre) — clic para abrirlos en la pestaña Psique",
   psyLine:"{n} nodos, {k} de núcleo",psySearch:"Buscar en la psique…",psyFree:"libres",psyFreeLong:"nodos que no cuelgan de ningún recuerdo ni persona",psyNodeW1:"nodo",psyNodeWn:"nodos",
@@ -259,12 +259,12 @@ Object.assign(T.es,{psyche:"Psique",psyNote:"Lo que el personaje lleva dentro �
   psyLegendLines:"continuo: porque · punteado: sobre · guiones verdes: apoya · guiones rojos: en conflicto con · doble anillo: núcleo · anillo a guiones: frágil o cambiante",
   psyCmdsRows:[["Abrir un nodo","<b>Clic en una burbuja</b>: se abre su ficha (<kbd>Escape</kbd> la cierra)."],["Abrir un recuerdo","<b>Clic en un eje</b> (la burbuja grande sobre una columna): se abre la ficha del recuerdo."],["Revelar","<b>Pasar el ratón</b> por un nodo o un eje: se iluminan sus enlaces y vecinos; un <b>clic</b> los mantiene hasta el siguiente clic; <b>clic en el fondo</b> o <kbd>Escape</kbd> borra."],["Tipos y líneas","Un color por tipo (leyenda bajo el grafo); el anillo se engrosa con la fuerza; doble anillo: nodo de núcleo; anillo a guiones: frágil o cambiante. Línea continua: porque; punteada: sobre; guiones verdes: apoya; guiones rojos: en conflicto con."]],
   psyMarkRow:["Psique","Una marca <b>ψ n</b> en una burbuja: n nodos de la psique cuelgan de este recuerdo; su ficha los lista y los abre en la pestaña Psique."],
-  contentPsyDang:"psique: nodos peligrosos",contentPsyInap:"psique: nodos inapropiados"});Object.assign(T.es.linkWords,{supports:"apoya",conflicts:"en conflicto con"});Object.assign(T.es.gloss,{node:"archivo del nodo",strength:"fuerza",stability:"estabilidad",risk:"riesgo",false_but_held:"tenida por cierta (falsa)"});
+  contentPsyDang:"psique: nodos peligrosos",contentPsyInap:"psique: nodos inapropiados"});Object.assign(T.es.linkWords,{supports:"apoya",conflicts:"contradice"});Object.assign(T.es.gloss,{node:"archivo del nodo",strength:"fuerza",stability:"estabilidad",risk:"riesgo",false_but_held:"tenida por cierta (falsa)"});
 Object.assign(T.zh,{psyche:"心理",psyNote:"角色内心所持有的——价值观、信念、欲望、恐惧、创伤……——以节点的形式挂在它的记忆上。「秘密」节点从不引用；「保留」节点只在要紧时引用。",
   psyKind:{value:"价值观",belief:"信念",want:"欲望",need:"需要",fear:"恐惧",wound:"创伤",stance:"立场",taste:"喜好",habit:"习惯",contradiction:"矛盾",rule:"规则",other:"其他"},
   psyKindN:{value:"价值观",belief:"信念",want:"欲望",need:"需要",fear:"恐惧",wound:"创伤",stance:"立场",taste:"喜好",habit:"习惯",contradiction:"矛盾",rule:"规则",other:"其他"},
   psyStab:{core:"核心",settled:"稳定",shifting:"变动",fragile:"脆弱"},psyRisk:{inappropriate:"不适宜",dangerous:"危险"},
-  heldTrue:"信以为真",towardUser:"对用户",userW:"用户",strengthW:"强度",stabilityW:"稳定性",riskW:"风险",sinceD:"自 {d}",
+  heldTrue:"虚假但坚持",towardUser:"对用户",userW:"用户",strengthW:"强度",stabilityW:"稳定性",riskW:"风险",sinceD:"自 {d}",
   psyIncoming1:"1 个节点指向此处",psyIncomingN:"{n} 个节点指向此处",psyIncomingNote:"其他节点声明的指向此节点的链接",
   psyHang1:"1 个心理节点挂在此记忆上",psyHangN:"{n} 个心理节点挂在此记忆上",psyHangNote:"由此记忆而来或关于此记忆的心理节点（因为 / 关于）——点击在「心理」标签页中打开",
   psyLine:"{n} 个节点，{k} 个核心",psySearch:"搜索心理…",psyFree:"自由",psyFreeLong:"不挂在任何记忆或人物上的节点",psyNodeW1:"个节点",psyNodeWn:"个节点",
@@ -273,12 +273,12 @@ Object.assign(T.zh,{psyche:"心理",psyNote:"角色内心所持有的——价�
   psyLegendLines:"实线：因为 · 点线：关于 · 绿色虚线：支持 · 红色虚线：冲突 · 双环：核心 · 虚线环：脆弱或变动",
   psyCmdsRows:[["打开节点","<b>点击气泡</b>：打开其卡片（<kbd>Escape</kbd> 关闭）。"],["打开记忆","<b>点击枢纽</b>（列上方的大气泡）：打开该记忆的卡片。"],["显示","<b>悬停</b>节点或枢纽：其链接和相邻节点亮起；<b>点击</b>保持到下一次点击；<b>点击背景</b>或 <kbd>Escape</kbd> 清除。"],["类型与线条","每种类型一种颜色（图谱下方的图例）；环随强度加粗；双环：核心节点；虚线环：脆弱或变动。实线：因为；点线：关于；绿色虚线：支持；红色虚线：冲突。"]],
   psyMarkRow:["心理","气泡上的 <b>ψ n</b> 标记：有 n 个心理节点挂在此记忆上；其卡片会列出它们并在「心理」标签页中打开。"],
-  contentPsyDang:"心理：危险节点",contentPsyInap:"心理：不适宜节点"});Object.assign(T.zh.linkWords,{supports:"支持",conflicts:"冲突"});Object.assign(T.zh.gloss,{node:"节点文件",strength:"强度",stability:"稳定性",risk:"风险",false_but_held:"信以为真（实为假）"});
+  contentPsyDang:"心理：危险节点",contentPsyInap:"心理：不适宜节点"});Object.assign(T.zh.linkWords,{supports:"支持",conflicts:"矛盾于"});Object.assign(T.zh.gloss,{node:"节点文件",strength:"强度",stability:"稳定性",risk:"风险",false_but_held:"信以为真（实为假）"});
 Object.assign(T.ja,{psyche:"心理",psyNote:"キャラクターが内に抱くもの——価値観、信念、望み、恐れ、傷……——を、記憶に結びついたノードとして。「秘密」のノードは決して引用されず、「控えめ」なノードは必要なときだけ引用されます。",
   psyKind:{value:"価値観",belief:"信念",want:"望み",need:"必要",fear:"恐れ",wound:"傷",stance:"姿勢",taste:"好み",habit:"習慣",contradiction:"矛盾",rule:"規則",other:"その他"},
   psyKindN:{value:"価値観",belief:"信念",want:"望み",need:"必要",fear:"恐れ",wound:"傷",stance:"姿勢",taste:"好み",habit:"習慣",contradiction:"矛盾",rule:"規則",other:"その他"},
   psyStab:{core:"核",settled:"安定",shifting:"変動",fragile:"脆弱"},psyRisk:{inappropriate:"不適切",dangerous:"危険"},
-  heldTrue:"真実と信じている",towardUser:"ユーザーに対して",userW:"ユーザー",strengthW:"強さ",stabilityW:"安定性",riskW:"リスク",sinceD:"{d} 以来",
+  heldTrue:"誤りだが抱いている",towardUser:"ユーザーに対して",userW:"ユーザー",strengthW:"強さ",stabilityW:"安定性",riskW:"リスク",sinceD:"{d} 以来",
   psyIncoming1:"1 件のノードがここを参照",psyIncomingN:"{n} 件のノードがここを参照",psyIncomingNote:"他のノードがこのノードへ宣言したリンク",
   psyHang1:"1 件の心理ノードがこの記憶に結びつく",psyHangN:"{n} 件の心理ノードがこの記憶に結びつく",psyHangNote:"この記憶に由来する、またはこの記憶について述べる心理ノード（のため / について）——クリックで「心理」タブに開く",
   psyLine:"{n} 件のノード、うち核 {k} 件",psySearch:"心理を検索…",psyFree:"自由",psyFreeLong:"どの記憶にも人物にも結びつかないノード",psyNodeW1:"件のノード",psyNodeWn:"件のノード",
@@ -287,7 +287,7 @@ Object.assign(T.ja,{psyche:"心理",psyNote:"キャラクターが内に抱く�
   psyLegendLines:"実線：のため · 点線：について · 緑の破線：支持 · 赤の破線：対立 · 二重の輪：核 · 破線の輪：脆弱または変動",
   psyCmdsRows:[["ノードを開く","<b>バブルをクリック</b>：カードが開きます（<kbd>Escape</kbd> で閉じる）。"],["記憶を開く","<b>中心をクリック</b>（列の上の大きなバブル）：記憶のカードが開きます。"],["表示","ノードや中心を<b>ホバー</b>：リンクと隣接ノードが光ります。<b>クリック</b>で次のクリックまで固定。<b>背景をクリック</b>または <kbd>Escape</kbd> で解除。"],["種類と線","種類ごとに色（グラフ下の凡例）。輪は強さに応じて太く、二重の輪は核ノード、破線の輪は脆弱または変動。実線：のため、点線：について、緑の破線：支持、赤の破線：対立。"]],
   psyMarkRow:["心理","バブル上の <b>ψ n</b> マーク：n 件の心理ノードがこの記憶に結びついています。カードに一覧され、「心理」タブで開けます。"],
-  contentPsyDang:"心理：危険なノード",contentPsyInap:"心理：不適切なノード"});Object.assign(T.ja.linkWords,{supports:"支持",conflicts:"対立"});Object.assign(T.ja.gloss,{node:"ノードファイル",strength:"強さ",stability:"安定性",risk:"リスク",false_but_held:"真実と信じている（実は偽）"});
+  contentPsyDang:"心理：危険なノード",contentPsyInap:"心理：不適切なノード"});Object.assign(T.ja.linkWords,{supports:"支持",conflicts:"矛盾する"});Object.assign(T.ja.gloss,{node:"ノードファイル",strength:"強さ",stability:"安定性",risk:"リスク",false_but_held:"真実と信じている（実は偽）"});
 function applyLang(){document.documentElement.lang=LANG;document.querySelectorAll("[data-i]").forEach(el=>{const v=LANG==="en"?null:(T[LANG]||{})[el.dataset.i];if(!el.dataset.en)el.dataset.en=el.innerHTML;el.innerHTML=v??el.dataset.en});const sl=document.getElementById("selLang");if(sl){sl.innerHTML=Object.keys(T).filter(k=>Object.keys(T[k]).length).map(k=>`<option value="${k}"${k===LANG?" selected":""}>${LANG_NAMES[k]||k}</option>`).join("")}window.paintTheme&&window.paintTheme();if(M)render()}
 (function(){const root=document.documentElement;let saved=null;try{saved=localStorage.getItem("cof-theme")}catch(e){}if(EMBED)saved=QS.get("theme");if(saved==="dark"||saved==="light")root.dataset.theme=saved;
   const isDark=()=>root.dataset.theme==="dark"||(!root.dataset.theme&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches);
