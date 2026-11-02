@@ -6,15 +6,16 @@ Français : [builder-guide.fr.md](builder-guide.fr.md)
 
 ## 1. The advanced version in short
 
-Seven steps, in the order of the left column:
+Eight steps, in the order of the left column:
 
 - **1 · Character(s)** — who it is: name, fictional or real, morphology.
 - **2 · Elements** — everything that describes it: texts, photos, voice, LoRA, 3D, poses, motion, files.
 - **3 · Memories** — its past: moments and periods, with what it felt, what it keeps to itself, and a few traces (a photo, a sound).
-- **4 · Presets** — ready-to-use combinations: a look, an age, a style, a language.
-- **5 · Rights** — what others may do with it.
-- **6 · Checks** — what is missing or does not fit.
-- **7 · Build** — the final .cof file.
+- **4 · Psyche** — its inner life as a graph: values, beliefs, wants, needs, fears, wounds, stances, tastes, habits, contradictions, rules — tied to the memories.
+- **5 · Presets** — ready-to-use combinations: a look, an age, a style, a language.
+- **6 · Rights** — what others may do with it.
+- **7 · Checks** — what is missing or does not fit.
+- **8 · Build** — the final .cof file.
 
 Only the name, fictional or real, the morphology and the rights are required. The easy version handles only a simple character (one card, photos, one voice): a richer file stays in the advanced version.
 
@@ -46,7 +47,17 @@ The character's past, node by node. A **moment** (green ●, code `ev`) is a poi
 - **Explicit** (nudity, intimate): only if the memory is lived at 18 or more, someone is declared shown, and every person shown is a known adult. Otherwise the options are greyed out, with the reason.
 - **Presets** pick their memories like a library: a ticked period brings its moments. At build, two purges: all audiences (explicit media leave, texts stay) and without personal memories.
 
-## 5. Presets
+## 5. Psyche
+
+The character's inner life, as a graph (COF 1.2). Eleven kinds of nodes: wound, value, belief, want, need, fear, stance, taste, habit, contradiction, rule. Each node is one or two sentences per language.
+
+- **Strength** (0–100, set node by node), **stability** (core, settled, shifting, fragile: what a host may change at use time), **since** (the age it appeared), origin, visibility, disclosure.
+- **Links**: “because” and “about” to a memory, a node or a character; “supports” and “conflicts” between nodes. A contradiction carries exactly two “conflicts”; a wound almost always comes from a memory.
+- **Declared risk**: none, inappropriate, dangerous. A host that gives the character tools never loads a dangerous node; fiction may load everything. At build, the “no risk” purge drops them.
+- A belief can be **false but held** (the lie the character tells itself); a stance has a **subject** (a character, the user, a memory, a label).
+- **Presets** pick their nodes like a library; a node that changes with age is a second node, derived from the first. “Graph view” shows the constellation in the explorer.
+
+## 6. Presets
 
 A preset = one character + a combination of variants. For example: "Clara 29, photo", "Clara manga", "Clara 65".
 
@@ -55,7 +66,7 @@ A preset = one character + a combination of variants. For example: "Clara 29, ph
 - **Offered** = available in this preset, never applied by default (a spare outfit, for example).
 - The **default preset** opens first; its front face becomes the file's thumbnail.
 
-## 6. Several characters
+## 7. Several characters
 
 A file can group several characters: a duo, a team. Each variant and each preset belongs to one character, chosen in the "Character" menu at the top of the screen.
 
@@ -63,14 +74,14 @@ A file can group several characters: a duo, a team. Each variant and each preset
 - A neutral place, pose or file can serve several.
 - To reuse a preset from another file: Presets step, "Import a preset (.cof)".
 
-## 7. Rights and sensitive content
+## 8. Rights and sensitive content
 
 - Rights are **closed by default**: you open what you allow (commercial use, redistribution, voice cloning, training…), per preset if needed.
 - **Real person**: consent is recommended, and required for nudity or intimate content.
 - **Under 18**: never nudity or intimate content in the preset.
 - Intimate content goes only in its "intimate" variant, kept apart and ignored by readers by default.
 
-## 8. Checks and build
+## 9. Checks and build
 
 - **Checks**: completeness (what each preset lacks) and coherence (what does not fit). Warnings never block; only errors prevent the build.
 - **AI check** (optional): you choose the AI (address, key, model). It checks that the preset describes one consistent character and that each variant shows one thing. The images are sent to that AI; the key is not saved.

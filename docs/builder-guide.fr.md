@@ -6,15 +6,16 @@ English: [builder-guide.md](builder-guide.md)
 
 ## 1. La version avancée en bref
 
-Sept étapes, dans l'ordre de la colonne de gauche :
+Huit étapes, dans l'ordre de la colonne de gauche :
 
 - **1 · Personnage(s)** — qui c'est : nom, fictif ou réel, morphologie.
 - **2 · Éléments** — tout ce qui le décrit : textes, photos, voix, LoRA, 3D, poses, mouvements, fichiers.
 - **3 · Souvenirs** — son passé : des moments et des périodes, avec ce qu'il a ressenti, ce qu'il tait, et quelques traces (une photo, un son).
-- **4 · Presets** — les combinaisons prêtes à l'emploi : un look, un âge, un style, une langue.
-- **5 · Droits** — ce que les autres ont le droit d'en faire.
-- **6 · Contrôles** — ce qui manque ou ne colle pas.
-- **7 · Build** — le fichier .cof final.
+- **4 · Psyché** — sa vie intérieure en graphe : valeurs, croyances, désirs, besoins, peurs, blessures, positions, goûts, habitudes, contradictions, règles — reliés aux souvenirs.
+- **5 · Presets** — les combinaisons prêtes à l'emploi : un look, un âge, un style, une langue.
+- **6 · Droits** — ce que les autres ont le droit d'en faire.
+- **7 · Contrôles** — ce qui manque ou ne colle pas.
+- **8 · Build** — le fichier .cof final.
 
 Seuls le nom, fictif ou réel, la morphologie et les droits sont obligatoires. La version facile ne gère qu'un personnage simple (une fiche, des photos, une voix) : un fichier plus riche reste en version avancée.
 
@@ -46,7 +47,17 @@ Le passé du personnage, nœud par nœud. Un **moment** (● vert, code `ev`) es
 - **Explicite** (nudité, intime) : seulement si le souvenir est vécu à 18 ans ou plus, si quelqu'un est déclaré montré, et si toute personne montrée est un adulte d'âge connu. Sinon les cases sont grisées, avec la raison.
 - Les **presets** choisissent leurs souvenirs comme une bibliothèque : une période cochée emporte ses moments. Au build, deux purges : tout public (les médias explicites partent, les textes restent) et sans souvenirs personnels.
 
-## 5. Presets
+## 5. Psyché
+
+La vie intérieure du personnage, en graphe (COF 1.2). Onze sortes de nœuds : blessure, valeur, croyance, désir, besoin, peur, position, goût, habitude, contradiction, règle. Chaque nœud tient en une ou deux phrases par langue.
+
+- **Force** (0–100, à régler nœud par nœud), **stabilité** (noyau, établi, mouvant, fragile : ce qu'un hôte peut changer à l'usage), **depuis** (l'âge d'apparition), origine, visibilité, confidence.
+- **Liens** : « à cause de » et « à propos de » vers un souvenir, un nœud ou un personnage ; « soutient » et « contredit » entre nœuds. Une contradiction porte exactement deux « contredit » ; une blessure vient presque toujours d'un souvenir.
+- **Risque déclaré** : aucun, inapproprié, dangereux. Un hôte qui donne des outils au personnage ne charge jamais un nœud dangereux ; la fiction peut tout charger. Au build, la purge « sans risque » les retire.
+- Une croyance peut être **fausse mais tenue** (le mensonge que le personnage se raconte) ; une position a un **sujet** (un personnage, l'utilisateur, un souvenir, un libellé).
+- Les **presets** choisissent leurs nœuds comme une bibliothèque ; un nœud qui change avec l'âge est un second nœud, dérivé du premier. « Visualisation graphe » montre la constellation dans l'explorateur.
+
+## 6. Presets
 
 Un preset = un personnage + une combinaison de déclinaisons. Par exemple : « Clara 29 ans, photo », « Clara manga », « Clara 65 ans ».
 
@@ -55,7 +66,7 @@ Un preset = un personnage + une combinaison de déclinaisons. Par exemple : « C
 - **Proposé** = disponible dans ce preset, jamais appliqué d'office (une tenue de rechange, par exemple).
 - Le **preset par défaut** s'ouvre en premier ; son visage de face devient la vignette du fichier.
 
-## 6. Plusieurs personnages
+## 7. Plusieurs personnages
 
 Un fichier peut regrouper plusieurs personnages : un duo, une équipe. Chaque déclinaison et chaque preset appartient à un seul personnage, choisi dans le menu « Personnage » en haut de l'écran.
 
@@ -63,14 +74,14 @@ Un fichier peut regrouper plusieurs personnages : un duo, une équipe. Chaque d�
 - Un lieu, une pose ou un fichier neutre peut servir à plusieurs.
 - Pour reprendre un preset d'un autre fichier : étape Presets, « Importer un preset (.cof) ».
 
-## 7. Droits et contenus sensibles
+## 8. Droits et contenus sensibles
 
 - Les droits sont **fermés par défaut** : vous ouvrez ce que vous autorisez (usage commercial, redistribution, clonage de voix, entraînement…), au besoin preset par preset.
 - **Personne réelle** : le consentement est recommandé, et obligatoire pour la nudité ou le contenu intime.
 - **Moins de 18 ans** : jamais de nudité ni de contenu intime dans le preset.
 - Le contenu intime va uniquement dans sa déclinaison « intime », isolée et ignorée par défaut par les lecteurs.
 
-## 8. Contrôles et build
+## 9. Contrôles et build
 
 - **Contrôles** : la complétude (ce qui manque à chaque preset) et la cohérence (ce qui ne colle pas). Les avertissements ne bloquent jamais ; seules les erreurs empêchent le build.
 - **Contrôle IA** (facultatif) : vous choisissez l'IA (adresse, clé, modèle). Elle vérifie que le preset décrit un seul personnage cohérent et que chaque déclinaison montre une seule chose. Les images partent vers cette IA ; la clé n'est pas enregistrée.
