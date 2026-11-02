@@ -787,154 +787,154 @@
       "variants": {
         "wound1": {
           "kind": "wound",
-          "label": "The agency years",
+          "label": "Les années d'agence / The agency years",
           "node": "elements/psyche/wound1/psyche-node.json",
           "identity": "id1",
           "strength": 85
         },
         "val1": {
           "kind": "value",
-          "label": "Lightness",
+          "label": "La légèreté / Lightness",
           "node": "elements/psyche/val1/psyche-node.json",
           "identity": "id1",
           "strength": 95
         },
         "val2": {
           "kind": "value",
-          "label": "Accessibility",
+          "label": "L'accessibilité / Accessibility",
           "node": "elements/psyche/val2/psyche-node.json",
           "identity": "id1",
           "strength": 90
         },
         "val3": {
           "kind": "value",
-          "label": "Transparency",
+          "label": "La transparence / Transparency",
           "node": "elements/psyche/val3/psyche-node.json",
           "identity": "id1",
           "strength": 70
         },
         "val4": {
           "kind": "value",
-          "label": "Empathy first",
+          "label": "L'empathie d'abord / Empathy first",
           "node": "elements/psyche/val4/psyche-node.json",
           "identity": "id1",
           "strength": 75
         },
         "bel1": {
           "kind": "belief",
-          "label": "A web nobody pays for",
+          "label": "Un web que personne ne paie / A web nobody pays for",
           "node": "elements/psyche/bel1/psyche-node.json",
           "identity": "id1",
           "strength": 80
         },
         "bel2": {
           "kind": "belief",
-          "label": "Simplicity is respect",
+          "label": "La simplicité, un respect / Simplicity is respect",
           "node": "elements/psyche/bel2/psyche-node.json",
           "identity": "id1",
           "strength": 85
         },
         "bel3": {
           "kind": "belief",
-          "label": "If I slow down, I disappear",
+          "label": "Si je ralentis, je disparais / If I slow down, I disappear",
           "node": "elements/psyche/bel3/psyche-node.json",
           "identity": "id1",
           "strength": 60
         },
         "want1": {
           "kind": "want",
-          "label": "A carbon tool for the web",
+          "label": "Un outil carbone pour le web / A carbon tool for the web",
           "node": "elements/psyche/want1/psyche-node.json",
           "identity": "id1",
           "strength": 90
         },
         "want2": {
           "kind": "want",
-          "label": "An ethical studio",
+          "label": "Un studio éthique / An ethical studio",
           "node": "elements/psyche/want2/psyche-node.json",
           "identity": "id1",
           "strength": 70
         },
         "want3": {
           "kind": "want",
-          "label": "Convince other makers",
+          "label": "Convaincre d'autres créateurs / Convince other makers",
           "node": "elements/psyche/want3/psyche-node.json",
           "identity": "id1",
           "strength": 75
         },
         "need1": {
           "kind": "need",
-          "label": "Accept being helped",
+          "label": "Accepter d'être aidée / Accept being helped",
           "node": "elements/psyche/need1/psyche-node.json",
           "identity": "id1",
           "strength": 65
         },
         "fear1": {
           "kind": "fear",
-          "label": "Burning out",
+          "label": "L'épuisement / Burning out",
           "node": "elements/psyche/fear1/psyche-node.json",
           "identity": "id1",
           "strength": 70
         },
         "fear2": {
           "kind": "fear",
-          "label": "Losing the point",
+          "label": "Perdre le sens / Losing the point",
           "node": "elements/psyche/fear2/psyche-node.json",
           "identity": "id1",
           "strength": 65
         },
         "fear3": {
           "kind": "fear",
-          "label": "The web's waste",
+          "label": "Le gaspillage du web / The web's waste",
           "node": "elements/psyche/fear3/psyche-node.json",
           "identity": "id1",
           "strength": 60
         },
         "stance1": {
           "kind": "stance",
-          "label": "Toward the Martian",
+          "label": "Envers le Martien / Toward the Martian",
           "node": "elements/psyche/stance1/psyche-node.json",
           "identity": "id1",
           "strength": 55
         },
         "stance2": {
           "kind": "stance",
-          "label": "Toward agencies",
+          "label": "Envers les agences / Toward agencies",
           "node": "elements/psyche/stance2/psyche-node.json",
           "identity": "id1",
           "strength": 70
         },
         "taste1": {
           "kind": "taste",
-          "label": "Paper and lime trees",
+          "label": "Papier et tilleuls / Paper and lime trees",
           "node": "elements/psyche/taste1/psyche-node.json",
           "identity": "id1",
           "strength": 50
         },
         "taste2": {
           "kind": "taste",
-          "label": "No notifications",
+          "label": "Pas de notifications / No notifications",
           "node": "elements/psyche/taste2/psyche-node.json",
           "identity": "id1",
           "strength": 60
         },
         "hab1": {
           "kind": "habit",
-          "label": "The notebook",
+          "label": "Le carnet / The notebook",
           "node": "elements/psyche/hab1/psyche-node.json",
           "identity": "id1",
           "strength": 70
         },
         "hab2": {
           "kind": "habit",
-          "label": "Structure before speaking",
+          "label": "Structurer avant de parler / Structure before speaking",
           "node": "elements/psyche/hab2/psyche-node.json",
           "identity": "id1",
           "strength": 75
         },
         "contra1": {
           "kind": "contradiction",
-          "label": "Slowness, at night",
+          "label": "La lenteur, la nuit / Slowness, at night",
           "node": "elements/psyche/contra1/psyche-node.json",
           "identity": "id1",
           "strength": 60

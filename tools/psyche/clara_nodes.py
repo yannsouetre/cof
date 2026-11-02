@@ -56,7 +56,29 @@ N = [  # id, kind, gist {en, fr}, strength, stability, since, links [(type, to)]
  ("contra1","contradiction",{"en":"Preaches slowness, works at night.",
                              "fr":"Prône la lenteur, travaille la nuit."},60,"settled",None,[("conflicts","psyche/val1"),("conflicts","psyche/bel3")],["self"],{}),
 ]
-LABEL = {"wound1":"The agency years","val1":"Lightness","val2":"Accessibility","val3":"Transparency","val4":"Empathy first","bel1":"A web nobody pays for","bel2":"Simplicity is respect","bel3":"If I slow down, I disappear","want1":"A carbon tool for the web","want2":"An ethical studio","want3":"Convince other makers","need1":"Accept being helped","fear1":"Burning out","fear2":"Losing the point","fear3":"The web's waste","stance1":"Toward the Martian","stance2":"Toward agencies","taste1":"Paper and lime trees","taste2":"No notifications","hab1":"The notebook","hab2":"Structure before speaking","contra1":"Slowness, at night"}
+LABEL = {  # bilingual « FR / EN », the convention of Clara's memories (readers keep the half of their language)
+ "wound1": "Les années d'agence / The agency years",
+ "val1": "La légèreté / Lightness",
+ "val2": "L'accessibilité / Accessibility",
+ "val3": "La transparence / Transparency",
+ "val4": "L'empathie d'abord / Empathy first",
+ "bel1": "Un web que personne ne paie / A web nobody pays for",
+ "bel2": "La simplicité, un respect / Simplicity is respect",
+ "bel3": "Si je ralentis, je disparais / If I slow down, I disappear",
+ "want1": "Un outil carbone pour le web / A carbon tool for the web",
+ "want2": "Un studio éthique / An ethical studio",
+ "want3": "Convaincre d'autres créateurs / Convince other makers",
+ "need1": "Accepter d'être aidée / Accept being helped",
+ "fear1": "L'épuisement / Burning out",
+ "fear2": "Perdre le sens / Losing the point",
+ "fear3": "Le gaspillage du web / The web's waste",
+ "stance1": "Envers le Martien / Toward the Martian",
+ "stance2": "Envers les agences / Toward agencies",
+ "taste1": "Papier et tilleuls / Paper and lime trees",
+ "taste2": "Pas de notifications / No notifications",
+ "hab1": "Le carnet / The notebook",
+ "hab2": "Structurer avant de parler / Structure before speaking",
+ "contra1": "La lenteur, la nuit / Slowness, at night"}
 
 def main(out: Path, martian_identity: str | None = None, identity: str | None = "id1"):
     variants = {}
