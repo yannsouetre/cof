@@ -4,7 +4,7 @@ Few authors will build a psyche of thirty nodes by hand. The builder and cof-cli
 
 Two directions:
 1. **Decomposition** (personality → nodes): a bundle in, a list of candidate nodes out (§ 1–3).
-2. **Rendering** (nodes → text): the « Who she is » section of `SOUL.md`, deterministic, no model (§ 5).
+2. **Rendering** (nodes → text): the « Who she is » section of `SOUL.md`, deterministic, no model (§ 6).
 
 ## 1. Input: the bundle
 

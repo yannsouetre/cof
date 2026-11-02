@@ -4,7 +4,7 @@ Peu d'auteurs construiront une psyché de trente nœuds à la main. Le builder e
 
 Deux sens :
 1. **Décomposition** (personnalité → nœuds) : un dossier en entrée, une liste de nœuds candidats en sortie (§ 1–3).
-2. **Rendu** (nœuds → texte) : la section « Qui elle est » de `SOUL.md`, déterministe, sans modèle (§ 5).
+2. **Rendu** (nœuds → texte) : la section « Qui elle est » de `SOUL.md`, déterministe, sans modèle (§ 6).
 
 ## 1. Entrée : le dossier (bundle)
 
