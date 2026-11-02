@@ -5,14 +5,15 @@ G = {}
 
 G["fr"] = [
 ("La version avancée en bref", [
- ("p", "Sept étapes, dans l'ordre de la colonne de gauche :"),
+ ("p", "Huit étapes, dans l'ordre de la colonne de gauche :"),
  ("ul", ["<b>1 · Personnage(s)</b> — qui c'est : nom, fictif ou réel, morphologie.",
          "<b>2 · Éléments</b> — tout ce qui le décrit : textes, photos, voix, LoRA, 3D, poses, mouvements, fichiers.",
          "<b>3 · Souvenirs</b> — son passé : des moments et des périodes, avec ce qu'il a ressenti, ce qu'il tait, et quelques traces (une photo, un son).",
-         "<b>4 · Presets</b> — les combinaisons prêtes à l'emploi : un look, un âge, un style, une langue.",
-         "<b>5 · Droits</b> — ce que les autres ont le droit d'en faire.",
-         "<b>6 · Contrôles</b> — ce qui manque ou ne colle pas.",
-         "<b>7 · Build</b> — le fichier .cof final."]),
+         "<b>4 · Psyché</b> — sa vie intérieure en graphe : valeurs, croyances, désirs, besoins, peurs, blessures, positions, goûts, habitudes, contradictions, règles — reliés aux souvenirs.",
+         "<b>5 · Presets</b> — les combinaisons prêtes à l'emploi : un look, un âge, un style, une langue.",
+         "<b>6 · Droits</b> — ce que les autres ont le droit d'en faire.",
+         "<b>7 · Contrôles</b> — ce qui manque ou ne colle pas.",
+         "<b>8 · Build</b> — le fichier .cof final."]),
  ("p", "Seuls le nom, fictif ou réel, la morphologie et les droits sont obligatoires. La version facile ne gère qu'un personnage simple (une fiche, des photos, une voix) : un fichier plus riche reste en version avancée."),
 ]),
 ("Catégories et déclinaisons", [
@@ -36,6 +37,14 @@ G["fr"] = [
          "<b>Médias</b> : une à trois traces — image, son, courte vidéo, quelques lignes — ou les mêmes médias qu'un autre souvenir (deux personnages, une soirée, une photo).",
          "<b>Explicite</b> (nudité, intime) : seulement si le souvenir est vécu à 18 ans ou plus, si quelqu'un est déclaré montré, et si toute personne montrée est un adulte d'âge connu. Sinon les cases sont grisées, avec la raison.",
          "Les <b>presets</b> choisissent leurs souvenirs comme une bibliothèque : une période cochée emporte ses moments. Au build, deux purges : tout public (les médias explicites partent, les textes restent) et sans souvenirs personnels."]),
+]),
+("Psyché", [
+ ("p", "La vie intérieure du personnage, en graphe (COF 1.2). Onze sortes de nœuds : blessure, valeur, croyance, désir, besoin, peur, position, goût, habitude, contradiction, règle. Chaque nœud tient en une ou deux phrases par langue."),
+ ("ul", ["<b>Force</b> (0–100, à régler nœud par nœud), <b>stabilité</b> (noyau, établi, mouvant, fragile : ce qu'un hôte peut changer à l'usage), <b>depuis</b> (l'âge d'apparition), origine, visibilité, confidence.",
+         "<b>Liens</b> : « à cause de » et « à propos de » vers un souvenir, un nœud ou un personnage ; « soutient » et « contredit » entre nœuds. Une contradiction porte exactement deux « contredit » ; une blessure vient presque toujours d'un souvenir.",
+         "<b>Risque déclaré</b> : aucun, inapproprié, dangereux. Un hôte qui donne des outils au personnage ne charge jamais un nœud dangereux ; la fiction peut tout charger. Au build, la purge « sans risque » les retire.",
+         "Une croyance peut être <b>fausse mais tenue</b> (le mensonge que le personnage se raconte) ; une position a un <b>sujet</b> (un personnage, l'utilisateur, un souvenir, un libellé).",
+         "Les <b>presets</b> choisissent leurs nœuds comme une bibliothèque ; un nœud qui change avec l'âge est un second nœud, dérivé du premier. « Visualisation graphe » montre la constellation dans l'explorateur."]),
 ]),
 ("Presets", [
  ("p", "Un preset = un personnage + une combinaison de déclinaisons. Par exemple : « Clara 29 ans, photo », « Clara manga », « Clara 65 ans »."),
@@ -65,14 +74,15 @@ G["fr"] = [
 
 G["en"] = [
 ("The advanced version in short", [
- ("p", "Seven steps, in the order of the left column:"),
+ ("p", "Eight steps, in the order of the left column:"),
  ("ul", ["<b>1 · Character(s)</b> — who it is: name, fictional or real, morphology.",
          "<b>2 · Elements</b> — everything that describes it: texts, photos, voice, LoRA, 3D, poses, motion, files.",
          "<b>3 · Memories</b> — its past: moments and periods, with what it felt, what it keeps to itself, and a few traces (a photo, a sound).",
-         "<b>4 · Presets</b> — ready-to-use combinations: a look, an age, a style, a language.",
-         "<b>5 · Rights</b> — what others may do with it.",
-         "<b>6 · Checks</b> — what is missing or does not fit.",
-         "<b>7 · Build</b> — the final .cof file."]),
+         "<b>4 · Psyche</b> — its inner life as a graph: values, beliefs, wants, needs, fears, wounds, stances, tastes, habits, contradictions, rules — tied to the memories.",
+         "<b>5 · Presets</b> — ready-to-use combinations: a look, an age, a style, a language.",
+         "<b>6 · Rights</b> — what others may do with it.",
+         "<b>7 · Checks</b> — what is missing or does not fit.",
+         "<b>8 · Build</b> — the final .cof file."]),
  ("p", "Only the name, fictional or real, the morphology and the rights are required. The easy version handles only a simple character (one card, photos, one voice): a richer file stays in the advanced version."),
 ]),
 ("Categories and variants", [
@@ -96,6 +106,14 @@ G["en"] = [
          "<b>Media</b>: one to three traces — image, sound, a short video, a few lines — or the same media as another memory (two characters, one evening, one photo).",
          "<b>Explicit</b> (nudity, intimate): only if the memory is lived at 18 or more, someone is declared shown, and every person shown is a known adult. Otherwise the options are greyed out, with the reason.",
          "<b>Presets</b> pick their memories like a library: a ticked period brings its moments. At build, two purges: all audiences (explicit media leave, texts stay) and without personal memories."]),
+]),
+("Psyche", [
+ ("p", "The character's inner life, as a graph (COF 1.2). Eleven kinds of nodes: wound, value, belief, want, need, fear, stance, taste, habit, contradiction, rule. Each node is one or two sentences per language."),
+ ("ul", ["<b>Strength</b> (0–100, set node by node), <b>stability</b> (core, settled, shifting, fragile: what a host may change at use time), <b>since</b> (the age it appeared), origin, visibility, disclosure.",
+         "<b>Links</b>: “because” and “about” to a memory, a node or a character; “supports” and “conflicts” between nodes. A contradiction carries exactly two “conflicts”; a wound almost always comes from a memory.",
+         "<b>Declared risk</b>: none, inappropriate, dangerous. A host that gives the character tools never loads a dangerous node; fiction may load everything. At build, the “no risk” purge drops them.",
+         "A belief can be <b>false but held</b> (the lie the character tells itself); a stance has a <b>subject</b> (a character, the user, a memory, a label).",
+         "<b>Presets</b> pick their nodes like a library; a node that changes with age is a second node, derived from the first. “Graph view” shows the constellation in the explorer."]),
 ]),
 ("Presets", [
  ("p", "A preset = one character + a combination of variants. For example: \"Clara 29, photo\", \"Clara manga\", \"Clara 65\"."),
@@ -125,14 +143,15 @@ G["en"] = [
 
 G["de"] = [
 ("Die erweiterte Version kurz erklärt", [
- ("p", "Sieben Schritte, in der Reihenfolge der linken Spalte:"),
+ ("p", "Acht Schritte, in der Reihenfolge der linken Spalte:"),
  ("ul", ["<b>1 · Figur(en)</b> — wer es ist: Name, fiktiv oder real, Morphologie.",
          "<b>2 · Elemente</b> — alles, was sie beschreibt: Texte, Fotos, Stimme, LoRA, 3D, Posen, Bewegungen, Dateien.",
          "<b>3 · Erinnerungen</b> — ihre Vergangenheit: Momente und Zeiträume, mit dem, was sie fühlte, was sie für sich behält, und ein paar Spuren (ein Foto, ein Ton).",
-         "<b>4 · Presets</b> — fertige Kombinationen: ein Look, ein Alter, ein Stil, eine Sprache.",
-         "<b>5 · Rechte</b> — was andere damit tun dürfen.",
-         "<b>6 · Prüfungen</b> — was fehlt oder nicht passt.",
-         "<b>7 · Build</b> — die fertige .cof-Datei."]),
+         "<b>4 · Psyche</b> — ihr Innenleben als Graph: Werte, Überzeugungen, Wünsche, Bedürfnisse, Ängste, Wunden, Haltungen, Geschmäcker, Gewohnheiten, Widersprüche, Regeln — mit den Erinnerungen verknüpft.",
+         "<b>5 · Presets</b> — fertige Kombinationen: ein Look, ein Alter, ein Stil, eine Sprache.",
+         "<b>6 · Rechte</b> — was andere damit tun dürfen.",
+         "<b>7 · Prüfungen</b> — was fehlt oder nicht passt.",
+         "<b>8 · Build</b> — die fertige .cof-Datei."]),
  ("p", "Pflicht sind nur Name, fiktiv oder real, Morphologie und Rechte. Die einfache Version kann nur eine einfache Figur (eine Karte, Fotos, eine Stimme): eine reichere Datei bleibt in der erweiterten Version."),
 ]),
 ("Kategorien und Varianten", [
@@ -156,6 +175,14 @@ G["de"] = [
          "<b>Medien</b>: ein bis drei Spuren — Bild, Ton, kurzes Video, ein paar Zeilen — oder dieselben Medien wie eine andere Erinnerung (zwei Figuren, ein Abend, ein Foto).",
          "<b>Explizit</b> (Nacktheit, intim): nur wenn die Erinnerung mit 18 oder mehr erlebt wurde, jemand als gezeigt erklärt ist und jede gezeigte Person ein Erwachsener bekannten Alters ist. Sonst sind die Optionen ausgegraut, mit Begründung.",
          "<b>Presets</b> wählen ihre Erinnerungen wie eine Bibliothek: ein angehakter Zeitraum bringt seine Momente mit. Beim Build zwei Bereinigungen: jugendfrei (explizite Medien gehen, Texte bleiben) und ohne persönliche Erinnerungen."]),
+]),
+("Psyche", [
+ ("p", "Das Innenleben der Figur als Graph (COF 1.2). Elf Knotenarten: Wunde, Wert, Überzeugung, Wunsch, Bedürfnis, Angst, Haltung, Geschmack, Gewohnheit, Widerspruch, Regel. Jeder Knoten ist ein bis zwei Sätze pro Sprache."),
+ ("ul", ["<b>Stärke</b> (0–100, Knoten für Knoten einstellen), <b>Stabilität</b> (Kern, gefestigt, wandelbar, fragil: was ein Host im Gebrauch ändern darf), <b>seit</b> (das Alter des Auftauchens), Herkunft, Sichtbarkeit, Vertraulichkeit.",
+         "<b>Verknüpfungen</b>: „wegen“ und „über“ zu einer Erinnerung, einem Knoten oder einer Figur; „stützt“ und „widerspricht“ zwischen Knoten. Ein Widerspruch trägt genau zwei „widerspricht“; eine Wunde rührt fast immer von einer Erinnerung her.",
+         "<b>Erklärtes Risiko</b>: keines, unangemessen, gefährlich. Ein Host, der der Figur Werkzeuge gibt, lädt nie einen gefährlichen Knoten; Fiktion darf alles laden. Beim Build entfernt die Bereinigung „ohne Risiko“ sie.",
+         "Eine Überzeugung kann <b>falsch, aber festgehalten</b> sein (die Lüge, die sich die Figur erzählt); eine Haltung hat einen <b>Gegenstand</b> (eine Figur, der Nutzer, eine Erinnerung, eine Bezeichnung).",
+         "<b>Presets</b> wählen ihre Knoten wie eine Bibliothek; ein Knoten, der sich mit dem Alter ändert, ist ein zweiter, vom ersten abgeleiteter Knoten. „Graphansicht“ zeigt die Konstellation im Explorer."]),
 ]),
 ("Presets", [
  ("p", "Ein Preset = eine Figur + eine Kombination von Varianten. Zum Beispiel: „Clara 29, Foto“, „Clara Manga“, „Clara 65“."),
@@ -185,14 +212,15 @@ G["de"] = [
 
 G["es"] = [
 ("La versión avanzada en breve", [
- ("p", "Siete pasos, en el orden de la columna izquierda:"),
+ ("p", "Ocho pasos, en el orden de la columna izquierda:"),
  ("ul", ["<b>1 · Personaje(s)</b> — quién es: nombre, ficticio o real, morfología.",
          "<b>2 · Elementos</b> — todo lo que lo describe: textos, fotos, voz, LoRA, 3D, poses, movimientos, archivos.",
          "<b>3 · Recuerdos</b> — su pasado: momentos y periodos, con lo que sintió, lo que calla, y algunas huellas (una foto, un sonido).",
-         "<b>4 · Presets</b> — combinaciones listas para usar: un look, una edad, un estilo, un idioma.",
-         "<b>5 · Derechos</b> — lo que otros pueden hacer con él.",
-         "<b>6 · Controles</b> — lo que falta o no encaja.",
-         "<b>7 · Build</b> — el archivo .cof final."]),
+         "<b>4 · Psique</b> — su vida interior en grafo: valores, creencias, deseos, necesidades, miedos, heridas, posturas, gustos, hábitos, contradicciones, reglas — ligados a los recuerdos.",
+         "<b>5 · Presets</b> — combinaciones listas para usar: un look, una edad, un estilo, un idioma.",
+         "<b>6 · Derechos</b> — lo que otros pueden hacer con él.",
+         "<b>7 · Controles</b> — lo que falta o no encaja.",
+         "<b>8 · Build</b> — el archivo .cof final."]),
  ("p", "Solo son obligatorios el nombre, ficticio o real, la morfología y los derechos. La versión fácil solo gestiona un personaje sencillo (una ficha, fotos, una voz): un archivo más rico se queda en la versión avanzada."),
 ]),
 ("Categorías y variantes", [
@@ -216,6 +244,14 @@ G["es"] = [
          "<b>Medios</b>: de una a tres huellas — imagen, sonido, vídeo corto, unas líneas — o los mismos medios que otro recuerdo (dos personajes, una noche, una foto).",
          "<b>Explícito</b> (desnudez, íntimo): solo si el recuerdo se vivió a los 18 años o más, alguien está declarado como mostrado y toda persona mostrada es un adulto de edad conocida. Si no, las opciones aparecen en gris, con el motivo.",
          "Los <b>presets</b> eligen sus recuerdos como una biblioteca: un periodo marcado arrastra sus momentos. Al construir, dos purgas: todo público (los medios explícitos se van, los textos se quedan) y sin recuerdos personales."]),
+]),
+("Psique", [
+ ("p", "La vida interior del personaje, en grafo (COF 1.2). Once tipos de nodos: herida, valor, creencia, deseo, necesidad, miedo, postura, gusto, hábito, contradicción, regla. Cada nodo cabe en una o dos frases por idioma."),
+ ("ul", ["<b>Fuerza</b> (0–100, ajustada nodo por nodo), <b>estabilidad</b> (núcleo, establecido, cambiante, frágil: lo que un anfitrión puede cambiar durante el uso), <b>desde</b> (la edad de aparición), origen, visibilidad, confidencia.",
+         "<b>Enlaces</b>: «a causa de» y «a propósito de» hacia un recuerdo, un nodo o un personaje; «apoya» y «contradice» entre nodos. Una contradicción lleva exactamente dos «contradice»; una herida casi siempre viene de un recuerdo.",
+         "<b>Riesgo declarado</b>: ninguno, inapropiado, peligroso. Un anfitrión que da herramientas al personaje nunca carga un nodo peligroso; la ficción puede cargarlo todo. En la construcción, la purga «sin riesgo» los retira.",
+         "Una creencia puede ser <b>falsa pero sostenida</b> (la mentira que el personaje se cuenta); una postura tiene un <b>sujeto</b> (un personaje, el usuario, un recuerdo, una etiqueta).",
+         "Los <b>presets</b> eligen sus nodos como una biblioteca; un nodo que cambia con la edad es un segundo nodo, derivado del primero. «Vista de grafo» muestra la constelación en el explorador."]),
 ]),
 ("Presets", [
  ("p", "Un preset = un personaje + una combinación de variantes. Por ejemplo: «Clara 29, foto», «Clara manga», «Clara 65»."),
@@ -245,14 +281,15 @@ G["es"] = [
 
 G["zh"] = [
 ("高级版速览", [
- ("p", "七个步骤，按左侧栏的顺序："),
+ ("p", "八个步骤，按左侧栏的顺序："),
  ("ul", ["<b>1 · 角色</b>——是谁：名称、虚构或真实、形态。",
          "<b>2 · 元素</b>——描述角色的一切：文本、照片、声音、LoRA、3D、姿势、动作、文件。",
          "<b>3 · 记忆</b> — 角色的过去：瞬间与时期，当时的感受、不愿说的事，以及几条痕迹（一张照片、一段声音）。",
-         "<b>4 · 预设</b>——现成的组合：一种造型、一个年龄、一种风格、一种语言。",
-         "<b>5 · 权利</b>——他人可以怎样使用。",
-         "<b>6 · 检查</b>——缺少什么、哪里不一致。",
-         "<b>7 · 构建</b>——最终的 .cof 文件。"]),
+         "<b>4 · 心理</b>——以图谱呈现的内心世界：价值观、信念、欲望、需求、恐惧、创伤、立场、喜好、习惯、矛盾、规则——与记忆相连。",
+         "<b>5 · 预设</b>——现成的组合：一种造型、一个年龄、一种风格、一种语言。",
+         "<b>6 · 权利</b>——他人可以怎样使用。",
+         "<b>7 · 检查</b>——缺少什么、哪里不一致。",
+         "<b>8 · 构建</b>——最终的 .cof 文件。"]),
  ("p", "只有名称、虚构或真实、形态和权利是必填的。简易版只处理简单角色（一张角色卡、照片、一个声音）：内容更丰富的文件留在高级版。"),
 ]),
 ("类别与变体", [
@@ -276,6 +313,14 @@ G["zh"] = [
          "<b>媒体</b>：一到三条痕迹——图片、声音、短视频、几行文字——或与另一条记忆共用媒体（两个角色，一个夜晚，一张照片）。",
          "<b>露骨</b>（裸露、亲密）：仅当记忆发生在 18 岁或以后、有人被声明出现、且所有出现者均为年龄已知的成年人。否则选项灰显，并说明原因。",
          "<b>预设</b>像图书馆一样挑选记忆：勾选一个时期会带上它的瞬间。构建时有两种清理：全年龄（露骨媒体移除，文字保留）和去除个人记忆。"]),
+]),
+("心理", [
+ ("p", "角色的内心世界，以图谱呈现（COF 1.2）。十一种节点：创伤、价值观、信念、欲望、需求、恐惧、立场、喜好、习惯、矛盾、规则。每个节点每种语言一两句话。"),
+ ("ul", ["<b>强度</b>（0–100，逐个节点设置）、<b>稳定性</b>（核心、稳定、变动、脆弱：宿主在使用时可以改变的程度）、<b>自</b>（出现的年龄）、来源、可见性、保密度。",
+         "<b>关联</b>：“因为”和“关于”指向记忆、节点或角色；“支持”和“矛盾于”在节点之间。矛盾恰好带有两个“矛盾于”；创伤几乎总是来自一段记忆。",
+         "<b>声明的风险</b>：无、不适宜、危险。向角色提供工具的宿主绝不加载危险节点；虚构作品可以加载一切。构建时，“无风险”清理会移除它们。",
+         "信念可以是<b>虚假但坚持的</b>（角色对自己说的谎言）；立场有一个<b>对象</b>（角色、用户、记忆、标签）。",
+         "<b>预设</b>像图书馆一样选择它们的节点；随年龄变化的节点是派生自第一个节点的第二个节点。“图谱视图”在浏览器中显示星座。"]),
 ]),
 ("预设", [
  ("p", "预设 = 一个角色 + 一组变体的组合。例如：“Clara 29 岁，照片”、“Clara 漫画风”、“Clara 65 岁”。"),
@@ -305,14 +350,15 @@ G["zh"] = [
 
 G["ja"] = [
 ("詳細版のあらまし", [
- ("p", "左の列の順に、7 つのステップがあります："),
+ ("p", "左の列の順に、8 つのステップがあります："),
  ("ul", ["<b>1 · キャラクター</b> — 誰か：名前、架空か実在か、形態。",
          "<b>2 · 要素</b> — キャラクターを表すすべて：テキスト、写真、声、LoRA、3D、ポーズ、モーション、ファイル。",
          "<b>3 · 記憶</b> — キャラクターの過去：瞬間と期間、そのとき感じたこと、口にしないこと、そしていくつかの痕跡（写真、音）。",
-         "<b>4 · プリセット</b> — すぐ使える組み合わせ：見た目、年齢、スタイル、言語。",
-         "<b>5 · 権利</b> — 他の人に許すこと。",
-         "<b>6 · チェック</b> — 足りないもの、合わないもの。",
-         "<b>7 · ビルド</b> — 完成した .cof ファイル。"]),
+         "<b>4 · 心理</b> — グラフで表す内面：価値観、信念、欲求、必要、恐れ、傷、態度、好み、習慣、矛盾、ルール — 記憶と結びつきます。",
+         "<b>5 · プリセット</b> — すぐ使える組み合わせ：見た目、年齢、スタイル、言語。",
+         "<b>6 · 権利</b> — 他の人に許すこと。",
+         "<b>7 · チェック</b> — 足りないもの、合わないもの。",
+         "<b>8 · ビルド</b> — 完成した .cof ファイル。"]),
  ("p", "必須なのは名前、架空か実在か、形態、権利だけです。かんたん版はシンプルなキャラクター（カード 1 枚、写真、声 1 つ）だけを扱います。より豊かなファイルは詳細版のままです。"),
 ]),
 ("カテゴリーとバリアント", [
@@ -336,6 +382,14 @@ G["ja"] = [
          "<b>メディア</b>：1〜3 つの痕跡 — 画像、音、短い動画、数行の文 — または別の記憶と同じメディア（2 人のキャラクター、1 つの夜、1 枚の写真）。",
          "<b>露骨</b>（ヌード、親密）：記憶が 18 歳以上の時期のもので、誰かが「映っている」と宣言され、映っている全員が年齢既知の成人である場合のみ。そうでなければ選択肢は理由つきで無効化されます。",
          "<b>プリセット</b>はライブラリのように記憶を選びます：期間にチェックを入れるとその瞬間も含まれます。ビルド時には 2 つのパージ：全年齢（露骨なメディアを除き、文章は残す）と個人の記憶なし。"]),
+]),
+("心理", [
+ ("p", "キャラクターの内面をグラフで表します（COF 1.2）。十一種類のノード：傷、価値観、信念、欲求、必要、恐れ、態度、好み、習慣、矛盾、ルール。各ノードは言語ごとに 1〜2 文です。"),
+ ("ul", ["<b>強さ</b>（0〜100、ノードごとに設定）、<b>安定性</b>（核、定着、揺らぎ、脆い：ホストが使用中に変えてよい範囲）、<b>いつから</b>（現れた年齢）、由来、可視性、開示。",
+         "<b>リンク</b>：「なぜなら」と「について」は記憶・ノード・キャラクターへ、「支持する」と「矛盾する」はノード間。矛盾はちょうど 2 本の「矛盾する」を持ち、傷はほぼ常に記憶に由来します。",
+         "<b>宣言されたリスク</b>：なし、不適切、危険。キャラクターにツールを与えるホストは危険なノードを決して読み込みません。フィクションはすべてを読み込めます。ビルド時、「リスクなし」パージがそれらを取り除きます。",
+         "信念は<b>誤りだが抱いている</b>ことがあります（キャラクターが自分に言い聞かせる嘘）。態度には<b>対象</b>があります（キャラクター、ユーザー、記憶、ラベル）。",
+         "<b>プリセット</b>はライブラリのようにノードを選びます。年齢で変わるノードは、最初のノードから派生した第 2 のノードです。「グラフ表示」はエクスプローラーで星座を示します。"]),
 ]),
 ("プリセット", [
  ("p", "プリセット = 1 人のキャラクター + バリアントの組み合わせ。例：「Clara 29 歳、写真」「Clara マンガ」「Clara 65 歳」。"),
