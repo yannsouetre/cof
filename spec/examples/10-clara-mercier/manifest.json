@@ -1032,8 +1032,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-30T16:53:55Z"
+        "computed_by": "cof-cli/1.2.0",
+        "computed_at": "2026-11-02T08:55:30Z"
       },
       "prompts": {
         "greeting": {
@@ -1123,8 +1123,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-30T16:53:55Z"
+        "computed_by": "cof-cli/1.2.0",
+        "computed_at": "2026-11-02T08:55:30Z"
       }
     },
     "en-12": {
@@ -1189,8 +1189,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-30T16:53:55Z"
+        "computed_by": "cof-cli/1.2.0",
+        "computed_at": "2026-11-02T08:55:30Z"
       }
     },
     "en-65": {
@@ -1282,8 +1282,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-30T16:53:55Z"
+        "computed_by": "cof-cli/1.2.0",
+        "computed_at": "2026-11-02T08:55:30Z"
       }
     },
     "en-future": {
@@ -1368,8 +1368,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-30T16:53:55Z"
+        "computed_by": "cof-cli/1.2.0",
+        "computed_at": "2026-11-02T08:55:30Z"
       }
     },
     "en-agent": {
@@ -1411,8 +1411,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-30T16:53:55Z"
+        "computed_by": "cof-cli/1.2.0",
+        "computed_at": "2026-11-02T08:55:30Z"
       }
     },
     "fr": {
@@ -1453,8 +1453,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-30T16:53:55Z"
+        "computed_by": "cof-cli/1.2.0",
+        "computed_at": "2026-11-02T08:55:30Z"
       },
       "prompts": {
         "greeting": {
@@ -1544,8 +1544,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-30T16:53:55Z"
+        "computed_by": "cof-cli/1.2.0",
+        "computed_at": "2026-11-02T08:55:30Z"
       }
     },
     "fr-12": {
@@ -1610,8 +1610,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-30T16:53:55Z"
+        "computed_by": "cof-cli/1.2.0",
+        "computed_at": "2026-11-02T08:55:30Z"
       }
     },
     "fr-65": {
@@ -1703,8 +1703,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-30T16:53:55Z"
+        "computed_by": "cof-cli/1.2.0",
+        "computed_at": "2026-11-02T08:55:30Z"
       }
     },
     "fr-futur": {
@@ -1789,8 +1789,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-30T16:53:55Z"
+        "computed_by": "cof-cli/1.2.0",
+        "computed_at": "2026-11-02T08:55:30Z"
       }
     },
     "fr-agent": {
@@ -1832,8 +1832,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.1.0",
-        "computed_at": "2026-10-30T16:53:55Z"
+        "computed_by": "cof-cli/1.2.0",
+        "computed_at": "2026-11-02T08:55:30Z"
       }
     }
   },
@@ -3395,7 +3395,7 @@
   },
   "provenance": {
     "created": "2026-10-11T10:32:23Z",
-    "modified": "2026-10-30T16:53:55Z",
+    "modified": "2026-11-02T08:55:30Z",
     "generator": "cof-builder/0.7.1",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/10-clara-mercier",
@@ -3543,8 +3543,8 @@
       "image-video-gen",
       "archive"
     ],
-    "computed_by": "cof-cli/1.1.0",
-    "computed_at": "2026-10-30T16:53:55Z"
+    "computed_by": "cof-cli/1.2.0",
+    "computed_at": "2026-11-02T08:55:30Z"
   },
   "coverage": {
     "elements": [

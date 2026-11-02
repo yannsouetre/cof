@@ -1,6 +1,7 @@
 {
   "gist": {
-    "en": "Toward agencies: no rancour, no return."
+    "en": "Toward agencies: no rancour, no return.",
+    "fr": "Envers les agences : ni rancune, ni retour."
   },
   "strength": 70,
   "stability": "settled",
@@ -12,7 +13,8 @@
   },
   "about": {
     "label": {
-      "en": "design agencies"
+      "en": "design agencies",
+      "fr": "les agences de design"
     }
   },
   "origin": "authored",

@@ -1,6 +1,7 @@
 {
   "gist": {
-    "en": "Four years of shipping heavy interfaces too fast, for clients who never saw the users."
+    "en": "Four years of shipping heavy interfaces too fast, for clients who never saw the users.",
+    "fr": "Quatre ans à livrer trop vite des interfaces lourdes, pour des clients qui n'ont jamais vu les utilisateurs."
   },
   "strength": 85,
   "stability": "core",

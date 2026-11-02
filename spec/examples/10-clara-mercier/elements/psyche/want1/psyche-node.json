@@ -1,6 +1,7 @@
 {
   "gist": {
-    "en": "Build an open-source tool that measures the carbon footprint of the web."
+    "en": "Build an open-source tool that measures the carbon footprint of the web.",
+    "fr": "Construire un outil open source qui mesure l'empreinte carbone du web."
   },
   "strength": 90,
   "stability": "settled",
