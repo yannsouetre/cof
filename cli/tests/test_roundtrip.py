@@ -1439,7 +1439,7 @@ def test_psyche_in_a_cast_hangs_on_its_own_past(tmp_path):
 def test_psyche_purges_personal_risk_and_contradictions(tmp_path):
     """RFC 0004 § 3 ter / § 3 septies: personal nodes leave an extract like personal memories (--keep-personal keeps them);
     `--no-risk` drops inappropriate and dangerous nodes; a contradiction that loses a side goes with them; tags.content
-    follows; the all-audiences slice drops both risk levels too, its memory behaviour unchanged."""
+    follows; the all-audiences slice leaves the risk nodes alone (a separate switch — Yann, 30 October)."""
     from cof_cli.ops import extract_presets, strip_intimate
     from cof_cli.psyche import drop_personal_nodes, strip_risk
     d, m = _psy(tmp_path)
@@ -1456,13 +1456,14 @@ def test_psyche_purges_personal_risk_and_contradictions(tmp_path):
     ma = json.loads((a / "manifest.json").read_text("utf-8"))
     assert sorted(ma["elements"]["psyche"]["variants"]) == ["val1", "wound1"] and ma["tags"]["content"] == ["none"]
     rep = Report(); validate_dir(a, rep); assert rep.ok, rep.errors
-    # --all-audiences: risk nodes leave too (both levels), memories untouched (no explicit one here); inappropriate alone, with the tag
+    # --all-audiences: the risk nodes stay (a separate switch), their file tag too; memories untouched (no explicit one here)
     b = tmp_path / "b"; extract_presets(d, b, ["default"])
     _pnode(b, "bel1", risk="inappropriate"); mb = json.loads((b / "manifest.json").read_text("utf-8")); mb["tags"]["content"] = ["psyche-inappropriate"]; _write(b, mb)
     gone = strip_intimate(b)
-    assert "psyche.bel1" in gone and "psyche.contra1" in gone
+    assert not [x for x in gone if x.startswith("psyche.")]
     mb = json.loads((b / "manifest.json").read_text("utf-8"))
-    assert mb["tags"]["content"] == ["none"] and "m3" in mb["elements"]["memories"]["variants"]
+    assert mb["tags"]["content"] == ["psyche-inappropriate"] and "bel1" in mb["elements"]["psyche"]["variants"] and "m3" in mb["elements"]["memories"]["variants"]
+    assert "bel1" in strip_risk(b) and json.loads((b / "manifest.json").read_text("utf-8"))["tags"]["content"] == ["none"]
     # the CLI: --no-risk is separate (memories' media stay), personal nodes are reported
     from cof_cli.cli import main
     c = tmp_path / "c"

@@ -642,6 +642,5 @@ def strip_intimate(dst: Path) -> list[str]:
         if not tc:
             tc.append("none")
     (dst / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
-    from .psyche import strip_risk                                   # RFC 0004 § 3 septies: the all-audiences slice holds no node of declared risk either
-    extra_gone += [f"psyche.{x}" for x in strip_risk(dst)]
+    # RFC 0004 § 3 septies: the risk purge is a separate switch (`--no-risk`); the all-audiences slice touches explicit memories and media only
     return gone + extra_gone
