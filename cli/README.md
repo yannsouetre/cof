@@ -16,6 +16,9 @@ cof merge clara.cof martien.cof -o duo/             # un casting : même nom + s
 cof memory add clara.cof --gist fr="Ce matin, relu avec Léo." --gist en="This morning, reread with Léo." --date 2026-10-25 --who "Léo" --tag travail --personal
 cof memory add clara/ --kind period --gist en="The agency years." --age 24 --approx --fidelity faded   # sur un dossier ; `--help` liste tout (--where, --self-shown, --media, --preset…)
 cof psyche add clara.cof --kind stance --gist fr="Envers l'utilisateur : une collègue." --about user --strength 60 --stability shifting --link because=memories/ev3 --since-date 2026-10-25   # nœud vécu, `visibility: personal` (--canon sinon), première révision ; `--help` liste tout (--lie, --risk, --tag, --preset…)
+cof psyche propose clara.cof --preset fr-agent --from-file proposition.json   # personnalité → psyché : une proposition validée (docs/psyche-propose.md), affichée en table, rien d'écrit
+cof psyche propose clara.cof --from-file proposition.json --apply --accept c2,c3   # n'écrit que les candidats acceptés ; --rules (listes 1.0), --zodiac vierge, --bundle-out, --provider openai-compatible (clé : COF_AI_KEY)
+cof psyche text clara.cof --preset fr-agent        # l'inverse : le texte « Qui elle est » ; --into-card l'ajoute à la suite du champ personnalité de la carte
 cof import carte.png -o perso/ --age 30 --lang fr --keep-png   # carte PNG CCv2/V3 → dossier COF
 cof export clara.cof --format png -o clara.png      # → PNG avec chunks chara + ccv3
 cof export clara.cof --format card -o clara.card.json
