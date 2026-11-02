@@ -17,6 +17,7 @@ from . import SPEC_VERSION, __version__
 from .completeness import compute as compute_completeness
 from .container import ContainerError, inspect, read_manifest, unpack, verify_hashes
 from .model import HUMAN_FORM, AGE_REQUIRED_KINDS, extends_cycle, garments, ADULT, implicit_resolved, AGELESS_KINDS, AGE_CATEGORIES, CATEGORIES, KINDS, MULTI_KINDS, _age_value, age_required, asset_index, default_preset_id, first, lowest_age, preset_age, preset_identity, preset_ids, region_conflicts, resolve_preset_slots, resolve_variant, resolved, single_kind_violations, by_kind, preset_alternatives, preset_primary_image, resolved_all, backstage, variant_owner, preset_owner, is_likeness, is_neutral, neutrality, effective_permissions, identity_rights, variant_asset_ids
+from .psyche import RISK_TAGS as PSYCHE_TAGS     # node risk → file-level tags.content (RFC 0004 § 3 septies); one table for the validator and the purges
 from .tokens import count as count_tokens, tokenizer_name
 
 PROMPT_FIELDS = ("description", "personality", "scenario", "first_mes", "mes_example", "system_prompt", "post_history_instructions")
@@ -1285,7 +1286,6 @@ def _memory_rules(manifest: dict, src: Path, rep: "Report") -> None:
 
 # ---------------------------------------------------------------- psyche (RFC 0004) ----------------------------------------------------------------
 
-PSYCHE_TAGS = {"inappropriate": "psyche-inappropriate", "dangerous": "psyche-dangerous"}     # node risk → file-level tags.content (§ 3 septies)
 
 
 def _psyche_rules(manifest: dict, src: Path, rep: "Report") -> None:

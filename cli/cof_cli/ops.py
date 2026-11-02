@@ -585,6 +585,10 @@ def extract_presets(src: Path, dst: Path, pids: list[str], tags: list[str] | Non
         out.pop(k, None)
     (dst / "manifest.json").write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", "utf-8")
     drop_dangling_memory_links(dst, out)
+    if (out["elements"].get("psyche") or {}).get("variants"):       # RFC 0004 § 3 sexies: a contradiction whose two sides did not both come along is dropped
+        from .psyche import prune_orphan_contradictions
+        if prune_orphan_contradictions(dst, out):
+            (dst / "manifest.json").write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", "utf-8")
     if cast_cleanup and m.get("identities") and set(out.get("identities") or {}) < set(m["identities"]):
         from .cast import drop_foreign_relations
         drop_foreign_relations(out)
@@ -638,4 +642,6 @@ def strip_intimate(dst: Path) -> list[str]:
         if not tc:
             tc.append("none")
     (dst / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
+    from .psyche import strip_risk                                   # RFC 0004 § 3 septies: the all-audiences slice holds no node of declared risk either
+    extra_gone += [f"psyche.{x}" for x in strip_risk(dst)]
     return gone + extra_gone

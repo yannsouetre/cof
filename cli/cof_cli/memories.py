@@ -112,8 +112,9 @@ def preset_language(manifest: dict, pid: str | None) -> str | None:
     return (p or {}).get("language")
 
 
-def gist_text(manifest: dict, vid: str, node: dict, pid: str | None = None) -> tuple[str, str]:
-    """(language, text): the preset's personality language → the identity's primary language → the only / first entry."""
+def gist_text(manifest: dict, vid: str, node: dict, pid: str | None = None, cat: str = "memories") -> tuple[str, str]:
+    """(language, text): the preset's personality language → the identity's primary language → the only / first entry.
+    The same reading rule serves psyche nodes (`cat="psyche"`, RFC 0004 § 3 bis)."""
     gist = node.get("gist") or {}
     if not gist:
         return "", ""
@@ -121,7 +122,7 @@ def gist_text(manifest: dict, vid: str, node: dict, pid: str | None = None) -> t
     pl = preset_language(manifest, pid)
     if pl:
         want.append(pl)
-    me = variant_owner(manifest, "memories", vid)
+    me = variant_owner(manifest, cat, vid)
     il = ((manifest.get("identities") or {}).get(me) or {}).get("language") if me else None
     if il:
         want.append(il)

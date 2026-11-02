@@ -1,6 +1,6 @@
 """COF.md — the container describes itself to whoever opens it without the specification at hand (an agent, a script,
 a person). Written at the root of every .cof by `cof pack` and by the builder; short, versioned, never normative:
-the specification wins. Also: `cof memory add`, the write path the note describes."""
+the specification wins. Also: `cof memory add` and `cof psyche add`, the write paths the note describes."""
 from __future__ import annotations
 
 import hashlib
@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 SELFDESC_PATH = "COF.md"
-SELFDESC_VERSION = "1.1"
+SELFDESC_VERSION = "1.2"
 
 
 def self_description(manifest: dict) -> str:
@@ -23,19 +23,20 @@ def self_description(manifest: dict) -> str:
     presets = ", ".join(f"`{k}`" for k in (manifest.get("presets") or {}).keys())
     cats = ", ".join(f"`{c}`" for c in (manifest.get("elements") or {}).keys())
     has_mem = "memories" in (manifest.get("elements") or {})
+    has_psy = "psyche" in (manifest.get("elements") or {})
     perms = (manifest.get("rights") or {}).get("permissions") or {}
     lines = [
         f"# COF.md — how to read this file ({name})",
         "",
         f"This is a **Character Open File** (COF {manifest.get('cof', '1.0')}, a ZIP with `manifest.json` at its root; MIME `application/vnd.cof.character+zip`).",
         "It carries one or more AI characters: their personality, looks, voice, body, past and rights, in one portable container.",
-        f"Specification, schemas and tools: https://github.com/yannsouetre/cof — `pip install cof-cli` gives `cof validate`, `cof info`, `cof export`, `cof extract`, `cof memory add`.",
+        f"Specification, schemas and tools: https://github.com/yannsouetre/cof — `pip install cof-cli` gives `cof validate`, `cof info`, `cof export`, `cof extract`, `cof memory add`, `cof psyche add`.",
         "This note is a courtesy for readers without the specification; **the specification and `manifest.json` win** whenever they differ.",
         "",
         "## Reading",
         f"- `manifest.json` is the index. Characters: {cast}. Presets (a consistent way to present a character — age, style, language): {presets or 'none'}; `default_preset` says which to use when nobody chooses.",
         f"- Elements by category ({cats or 'none'}): each category has `variants`; a preset's `slots` lists the variants it applies, `alternatives` the ones it offers; `extends` inherits from another preset.",
-        "- Every file of the container is declared in `assets` (path, `mediaType`, `sha256`, `license`, `role`); a variant names its files by asset id. Sub-files (`card.json`, `psyche.json`, `profile.json`, `memory.json`) are JSON next to their variant under `elements/<category>/<variant>/`.",
+        "- Every file of the container is declared in `assets` (path, `mediaType`, `sha256`, `license`, `role`); a variant names its files by asset id. Sub-files (`card.json`, `psyche.json`, `profile.json`, `memory.json`, `psyche-node.json`) are JSON next to their variant under `elements/<category>/<variant>/`.",
         "- Short texts that are per language are maps keyed by BCP 47 (`{\"fr\": …, \"en\": …}`); pick the preset's personality language, else the identity's `language`, else the first entry.",
         "- `cof export --format agent --preset <id>` turns a preset into `SOUL.md` + `IDENTITY.md` + `MEMORY.md` for a text agent; the ComfyUI nodes read the file directly.",
         "",
@@ -49,6 +50,10 @@ def self_description(manifest: dict) -> str:
         lines += [
             "- **Memories** (`elements/memories`, COF 1.1 / RFC 0002): nodes `moment` or `period`, each with a `memory.json` (gist per language, when, where, who, feelings, `fidelity`, links). `disclosure: secret` is never told; `guarded` only when it matters; `visibility: personal` nodes are one user's data and never leave this file without their consent; `explicit` nodes show no media to anyone but an adult preset with the opt-in. Readers order by age, else date, else links.",
         ]
+    if has_psy:
+        lines += [
+            "- **Psyche** (`elements/psyche`, COF 1.2 / RFC 0004): what the character is inside and why, as a graph of short nodes — `value`, `belief` (a lie it tells itself is `false_but_held`), `want`, `need`, `fear`, `wound`, `stance` (toward a character, a node, the user or a label), `taste`, `habit`, `contradiction` (owns a tension between two nodes), `rule` (a boundary kept whatever the pressure) — each in `psyche-node.json` (gist per language, `strength` 0–100, `stability` core / settled / shifting / fragile, `since`, links `because` / `about` / `supports` / `conflicts` to memories, nodes and characters). Presets pick nodes in `slots.psyche`. `disclosure: secret` nodes are context, never quoted; `personal` nodes are one user's data. **Declared risk**: a node's `risk` is `inappropriate` (unsuitable for some audiences) or `dangerous` (would make the character harmful if it acted on it), mirrored at file level by `tags.content` `psyche-inappropriate` / `psyche-dangerous` — a host that gives the character tools or data access MUST NOT load `dangerous` nodes (`cof export --format agent` leaves them out unless `--keep-dangerous`; `cof extract --no-risk` drops both levels); a fiction host may load everything and should say so. `cof export --format agent` renders the nodes as the « Who she is » section of `SOUL.md`.",
+        ]
     lines += [
         "",
         "## Writing back what the character lives (hosts and agents)",
@@ -57,6 +62,7 @@ def self_description(manifest: dict) -> str:
         "2. Declare it in `manifest.json` › `elements.memories.variants.<id>`: `{\"kind\": \"moment\", \"label\": \"…\", \"memory\": \"elements/memories/<id>/memory.json\", \"identity\": \"<character>\"}`, and list the id in the `slots.memories` of the presets that may recall it. Media go under the same folder, declared in `assets` with role `memory-media` and their `sha256`; say who is in them — `who: [{\"identity\": \"self\", \"shown\": true}]` with the character's `age` on the variant, `{\"label\": {…}, \"shown\": true, \"real\": true}` for the user — a validator warns on image media with nobody declared shown.",
         "3. Set `cof` to `\"1.1\"` if it says `\"1.0\"`, then run `cof validate` — or let the tool do all of it: `cof memory add <file.cof> --identity <id> --gist fr=\"…\" --date 2026-10-25 --personal` (add `--self-shown --age 29` when the character is in the media, `--who \"Sam|shown|34|real\"` for someone else).",
         "Do not rewrite existing nodes; a changed feeling is a new `lived` node linked `about` the old one. Never add a memory that shows a real person who is not a consenting identity of this file.",
+        "What the character came to think or want at use time is a **lived psyche node** (COF 1.2): `cof psyche add <file.cof> --kind stance --gist fr=\"…\" --about user --strength 60 --stability shifting --link because=memories/ev3 --since-date 2026-10-25` writes `elements/psyche/<id>/psyche-node.json` with `origin: \"lived\"`, `visibility: \"personal\"` (add `--canon` for a node that belongs to the character for everyone) and a first `revisions` entry, declares it and lists it in the presets. A `core` node is never changed at use time; a `settled` one only through a lived node that declares it; `shifting` with evidence, the previous value kept in `revisions`; `fragile` within one conversation.",
         "",
         f"_Written by cof-cli for COF {SELFDESC_VERSION}; regenerate with `cof pack`. Not part of the character._",
     ]
@@ -197,5 +203,135 @@ def memory_add(src: Path, *, identity: str | None, kind: str, gists: dict[str, s
     if "has-memories" not in auto:
         auto.append("has-memories")
     m.setdefault("provenance", {})["modified"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    mpath.write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
+    return vid
+
+
+# ---- cof psyche add (RFC 0004) ------------------------------------------------------------------------------------
+
+def psyche_add(src: Path, *, identity: str | None, kind: str, gists: dict[str, str], label: str | None = None, strength: int | None = None,
+               stability: str | None = None, since_age: float | None = None, since_date: str | None = None, approx: bool = False,
+               links: list[str] | None = None, about: str | None = None, lie: bool = False, tags: list[str] | None = None, risk: str = "none",
+               origin: str = "lived", personal: bool = True, disclosure: str = "open", presets: list[str] | None = None) -> str:
+    """Append one psyche node to an unpacked character folder — the host's write path (RFC 0004 § 3 bis, § 3 ter):
+    `origin: lived` and `visibility: personal` by default like a memory lived with one user, a first `revisions` entry on a
+    lived node, the node listed by the character's presets, `tags.content` following `risk`. Returns the new node id."""
+    from .psyche import ID_PREFIX, KINDS, STABILITIES, RISK_TAGS
+    mpath = src / "manifest.json"
+    m = json.loads(mpath.read_text("utf-8"))
+    if not gists:
+        raise ValueError("a gist is required (--gist lang=text)")
+    if kind not in KINDS:
+        raise ValueError(f"kind must be one of {', '.join(KINDS)}")
+    if stability is not None and stability not in STABILITIES:
+        raise ValueError(f"stability must be one of {', '.join(STABILITIES)}")
+    if strength is not None and not (0 <= int(strength) <= 100):
+        raise ValueError("--strength is an integer between 0 and 100")
+    if lie and kind != "belief":
+        raise ValueError("--lie (false_but_held) is for a belief only")
+    if about is not None and kind != "stance":
+        raise ValueError("--about is for a stance only; other kinds say what they bear on with --link about=<ref>")
+    if risk not in RISK_TAGS and risk != "none":
+        raise ValueError("risk must be none, inappropriate or dangerous")
+    ids = m.get("identities") or {}
+    iid = identity or m.get("default_identity") or (next(iter(ids)) if ids else None)
+    if ids and iid not in ids:
+        raise ValueError(f"unknown character {iid!r}; known: {', '.join(ids)}")
+    E = m.setdefault("elements", {})
+    V = E.setdefault("psyche", {}).setdefault("variants", {})
+    vid = _next_id(V, ID_PREFIX[kind])
+    lang = next(iter(gists))
+    node: dict = {"gist": dict(gists)}
+    if strength is not None:
+        node["strength"] = int(strength)
+    if stability:
+        node["stability"] = stability
+    if risk != "none":
+        node["risk"] = risk
+    pt: dict = {}
+    if since_age is not None:
+        pt["age"] = {"value": since_age, "unit": "years"}
+    if since_date:
+        pt["date"] = since_date
+    if approx and pt:
+        pt["approx"] = True
+    if pt:
+        node["since"] = pt
+    if lie:
+        node["false_but_held"] = True
+    if about is not None:                                              # user | identity=<id> | node=<category>/<id> | label=<text> | <text>
+        a = str(about).strip()
+        if a.lower() == "user":
+            node["about"] = {"user": True}
+        elif a.startswith("identity="):
+            node["about"] = {"identity": a[len("identity="):].strip()}
+        elif a.startswith("node="):
+            node["about"] = {"node": a[len("node="):].strip()}
+        else:
+            node["about"] = {"label": {lang: a[len("label="):].strip() if a.startswith("label=") else a}}
+    L = []
+    for ln in links or []:                                             # "because=memories/ev3", "supports=psyche/val1"
+        ty, _, to = str(ln).partition("=")
+        ty, to = ty.strip(), to.strip()
+        if ty not in ("because", "about", "supports", "conflicts") or "/" not in to:
+            raise ValueError(f"--link {ln!r}: expected TYPE=<category>/<id> with TYPE because, about, supports or conflicts")
+        L.append({"to": to, "type": ty})
+    if L:
+        node["links"] = L
+    node["origin"] = origin
+    node["visibility"] = "personal" if personal else "canon"
+    node["disclosure"] = disclosure
+    if tags:
+        import unicodedata
+        slug = lambda t: re.sub(r"[^a-z0-9:-]+", "-", unicodedata.normalize("NFKD", t).encode("ascii", "ignore").decode().lower()).strip("-")
+        node["tags"] = [x for x in (slug(t) for t in tags) if x]
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    if origin == "lived":                                              # the first revision records what was written, by whom
+        rev = {"date": now, "gist": dict(gists), "by": "cof-cli psyche add"}
+        if strength is not None:
+            rev["strength"] = int(strength)
+        if stability:
+            rev["stability"] = stability
+        node["revisions"] = [rev]
+    d = src / "elements" / "psyche" / vid
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "psyche-node.json").write_text(json.dumps(node, ensure_ascii=False, indent=2) + "\n", "utf-8")
+    var: dict = {"kind": kind, "label": label or next(iter(gists.values()))[:60], "node": f"elements/psyche/{vid}/psyche-node.json"}
+    if iid and (len(ids) > 1 or (ids and any(v.get("identity") for e in E.values() for v in (e.get("variants") or {}).values()))):
+        var["identity"] = iid
+    if strength is not None:
+        var["strength"] = int(strength)
+    V[vid] = var
+    P = m.get("presets") or {}
+    targets = presets or [p for p, q in P.items() if (q.get("identity") or m.get("default_identity") or iid) == iid]
+    if not targets and P:
+        targets = [m.get("default_preset") or next(iter(P))]
+    for pid in targets:
+        if pid not in P:
+            raise ValueError(f"unknown preset {pid!r}")
+        sl = P[pid].setdefault("slots", {})
+        if "psyche" not in sl:                                        # inherited through extends: copy the effective list before adding
+            from .model import resolve_preset_slots
+            sl["psyche"] = list(resolve_preset_slots(m, pid).get("psyche") or [])
+        if vid not in sl["psyche"]:
+            sl["psyche"].append(vid)
+    try:
+        if tuple(int(x) for x in str(m.get("cof", "1.0")).split(".")[:2]) < (1, 2):
+            m["cof"] = "1.2"
+    except ValueError:
+        m["cof"] = "1.2"
+    cov = m.setdefault("coverage", {})
+    if "psyche" not in (cov.get("elements") or []):
+        cov["elements"] = sorted(set(cov.get("elements") or []) | {"psyche"})
+    tags_ = m.setdefault("tags", {})
+    auto = tags_.setdefault("auto", [])
+    if "has-psyche" not in auto:
+        auto.append("has-psyche")
+    if risk != "none":                                                 # § 3 septies: the file-level tag follows the node
+        content = [t for t in (tags_.get("content") or []) if t != "none"]
+        if RISK_TAGS[risk] not in content:
+            content.append(RISK_TAGS[risk])
+        tags_["content"] = content
+    m.setdefault("provenance", {})["modified"] = now
     mpath.write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
     return vid

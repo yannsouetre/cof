@@ -1324,7 +1324,9 @@ def test_example_10_psyche_is_valid(tmp_path):
     rep = Report(); m = validate_dir(src, rep, recompute=False)
     assert rep.ok, rep.errors
     assert m["cof"] == "1.2" and len(m["elements"]["psyche"]["variants"]) == 22
-    assert not [w for w in rep.warnings if "psyche" in w and "primary language" not in w], rep.warnings
+    assert not [w for w in rep.warnings if "psyche" in w], rep.warnings            # part B: every node carries Clara's French (her primary language)
+    from cof_cli.psyche import load_nodes as load_psyche
+    assert all(set(n["gist"]) == {"en", "fr"} for n in load_psyche(src, m).values())
     from cof_cli.model import resolve_preset_slots
     assert len(resolve_preset_slots(m, "default")["psyche"]) == 22 and len(resolve_preset_slots(m, "fr")["psyche"]) == 22
     assert resolve_preset_slots(m, "en-12")["psyche"] == ["val4", "taste1", "hab2"]
@@ -1430,3 +1432,190 @@ def test_psyche_in_a_cast_hangs_on_its_own_past(tmp_path):
     assert any("psyche.leo1: `because` memories/m1 is a memory of id1" in e for e in errs), errs
     (d / "elements/psyche/leo1/psyche-node.json").write_text(json.dumps({"gist": {"en": "Losing his mother's attention."}, "strength": 40, "links": [{"to": "identities/id1", "type": "about"}]}), "utf-8")
     rep = _val(d); assert rep.ok, rep.errors
+
+
+# ---------------------------------------------------------------- psyche, part B: purges, SOUL.md, migrate, psyche add ----------------------------------------------------------------
+
+def test_psyche_purges_personal_risk_and_contradictions(tmp_path):
+    """RFC 0004 § 3 ter / § 3 septies: personal nodes leave an extract like personal memories (--keep-personal keeps them);
+    `--no-risk` drops inappropriate and dangerous nodes; a contradiction that loses a side goes with them; tags.content
+    follows; the all-audiences slice drops both risk levels too, its memory behaviour unchanged."""
+    from cof_cli.ops import extract_presets, strip_intimate
+    from cof_cli.psyche import drop_personal_nodes, strip_risk
+    d, m = _psy(tmp_path)
+    _pnode(d, "stance1", visibility="personal")
+    _pnode(d, "bel1", risk="dangerous")
+    m["tags"]["content"] = ["psyche-dangerous"]; _write(d, m)
+    rep = _val(d); assert rep.ok, rep.errors
+    a = tmp_path / "a"; extract_presets(d, a, ["default"])
+    assert drop_personal_nodes(a) == ["stance1"] and drop_personal_nodes(a) == []
+    ma = json.loads((a / "manifest.json").read_text("utf-8"))
+    assert "stance1" not in ma["elements"]["psyche"]["variants"] and not (a / "elements/psyche/stance1").exists()
+    assert ma["presets"]["default"]["slots"]["psyche"] == ["wound1", "val1", "bel1", "contra1"] and ma["tags"]["content"] == ["psyche-dangerous"]
+    assert strip_risk(a) == ["bel1", "contra1"]                       # the contradiction val1 ↔ bel1 lost a side
+    ma = json.loads((a / "manifest.json").read_text("utf-8"))
+    assert sorted(ma["elements"]["psyche"]["variants"]) == ["val1", "wound1"] and ma["tags"]["content"] == ["none"]
+    rep = Report(); validate_dir(a, rep); assert rep.ok, rep.errors
+    # --all-audiences: risk nodes leave too (both levels), memories untouched (no explicit one here); inappropriate alone, with the tag
+    b = tmp_path / "b"; extract_presets(d, b, ["default"])
+    _pnode(b, "bel1", risk="inappropriate"); mb = json.loads((b / "manifest.json").read_text("utf-8")); mb["tags"]["content"] = ["psyche-inappropriate"]; _write(b, mb)
+    gone = strip_intimate(b)
+    assert "psyche.bel1" in gone and "psyche.contra1" in gone
+    mb = json.loads((b / "manifest.json").read_text("utf-8"))
+    assert mb["tags"]["content"] == ["none"] and "m3" in mb["elements"]["memories"]["variants"]
+    # the CLI: --no-risk is separate (memories' media stay), personal nodes are reported
+    from cof_cli.cli import main
+    c = tmp_path / "c"
+    assert main(["extract", str(d), "--preset", "default", "-o", str(c), "--no-risk", "--keep-personal"]) == 0
+    mc = json.loads((c / "manifest.json").read_text("utf-8"))
+    assert sorted(mc["elements"]["psyche"]["variants"]) == ["stance1", "val1", "wound1"] and (c / "elements/memories/m3/meeting.jpg").is_file()
+    # an extract whose preset lists a contradiction without one of its sides drops the contradiction (§ 3 sexies)
+    m["presets"]["half"] = {"label": "half", "slots": {"psyche": ["val1", "contra1"], "personality": ["p1"]}, "age_override": {"value": 29, "unit": "years", "basis": "declared"}}; _write(d, m)
+    e = tmp_path / "e"; extract_presets(d, e, ["half"])
+    me = json.loads((e / "manifest.json").read_text("utf-8"))
+    assert sorted(me["elements"]["psyche"]["variants"]) == ["val1"] and me["presets"]["half"]["slots"]["psyche"] == ["val1"]   # a preset selects nodes: val1's `because` wound1 is dropped as a link (part A)
+    rep = Report(); validate_dir(e, rep); assert rep.ok, rep.errors
+
+
+def test_soul_md_who_she_is(tmp_path):
+    """§ 3 quinquies: SOUL.md renders the nodes in the fixed kind order, whole gist at strength ≥ 70 and a short clause below,
+    lies and guarded nodes marked, secret nodes left out with one line, personal and dangerous nodes dropped unless kept, in
+    the preset's language with each node falling back to what it has; the 1.0 lists leave the sheet when nodes exist."""
+    from cof_cli.convert import export_agent, export_soul
+    from cof_cli.psyche import short_clause
+    d, m = _psy(tmp_path)
+    for vid, kind, node in [("rule1", "rule", {"gist": {"fr": "Ne jamais envoyer un message que personne n'a demandé."}, "strength": 90, "stability": "core"}),
+                            ("taste1", "taste", {"gist": {"en": "Loves the smell of paper — and a lime tree's shade in August."}, "strength": 40, "disclosure": "guarded"}),
+                            ("need1", "need", {"gist": {"fr": "Accepter d'être aidée.", "en": "Accept being helped."}, "strength": 65, "disclosure": "secret"}),
+                            ("fear1", "fear", {"gist": {"fr": "S'épuiser.", "en": "Burning out."}, "strength": 70, "origin": "lived"}),
+                            ("hab1", "habit", {"gist": {"fr": "Range son bureau avant de réfléchir.", "en": "Tidies her desk before thinking."}, "strength": 75, "risk": "dangerous"})]:
+        (d / f"elements/psyche/{vid}").mkdir(); (d / f"elements/psyche/{vid}/psyche-node.json").write_text(json.dumps(node), "utf-8")
+        m["elements"]["psyche"]["variants"][vid] = {"kind": kind, "label": vid, "node": f"elements/psyche/{vid}/psyche-node.json", "identity": "id1", "strength": node["strength"]}
+        m["presets"]["default"]["slots"]["psyche"].append(vid)
+    m["tags"]["content"] = ["psyche-dangerous"]; m["identities"]["id1"]["gender"] = "female"; _write(d, m)
+    rep = _val(d); assert rep.ok, rep.errors
+    soul, _ = export_soul(d, "default")                      # no personality language on this preset: the character's (fr)
+    who = soul[soul.index("## Qui elle est"):soul.index("## Disclosure")]
+    heads = [l for l in who.splitlines() if l.startswith("### ")]
+    assert heads == ["### Blessure", "### Valeurs", "### Croyances", "### Peurs", "### Positions", "### Goûts", "### Contradictions", "### Règles"], heads   # need1 secret, hab1 dangerous: no heading
+    assert "- Les années d'agence." in who and "- La légèreté." in who                                   # ≥ 70: whole gist
+    assert "- Si je ralentis, je disparais  ·  mensonge" in who                                            # 60: short clause, the lie marked
+    assert "- Loves the smell of paper  ·  réservé" in who                                                 # no French on this node: its English; guarded marked
+    assert "- Envers l'utilisateur : une collègue  ·  envers: l'utilisateur" in who
+    assert "- S'épuiser.  ·  vécu" in who and "Il y a des choses qu'elle ne dit pas." in who
+    assert "Accepter" not in who and "Range son bureau" not in who and "## Values" not in soul and "## Goals" not in soul and "## Habits" not in soul
+    assert who.index("### Blessure") < who.index("### Valeurs") < who.index("### Croyances") < who.index("### Peurs") < who.index("### Règles")
+    out = tmp_path / "ws"; done = export_agent(d, out, "default")
+    assert done["psyche_nodes"] == 9 and done["psyche_personal_dropped"] == 0 and done["dangerous_dropped"] == 1 and done["memory_nodes"] == 4
+    assert "## Qui elle est" in (out / "SOUL.md").read_text("utf-8") and "## Memories" in (out / "MEMORY.md").read_text("utf-8")
+    out2 = tmp_path / "ws2"; done = export_agent(d, out2, "default", keep_dangerous=True)
+    assert done["dangerous_dropped"] == 0 and "Range son bureau avant de réfléchir." in (out2 / "SOUL.md").read_text("utf-8")
+    _pnode(d, "fear1", visibility="personal")
+    out3 = tmp_path / "ws3"; done = export_agent(d, out3, "default")
+    assert done["psyche_personal_dropped"] == 1 and "S'épuiser" not in (out3 / "SOUL.md").read_text("utf-8")
+    assert "S'épuiser" in (export_agent(d, tmp_path / "ws4", "default", keep_personal=True) and (tmp_path / "ws4/SOUL.md").read_text("utf-8"))
+    # an English preset of the same file renders in English, the French-only rule falls back to its French
+    m["presets"]["en"] = {"label": "en", "extends": "default", "slots": {"personality": []}, "age_override": {"value": 29, "unit": "years", "basis": "declared"}}
+    m["identities"]["id1"]["language"] = "en"; _write(d, m)
+    soul_en, _ = export_soul(d, "en")
+    assert "## Who she is" in soul_en and "### Wound" in soul_en and "- The agency years." in soul_en and "Ne jamais envoyer" in soul_en and "There are things she does not tell." in soul_en
+    assert short_clause("Toward the Martian: protective curiosity — the one visitor who looked at the sheep.") == "Toward the Martian: protective curiosity"
+    long = short_clause(" ".join(["word"] * 40) + ".")
+    assert long.endswith("…") and len(long) <= 101 and not long[:-1].endswith(" ") and long[:-1].endswith("word")
+    # Clara (example 10): the French agent preset renders the 22 nodes in French, in order, lie and subjects marked
+    out5 = tmp_path / "ws5"; done = export_agent(ROOT / "spec/examples/10-clara-mercier", out5, "fr-agent")
+    soul = (out5 / "SOUL.md").read_text("utf-8")
+    assert done["psyche_nodes"] == 22 and "Quatre ans à livrer trop vite" in soul and "- Si je ralentis, je disparais  ·  mensonge" in soul
+    assert soul.index("### Blessure") < soul.index("### Valeurs") < soul.index("### Contradictions") < soul.index("## Boundaries") and "## Goals" not in soul
+
+
+def test_migrate_psyche_from_the_lists(tmp_path):
+    """§ 3 quater: psyche.json goals / fears / values and the card's cof.goals / cof.fears / cof.behavior become want (70),
+    fear (70), value ("Word."), habit nodes; duplicates merged by text and by id; the lists stay; the presets holding the
+    personality variant list the nodes; cof 1.2; idempotent; a bilingual card gives one node with two gists."""
+    from cof_cli.migrate import migrate_psyche
+    from cof_cli.cli import main
+    d, m = _mem_copy(tmp_path)
+    r = migrate_psyche(d)
+    assert r["written"] == ["want1", "fear1", "val1", "val2", "val3", "hab1", "hab2", "hab3"] and r["skipped"] == 0 and not r["untouched"]
+    m2 = json.loads((d / "manifest.json").read_text("utf-8"))
+    assert m2["cof"] == "1.2" and "has-psyche" in m2["tags"]["auto"] and m2["presets"]["default"]["slots"]["psyche"] == r["written"]
+    V = m2["elements"]["psyche"]["variants"]
+    assert V["want1"] == {"kind": "want", "label": "Créer un outil open source qui mesure l'impact carbone et", "node": "elements/psyche/want1/psyche-node.json", "identity": "id1", "strength": 70}
+    n = json.loads((d / "elements/psyche/val1/psyche-node.json").read_text("utf-8"))
+    assert n == {"gist": {"fr": "Sobriété."}, "stability": "settled", "origin": "authored", "visibility": "canon", "disclosure": "open"}
+    assert json.loads((d / "elements/psyche/want1/psyche-node.json").read_text("utf-8"))["strength"] == 70
+    ps = json.loads((d / "elements/personality/p1/psyche.json").read_text("utf-8"))
+    assert ps["goals"] and ps["values"] and json.loads((d / "elements/personality/p1/card.json").read_text("utf-8"))["data"]["extensions"]["cof"]["behavior"]   # the lists stay
+    rep = _val(d); assert rep.ok, rep.errors
+    assert any("strength unset on 6 of 8" in x for x in rep.info.get("notes") or [])
+    r2 = migrate_psyche(d)
+    assert r2["written"] == [] and r2["skipped"] == 8 and sorted(p.name for p in (d / "elements/psyche").iterdir()) == sorted(r["written"])
+    assert main(["migrate", str(d), "--psyche"]) == 0
+    # a psyche written by hand is left alone: the lists are not poured on top (example 10 holds Clara's 22 nodes)
+    c = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/10-clara-mercier", c)
+    r3 = migrate_psyche(c)
+    assert r3["written"] == [] and r3["untouched"] == {"id1": 15} and r3["skipped"] == 1 and len(json.loads((c / "manifest.json").read_text("utf-8"))["elements"]["psyche"]["variants"]) == 22
+    # a bilingual card (a second personality variant, English, same lists): one node per entry, a gist per language
+    e = tmp_path / "e"; shutil.copytree(MEM, e)
+    me = json.loads((e / "manifest.json").read_text("utf-8"))
+    shutil.copytree(e / "elements/personality/p1", e / "elements/personality/p2")
+    card = json.loads((e / "elements/personality/p2/card.json").read_text("utf-8")); card["data"]["extensions"]["cof"] = {"behavior": ["Takes out her notebook to sketch a wireframe before answering", "Opens with a question about real use", "Says « we remove » rather than « we add »"]}
+    (e / "elements/personality/p2/card.json").write_text(json.dumps(card), "utf-8")
+    ps = json.loads((e / "elements/personality/p2/psyche.json").read_text("utf-8"))
+    ps["goals"] = [{"id": "goal:sobriety", "text": "Build an open-source tool that measures the carbon impact and the accessibility of web interfaces."}]
+    ps["fears"] = [{"id": "fear:bloat", "text": "Bloated interfaces that exclude and waste."}]; ps["values"] = ["sobriety", "accessibility", "kindness"]
+    (e / "elements/personality/p2/psyche.json").write_text(json.dumps(ps), "utf-8")
+    me["elements"]["personality"]["variants"]["p2"] = {**me["elements"]["personality"]["variants"]["p1"], "label": "EN", "language": "en", "card": "elements/personality/p2/card.json", "psyche": "elements/personality/p2/psyche.json"}
+    me["presets"]["en"] = {"label": "en", "extends": "default", "slots": {"personality": ["p2"]}}; _write(e, me)
+    r4 = migrate_psyche(e)
+    assert r4["written"] == ["want1", "fear1", "val1", "val2", "val3", "hab1", "hab2", "hab3"]
+    assert json.loads((e / "elements/psyche/want1/psyche-node.json").read_text("utf-8"))["gist"] == {"fr": "Créer un outil open source qui mesure l'impact carbone et l'accessibilité des interfaces web.", "en": "Build an open-source tool that measures the carbon impact and the accessibility of web interfaces."}
+    assert json.loads((e / "elements/psyche/val3/psyche-node.json").read_text("utf-8"))["gist"] == {"fr": "Bienveillance.", "en": "Kindness."}
+    me2 = json.loads((e / "manifest.json").read_text("utf-8"))
+    from cof_cli.model import resolve_preset_slots
+    assert resolve_preset_slots(me2, "en")["psyche"] == r4["written"] and me2["presets"]["default"]["slots"]["psyche"] == r4["written"] and "psyche" not in me2["presets"]["en"]["slots"]   # inherited through extends
+    rep = _val(e); assert rep.ok, rep.errors
+
+
+def test_psyche_add(tmp_path):
+    """`cof psyche add`: a lived, personal node by default with a first revision, listed by the character's presets (inherited
+    lists copied), tags.content following the risk, validated; kind-specific fields refused early; atomic on a folder."""
+    from cof_cli.selfdesc import psyche_add
+    from cof_cli.cli import main
+    d, m = _psy(tmp_path)
+    m["presets"]["child"] = {"label": "child", "extends": "default", "slots": {}, "age_override": {"value": 29, "unit": "years", "basis": "declared"}}; _write(d, m)
+    vid = psyche_add(d, identity=None, kind="stance", gists={"fr": "Envers Léo : une confiance prudente.", "en": "Toward Léo: a careful trust."}, about="Léo", strength=60,
+                     stability="shifting", since_date="2026-10-25", links=["because=memories/m3", "supports=psyche/val1"], tags=["Léo"], risk="inappropriate", presets=["child"])
+    assert vid == "stance2"
+    n = json.loads((d / "elements/psyche/stance2/psyche-node.json").read_text("utf-8"))
+    assert n["origin"] == "lived" and n["visibility"] == "personal" and n["about"] == {"label": {"fr": "Léo"}} and n["since"] == {"date": "2026-10-25"} and n["tags"] == ["leo"]
+    assert n["links"] == [{"to": "memories/m3", "type": "because"}, {"to": "psyche/val1", "type": "supports"}] and n["risk"] == "inappropriate"
+    assert len(n["revisions"]) == 1 and n["revisions"][0]["gist"] == n["gist"] and n["revisions"][0]["strength"] == 60 and n["revisions"][0]["by"] == "cof-cli psyche add"
+    m2 = json.loads((d / "manifest.json").read_text("utf-8"))
+    assert m2["elements"]["psyche"]["variants"]["stance2"] == {"kind": "stance", "label": "Envers Léo : une confiance prudente.", "node": "elements/psyche/stance2/psyche-node.json", "identity": "id1", "strength": 60}
+    assert m2["presets"]["child"]["slots"]["psyche"] == ["wound1", "val1", "bel1", "contra1", "stance1", "stance2"] and "stance2" not in m2["presets"]["default"]["slots"]["psyche"]
+    assert m2["tags"]["content"] == ["psyche-inappropriate"]
+    rep = _val(d); assert rep.ok, rep.errors
+    assert any("psyche.stance2: personal node" in w for w in rep.warnings)
+    vid2 = psyche_add(d, identity=None, kind="belief", gists={"fr": "Les gens finissent par partir."}, lie=True, personal=False, origin="authored", disclosure="guarded")
+    n2 = json.loads((d / f"elements/psyche/{vid2}/psyche-node.json").read_text("utf-8"))
+    assert vid2 == "bel2" and n2["false_but_held"] is True and n2["visibility"] == "canon" and "revisions" not in n2 and "strength" not in n2
+    assert _val(d).ok
+    for kw in (dict(kind="value", lie=True), dict(kind="value", about="x"), dict(kind="opinion"), dict(kind="fear", links=["after=memories/m1"]), dict(kind="fear", strength=140), dict(kind="fear", risk="bad")):
+        with pytest.raises(ValueError):
+            psyche_add(d, identity=None, gists={"fr": "x"}, **kw)
+    # the CLI, on a .cof and on a folder; a refused add leaves the folder untouched; a 1.1 file becomes 1.2 with the category
+    cof = tmp_path / "c.cof"; pack(d, cof)
+    assert main(["psyche", "add", str(cof), "--kind", "taste", "--gist", "fr=Aime l'odeur du papier.", "--strength", "40", "--canon"]) == 0
+    u = tmp_path / "u"; unpack(cof, u)
+    mu = json.loads((u / "manifest.json").read_text("utf-8"))
+    assert "taste1" in mu["elements"]["psyche"]["variants"] and json.loads((u / "elements/psyche/taste1/psyche-node.json").read_text("utf-8"))["visibility"] == "canon"
+    assert "cof psyche add" in (u / "COF.md").read_text("utf-8") and "**Psyche**" in (u / "COF.md").read_text("utf-8")
+    f = tmp_path / "f"; shutil.copytree(MEM, f)
+    before = sorted(str(p.relative_to(f)) for p in f.rglob("*"))
+    assert main(["psyche", "add", str(f), "--kind", "stance", "--gist", "fr=x", "--about", "user", "--link", "because=memories/zz"]) == 1       # unresolved link: nothing written
+    assert sorted(str(p.relative_to(f)) for p in f.rglob("*")) == before
+    assert main(["psyche", "add", str(f), "--kind", "rule", "--gist", "fr=Ne jamais envoyer un message que personne n'a demandé.", "--stability", "core", "--strength", "90", "--canon", "--origin", "authored"]) == 0
+    mf = json.loads((f / "manifest.json").read_text("utf-8"))
+    assert mf["cof"] == "1.2" and mf["presets"]["default"]["slots"]["psyche"] == ["rule1"] and "has-psyche" in mf["tags"]["auto"]

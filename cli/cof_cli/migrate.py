@@ -295,3 +295,197 @@ def migrate_any(src: Path) -> dict:
     if changed:
         (src / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
     return m
+
+
+# ---------------- 1.0 / 1.1 lists → psyche nodes (RFC 0004 § 3 quater) ----------------
+
+def _norm(text: str) -> str:
+    import unicodedata
+    return " ".join(unicodedata.normalize("NFKD", str(text)).encode("ascii", "ignore").decode().lower().split()).rstrip(".")
+
+
+def _value_gist(word: str) -> str:
+    """A one-word value becomes a short gist the author completes: "sobriety" → "Sobriety." (§ 3 quater)."""
+    w = " ".join(str(word).split())
+    w = w[:1].upper() + w[1:]
+    return w if w.endswith((".", "!", "?")) else w + "."
+
+
+def _label(text: str, limit: int = 60) -> str:
+    """A variant label from a gist: the whole text when short, else cut at a word boundary."""
+    t = " ".join(str(text).split()).rstrip(" .")
+    if len(t) <= limit:
+        return t
+    cut = t.rfind(" ", 0, limit)
+    return (t[:cut] if cut > 20 else t[:limit]).rstrip(" ,;:—–")
+
+
+def _lists_of(src: Path, m: dict, vid: str, v: dict) -> dict[str, list[tuple[str | None, str]]]:
+    """The 1.0 lists of one personality variant as (id, text) pairs per target kind: psyche.json goals / fears / values,
+    the card extensions cof.goals / cof.fears / cof.behavior. An extension entry that names a psyche.json id or repeats
+    its text is the same item."""
+    out: dict[str, list[tuple[str | None, str]]] = {"want": [], "fear": [], "value": [], "habit": []}
+    ps, card = {}, {}
+    try:
+        ps = json.loads((src / v["psyche"]).read_text("utf-8")) if v.get("psyche") and (src / v["psyche"]).is_file() else {}
+    except (OSError, ValueError):
+        ps = {}
+    try:
+        card = (json.loads((src / v["card"]).read_text("utf-8")) if v.get("card") and (src / v["card"]).is_file() else {}).get("data") or {}
+    except (OSError, ValueError):
+        card = {}
+    ps = ps if isinstance(ps, dict) else {}
+    for kind, key in (("want", "goals"), ("fear", "fears")):
+        for g in ps.get(key) or []:
+            if isinstance(g, dict) and str(g.get("text") or "").strip():
+                out[kind].append((str(g.get("id")) if g.get("id") else None, str(g["text"]).strip()))
+            elif isinstance(g, str) and g.strip():
+                out[kind].append((None, g.strip()))
+    for w in ps.get("values") or []:
+        if isinstance(w, str) and w.strip():
+            out["value"].append((None, _value_gist(w)))
+    ext = ((card.get("extensions") or {}).get("cof") or {}) if isinstance(card, dict) else {}
+    for kind, key in (("want", "goals"), ("fear", "fears"), ("habit", "behavior")):
+        for x in ext.get(key) or []:
+            if not isinstance(x, str) or not x.strip():
+                continue
+            x = x.strip()
+            if any(i == x or _norm(t) == _norm(x) for i, t in out[kind]):      # the id of a psyche.json entry, or its text again
+                continue
+            out[kind].append((None, x))
+    for kind in out:                                                        # duplicates within one list, by text
+        seen, uniq = set(), []
+        for i, t in out[kind]:
+            if _norm(t) not in seen:
+                seen.add(_norm(t)); uniq.append((i, t))
+        out[kind] = uniq
+    return out
+
+
+def migrate_psyche(src: Path) -> dict:
+    """`cof migrate --psyche`: the 1.0 / 1.1 lists (psyche.json goals / fears / values, card extensions cof.goals /
+    cof.fears / cof.behavior) become psyche nodes — `want` (strength 70), `fear` (70), `value` (one word → "Word."),
+    `habit` — written under elements/psyche/<id>/psyche-node.json, declared in the manifest and listed by every preset
+    that holds the personality variant they come from; the file declares cof 1.2. The lists stay (a 1.0 reader needs
+    them; RFC 0004 § 3 quater). Across the personality variants of one character, entries sharing a psyche.json id, or
+    sitting at the same position in lists of equal length written in different languages, are one node with a gist per
+    language. A character whose psyche already holds nodes is left alone (the conversion is for a file with lists and no
+    psyche; its unmatched entries are counted so the author can add them with `cof psyche add`). Idempotent: an entry
+    whose text (in any language) a node of the same kind already carries is skipped.
+    Returns {"written": [ids], "skipped": n, "untouched": {character: n unmatched entries}, "manifest": m}."""
+    from .model import resolve_preset_slots, variant_owner
+    mpath = src / "manifest.json"
+    m = json.loads(mpath.read_text("utf-8"))
+    E = m.setdefault("elements", {})
+    P = m.get("presets") or {}
+    ids = m.get("identities") or {}
+    pers = ((E.get("personality") or {}).get("variants")) or {}
+    existing = ((E.get("psyche") or {}).get("variants")) or {}
+    # what the nodes already say, by kind: (identity, normalised text) for every language of every gist
+    known: set[tuple[str, str | None, str]] = set()
+    for vid, v in existing.items():
+        rel = v.get("node")
+        try:
+            node = json.loads((src / rel).read_text("utf-8")) if rel else {}
+        except (OSError, ValueError):
+            node = {}
+        for t in (node.get("gist") or {}).values():
+            known.add((v.get("kind"), variant_owner(m, "psyche", vid), _norm(t)))
+    # candidates per character: kind → list of {"lang": text, ...} items, merged by id / text / position
+    per_char: dict[str | None, dict[str, list[dict]]] = {}
+    sources: dict[str | None, dict[str, dict[int, set[str]]]] = {}   # character → kind → item index → personality variants it came from
+    for pvid, pv in pers.items():
+        if pv.get("derives_from"):
+            continue
+        lists = _lists_of(src, m, pvid, pv)
+        owner = variant_owner(m, "personality", pvid)
+        lang = pv.get("language") or (ids.get(owner or "") or {}).get("language") or (m.get("languages") or ["en"])[0]
+        for kind, entries in lists.items():
+            if not entries:
+                continue
+            items = per_char.setdefault(owner, {}).setdefault(kind, [])
+            srcs = sources.setdefault(owner, {}).setdefault(kind, {})
+            # an earlier variant whose list of this kind has the same length and no entry in this language: positions
+            # align (a card written twice, once per language)
+            aligned: dict[int, int] = {}
+            for b in dict.fromkeys(it["_batch"] for it in items):
+                bi = [k for k, it in enumerate(items) if it["_batch"] == b]
+                if len(bi) == len(entries) and all(lang not in items[k] for k in bi):
+                    aligned = {pos: k for pos, k in enumerate(bi)}
+                    break
+            for pos, (eid, text) in enumerate(entries):
+                hit = next((k for k, it in enumerate(items) if (eid and it.get("_id") == eid)
+                            or any(_norm(t) == _norm(text) for kk, t in it.items() if not kk.startswith("_"))), None)
+                if hit is None:
+                    hit = aligned.get(pos)
+                if hit is None:
+                    items.append({"_batch": pvid, "_id": eid, lang: text}); hit = len(items) - 1
+                else:
+                    items[hit].setdefault(lang, text)
+                    if eid and not items[hit].get("_id"):
+                        items[hit]["_id"] = eid
+                srcs.setdefault(hit, set()).add(pvid)
+    # write the nodes
+    from .psyche import ID_PREFIX
+    from .selfdesc import _next_id
+    V = E.setdefault("psyche", {}).setdefault("variants", {})
+    written: list[str] = []
+    skipped = 0
+    untouched: dict[str | None, int] = {}
+    has_nodes = {variant_owner(m, "psyche", vid) for vid in existing}
+    strength = {"want": 70, "fear": 70}                                 # § 3 quater: goals and fears at 70; values and habits left to the author (default 50)
+    per_variant_nodes: dict[str, list[str]] = {}
+    for owner, kinds in per_char.items():
+        for kind, items in kinds.items():
+            for k, it in enumerate(items):
+                gist = {kk: t for kk, t in it.items() if not kk.startswith("_")}
+                if any((kind, owner, _norm(t)) in known for t in gist.values()):
+                    skipped += 1; continue
+                if owner in has_nodes:                                  # a psyche exists: the author decomposed it by hand, the lists are not poured on top
+                    untouched[owner] = untouched.get(owner, 0) + 1; continue
+                vid = _next_id(V, ID_PREFIX[kind])
+                node: dict = {"gist": gist}
+                if kind in strength:
+                    node["strength"] = strength[kind]
+                node.update({"stability": "settled", "origin": "authored", "visibility": "canon", "disclosure": "open"})
+                d = src / "elements" / "psyche" / vid
+                d.mkdir(parents=True, exist_ok=True)
+                (d / "psyche-node.json").write_text(json.dumps(node, ensure_ascii=False, indent=2) + "\n", "utf-8")
+                first = next(iter(gist.values()))
+                var: dict = {"kind": kind, "label": _label(first), "node": f"elements/psyche/{vid}/psyche-node.json"}
+                if owner and (len(ids) > 1 or (ids and any(v.get("identity") for e in E.values() for v in (e.get("variants") or {}).values()))):
+                    var["identity"] = owner
+                if kind in strength:
+                    var["strength"] = strength[kind]
+                V[vid] = var
+                for t in gist.values():
+                    known.add((kind, owner, _norm(t)))
+                written.append(vid)
+                for pvid in sources[owner][kind].get(k, set()):
+                    per_variant_nodes.setdefault(pvid, []).append(vid)
+    if not V:
+        E.pop("psyche", None)                                           # nothing to convert and no category before: none after
+    # every preset that holds a converted personality variant lists the nodes it yielded
+    for pid, p in P.items():
+        held = resolve_preset_slots(m, pid)
+        want_nodes = [n for pvid in (held.get("personality") or []) for n in per_variant_nodes.get(pvid, [])]
+        have = held.get("psyche") or []
+        missing = [n for n in want_nodes if n not in have]
+        if missing:
+            p.setdefault("slots", {})["psyche"] = list(have) + missing
+    if written:
+        try:
+            if tuple(int(x) for x in str(m.get("cof", "1.0")).split(".")[:2]) < (1, 2):
+                m["cof"] = "1.2"
+        except ValueError:
+            m["cof"] = "1.2"
+        tags = m.setdefault("tags", {}); auto = tags.setdefault("auto", [])
+        if "has-psyche" not in auto:
+            auto.append("has-psyche")
+        cov = m.setdefault("coverage", {})
+        if "psyche" not in (cov.get("elements") or []):
+            cov["elements"] = sorted(set(cov.get("elements") or []) | {"psyche"})
+        from datetime import datetime, timezone
+        m.setdefault("provenance", {})["modified"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    mpath.write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
+    return {"written": written, "skipped": skipped, "untouched": untouched, "manifest": m}

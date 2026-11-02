@@ -269,7 +269,11 @@ def card_to_cof_dir(card: dict, dest: Path, *, png: bytes | None = None, age: in
 
 # ---------- COF directory → SOUL.md / IDENTITY.md ----------
 
-def export_soul(src: Path, preset: str | None = None) -> tuple[str, str]:
+def export_soul(src: Path, preset: str | None = None, keep_personal: bool = False, keep_dangerous: bool = False) -> tuple[str, str]:
+    """SOUL.md and IDENTITY.md of one preset. With a `psyche` category (1.2, RFC 0004 § 3 quinquies) SOUL.md carries a
+    "Who she is" section rendered from the nodes the preset holds — personal nodes left out unless `keep_personal`,
+    `dangerous` ones unless `keep_dangerous` — and the 1.0 lists (goals, fears, values, behaviours) are then left out of
+    the sheet: a reader that finds both prefers the nodes (§ 3 quater)."""
     from .model import asset_index, default_preset_id, effective_permissions, first, preset_identity, preset_primary_image, resolved
     manifest = json.loads((src / "manifest.json").read_text("utf-8"))
     pid = preset or default_preset_id(manifest)
@@ -284,6 +288,8 @@ def export_soul(src: Path, preset: str | None = None) -> tuple[str, str]:
     data = json.loads((src / p["card"]).read_text("utf-8")).get("data", {}) if p.get("card") else {}
     psyche = json.loads((src / p["psyche"]).read_text("utf-8")) if p.get("psyche") and (src / p["psyche"]).is_file() else {}
     A = asset_index(manifest)
+    from .psyche import load_nodes as load_psyche, soul_section as psyche_section
+    who, _ = psyche_section(manifest, load_psyche(src, manifest), pid, keep_personal, keep_dangerous)
 
     lines = [f"# SOUL.md — {name}", ""]
     if p.get("kind") == "description" and (p.get("text") or "").strip():
@@ -291,13 +297,13 @@ def export_soul(src: Path, preset: str | None = None) -> tuple[str, str]:
     if data.get("personality"):
         lines += ["## Voice & stance", data["personality"].strip(), ""]
     beh = (data.get("extensions", {}).get("cof", {}) or {}).get("behavior")
-    if beh:
+    if beh and not who:
         lines += ["## Habits", *[f"- {b}" for b in beh], ""]
-    if psyche.get("values"):
+    if psyche.get("values") and not who:
         lines += ["## Values", *[f"- {v}" for v in psyche["values"]], ""]
-    if psyche.get("goals"):
+    if psyche.get("goals") and not who:
         lines += ["## Goals", *[f"- {g.get('text')}" for g in psyche["goals"]], ""]
-    if psyche.get("fears"):
+    if psyche.get("fears") and not who:
         lines += ["## Fears", *[f"- {f.get('text')}" for f in psyche["fears"]], ""]
     from .cast import identity_lines, psyche_lines
     lang = (manifest.get("languages") or ["en"])[0]
@@ -308,6 +314,8 @@ def export_soul(src: Path, preset: str | None = None) -> tuple[str, str]:
     rel = [x for x in il if x.startswith("Relations")]
     if rel:
         lines += ["## Relations", *[f"- {x}" for x in rel[0].split(": ", 1)[1].split(" · ")], ""]
+    if who:                                                   # the psyche, after the sheet (the voice), before the opening line and the boundaries
+        lines += [who.rstrip(), ""]
     from .cast import preset_prompts, text_in
     pr = preset_prompts(manifest, pid)
     if pr.get("greeting"):
@@ -397,17 +405,19 @@ def memory_section(src: Path, manifest: dict, pid: str | None, keep_personal: bo
     return "\n".join(lines).rstrip() + "\n", kept, dropped
 
 
-def export_agent(src: Path, out: Path, preset: str | None = None, keep_personal: bool = False) -> dict:
+def export_agent(src: Path, out: Path, preset: str | None = None, keep_personal: bool = False, keep_dangerous: bool = False) -> dict:
     """A ready-to-use agent workspace from one preset: SOUL.md, IDENTITY.md, avatar, skills/<name>/,
     memories at the root, documents in docs/, and COF.md (rights and provenance the agent host must honour).
     With a `memories` category (1.1): MEMORY.md = the host memory file (files/memory) followed by the canon gists in
-    timeline order, and memories/<id>/ holding the media of non-explicit nodes (RFC 0002 § 6.4)."""
+    timeline order, and memories/<id>/ holding the media of non-explicit nodes (RFC 0002 § 6.4).
+    With a `psyche` category (1.2): SOUL.md gains "Who she is" from the preset's nodes; personal nodes stay behind unless
+    `keep_personal`, `dangerous` nodes unless `keep_dangerous` — an agent acts (RFC 0004 § 3 septies)."""
     import shutil
     from .model import asset_index, default_preset_id, effective_permissions, preset_identity, resolved
     manifest = json.loads((src / "manifest.json").read_text("utf-8"))
     pid = preset or default_preset_id(manifest)
     out.mkdir(parents=True, exist_ok=True)
-    soul, identity = export_soul(src, pid)
+    soul, identity = export_soul(src, pid, keep_personal=keep_personal, keep_dangerous=keep_dangerous)
     A = asset_index(manifest)
     av = next((l.split(": ", 1)[1] for l in identity.splitlines() if l.startswith("- Avatar: ")), "")
     if av and (src / av).is_file():
@@ -442,6 +452,9 @@ def export_agent(src: Path, out: Path, preset: str | None = None, keep_personal:
     # memories category (1.1): MEMORY.md = host memory file (if any) + the canon gists; media of non-explicit nodes
     section, kept, dropped = memory_section(src, manifest, pid, keep_personal)
     done["memory_nodes"], done["personal_dropped"] = len(kept), dropped
+    from .psyche import load_nodes as load_psyche, select_nodes
+    psy_kept, pst = select_nodes(manifest, load_psyche(src, manifest), pid, keep_personal, keep_dangerous)
+    done["psyche_nodes"] = len(psy_kept); done["psyche_personal_dropped"] = pst["personal_dropped"]; done["dangerous_dropped"] = pst["dangerous_dropped"]
     if section:
         from .memories import media_assets
         host = out / "MEMORY.md"

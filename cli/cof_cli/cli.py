@@ -204,10 +204,12 @@ def cmd_export(a):
         elif fmt == "agent":
             from .convert import export_agent
             out = out or Path(f"{_fname(manifest)}-agent")
-            done = export_agent(d, out, pid, keep_personal=getattr(a, "keep_personal", False))
-            print(f"skills: {', '.join(done['skills']) or '—'} · memory files: {len(done['memories'])} · memories (nodes): {done.get('memory_nodes', 0)} · documents: {len(done['documents'])}")
-            if done.get("personal_dropped"):
-                print(f"personal memories not exported: {done['personal_dropped']} (--keep-personal exports them)")
+            done = export_agent(d, out, pid, keep_personal=getattr(a, "keep_personal", False), keep_dangerous=getattr(a, "keep_dangerous", False))
+            print(f"skills: {', '.join(done['skills']) or '—'} · memory files: {len(done['memories'])} · memories (nodes): {done.get('memory_nodes', 0)} · psyche (nodes): {done.get('psyche_nodes', 0)} · documents: {len(done['documents'])}")
+            if done.get("personal_dropped") or done.get("psyche_personal_dropped"):
+                print(f"personal memories not exported: {done.get('personal_dropped', 0)}, personal psyche nodes: {done.get('psyche_personal_dropped', 0)} (--keep-personal exports them)")
+            if done.get("dangerous_dropped"):
+                print(f"dangerous psyche nodes not exported: {done['dangerous_dropped']} (an agent acts — --keep-dangerous exports them)")
         elif fmt == "card":
             card = json.loads((d / card_path).read_text("utf-8"))
             out = out or Path(f"{_fname(manifest)}.card.json")
@@ -235,34 +237,35 @@ def cmd_merge(a):
     return _print_report(rep, a.json)
 
 
-def cmd_memory_add(a):
-    import tempfile
-    from .selfdesc import memory_add, write_self_description
+def _gists(a) -> dict | None:
     gists = {}
     for g in a.gist:
         if "=" not in g:
-            print("ERROR  --gist expects LANG=TEXT (e.g. fr=\"…\")", file=sys.stderr); return 2
+            print("ERROR  --gist expects LANG=TEXT (e.g. fr=\"…\")", file=sys.stderr); return None
         k, v = g.split("=", 1); gists[k.strip()] = v.strip()
+    return gists
+
+
+def _add_node(a, what: str, add):
+    """The shared write path of `memory add` and `psyche add`: a copy is edited, validated, and only then written back
+    (a .cof is repacked, a folder is overwritten); `add(work)` returns the new node id."""
+    from .selfdesc import write_self_description
     src = Path(a.src)
     if not src.exists():
         print(f"ERROR  {src}: no such file or folder", file=sys.stderr); return 2
-    if a.age is not None and not (math.isfinite(a.age) and 0 <= a.age <= 200):
-        print("ERROR  --age must be a number of years between 0 and 200", file=sys.stderr); return 2
     is_file = src.is_file()
-    tmp = tempfile.TemporaryDirectory(prefix="cof-mem-")             # a folder is edited through a copy: nothing lands in it unless the result validates
+    tmp = tempfile.TemporaryDirectory(prefix="cof-add-")              # a folder is edited through a copy: nothing lands in it unless the result validates
     work = Path(tmp.name) / "x"
     try:
         if is_file:
             unpack(src, work)
         else:
             shutil.copytree(src, work)
-        vid = memory_add(work, identity=a.identity, kind=a.kind, gists=gists, label=a.label, age=a.age, date=a.date, approx=a.approx, where=a.where,
-                         who=a.who, tags=a.tag, personal=a.personal, origin=a.origin, disclosure=a.disclosure, fidelity=a.fidelity, salience=a.salience,
-                         media=[Path(x) for x in (a.media or [])], presets=a.preset, self_shown=a.self_shown)
+        vid = add(work)
         rep = Report()
         manifest = validate_dir(work, rep, recompute=True)
         if rep.errors:
-            _print_report(rep, False); print("Memory not added: the file would not validate.", file=sys.stderr); return 1
+            _print_report(rep, False); print(f"{what} not added: the file would not validate.", file=sys.stderr); return 1
         if manifest:
             (work / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", "utf-8")
             write_self_description(work, manifest)
@@ -282,6 +285,32 @@ def cmd_memory_add(a):
         tmp.cleanup()
 
 
+def cmd_memory_add(a):
+    from .selfdesc import memory_add
+    gists = _gists(a)
+    if gists is None:
+        return 2
+    if a.age is not None and not (math.isfinite(a.age) and 0 <= a.age <= 200):
+        print("ERROR  --age must be a number of years between 0 and 200", file=sys.stderr); return 2
+    return _add_node(a, "Memory", lambda work: memory_add(
+        work, identity=a.identity, kind=a.kind, gists=gists, label=a.label, age=a.age, date=a.date, approx=a.approx, where=a.where,
+        who=a.who, tags=a.tag, personal=a.personal, origin=a.origin, disclosure=a.disclosure, fidelity=a.fidelity, salience=a.salience,
+        media=[Path(x) for x in (a.media or [])], presets=a.preset, self_shown=a.self_shown))
+
+
+def cmd_psyche_add(a):
+    from .selfdesc import psyche_add
+    gists = _gists(a)
+    if gists is None:
+        return 2
+    if a.since_age is not None and not (math.isfinite(a.since_age) and 0 <= a.since_age <= 200):
+        print("ERROR  --since-age must be a number of years between 0 and 200", file=sys.stderr); return 2
+    return _add_node(a, "Psyche node", lambda work: psyche_add(
+        work, identity=a.identity, kind=a.kind, gists=gists, label=a.label, strength=a.strength, stability=a.stability, since_age=a.since_age,
+        since_date=a.since_date, approx=a.approx, links=a.link, about=a.about, lie=a.lie, tags=a.tag, risk=a.risk, origin=a.origin,
+        personal=not a.canon, disclosure=a.disclosure, presets=a.preset))
+
+
 def cmd_extract(a):
     src = Path(a.src)
     with tempfile.TemporaryDirectory() as td:
@@ -296,15 +325,23 @@ def cmd_extract(a):
             extract_preset(d, Path(a.out), a.preset)
         for n in notes:
             print(f"WARN   {n}")
-        if not getattr(a, "keep_personal", False):           # RFC 0002 § 5.7: personal memories never travel unasked
+        if not getattr(a, "keep_personal", False):           # RFC 0002 § 5.7: personal memories never travel unasked; RFC 0004 § 3 ter: personal psyche nodes likewise
             from .ops import drop_personal_memories
+            from .psyche import drop_personal_nodes
             dropped = drop_personal_memories(Path(a.out))
             if dropped:
                 print(f"personal memories dropped: {', '.join(dropped)} (--keep-personal keeps them)")
+            dropped = drop_personal_nodes(Path(a.out))
+            if dropped:
+                print(f"personal psyche nodes dropped: {', '.join(dropped)} (--keep-personal keeps them)")
         if getattr(a, "no_intimate", False):
             from .ops import strip_intimate
             gone = strip_intimate(Path(a.out))
             print(f"--all-audiences: removed {', '.join(gone) or 'nothing'}; allowSexualUsage set to false — review tags.content")
+        if getattr(a, "no_risk", False):                      # RFC 0004 § 3 septies: the risk purge, separate from the all-audiences one
+            from .psyche import strip_risk
+            gone = strip_risk(Path(a.out))
+            print(f"--no-risk: psyche nodes removed: {', '.join(gone) or 'none'} (inappropriate and dangerous, with the contradictions that lost a side); tags.content updated")
     rep = Report(); validate_dir(Path(a.out), rep, recompute=True)
     what = 'tags ' + '+'.join(a.tag) if a.tag else ('character ' + a.identity if getattr(a, "identity", None) else 'preset ' + a.preset)
     print(f"{what} extracted to: {a.out}")
@@ -313,6 +350,12 @@ def cmd_extract(a):
 
 def cmd_migrate(a):
     m = migrate_any(Path(a.dir))
+    if getattr(a, "psyche", False):                           # RFC 0004 § 3 quater: the 1.0 lists become nodes, the lists stay
+        from .migrate import migrate_psyche
+        r = migrate_psyche(Path(a.dir)); m = r["manifest"]
+        print(f"psyche: {len(r['written'])} node(s) written" + (f" ({', '.join(r['written'])})" if r["written"] else "") + (f", {r['skipped']} already present" if r["skipped"] else ""))
+        for who, n in r["untouched"].items():
+            print(f"psyche of {who or 'the character'} already has nodes: {n} list entr{'y' if n == 1 else 'ies'} with no node of the same text left as they are (add them with `cof psyche add` if they belong)")
     rep = Report()
     validate_dir(Path(a.dir), rep, recompute=True)
     Path(a.dir, "manifest.json").write_text(json.dumps(m | {k: v for k, v in json.loads(Path(a.dir, "manifest.json").read_text("utf-8")).items()}, ensure_ascii=False, indent=2) + "\n", "utf-8")
@@ -366,16 +409,32 @@ def main(argv=None) -> int:
     ma.add_argument("--disclosure", choices=["open", "guarded", "secret"], default="open"); ma.add_argument("--fidelity", choices=["vivid", "clear", "faded", "fragment"], default="clear"); ma.add_argument("--salience", type=int)
     ma.add_argument("--media", action="append", help="image / audio / video / short text file; repeat"); ma.add_argument("--preset", action="append", help="preset(s) that may recall it (default: the character's presets)")
     ma.add_argument("-o", "--out", help="output .cof (default: in place)"); ma.set_defaults(fn=cmd_memory_add)
+    s = sub.add_parser("psyche", help="psyche: `psyche add` appends a lived node (RFC 0004, the write path of COF.md)")
+    ps_ = s.add_subparsers(dest="pcmd", required=True)
+    pa = ps_.add_parser("add", help="append one psyche node"); pa.add_argument("src", help=".cof file or character folder")
+    pa.add_argument("--identity", help="character id (default: the file's default character)")
+    pa.add_argument("--kind", choices=["value", "belief", "want", "need", "fear", "wound", "stance", "taste", "habit", "contradiction", "rule"], required=True)
+    pa.add_argument("--gist", action="append", required=True, metavar="LANG=TEXT", help="the node in one or two sentences; repeat per language")
+    pa.add_argument("--label"); pa.add_argument("--strength", type=int, help="0–100 (default 50)"); pa.add_argument("--stability", choices=["core", "settled", "shifting", "fragile"], help="default settled")
+    pa.add_argument("--since-age", type=float, help="age (years) when it appeared"); pa.add_argument("--since-date", help="YYYY, YYYY-MM or YYYY-MM-DD"); pa.add_argument("--approx", action="store_true")
+    pa.add_argument("--link", action="append", metavar="TYPE=REF", help="because=memories/ev3, about=identities/id2, supports=psyche/val1, conflicts=psyche/bel3; repeat")
+    pa.add_argument("--about", metavar="SUBJECT", help="stance only: user | identity=<id> | node=<category>/<id> | a free label")
+    pa.add_argument("--lie", action="store_true", help="belief only: false_but_held (the character holds it, the author says it is false)")
+    pa.add_argument("--tag", action="append"); pa.add_argument("--risk", choices=["none", "inappropriate", "dangerous"], default="none", help="declared risk (tags.content follows)")
+    pa.add_argument("--origin", choices=["lived", "authored"], default="lived"); pa.add_argument("--canon", action="store_true", help="visibility: canon (default personal: one user's data, as a lived memory)")
+    pa.add_argument("--personal", action="store_true", help="visibility: personal (the default; kept for symmetry with memory add)")
+    pa.add_argument("--disclosure", choices=["open", "guarded", "secret"], default="open"); pa.add_argument("--preset", action="append", help="preset(s) that hold it (default: the character's presets)")
+    pa.add_argument("-o", "--out", help="output .cof (default: in place)"); pa.set_defaults(fn=cmd_psyche_add)
     s = sub.add_parser("unpack", help=".cof → folder"); s.add_argument("cof"); s.add_argument("-o", "--out"); s.set_defaults(fn=cmd_unpack)
     s = sub.add_parser("info", help="summary of a .cof"); s.add_argument("cof"); s.set_defaults(fn=cmd_info)
     s = sub.add_parser("tokens", help="token estimate per block"); s.add_argument("path"); s.set_defaults(fn=cmd_tokens)
     s = sub.add_parser("embed-text", help="write a text (.md/.txt) into a PNG as iTXt 'Description' — readable by the builder (personality + appearance)"); s.add_argument("png"); s.add_argument("text"); s.add_argument("-o", "--out"); s.set_defaults(fn=cmd_embed_text)
     s = sub.add_parser("read-text", help="show the descriptive text embedded in an image (PNG/JPEG: iTXt, XMP, EXIF)"); s.add_argument("image"); s.set_defaults(fn=cmd_read_text)
     s = sub.add_parser("import", help="PNG/JSON card (CCv2/V3) → COF folder"); s.add_argument("src"); s.add_argument("-o", "--out"); s.add_argument("--age", type=int); s.add_argument("--real", action="store_true", help="character based on a real person (consent required)"); s.add_argument("--lang", default="en"); s.add_argument("--keep-png", action="store_true", help="keep the PNG as the head.front view"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_import)
-    s = sub.add_parser("export", help="folder/.cof → png | soul | card | agent (workspace: SOUL.md, IDENTITY.md, skills/, memories) — from the default preset or --preset"); s.add_argument("src"); s.add_argument("--format", choices=["png", "soul", "card", "agent"], required=True); s.add_argument("-o", "--out"); s.add_argument("--preset"); s.add_argument("--keep-personal", action="store_true", help="agent: also export `visibility: personal` memories (dropped by default)"); s.set_defaults(fn=cmd_export)
-    s = sub.add_parser("migrate", help="folder v0.2 … v0.5 → v1.0"); s.add_argument("dir"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_migrate)
+    s = sub.add_parser("export", help="folder/.cof → png | soul | card | agent (workspace: SOUL.md, IDENTITY.md, skills/, memories) — from the default preset or --preset"); s.add_argument("src"); s.add_argument("--format", choices=["png", "soul", "card", "agent"], required=True); s.add_argument("-o", "--out"); s.add_argument("--preset"); s.add_argument("--keep-personal", action="store_true", help="agent: also export `visibility: personal` memories and psyche nodes (dropped by default)"); s.add_argument("--keep-dangerous", action="store_true", help="agent: also render psyche nodes of risk `dangerous` (dropped by default: an agent acts — RFC 0004 § 3 septies)"); s.set_defaults(fn=cmd_export)
+    s = sub.add_parser("migrate", help="folder v0.2 … v0.5 → v1.0; --psyche converts the 1.0 lists (goals, fears, values, behaviours) into psyche nodes (1.2)"); s.add_argument("dir"); s.add_argument("--psyche", action="store_true", help="write psyche nodes from psyche.json goals / fears / values and the card's cof.goals / cof.fears / cof.behavior (the lists stay); idempotent"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_migrate)
     s = sub.add_parser("merge", help="merge several .cof files/folders (same name, nickname, fictional status and morphology class ⇒ same identity, otherwise multiple identities)"); s.add_argument("sources", nargs="+"); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_merge)
-    s = sub.add_parser("extract", help="extract a preset, a character (--identity), or the presets carrying one or more tags (intersection), into a lighter COF folder"); s.add_argument("src"); g = s.add_mutually_exclusive_group(required=True); g.add_argument("--preset"); g.add_argument("--identity", help="one character: all its presets, elements, files and rights"); g.add_argument("--tag", action="append", help="repeatable: --tag english --tag age-12"); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.add_argument("--all-audiences", "--no-intimate", dest="no_intimate", action="store_true", help="all-audiences slice: drop intimate / nude variants and the media of explicit memories (gist kept), allowSexualUsage = false"); s.add_argument("--keep-personal", action="store_true", help="keep `visibility: personal` memories (a user's data; dropped by default)"); s.set_defaults(fn=cmd_extract)
+    s = sub.add_parser("extract", help="extract a preset, a character (--identity), or the presets carrying one or more tags (intersection), into a lighter COF folder"); s.add_argument("src"); g = s.add_mutually_exclusive_group(required=True); g.add_argument("--preset"); g.add_argument("--identity", help="one character: all its presets, elements, files and rights"); g.add_argument("--tag", action="append", help="repeatable: --tag english --tag age-12"); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.add_argument("--all-audiences", "--no-intimate", dest="no_intimate", action="store_true", help="all-audiences slice: drop intimate / nude variants and the media of explicit memories (gist kept), allowSexualUsage = false"); s.add_argument("--keep-personal", action="store_true", help="keep `visibility: personal` memories and psyche nodes (a user's data; dropped by default)"); s.add_argument("--no-risk", action="store_true", help="risk purge (RFC 0004 § 3 septies): drop psyche nodes of risk `inappropriate` and `dangerous` (and the contradictions that lose a side); separate from --all-audiences"); s.set_defaults(fn=cmd_extract)
 
     a = ap.parse_args(argv)
     try:
