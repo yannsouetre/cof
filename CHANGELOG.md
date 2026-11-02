@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased — 1.1.1
+## 1.1.1 — 2026-11-02 (tooling: the memory graph at scale, pages, performance)
 
 - **Builder: a note under the salience slider** of every memory (« set it memory by memory: a considered salience makes a more finished memory; 50 is the default ») — Yann's decision of 30 October, the same note will sit under a psyche node's strength in 1.2.
 - **`cof validate`: tool limits, not format limits** — an INFO line from 5 000 memories (the reference tools are tuned for that order of magnitude; the explorer and the builder open such files in optimized views) and a WARN line from 20 000 (fluid reading and search no longer guaranteed). `cof validate` now prints INFO lines (`info.notes` in `--json`).

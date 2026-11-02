@@ -12,3 +12,4 @@ Thumbs.db
 !viewer/samples/*.cof
 !tests/invalid/*.cof
 cli/build/
+/*.png
