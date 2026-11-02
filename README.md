@@ -19,7 +19,7 @@
 
 COF is an open file format (`.cof`, a ZIP container) that bundles everything that defines an AI character: personality, appearance (photos, vector code, description), voice, 3D body, motion — **and** its rights, consent and provenance. The same file opens in a chat app, an image or video generator, a game engine, Blender, or serves as the "soul" of an agent.
 
-> Status: **1.1, released on 30 October 2026** — [AI characters now have memories](https://yannsouetre.github.io/cof/memories/) (RFC 0002), gender, relations, archetype and role (RFC 0003), `COF.md` in every file; format 1.0 (17 October 2026) stays valid and readable by every 1.x tool. Reference tooling `cof-cli` 1.1.0 (`pip install cof-cli`), builder 0.13, explorer, ComfyUI nodes 0.6. Feedback welcome through the [issues](https://github.com/yannsouetre/cof/issues).
+> Status: **1.1, released on 30 October 2026** — [AI characters now have memories](https://yannsouetre.github.io/cof/memories/) (RFC 0002), gender, relations, archetype and role (RFC 0003), `COF.md` in every file; format 1.0 (17 October 2026) stays valid and readable by every 1.x tool. **Tooling 1.1.1, released on 2 November 2026** (no format change): the memory graph holds a whole life — columns under the periods, life stages, a time window, people and places as tags —, pages in every list, and the builder opens 5 000 memories in seconds ([release notes](docs/release-notes-1.1.1.md)). Reference tooling `cof-cli` 1.1.1 (`pip install cof-cli`), builder 0.13.1, explorer 1.1.1, ComfyUI nodes 0.6. Feedback welcome through the [issues](https://github.com/yannsouetre/cof/issues).
 
 ## Why
 - **No more juggling** PNGs, WAVs, VRMs, LoRAs and scattered notes.
@@ -49,6 +49,10 @@ A **preset** is a ready-to-use combination: one personality, one look, one voice
 <p align="center"><a href="https://yannsouetre.github.io/cof/viewer/#clara/memories:graph"><img src="docs/img/cof-memories.jpg" alt="The explorer's memory graph of Clara at 65: a period, nine moments on a time axis, the people and places they link to" width="100%"></a></p>
 
 Since 1.1, a character can carry **memories**: moments and periods of its life, each with a short text per language, when / where / with whom, how it felt then and now, how clearly it comes back, a few sensory traces (images, sound, a short video), and what the character would rather not tell. What the character lives with a user is written back into the same file as new memories — and leaves with it. Read [why it matters](https://yannsouetre.github.io/cof/memories/) and [how much a life could weigh](https://yannsouetre.github.io/cof/memories/how-much.html); the rules are in [RFC 0002](rfcs/0002-memories.md).
+
+<p align="center"><a href="https://yannsouetre.github.io/cof/viewer/"><img src="docs/img/cof-memories-scale.jpg" alt="The explorer's memory graph on a 500-memory file: a window of four years on the density strip, periods with their moments in columns, a hovered memory showing its link and the place it happened, people and places as tags under the graph" width="100%"></a></p>
+
+Since 1.1.1 the graph holds a whole life: periods with their moments in columns, the loose moments by life stage, a time window on a density strip, people and places as tags (hover one to see its memories), and a network view when the window is small enough to read. Tested on 5 000 memories — the order of magnitude of [a life](https://yannsouetre.github.io/cof/memories/how-much.html).
 
 ## Its rights travel with it
 <p align="center"><img src="docs/img/cof-rights.jpg" alt="A rights card: voice cloning no, training no, redistribution no, commercial use personal and non-profit, AI disclosure yes" width="100%"></p>
@@ -121,7 +125,7 @@ A `.cof` contains a valid Character Card V3 and exports to a `ccv3` PNG card, a 
 
 ## Cite
 
-Each release is archived on Zenodo. Concept DOI (all versions): [10.5281/zenodo.23434045](https://doi.org/10.5281/zenodo.23434045) · version 1.1.0: [10.5281/zenodo.23805416](https://doi.org/10.5281/zenodo.23805416) · version 1.0.0: [10.5281/zenodo.23434046](https://doi.org/10.5281/zenodo.23434046). Citation metadata: [`CITATION.cff`](CITATION.cff).
+Each release is archived on Zenodo. Concept DOI (all versions): [10.5281/zenodo.23434045](https://doi.org/10.5281/zenodo.23434045) · version 1.1.1: [10.5281/zenodo.23879507](https://doi.org/10.5281/zenodo.23879507) · version 1.1.0: [10.5281/zenodo.23805416](https://doi.org/10.5281/zenodo.23805416) · version 1.0.0: [10.5281/zenodo.23434046](https://doi.org/10.5281/zenodo.23434046). Citation metadata: [`CITATION.cff`](CITATION.cff).
 
 ## License
 | Part | License |

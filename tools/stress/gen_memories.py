@@ -1,25 +1,39 @@
-"""Stress file for the memories views: N moments, P periods, links everywhere, no media, minimal gists, normal labels.
-Usage: python3 tools/stress/gen_memories.py 100 10 out-dir  (then `cof pack out-dir -o x.cof`). Not an example: a test input for the explorer graph and the builder lists."""
+"""Stress file for the memories views: N moments, P periods, links everywhere, people and places as hubs (a few frequent, many rare), no media, minimal gists, normal labels.
+Usage: python3 tools/stress/gen_memories.py 100 10 out-dir  (then `cof pack out-dir -o x.cof`). Not an example: a test input for the explorer graph and the builder lists.
+Periods split ages 3–63 evenly (fractional bounds when P > 60); moments get one decimal of age so that short periods still hold some."""
 import json, random, shutil, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "cli"))
 from cof_cli.selfdesc import memory_add
 N, P, out = int(sys.argv[1]), int(sys.argv[2]), Path(sys.argv[3])
+PHOTOS = len(sys.argv) > 4 and sys.argv[4] == "--photos"   # a distinct 1024×683 JPEG on every moment (≈ 120–200 KB each): the graph with media
 random.seed(N)
 if out.exists(): shutil.rmtree(out)
 shutil.copytree(Path(__file__).resolve().parents[2] / "spec/examples/01-clara-text-only", out)
 W = "matin soir quai jardin gare atelier pluie neige lettre fenêtre train velo cafe river lampe rue plage cahier musique silence".split()
 label = lambda: " ".join(random.choice(W) for _ in range(random.randint(2, 5))).capitalize()
+NAMES = "Léo Théo Anna Marc Inès Paul Jade Hugo Lina Noé Rose Yann Zoé Malo Elsa Tom Iris Sacha Lou Nina".split()
+PEOPLE = [NAMES[i % len(NAMES)] + ("" if i < len(NAMES) else f" {i // len(NAMES) + 1}") for i in range(max(6, N // 20))]
+PLACES = [f"{w.capitalize()} {i + 1}" for i, w in enumerate((W * (1 + N // 400))[:max(4, N // 40)])]
+zipf = lambda pool: random.choices(pool, weights=[1 / (i + 1) for i in range(len(pool))])[0]   # a few people / places are everywhere, most are rare
 periods = []
 for i in range(P):
-    a = 3 + i * (60 // P); b = a + 60 // P - 1
+    span = 60 / P; a = round(3 + i * span, 2); b = round(a + span - (1 if span >= 2 else 0.01), 2); a = int(a) if a == int(a) else a; b = int(b) if b == int(b) else b
     vid = memory_add(out, identity=None, kind="period", gists={"fr": f"Période {i+1}.", "en": f"Period {i+1}."}, label=f"Les années {a}–{b} / The {a}–{b} years", age=a, lang="fr", fidelity="faded")
     n = json.loads((out / "elements/memories" / vid / "memory.json").read_text("utf-8")); n["when"]["to"] = {"age": {"value": b, "unit": "years"}}
     (out / "elements/memories" / vid / "memory.json").write_text(json.dumps(n, ensure_ascii=False, indent=2), "utf-8"); periods.append((vid, a, b))
 moments = []
 for i in range(N):
-    age = random.randint(3, 62); lab = label()
-    vid = memory_add(out, identity=None, kind="moment", gists={"fr": f"Souvenir {i+1}.", "en": f"Memory {i+1}."}, label=lab + " / " + lab.lower(), age=age, approx=random.random() < .3, lang="fr", fidelity=random.choice(["vivid", "clear", "faded"]), salience=random.randint(10, 95), tags=[random.choice(W)])
+    age = round(random.uniform(3, 62.9), 1); lab = label()
+    who = sorted({zipf(PEOPLE) for _ in range(random.choice([0, 1, 1, 2, 3]))}); where = zipf(PLACES) if random.random() < .7 else None
+    media = None
+    if PHOTOS:
+        from PIL import Image, ImageDraw
+        im = Image.radial_gradient("L").resize((1024, 683)).convert("RGB"); d = ImageDraw.Draw(im)
+        for _ in range(40): x, y = random.randint(0, 1024), random.randint(0, 683); d.ellipse([x, y, x + random.randint(20, 200), y + random.randint(20, 200)], fill=tuple(random.randint(0, 255) for _ in range(3)))
+        noise = Image.effect_noise((1024, 683), 48).convert("RGB"); im = Image.blend(im, noise, .45)   # fine grain: a real scene's weight (≈ 250 KB at 0.7 MP, like a phone JPEG), not a flat drawing's
+        pf = out / f"photo{i}.jpg"; im.save(pf, "JPEG", quality=88); media = [pf]
+    vid = memory_add(out, identity=None, kind="moment", gists={"fr": f"Souvenir {i+1}.", "en": f"Memory {i+1}."}, label=lab + " / " + lab.lower(), age=age, who=who, where=where, approx=random.random() < .3, lang="fr", fidelity=random.choice(["vivid", "clear", "faded"]), media=media, salience=random.randint(10, 95), tags=[random.choice(W)])
     moments.append((vid, age))
 mp = {v: json.loads((out / "elements/memories" / v / "memory.json").read_text("utf-8")) for v, _ in moments}
 for i, (v, age) in enumerate(moments):
@@ -31,6 +45,7 @@ for i, (v, age) in enumerate(moments):
         if older: links.append({"to": f"memories/{random.choice(older)}", "type": random.choice(["after", "about", "because", "same-event"])})
     if links: mp[v]["links"] = links
     (out / "elements/memories" / v / "memory.json").write_text(json.dumps(mp[v], ensure_ascii=False, indent=2), "utf-8")
-m = json.loads((out / "manifest.json").read_text("utf-8")); m["name"] = f"Stress {N}+{P}"
+for pf in out.glob("photo*.jpg"): pf.unlink()   # the copies live under elements/memories/<id>/
+m = json.loads((out / "manifest.json").read_text("utf-8")); m["name"] = f"Stress {N}+{P}" + (" photos" if PHOTOS else "")
 (out / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2), "utf-8")
 print("ok", N, P)
