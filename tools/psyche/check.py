@@ -21,7 +21,7 @@ def check(root: Path, memories=set(), identities=set(), schema_path=None):
             cat, t = l["to"].split("/", 1)
             if cat == "psyche" and t not in nodes: out["errors"].append(f"{vid}: dangling {l['to']}")
             if cat == "memories" and memories and t not in memories: out["errors"].append(f"{vid}: unknown memory {t}")
-            if cat == "identities" and identities and t not in identities: out["errors"].append(f"{vid}: unknown identity {t}")
+            if cat == "identities": out["errors"].append(f"{vid}: link to {l['to']} — people go in `who` (RFC 0005)")
             if l["type"] in ("supports", "conflicts") and cat != "psyche": out["errors"].append(f"{vid}: {l['type']} must target a psyche node")
         if k == "contradiction" and sum(1 for l in node.get("links", []) if l["type"] == "conflicts") != 2: out["errors"].append(f"{vid}: a contradiction carries exactly two conflicts")
         if k == "wound" and not any(l["type"] == "because" and l["to"].startswith("memories/") for l in node.get("links", [])): out["info"].append(f"{vid}: wound without a memory cause")
@@ -29,6 +29,8 @@ def check(root: Path, memories=set(), identities=set(), schema_path=None):
         if "about" in node and k != "stance": out["errors"].append(f"{vid}: about field on a {k}")
         if k == "stance" and "about" not in node: out["info"].append(f"{vid}: stance without a subject")
         if k == "rule" and node.get("stability", "settled") != "core": out["info"].append(f"{vid}: a rule that is not core")
+        for w in node.get("who", []):
+            if w.get("identity") not in (None, "self") and identities and w["identity"] not in identities: out["errors"].append(f"{vid}: who: unknown identity {w['identity']}")
         a = node.get("about", {})
         if "identity" in a and identities and a["identity"] not in identities: out["errors"].append(f"{vid}: stance about unknown identity {a['identity']}")
         if "strength" in variants[vid] and variants[vid]["strength"] != node.get("strength", 50): out["errors"].append(f"{vid}: manifest strength differs from the node")

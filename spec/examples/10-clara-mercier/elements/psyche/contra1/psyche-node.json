@@ -1,13 +1,18 @@
 {
   "gist": {
-    "en": "Preaches slowness, works at night.",
-    "fr": "Prône la lenteur, travaille la nuit."
+    "en": "Preaches slowness, works at night — after a few guitar chords, her only slowness.",
+    "fr": "Prône la lenteur, travaille la nuit — après quelques accords de guitare, sa seule lenteur."
   },
   "strength": 60,
   "stability": "settled",
   "origin": "authored",
   "visibility": "canon",
   "disclosure": "open",
+  "what": [
+    {
+      "item": "appearance/x1"
+    }
+  ],
   "links": [
     {
       "to": "psyche/val1",

@@ -1,7 +1,7 @@
 {
   "gist": {
-    "fr": "Notre mariage, à 31 ans, dans le jardin de la mairie du 1er : une robe simple, Théo qui n'arrivait pas à mettre l'alliance, le discours de ma grand-mère qui a fait pleurer tout le monde.",
-    "en": "Our wedding, at 31, in the garden of the town hall: a simple dress, Théo failing to slide the ring on, my grandmother's speech that made everyone cry."
+    "fr": "Notre mariage, à 31 ans, dans le jardin de la mairie du 1er : une robe simple, Théo qui n'arrivait pas à mettre l'alliance, le discours de ma grand-mère qui a fait pleurer tout le monde — et son pendentif, qu'elle m'avait passé au cou le matin même.",
+    "en": "Our wedding, at 31, in the garden of the town hall: a simple dress, Théo failing to slide the ring on, my grandmother's speech that made everyone cry — and her pendant, which she had put around my neck that very morning."
   },
   "nature": [
     "experienced"
@@ -42,6 +42,14 @@
       "label": {
         "fr": "ma grand-mère",
         "en": "my grandmother"
+      }
+    }
+  ],
+  "what": [
+    {
+      "label": {
+        "fr": "le pendentif de ma grand-mère",
+        "en": "my grandmother's pendant"
       }
     }
   ],

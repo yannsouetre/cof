@@ -351,9 +351,9 @@
     },
     {
       "file": "psyche-link-dangling.cof",
-      "rule": "a link points to an existing node or identity",
+      "rule": "a link points to an existing memory or psyche node",
       "spec": "RFC 0004 § 3 sexies",
-      "expect": "unknown node or identity"
+      "expect": "unknown node"
     },
     {
       "file": "psyche-supports-not-psyche.cof",
@@ -402,6 +402,48 @@
       "rule": "a file using the psyche category declares cof 1.2",
       "spec": "RFC 0004 § 3 ter / § 8",
       "expect": "uses 1.2 additions"
+    },
+    {
+      "file": "psyche-link-to-identity.cof",
+      "rule": "a psyche link targets a memory or a psyche node — people go in `who`",
+      "spec": "RFC 0005 § 2.3 / RFC 0004 § 3 sexies",
+      "expect": "people go in `who`"
+    },
+    {
+      "file": "psyche-who-unknown-identity.cof",
+      "rule": "a person entry's identity exists (a file without an identities table knows only \"self\")",
+      "spec": "RFC 0005 § 2.5",
+      "expect": "who: unknown identity"
+    },
+    {
+      "file": "psyche-object-unresolved.cof",
+      "rule": "an object entry's item names an element of the character",
+      "spec": "RFC 0005 § 2.5",
+      "expect": "unknown element"
+    },
+    {
+      "file": "psyche-entry-without-reference-or-label.cof",
+      "rule": "a person, place or object entry carries its reference or a label",
+      "spec": "RFC 0005 § 2.1",
+      "expect": "its reference or a label"
+    },
+    {
+      "file": "memory-object-unresolved.cof",
+      "rule": "a memory's object names an existing element of the character",
+      "spec": "RFC 0005 § 2.5",
+      "expect": "unknown element"
+    },
+    {
+      "file": "memory-objects-in-a-1.1-file.cof",
+      "rule": "a file using objects on a memory declares cof 1.2",
+      "spec": "RFC 0005 § 6",
+      "expect": "uses 1.2 additions"
+    },
+    {
+      "file": "object-of-another-character.cof",
+      "rule": "in a cast file a node's places and objects are its own character's elements",
+      "spec": "RFC 0005 § 2.5",
+      "expect": "belongs to another character"
     },
     {
       "file": "mimetype-not-first.cof",

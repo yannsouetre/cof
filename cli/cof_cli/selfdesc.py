@@ -46,13 +46,17 @@ def self_description(manifest: dict) -> str:
         "- **Real persons** (`fictional: false`) come with a consent record; their likeness, voice and memories never travel to another character or another file.",
         "- **Content flags** (`tags.content`) list what the file holds (`nudity`, `violence`…); `none` means nothing flagged.",
     ]
+    try:
+        v12 = tuple(int(x) for x in str(manifest.get("cof", "1.0")).split(".")[:2]) >= (1, 2)
+    except ValueError:
+        v12 = False
     if has_mem:
         lines += [
-            "- **Memories** (`elements/memories`, COF 1.1 / RFC 0002): nodes `moment` or `period`, each with a `memory.json` (gist per language, when, where, who, feelings, `fidelity`, links). `disclosure: secret` is never told; `guarded` only when it matters; `visibility: personal` nodes are one user's data and never leave this file without their consent; `explicit` nodes show no media to anyone but an adult preset with the opt-in. Readers order by age, else date, else links.",
+            "- **Memories** (`elements/memories`, COF 1.1 / RFC 0002): nodes `moment` or `period`, each with a `memory.json` (gist per language, when, where, who, " + ("what — the objects, an accessory element and/or a name (1.2, RFC 0005) —, " if v12 else "") + "feelings, `fidelity`, links). `disclosure: secret` is never told; `guarded` only when it matters; `visibility: personal` nodes are one user's data and never leave this file without their consent; `explicit` nodes show no media to anyone but an adult preset with the opt-in. Readers order by age, else date, else links.",
         ]
     if has_psy:
         lines += [
-            "- **Psyche** (`elements/psyche`, COF 1.2 / RFC 0004): what the character is inside and why, as a graph of short nodes — `value`, `belief` (a lie it tells itself is `false_but_held`), `want`, `need`, `fear`, `wound`, `stance` (toward a character, a node, the user or a label), `taste`, `habit`, `contradiction` (owns a tension between two nodes), `rule` (a boundary kept whatever the pressure) — each in `psyche-node.json` (gist per language, `strength` 0–100, `stability` core / settled / shifting / fragile, `since`, links `because` / `about` / `supports` / `conflicts` to memories, nodes and characters). Presets pick nodes in `slots.psyche`. `disclosure: secret` nodes are context, never quoted; `personal` nodes are one user's data. **Declared risk**: a node's `risk` is `inappropriate` (unsuitable for some audiences) or `dangerous` (would make the character harmful if it acted on it), mirrored at file level by `tags.content` `psyche-inappropriate` / `psyche-dangerous` — a host that gives the character tools or data access MUST NOT load `dangerous` nodes (`cof export --format agent` leaves them out unless `--keep-dangerous`; `cof extract --no-risk` drops both levels); a fiction host may load everything and should say so. `cof export --format agent` renders the nodes as the « Who she is » section of `SOUL.md`.",
+            "- **Psyche** (`elements/psyche`, COF 1.2 / RFC 0004): what the character is inside and why, as a graph of short nodes — `value`, `belief` (a lie it tells itself is `false_but_held`), `want`, `need`, `fear`, `wound`, `stance` (toward a character, a node, the user or a label), `taste`, `habit`, `contradiction` (owns a tension between two nodes), `rule` (a boundary kept whatever the pressure) — each in `psyche-node.json` (gist per language, `strength` 0–100, `stability` core / settled / shifting / fragile, `since`, links `because` / `about` / `supports` / `conflicts` to memories and nodes, and the people, places and objects it is tied to — `who`, `where`, `what`, RFC 0005: a character of the file, an environment, an accessory, or a name). Presets pick nodes in `slots.psyche`. `disclosure: secret` nodes are context, never quoted; `personal` nodes are one user's data. **Declared risk**: a node's `risk` is `inappropriate` (unsuitable for some audiences) or `dangerous` (would make the character harmful if it acted on it), mirrored at file level by `tags.content` `psyche-inappropriate` / `psyche-dangerous` — a host that gives the character tools or data access MUST NOT load `dangerous` nodes (`cof export --format agent` leaves them out unless `--keep-dangerous`; `cof extract --no-risk` drops both levels); a fiction host may load everything and should say so. `cof export --format agent` renders the nodes as the « Who she is » section of `SOUL.md`.",
         ]
     lines += [
         "",
@@ -86,10 +90,33 @@ def _next_id(variants: dict, prefix: str) -> str:
     return f"{prefix}{n + 1}"
 
 
+def axis_entry(spec: str, lang: str, ref_key: str, words: tuple[str, ...] = (), opt: str = "") -> dict:
+    """One person, place or object entry from the command line (RFC 0005 § 2.1), the `--who` syntax of `memory add`:
+    parts separated by `|` — `<ref_key>=<reference>` (identity=martien, environment=appearance/e1, item=appearance/x1),
+    the allowed `words` (shown, real) as flags, anything else the free name. "le carnet", "item=appearance/x1|shown",
+    "ma guitare|item=appearance/x1"."""
+    e: dict = {}
+    for x in (p.strip() for p in str(spec).split("|")):
+        if not x:
+            continue
+        if x.startswith(ref_key + "="):
+            e[ref_key] = x[len(ref_key) + 1:].strip()
+        elif x.lower() in words:
+            e[x.lower()] = True
+        elif "label" not in e:
+            e["label"] = {lang: x}
+        else:
+            raise ValueError(f"{opt} {spec!r}: two names ({x!r}); use {ref_key}=<ref> for the reference" + (f", or the words {', '.join(words)}" if words else ""))
+    if not (e.get(ref_key) or e.get("label")):
+        raise ValueError(f"{opt} {spec!r}: give a name or {ref_key}=<ref>")
+    return {k: e[k] for k in (ref_key, "label", *words) if k in e}
+
+
 def memory_add(src: Path, *, identity: str | None, kind: str, gists: dict[str, str], label: str | None = None, age: float | None = None,
                date: str | None = None, approx: bool = False, where: str | None = None, who: list[str] | None = None, tags: list[str] | None = None,
                personal: bool = False, origin: str = "lived", disclosure: str = "open", fidelity: str = "clear", salience: int | None = None,
-               media: list[Path] | None = None, presets: list[str] | None = None, lang: str | None = None, self_shown: bool = False) -> str:
+               media: list[Path] | None = None, presets: list[str] | None = None, lang: str | None = None, self_shown: bool = False,
+               what: list[str] | None = None) -> str:
     """Append one lived memory to an unpacked character folder (RFC 0002 § 3, § 5.7); returns the new node id."""
     mpath = src / "manifest.json"
     m = json.loads(mpath.read_text("utf-8"))
@@ -143,6 +170,9 @@ def memory_add(src: Path, *, identity: str | None, kind: str, gists: dict[str, s
         W.append(e)
     if W:
         node["who"] = W
+    O = [axis_entry(x, lang, "item", ("shown",), "--what") for x in what or []]    # objects (1.2, RFC 0005 § 2.2)
+    if O:
+        node["what"] = O
     if salience is not None:
         node["salience"] = int(salience)
     node["fidelity"] = fidelity
@@ -195,6 +225,8 @@ def memory_add(src: Path, *, identity: str | None, kind: str, gists: dict[str, s
             sl["memories"].append(vid)
     if str(m.get("cof", "1.0")) == "1.0":
         m["cof"] = "1.1"
+    if O and str(m.get("cof")) == "1.1":                         # objects are a 1.2 field: the lowest minor that defines what the file uses
+        m["cof"] = "1.2"
     cov = m.setdefault("coverage", {})
     if "memories" not in (cov.get("elements") or []):
         cov["elements"] = sorted(set(cov.get("elements") or []) | {"memories"})
@@ -212,7 +244,8 @@ def memory_add(src: Path, *, identity: str | None, kind: str, gists: dict[str, s
 def psyche_add(src: Path, *, identity: str | None, kind: str, gists: dict[str, str], label: str | None = None, strength: int | None = None,
                stability: str | None = None, since_age: float | None = None, since_date: str | None = None, approx: bool = False,
                links: list[str] | None = None, about: str | None = None, lie: bool = False, tags: list[str] | None = None, risk: str = "none",
-               origin: str = "lived", personal: bool = True, disclosure: str = "open", presets: list[str] | None = None) -> str:
+               origin: str = "lived", personal: bool = True, disclosure: str = "open", presets: list[str] | None = None,
+               who: list[str] | None = None, where: list[str] | None = None, what: list[str] | None = None) -> str:
     """Append one psyche node to an unpacked character folder — the host's write path (RFC 0004 § 3 bis, § 3 ter):
     `origin: lived` and `visibility: personal` by default like a memory lived with one user, a first `revisions` entry on a
     lived node, the node listed by the character's presets, `tags.content` following `risk`. Returns the new node id."""
@@ -275,7 +308,13 @@ def psyche_add(src: Path, *, identity: str | None, kind: str, gists: dict[str, s
         ty, to = ty.strip(), to.strip()
         if ty not in ("because", "about", "supports", "conflicts") or "/" not in to:
             raise ValueError(f"--link {ln!r}: expected TYPE=<category>/<id> with TYPE because, about, supports or conflicts")
+        if to.startswith("identities/"):
+            raise ValueError(f"--link {ln!r}: links target memories and psyche nodes — a person goes in --who identity={to.partition('/')[2]} (RFC 0005)")
         L.append({"to": to, "type": ty})
+    for key, specs, ref_key, words in (("who", who, "identity", ("real",)), ("where", where, "environment", ()), ("what", what, "item", ())):
+        E_ = [axis_entry(x, lang, ref_key, words, f"--{key}") for x in specs or []]     # people, places, objects (RFC 0005 § 2.3)
+        if E_:
+            node[key] = E_
     if L:
         node["links"] = L
     node["origin"] = origin

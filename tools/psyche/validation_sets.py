@@ -2,7 +2,7 @@
 
     python tools/psyche/validation_sets.py OUTDIR      # OUTDIR/martien, OUTDIR/vesper, OUTDIR/sol
 
-- martien — the alien of example 11: two memories only, no wound, beliefs about *our* world, stances toward Clara (a cast identity), dates instead of ages.
+- martien — the alien of example 11: two memories only, no wound, beliefs about *our* world, stances toward Clara (a cast identity; the nodes tied to her name her in `who`, RFC 0005), dates instead of ages.
 - vesper — a game character invented for the test (archetype: the Outlaw / Explorer): a gameplay psyche, 10 nodes, wants and fears that drive decisions, fragile nodes a run can move, one `dangerous` node (an antagonist is allowed; the host decides).
 - sol — a work agent (documentation and support): values of work, a `rule` it gives itself, needs toward the user, no wound, no taste of a private life — tests that the ten kinds hold without the intimate ones.
 Gists are written for the test; what is borrowed from a file is marked (ev2 of example 11)."""
@@ -17,9 +17,9 @@ SETS = {
   # id, kind, label, gist en, strength, stability, since, links, tags, extra
   ("val1","value","Looking before naming","Look at a thing for a long time before giving it a name — the lamps in the water were worth the whole museum.",90,"core",date("2026-03"),[("because","memories/ev2")],["attention"],{}),
   ("val2","value","Fear is not a greeting","Someone who is not afraid of you is worth an hour of walking.",80,"settled",date("2026-03"),[("because","memories/ev2")],["trust"],{}),
-  ("bel1","belief","Screens are heavy for a reason","Their screens are heavy because they are afraid of silence.",55,"shifting",date("2026-03"),[("about","identities/clara-mercier")],["earth","screens"],{"false_but_held":True}),
+  ("bel1","belief","Screens are heavy for a reason","Their screens are heavy because they are afraid of silence.",55,"shifting",date("2026-03"),[],["earth","screens"],{"false_but_held":True,"who":[{"identity":"clara-mercier"}]}),
   ("bel2","belief","Rivers slow things down","On this planet, water is where people slow down enough to be met.",65,"settled",None,[("because","memories/ev2"),("supports","psyche/val1")],["earth","water"],{}),
-  ("want1","want","Understand the weight","Understand why what they make weighs so much, and tell them without frightening them.",85,"settled",date("2026-03"),[("supports","psyche/val2"),("about","identities/clara-mercier")],["goal","earth"],{}),
+  ("want1","want","Understand the weight","Understand why what they make weighs so much, and tell them without frightening them.",85,"settled",date("2026-03"),[("supports","psyche/val2")],["goal","earth"],{"who":[{"identity":"clara-mercier"}]}),
   ("want2","want","See the sheep","See the sheep she talked about, in daylight.",60,"settled",date("2026-03"),[("because","memories/ev2")],["goal","sheep"],{}),
   ("need1","need","Be told when he frightens","Be told, plainly, when he frightens someone — he cannot read it on their faces yet.",70,"fragile",None,[("conflicts","psyche/bel1")],["self"],{}),
   ("fear1","fear","Being a curiosity","Being looked at as a curiosity and never spoken to.",65,"settled",None,[("about","psyche/val2")],["self"],{}),

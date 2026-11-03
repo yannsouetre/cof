@@ -124,38 +124,49 @@ def merge_dirs(sources: list[Path], dst: Path) -> dict:
             for vid, v in e["variants"].items():
                 if v.get("derives_from") and (cat, v["derives_from"]) in vid_map:
                     v["derives_from"] = vid_map[(cat, v["derives_from"])]
-        for (cat, vid0), vid1 in vid_map.items():        # memory nodes of this file: media_from, links, where, who follow the renames (RFC 0002 § 3)
+        id_refs = {f"identities/{i0}": f"identities/{i1}" for i0, i1 in id_map.items() if i0 != i1}
+
+        def rename_axes(node: dict) -> None:
+            """People, places and objects of a node follow the renames (RFC 0005 § 2.6): `who[].identity` with its
+            character, `where[].environment` and `what[].item` with their element (a memory's `where` is one object)."""
+            places = node.get("where") if isinstance(node.get("where"), list) else [node.get("where")]
+            for p_ in places:
+                if isinstance(p_, dict) and p_.get("environment") in ref_map:
+                    p_["environment"] = ref_map[p_["environment"]]
+            for o_ in node.get("what") or []:
+                if isinstance(o_, dict) and o_.get("item") in ref_map:
+                    o_["item"] = ref_map[o_["item"]]
+            for who in node.get("who") or []:
+                if isinstance(who, dict) and who.get("identity") not in (None, "self") and who["identity"] in id_map:
+                    who["identity"] = id_map[who["identity"]]
+
+        for (cat, vid0), vid1 in vid_map.items():        # memory nodes of this file: media_from, links, where, who, what follow the renames (RFC 0002 § 3)
             if cat != "memories":
                 continue
             v = out["elements"]["memories"]["variants"][vid1]
             if v.get("media_from") in ref_map:
                 v["media_from"] = ref_map[v["media_from"]]
             rel = v.get("memory")
-            if ref_map and isinstance(rel, str) and (dst / rel).is_file():
+            if (ref_map or id_refs) and isinstance(rel, str) and (dst / rel).is_file():
                 node = json.loads((dst / rel).read_text("utf-8"))
                 for ln in node.get("links") or []:
                     if isinstance(ln, dict) and ln.get("to") in ref_map:
                         ln["to"] = ref_map[ln["to"]]
-                w = node.get("where")
-                if isinstance(w, dict) and w.get("environment") in ref_map:
-                    w["environment"] = ref_map[w["environment"]]
-                for who in node.get("who") or []:
-                    if isinstance(who, dict) and who.get("identity") not in (None, "self") and who["identity"] in id_map:
-                        who["identity"] = id_map[who["identity"]]
+                rename_axes(node)
                 (dst / rel).write_text(json.dumps(node, ensure_ascii=False, indent=2) + "\n", "utf-8")
-        id_refs = {f"identities/{i0}": f"identities/{i1}" for i0, i1 in id_map.items() if i0 != i1}
-        for (cat, vid0), vid1 in vid_map.items():        # psyche nodes (RFC 0004): links and a stance's `about` follow the renames
+        for (cat, vid0), vid1 in vid_map.items():        # psyche nodes (RFC 0004): links, a stance's `about`, who / where / what follow the renames
             rel = out["elements"]["psyche"]["variants"][vid1].get("node") if cat == "psyche" else None
             if (ref_map or id_refs) and isinstance(rel, str) and (dst / rel).is_file():
                 node = json.loads((dst / rel).read_text("utf-8"))
                 for ln in node.get("links") or []:
-                    if isinstance(ln, dict) and ln.get("to") in {**ref_map, **id_refs}:
-                        ln["to"] = {**ref_map, **id_refs}[ln["to"]]
+                    if isinstance(ln, dict) and ln.get("to") in ref_map:
+                        ln["to"] = ref_map[ln["to"]]
                 a = node.get("about")
                 if isinstance(a, dict) and a.get("node") in ref_map:
                     a["node"] = ref_map[a["node"]]
                 if isinstance(a, dict) and a.get("identity") in id_map:
                     a["identity"] = id_map[a["identity"]]
+                rename_axes(node)
                 (dst / rel).write_text(json.dumps(node, ensure_ascii=False, indent=2) + "\n", "utf-8")
         pid_map = {}
         for pid, p in (m.get("presets") or {}).items():
@@ -268,13 +279,14 @@ def extract_identity(src: Path, dst: Path, iid: str, notes: list[str] | None = N
 
 
 def relabel_departed_identities(dst: Path, m: dict, identities: dict) -> list[str]:
-    """After an extract of one character: a `who` entry that named another character of the source file becomes a
-    plain person — its name as label, its age kept, `real: true` when that character was a real person (the
-    consent record did not travel; the file stays honest about who is shown). Returns one line per rewrite."""
+    """After an extract of one character: a `who` entry (of a memory or a psyche node, RFC 0005) that named another
+    character of the source file becomes a plain person — its name as label, its age kept, `real: true` when that
+    character was a real person (the consent record did not travel; the file stays honest about who is shown); a stance
+    `about` that character keeps its name as a free subject. Returns one line per rewrite."""
     kept = set(m.get("identities") or {})
     out = []
-    for vid, v in _memory_variants(m).items():
-        rel = v.get("memory")
+    psy = (((m.get("elements") or {}).get("psyche") or {}).get("variants")) or {}
+    for cat, vid, rel in [("memories", k, x.get("memory")) for k, x in _memory_variants(m).items()] + [("psyche", k, x.get("node")) for k, x in psy.items()]:
         if not rel or not (dst / rel).is_file():
             continue
         try:
@@ -282,7 +294,7 @@ def relabel_departed_identities(dst: Path, m: dict, identities: dict) -> list[st
         except Exception:
             continue
         changed = False
-        for w in node.get("who") or []:
+        for w in node.get("who") or []:                 # memories (RFC 0002) and psyche nodes (RFC 0005 § 2.6) alike
             i = w.get("identity")
             if i and i != "self" and i not in kept:
                 src = identities.get(i) or {}
@@ -291,7 +303,13 @@ def relabel_departed_identities(dst: Path, m: dict, identities: dict) -> list[st
                 if src.get("fictional") is False:
                     w["real"] = True
                 changed = True
-                out.append(f"memories.{vid}: who: {i} is not in this file any more — kept as a person named {src.get('name') or i}")
+                out.append(f"{cat}.{vid}: who: {i} is not in this file any more — kept as a person named {src.get('name') or i}")
+        a = node.get("about") if cat == "psyche" else None
+        if isinstance(a, dict) and a.get("identity") and a["identity"] not in kept:   # a stance toward a character who left: its name as a free subject
+            i = a["identity"]; src = identities.get(i) or {}
+            node["about"] = {"label": {(src.get("language") or "en"): src.get("name") or i}}
+            changed = True
+            out.append(f"psyche.{vid}: about: {i} is not in this file any more — kept as the subject {src.get('name') or i}")
         if changed:
             (dst / rel).write_text(json.dumps(node, ensure_ascii=False, indent=2) + "\n", "utf-8")
     return out
@@ -495,20 +513,27 @@ def extract_presets(src: Path, dst: Path, pids: list[str], tags: list[str] | Non
                 while cur and (cat, cur) not in keep_v:
                     keep_v.add((cat, cur))
                     cur = (m["elements"].get(cat, {}).get("variants", {}).get(cur) or {}).get("derives_from")
-    # what the kept memories point at outside their category (RFC 0002 § 3): the place of a memory (`where.environment`)
-    # and the elements its links name (a garment, an accessory, a place) travel with the memory, whether or not the preset lists them
+    # what the kept memories point at outside their category (RFC 0002 § 3): the place of a memory (`where.environment`),
+    # its objects (`what[].item`, RFC 0005 § 2.6) and the elements its links name (a garment, an accessory, a place) travel
+    # with the memory, whether or not the preset lists them; likewise the places and objects of the kept psyche nodes
     for cat, vid in sorted(keep_v):
-        if cat != "memories":
+        if cat not in ("memories", "psyche"):
             continue
-        rel = (m["elements"]["memories"]["variants"].get(vid) or {}).get("memory")
+        rel = (m["elements"][cat]["variants"].get(vid) or {}).get("memory" if cat == "memories" else "node")
         try:
             node = json.loads((src / rel).read_text("utf-8")) if rel else {}
         except (OSError, ValueError):
             node = {}
-        refs = [str((node.get("where") or {}).get("environment") or "")] + [str(l.get("to") or "") for l in node.get("links") or []]
+        if not isinstance(node, dict):
+            node = {}
+        places = node.get("where") if isinstance(node.get("where"), list) else [node.get("where")]
+        refs = [str((p_ or {}).get("environment") or "") for p_ in places if isinstance(p_, dict) or p_ is None]
+        refs += [str(o_.get("item") or "") for o_ in node.get("what") or [] if isinstance(o_, dict)]
+        if cat == "memories":
+            refs += [str(l.get("to") or "") for l in node.get("links") or []]
         for ref in refs:
             rcat, _, rvid = ref.partition("/")
-            if not rvid or rcat == "memories" or rvid not in (m["elements"].get(rcat, {}).get("variants") or {}):
+            if not rvid or rcat in ("memories", "psyche") or rvid not in (m["elements"].get(rcat, {}).get("variants") or {}):
                 continue
             cur = rvid
             while cur and (rcat, cur) not in keep_v:

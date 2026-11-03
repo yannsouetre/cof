@@ -327,7 +327,7 @@ def with_psyche(d, nodes=None, variants=None):
 @case("psyche-node-missing", "a psyche variant names its node file", "RFC 0004 § 3 bis", "names its node file")
 def _(d): with_psyche(d, variants={"val1": {"node": None}})
 
-@case("psyche-link-dangling", "a link points to an existing node or identity", "RFC 0004 § 3 sexies", "unknown node or identity")
+@case("psyche-link-dangling", "a link points to an existing memory or psyche node", "RFC 0004 § 3 sexies", "unknown node")
 def _(d): with_psyche(d, nodes={"bel1": {"links": [{"to": "psyche/zz", "type": "because"}]}})
 
 @case("psyche-supports-not-psyche", "`supports` and `conflicts` link psyche nodes only", "RFC 0004 § 3 bis", "targets a psyche node only")
@@ -353,6 +353,32 @@ def _(d): with_psyche(d, nodes={"bel1": {"risk": "dangerous"}})
 
 @case("psyche-cof-version", "a file using the psyche category declares cof 1.2", "RFC 0004 § 3 ter / § 8", "uses 1.2 additions")
 def _(d): m = with_psyche(d); m["cof"] = "1.1"; save(d, m)
+
+# ---------- people, places and objects (RFC 0005, 1.2): memories gain `what`, psyche nodes `who` / `where` / `what` ----------
+@case("psyche-link-to-identity", "a psyche link targets a memory or a psyche node — people go in `who`", "RFC 0005 § 2.3 / RFC 0004 § 3 sexies", "people go in `who`")
+def _(d): with_psyche(d, nodes={"bel1": {"links": [{"to": "psyche/val1", "type": "supports"}, {"to": "identities/id1", "type": "about"}]}})
+
+@case("psyche-who-unknown-identity", "a person entry's identity exists (a file without an identities table knows only \"self\")", "RFC 0005 § 2.5", "who: unknown identity")
+def _(d): with_psyche(d, nodes={"val1": {"who": [{"identity": "marc"}]}})
+
+@case("psyche-object-unresolved", "an object entry's item names an element of the character", "RFC 0005 § 2.5", "unknown element")
+def _(d): with_psyche(d, nodes={"val1": {"what": [{"item": "appearance/zz"}]}})
+
+@case("psyche-entry-without-reference-or-label", "a person, place or object entry carries its reference or a label", "RFC 0005 § 2.1", "its reference or a label")
+def _(d): with_psyche(d, nodes={"val1": {"where": [{"geo": {"lat": 45.76, "lon": 4.84}}]}})
+
+@case("memory-object-unresolved", "a memory's object names an existing element of the character", "RFC 0005 § 2.5", "unknown element")
+def _(d): m = with_memory(d, node={"what": [{"item": "appearance/zz"}]}); m["cof"] = "1.2"; save(d, m)
+
+@case("memory-objects-in-a-1.1-file", "a file using objects on a memory declares cof 1.2", "RFC 0005 § 6", "uses 1.2 additions")
+def _(d): with_memory(d, node={"what": [{"label": {"en": "the notebook"}}]})
+
+@case("object-of-another-character", "in a cast file a node's places and objects are its own character's elements", "RFC 0005 § 2.5", "belongs to another character")
+def _(d):
+    m = two_characters(load(d))
+    m["elements"]["appearance"]["variants"]["x-marc"] = {"kind": "accessory", "label": "Marc's plane", "accessory_use": "not-worn", "identity": "marc"}
+    m["presets"]["marc"]["slots"]["appearance"] = ["x-marc"]; save(d, m)
+    with_psyche(d, nodes={"val1": {"what": [{"item": "appearance/x-marc"}]}}, variants={v: {"identity": "lea"} for v in PSY})
 
 # ---------- archive-level cases (pack the valid base, then tamper) ----------
 def rewrite(src: Path, dst: Path, entries):

@@ -109,6 +109,14 @@
             }
           }
         ],
+        "what": [
+          {
+            "label": {
+              "fr": "le carnet",
+              "en": "the notebook"
+            }
+          }
+        ],
         "felt_then": {
           "category": {
             "set": "everyday",
@@ -247,8 +255,8 @@
       "label": "Le premier matin dans mon atelier à moi / The first morning in my own studio",
       "node": {
         "gist": {
-          "fr": "Le premier matin dans mon atelier à moi, face au parc, à 28 ans — le lendemain de mon dernier jour à l'agence : la lumière sur le bureau vide, le carton de l'agence pas encore ouvert, le silence après quatre ans d'open space.",
-          "en": "The first morning in my own studio facing the park, at 28 — the day after my last day at the agency: light on the empty desk, the box from the agency still unopened, the silence after four years of open-plan offices."
+          "fr": "Le premier matin dans mon atelier à moi, face au parc, à 28 ans — le lendemain de mon dernier jour à l'agence : la lumière sur le bureau vide, le carton de l'agence pas encore ouvert, ma guitare posée contre lui, le silence après quatre ans d'open space.",
+          "en": "The first morning in my own studio facing the park, at 28 — the day after my last day at the agency: light on the empty desk, the box from the agency still unopened, my guitar leaning against it, the silence after four years of open-plan offices."
         },
         "nature": [
           "experienced"
@@ -270,6 +278,11 @@
           },
           "environment": "appearance/e1"
         },
+        "what": [
+          {
+            "item": "appearance/x1"
+          }
+        ],
         "felt_then": {
           "category": {
             "set": "everyday",
@@ -520,8 +533,8 @@
       "age": 31,
       "node": {
         "gist": {
-          "fr": "Notre mariage, à 31 ans, dans le jardin de la mairie du 1er : une robe simple, Théo qui n'arrivait pas à mettre l'alliance, le discours de ma grand-mère qui a fait pleurer tout le monde.",
-          "en": "Our wedding, at 31, in the garden of the town hall: a simple dress, Théo failing to slide the ring on, my grandmother's speech that made everyone cry."
+          "fr": "Notre mariage, à 31 ans, dans le jardin de la mairie du 1er : une robe simple, Théo qui n'arrivait pas à mettre l'alliance, le discours de ma grand-mère qui a fait pleurer tout le monde — et son pendentif, qu'elle m'avait passé au cou le matin même.",
+          "en": "Our wedding, at 31, in the garden of the town hall: a simple dress, Théo failing to slide the ring on, my grandmother's speech that made everyone cry — and her pendant, which she had put around my neck that very morning."
         },
         "nature": [
           "experienced"
@@ -562,6 +575,14 @@
             "label": {
               "fr": "ma grand-mère",
               "en": "my grandmother"
+            }
+          }
+        ],
+        "what": [
+          {
+            "label": {
+              "fr": "le pendentif de ma grand-mère",
+              "en": "my grandmother's pendant"
             }
           }
         ],
@@ -1166,6 +1187,14 @@
             }
           }
         ],
+        "what": [
+          {
+            "label": {
+              "fr": "le carnet",
+              "en": "the notebook"
+            }
+          }
+        ],
         "felt_then": {
           "category": {
             "set": "everyday",
@@ -1231,8 +1260,8 @@
       "label": "Le premier matin dans mon atelier à moi / The first morning in my own studio (manga)",
       "node": {
         "gist": {
-          "fr": "Le premier matin dans mon atelier à moi, face au parc, à 28 ans — le lendemain de mon dernier jour à l'agence : la lumière sur le bureau vide, le carton de l'agence pas encore ouvert, le silence après quatre ans d'open space.",
-          "en": "The first morning in my own studio facing the park, at 28 — the day after my last day at the agency: light on the empty desk, the box from the agency still unopened, the silence after four years of open-plan offices."
+          "fr": "Le premier matin dans mon atelier à moi, face au parc, à 28 ans — le lendemain de mon dernier jour à l'agence : la lumière sur le bureau vide, le carton de l'agence pas encore ouvert, ma guitare posée contre lui, le silence après quatre ans d'open space.",
+          "en": "The first morning in my own studio facing the park, at 28 — the day after my last day at the agency: light on the empty desk, the box from the agency still unopened, my guitar leaning against it, the silence after four years of open-plan offices."
         },
         "nature": [
           "experienced"
@@ -1254,6 +1283,11 @@
           },
           "environment": "appearance/e1"
         },
+        "what": [
+          {
+            "item": "appearance/x1"
+          }
+        ],
         "felt_then": {
           "category": {
             "set": "everyday",

@@ -295,7 +295,7 @@ def cmd_memory_add(a):
     return _add_node(a, "Memory", lambda work: memory_add(
         work, identity=a.identity, kind=a.kind, gists=gists, label=a.label, age=a.age, date=a.date, approx=a.approx, where=a.where,
         who=a.who, tags=a.tag, personal=a.personal, origin=a.origin, disclosure=a.disclosure, fidelity=a.fidelity, salience=a.salience,
-        media=[Path(x) for x in (a.media or [])], presets=a.preset, self_shown=a.self_shown))
+        media=[Path(x) for x in (a.media or [])], presets=a.preset, self_shown=a.self_shown, what=a.what))
 
 
 def cmd_psyche_add(a):
@@ -308,7 +308,7 @@ def cmd_psyche_add(a):
     return _add_node(a, "Psyche node", lambda work: psyche_add(
         work, identity=a.identity, kind=a.kind, gists=gists, label=a.label, strength=a.strength, stability=a.stability, since_age=a.since_age,
         since_date=a.since_date, approx=a.approx, links=a.link, about=a.about, lie=a.lie, tags=a.tag, risk=a.risk, origin=a.origin,
-        personal=not a.canon, disclosure=a.disclosure, presets=a.preset))
+        personal=not a.canon, disclosure=a.disclosure, presets=a.preset, who=a.who, where=a.where, what=a.what))
 
 
 def cmd_psyche_propose(a):
@@ -504,6 +504,7 @@ def main(argv=None) -> int:
     ma.add_argument("--gist", action="append", required=True, metavar="LANG=TEXT", help="the memory in one paragraph; repeat per language")
     ma.add_argument("--label"); ma.add_argument("--age", type=float); ma.add_argument("--date", help="YYYY, YYYY-MM or YYYY-MM-DD"); ma.add_argument("--approx", action="store_true")
     ma.add_argument("--where"); ma.add_argument("--who", action="append", metavar="LABEL[|shown][|AGE][|real]", help="a person: label, then optional words 'shown' (appears in a media), their age, 'real' (a real person who is not a character of the file); repeat");
+    ma.add_argument("--what", action="append", metavar="LABEL[|item=REF][|shown]", help="an object (1.2, RFC 0005): its name and/or item=<category>/<id> (an accessory of the character, e.g. item=appearance/x1), 'shown' if it appears in a media; repeat")
     ma.add_argument("--self-shown", action="store_true", help="the character appears in the media (requires --age: the minor rules read it)"); ma.add_argument("--tag", action="append")
     ma.add_argument("--personal", action="store_true", help="visibility: personal (one user's data) instead of canon"); ma.add_argument("--origin", choices=["lived", "authored"], default="lived")
     ma.add_argument("--disclosure", choices=["open", "guarded", "secret"], default="open"); ma.add_argument("--fidelity", choices=["vivid", "clear", "faded", "fragment"], default="clear"); ma.add_argument("--salience", type=int)
@@ -517,7 +518,10 @@ def main(argv=None) -> int:
     pa.add_argument("--gist", action="append", required=True, metavar="LANG=TEXT", help="the node in one or two sentences; repeat per language")
     pa.add_argument("--label"); pa.add_argument("--strength", type=int, help="0–100 (default 50)"); pa.add_argument("--stability", choices=["core", "settled", "shifting", "fragile"], help="default settled")
     pa.add_argument("--since-age", type=float, help="age (years) when it appeared"); pa.add_argument("--since-date", help="YYYY, YYYY-MM or YYYY-MM-DD"); pa.add_argument("--approx", action="store_true")
-    pa.add_argument("--link", action="append", metavar="TYPE=REF", help="because=memories/ev3, about=identities/id2, supports=psyche/val1, conflicts=psyche/bel3; repeat")
+    pa.add_argument("--link", action="append", metavar="TYPE=REF", help="because=memories/ev3, about=psyche/bel1, supports=psyche/val1, conflicts=psyche/bel3 (memories and psyche nodes; a person goes in --who); repeat")
+    pa.add_argument("--who", action="append", metavar="LABEL[|identity=ID][|real]", help="a person the node is tied to (RFC 0005): a name and/or identity=<cast id>, 'real' for a real person who is not a character of the file; repeat")
+    pa.add_argument("--where", action="append", metavar="LABEL[|environment=REF]", help="a place the node is tied to: a name and/or environment=<category>/<id> (an environment of the character); repeat")
+    pa.add_argument("--what", action="append", metavar="LABEL[|item=REF]", help="an object the node is tied to: a name and/or item=<category>/<id> (an accessory of the character); repeat")
     pa.add_argument("--about", metavar="SUBJECT", help="stance only: user | identity=<id> | node=<category>/<id> | a free label")
     pa.add_argument("--lie", action="store_true", help="belief only: false_but_held (the character holds it, the author says it is false)")
     pa.add_argument("--tag", action="append"); pa.add_argument("--risk", choices=["none", "inappropriate", "dangerous"], default="none", help="declared risk (tags.content follows)")

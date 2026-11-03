@@ -73,7 +73,7 @@ validator's error (`expect`) — other implementations only need to reject the f
 | `memory-explicit-lived-as-minor.cof` | a memory lived as a minor is never explicit, whoever is shown (here only an adult third party) |
 | `relation-to-oneself.cof` | a relation names another character of the same file (RFC 0003) |
 | `psyche-node-missing.cof` | a psyche variant names its node file (RFC 0004) |
-| `psyche-link-dangling.cof` | a psyche link points to an existing node or identity |
+| `psyche-link-dangling.cof` | a psyche link points to an existing memory or psyche node |
 | `psyche-supports-not-psyche.cof` | `supports` and `conflicts` link psyche nodes only |
 | `psyche-contradiction-links.cof` | a contradiction carries exactly two `conflicts` links |
 | `psyche-false-but-held-kind.cof` | `false_but_held` (the lie) is on a belief only |
@@ -82,5 +82,12 @@ validator's error (`expect`) — other implementations only need to reject the f
 | `psyche-strength-mirror.cof` | the variant's `strength` mirrors the node's |
 | `psyche-risk-tag-missing.cof` | a `dangerous` node makes the file carry `tags.content` `psyche-dangerous` |
 | `psyche-cof-version.cof` | a file using the psyche category declares cof 1.2 |
+| `psyche-link-to-identity.cof` | a psyche link targets a memory or a psyche node — people go in `who` (RFC 0005) |
+| `psyche-who-unknown-identity.cof` | a person entry's `identity` exists (a file without an `identities` table knows only `"self"`) |
+| `psyche-object-unresolved.cof` | an object entry's `item` names an element of the character |
+| `psyche-entry-without-reference-or-label.cof` | a person, place or object entry carries its reference or a `label` |
+| `memory-object-unresolved.cof` | a memory's object (`what[].item`) names an existing element |
+| `memory-objects-in-a-1.1-file.cof` | a file using objects on a memory declares cof 1.2 |
+| `object-of-another-character.cof` | in a cast file, a node's places and objects are its own character's elements |
 
 Regenerate with `python tests/invalid/build.py` (it also checks every case against the reference validator).

@@ -8,6 +8,14 @@
   "origin": "authored",
   "visibility": "canon",
   "disclosure": "open",
+  "what": [
+    {
+      "label": {
+        "fr": "le carnet",
+        "en": "the notebook"
+      }
+    }
+  ],
   "links": [
     {
       "to": "psyche/val1",

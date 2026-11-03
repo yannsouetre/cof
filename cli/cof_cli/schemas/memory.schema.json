@@ -124,6 +124,39 @@
         ]
       }
     },
+    "what": {
+      "type": "array",
+      "description": "(1.2, RFC 0005) The objects of the memory — an entry names an element of the same character that shows the object (`item`, in practice an `appearance` variant of kind `accessory`) and/or a free name (`label`); `shown`: the object appears in a media of this node (absent = only in the story).",
+      "items": {
+        "type": "object",
+        "properties": {
+          "item": {
+            "$ref": "#/$defs/ref",
+            "description": "Qualified reference to a variant of the same character that shows the object (appearance/x1)."
+          },
+          "label": {
+            "$ref": "#/$defs/text"
+          },
+          "shown": {
+            "type": "boolean",
+            "description": "Appears in a media of this node (absent = only in the story)."
+          }
+        },
+        "anyOf": [
+          {
+            "required": [
+              "item"
+            ]
+          },
+          {
+            "required": [
+              "label"
+            ]
+          }
+        ],
+        "additionalProperties": false
+      }
+    },
     "felt_then": {
       "$ref": "#/$defs/emotion"
     },

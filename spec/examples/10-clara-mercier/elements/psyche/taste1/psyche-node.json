@@ -14,6 +14,14 @@
   "origin": "authored",
   "visibility": "canon",
   "disclosure": "open",
+  "where": [
+    {
+      "label": {
+        "fr": "la maison de ma grand-mère, au pied des Alpes",
+        "en": "my grandmother's house, at the foot of the Alps"
+      }
+    }
+  ],
   "links": [
     {
       "to": "memories/ev1",
