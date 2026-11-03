@@ -5,6 +5,12 @@
   },
   "strength": 60,
   "stability": "settled",
+  "since": {
+    "age": {
+      "value": 28,
+      "unit": "years"
+    }
+  },
   "until": {
     "age": {
       "value": 45,

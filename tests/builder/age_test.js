@@ -93,7 +93,7 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
     M = await offered(pid, "memories"); N = await offered(pid, "psyche");
     check(ids(M, x => x.kind !== "g").join() === "ev1,ev11" && (await chips(pid, "data-memfs")).find(x => x.id === "ev1").st === "def", `${pid} (12): only ev1 and ev11 (8) offered, ev1 ticked: ${ids(M).join()}`);
     check(await line(pid, "data-memfs") === "14 souvenir(s) après 12 ans non proposé(s)", `${pid}: « 14 souvenir(s) après 12 ans non proposé(s) »`);
-    check(ids(N).join() === "bel2,contra1,fear2,fear3,hab1,hab2,need1,taste1,taste2,val2,val3,val4,want3" && ids(await chips(pid, "data-psyfs"), x => x.st === "def").join() === "hab2,taste1,val4", `${pid} (12): the 13 nodes held at 12 offered, its three ticked`);
+    check(ids(N).join() === "bel2,fear2,fear3,hab1,hab2,need1,taste1,taste2,val2,val3,val4,want3" && ids(await chips(pid, "data-psyfs"), x => x.st === "def").join() === "hab2,taste1,val4", `${pid} (12): the 12 nodes held at 12 offered (contra1 holds from 28 since 3 Nov. evening), its three ticked`);
   }
   for (const pid of ["en-65", "fr-65"]) {
     M = await offered(pid, "memories"); N = await offered(pid, "psyche");
@@ -127,8 +127,8 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
   const before = { m: await memList("default"), p: await psyList("default") };
   await setAge("default", 12);
   let pop = await popup();
-  check(pop && pop.head === "Ce preset a 12 ans, mais il retient 4 souvenirs et 9 nœuds incompatibles avec cet âge :", "age 12 on default: « Ce preset a 12 ans, mais il retient 4 souvenirs et 9 nœuds incompatibles avec cet âge : » — " + (pop && pop.head));
-  check(pop && pop.lines.length === 9 && pop.lines[8] === "et 5 autres" && /^🕰️ .*ep1 · 24 ans$/.test(pop.lines[0]) && pop.lines.some(l => /^🧠 .*wound1 · depuis 24 ans$/.test(l)), "eight lines then « et 5 autres »; « ep1 · 24 ans », « wound1 · depuis 24 ans »");
+  check(pop && pop.head === "Ce preset a 12 ans, mais il retient 4 souvenirs et 10 nœuds incompatibles avec cet âge :", "age 12 on default: « Ce preset a 12 ans, mais il retient 4 souvenirs et 10 nœuds incompatibles avec cet âge : » — " + (pop && pop.head));
+  check(pop && pop.lines.length === 9 && pop.lines[8] === "et 6 autres" && /^🕰️ .*ep1 · 24 ans$/.test(pop.lines[0]) && pop.lines.some(l => /^🧠 .*wound1 · depuis 24 ans$/.test(l)), "eight lines then « et 6 autres »; « ep1 · 24 ans », « wound1 · depuis 24 ans »");
   check(pop && pop.btns.join("|") === "Garder — je corrige l'âge|Désélectionner ces éléments", "two buttons: « Garder — je corrige l'âge », « Désélectionner ces éléments »");
   await press("Garder — je corrige l'âge");
   const afterKeep = { m: await memList("default"), p: await psyList("default") };
@@ -156,7 +156,7 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
   /* ---- an inherited list (fr extends default, no list of its own) ---- */
   await setAge("fr", 25);
   pop = await popup();
-  check(pop && pop.head === "Ce preset a 25 ans, mais il retient 3 souvenirs et 7 nœuds incompatibles avec cet âge :" && pop.lines.length === 9 && pop.lines.slice(0, 8).every(l => / · hérité$/.test(l)) && pop.lines[8] === "et 2 autres", "fr at 25: 3 memories and 7 nodes, the inherited items marked « hérité », « et 2 autres »");
+  check(pop && pop.head === "Ce preset a 25 ans, mais il retient 3 souvenirs et 8 nœuds incompatibles avec cet âge :" && pop.lines.length === 9 && pop.lines.slice(0, 8).every(l => / · hérité$/.test(l)) && pop.lines[8] === "et 3 autres", "fr at 25: 3 memories and 8 nodes (contra1 since 28), the inherited items marked « hérité », « et 3 autres »");
   await press("Garder — je corrige l'âge");
   await narrow("fr", "memories", "ev"); await narrow("fr", "psyche", "stance");
   M = await chips("fr", "data-memfs"); N = await chips("fr", "data-psyfs");

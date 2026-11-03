@@ -1041,7 +1041,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-02T08:55:30Z"
+        "computed_at": "2026-11-03T21:24:10Z"
       },
       "prompts": {
         "greeting": {
@@ -1132,7 +1132,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-02T08:55:30Z"
+        "computed_at": "2026-11-03T21:24:10Z"
       }
     },
     "en-12": {
@@ -1198,7 +1198,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-02T08:55:30Z"
+        "computed_at": "2026-11-03T21:24:10Z"
       }
     },
     "en-65": {
@@ -1290,7 +1290,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-02T08:55:30Z"
+        "computed_at": "2026-11-03T21:24:10Z"
       }
     },
     "en-future": {
@@ -1376,7 +1376,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-02T08:55:30Z"
+        "computed_at": "2026-11-03T21:24:10Z"
       }
     },
     "en-agent": {
@@ -1419,7 +1419,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-02T08:55:30Z"
+        "computed_at": "2026-11-03T21:24:10Z"
       }
     },
     "fr": {
@@ -1461,7 +1461,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-02T08:55:30Z"
+        "computed_at": "2026-11-03T21:24:10Z"
       },
       "prompts": {
         "greeting": {
@@ -1552,7 +1552,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-02T08:55:30Z"
+        "computed_at": "2026-11-03T21:24:10Z"
       }
     },
     "fr-12": {
@@ -1618,7 +1618,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-02T08:55:30Z"
+        "computed_at": "2026-11-03T21:24:10Z"
       }
     },
     "fr-65": {
@@ -1710,7 +1710,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-02T08:55:30Z"
+        "computed_at": "2026-11-03T21:24:10Z"
       }
     },
     "fr-futur": {
@@ -1796,7 +1796,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-02T08:55:30Z"
+        "computed_at": "2026-11-03T21:24:10Z"
       }
     },
     "fr-agent": {
@@ -1839,7 +1839,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-02T08:55:30Z"
+        "computed_at": "2026-11-03T21:24:10Z"
       }
     }
   },
@@ -3401,7 +3401,7 @@
   },
   "provenance": {
     "created": "2026-10-11T10:32:23Z",
-    "modified": "2026-11-02T08:55:30Z",
+    "modified": "2026-11-03T21:24:10Z",
     "generator": "cof-builder/0.7.1",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/10-clara-mercier",
@@ -3550,7 +3550,7 @@
       "archive"
     ],
     "computed_by": "cof-cli/1.2.0",
-    "computed_at": "2026-11-02T08:55:30Z"
+    "computed_at": "2026-11-03T21:24:10Z"
   },
   "coverage": {
     "elements": [

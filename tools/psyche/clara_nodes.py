@@ -6,7 +6,7 @@
 Nothing here is invented beyond the RFC table: gists are its sentences (English, and the French the file carries since
 cof-cli part B — Clara's primary language), links its links; the people, places and objects of RFC 0005 § 3 (`AXES`).
 § 3 nonies (Yann's choices C1–C3): `bel3` is unconscious (`aware: no`) and `need1` half known (`partly`); the two stances
-and the two tastes lean (`valence`); `bel3` and `contra1` end around 45 (`until`), when `bel4` — « slowing down is not
+and the two tastes lean (`valence`); `contra1` holds from 28 (when its later side, `val1`, begins: Yann, 3 Nov., « afficher 28 ans à 45 ans »); `bel3` and `contra1` end around 45 (`until`), when `bel4` — « slowing down is not
 disappearing », `derives_from: bel3` on its variant — takes over (the 65-year-old presets hold it instead).
 In the one-character file (example 10) the stance toward the Martian names him by label; `--identity <id>` adds him as a
 person of the cast file, `who: [{"identity": <id>}]` (the stance keeps its label subject — RFC 0004 § 7 bis)."""
@@ -61,7 +61,7 @@ N = [  # id, kind, gist {en, fr}, strength, stability, since, links [(type, to)]
  ("hab2","habit",{"en":"Takes a moment to structure her ideas before answering.",
                   "fr":"Prend un temps pour structurer ses idées avant de répondre."},75,"core",None,[("supports","psyche/bel2")],["speech"],{}),
  ("contra1","contradiction",{"en":"Preaches slowness, works at night — after a few guitar chords, her only slowness.",
-                             "fr":"Prône la lenteur, travaille la nuit — après quelques accords de guitare, sa seule lenteur."},60,"settled",None,[("conflicts","psyche/val1"),("conflicts","psyche/bel3")],["self"],{"until":ABOUT45}),
+                             "fr":"Prône la lenteur, travaille la nuit — après quelques accords de guitare, sa seule lenteur."},60,"settled",28,[("conflicts","psyche/val1"),("conflicts","psyche/bel3")],["self"],{"until":ABOUT45}),
 ]
 LABEL = {  # bilingual « FR / EN », the convention of Clara's memories (readers keep the half of their language)
  "wound1": "Les années d'agence / The agency years",
