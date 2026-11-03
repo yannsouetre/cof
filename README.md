@@ -98,6 +98,8 @@ More commands (import, export to SOUL.md/IDENTITY.md, migrate, tokens…) in [`c
 ## Open, with discipline
 COF is deliberately flexible: almost everything is optional, unknown keys survive round-trips, and there are explicit escape hatches — a 3D file without its textures (`self_contained: false`), LoRA weights by link instead of embedded, custom `x-` categories. That openness only works with **discipline in what goes in**: the validator blocks what is unsafe or broken (minors and intimate content, missing hashes, unresolved references, undeclared executables…), warns about what is risky (links that can rot, untextured 3D, missing transcripts…), and every author — human, tool or AI agent — runs the coherence review of [spec § 11.4](spec/SPEC.md) before publishing: ages, identity, style, voice, language, rights, provenance.
 
+**Site statistics.** The project's web pages (home, memories pages, explorer, builder on `yannsouetre.github.io`) load a cookie-free visit counter, [GoatCounter](https://www.goatcounter.com): page views and referrers only, no personal data, nothing about the files you open — which never leave your browser. A local copy of the explorer or the builder never loads it.
+
 ## Repository layout
 | Folder | Content |
 |---|---|
