@@ -25,7 +25,7 @@ The file already knows some of these people, places and things as data: cast ide
 | place | `{ environment?, label?, geo? }` | `environment`: a qualified reference to an `environment` variant of the same character (`appearance/e1`, `volume3d/env1`) | `label`; `geo` `{ lat, lon }` for a real place |
 | object | `{ item?, label? }` | `item`: a qualified reference to a variant of the same character that shows the object — in practice an `appearance` variant of kind `accessory` (`appearance/x1`) | `label` |
 
-Each entry carries **at least one** of its reference or its `label`; a `label` beside a reference is a display label for this entry (as RFC 0002 § 4.2 says of `who`). The person and place shapes are those of RFC 0002, unchanged; the object shape is new and follows them.
+Each entry carries **at least one** of its reference or its `label` (a memory's `where` with only `geo` stays valid, as RFC 0002 allows); a `label` beside a reference is a display label for this entry (as RFC 0002 § 4.2 says of `who`). The person and place shapes are those of RFC 0002, unchanged; the object shape is new and follows them.
 
 ### 2.2 Memories gain `what`
 
@@ -54,7 +54,7 @@ Warnings: an `item` whose variant is not of kind `accessory`; an `environment` w
 
 ### 2.6 Extraction and exports
 
-- `cof extract --preset`: the element an `item` (or a psyche node's `environment`) names travels with the memory or node that names it, whether or not the preset lists it — the rule RFC 0002 already applies to `where.environment` and to links towards elements. People entries follow what `cof extract` already does for a memory's `who[].identity` (renamed with the identity, RFC 0003).
+- `cof extract --preset`: the element an `item` (or a psyche node's `environment`) names travels with the memory or node that names it, whether or not the preset lists it — the rule RFC 0002 already applies to `where.environment` and to links towards elements. People entries follow what `cof extract` already does for a memory's `who[].identity` (renamed with the identity, RFC 0003); a person entry, or a stance's `about.identity`, naming a character who leaves the file becomes a free name (the character's name).
 - `cof export --format agent`: in `MEMORY.md` a memory's context line gains `objects: …` after `where: …` and `with: …` (an `item` without a label shows its element's label). `SOUL.md` « Who she is » is unchanged: the node's gist says what matters.
 - Readers that inject part of a file (RFC 0004 § 3 quinquies) MAY select by person, place or object.
 
@@ -67,7 +67,7 @@ Warnings: an `item` whose variant is not of kind `accessory`; an `environment` w
 
 | Object | Entry | Memories | Psyche nodes |
 |---|---|---|---|
-| the recycled-paper notebook | `{ "label": { "fr": "le carnet de papier recyclé", "en": "the recycled-paper notebook" } }` | `ev1` (her grandmother's house at eight) and its manga copy `ev11` | `hab1` « The notebook » — the habit comes from childhood |
+| the notebook | `{ "label": { "fr": "le carnet", "en": "the notebook" } }` | `ev1` (her grandmother's house at eight) and its manga copy `ev11` | `hab1` « The notebook » — the habit comes from childhood |
 | the folk guitar with the peace motif | `{ "item": "appearance/x1" }` | `ev2` (the first morning in her own studio: the guitar against the agency's box) and `ev12` | `contra1` « Slowness, at night » — a few chords before working through the night |
 | her grandmother's pendant | `{ "label": { "fr": "le pendentif de ma grand-mère", "en": "my grandmother's pendant" } }` | `ev5` (the wedding: her grandmother puts it around her neck) | — |
 
