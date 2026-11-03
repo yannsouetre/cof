@@ -61,3 +61,33 @@ is refused; a pasted candidate carrying `until`, `aware` and `valence` is checke
 before its `since` refused) and kept on the node written. The inverse: « Texte depuis la psyché » renders exactly the « Who she is » section of `cof export --format agent`
 for `fr-agent`, `default` and `en-12`, and « append » appends it to the card's personality. Also: the date inputs of a psyche
 and a memory card sit on one line; the buttons and dialogs in the six languages.
+
+## A preset's age stops its memories and its psyche (Yann, 3 November)
+
+```
+node tests/builder/age_test.js [repo-root] [work-dir]
+```
+
+On example 10 (Clara: presets at 12, 29 and 65; `bel4` since ~45, `bel3` and `contra1` until ~45): what the Memories and Psyché
+subsections of a preset card offer at 12, 29 and 65, moment by moment and « Périodes seulement » (read from the subsection's lines, all
+pages), the count lines and « afficher quand même » (greyed, disabled chips); the pop-up when the age field changes — its sentence, eight
+lines then « et n autres », « Garder — je corrige l'âge » (lists unchanged, the checks report them) and « Désélectionner ces éléments »;
+an inherited list struck through (« hérité, après l'âge », « hérité, non tenu à cet âge ») and « retirer pour ce preset » (own list
+written, the parent's kept); the file built without edits keeps every preset's effective lists. Then on a copy with `ev5` (31) made
+`part-of` `ep2` (listed alone by `en-future`, not by `fr-futur`) and two date-only moments: the lists written back unchanged, `ep2`
+ticked at 29 bringing `ev9`, `ev10` and not `ev5`, the date-only moments placed through the implied birth year (pop-up and check
+« ≈ 39 »). The new strings in the six languages.
+
+## Clara with thousands of memories opens in seconds (performance)
+
+```
+node tests/builder/perf_test.js [repo-root] [work-dir] [N]      # N extra memories, default 1 000 (about 15 s); 5 000 is the demonstration size
+```
+
+Builds example 10 plus N memories from `tools/stress/gen_memories.py --base` (60 periods, objects on 30 %), each preset with its own
+list getting the memories up to its age (12, 29 or 65), packs it and opens it in the builder. Call counts during the open, which do
+not depend on the machine: each preset is expanded (`memHeld`) and its age computed (`presetAge`) a few times per preset, not once per
+element card × memory photo × preset or once per memory. Times with generous ceilings (`COF_PERF_SLACK=2` doubles them on a slow
+machine): open under 5 s (it includes the one second « Fichier chargé » stays on screen), Presets under 500 ms, Memories and Psyché under
+1 s, checks under 2 s, Build under 1 s. Before the fix, Clara + 5 000 took 30 s to open (59 s with every memory in every preset) and its
+Build step 4 s.

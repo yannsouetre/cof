@@ -68,6 +68,7 @@ A preset = one character + a combination of variants. For example: "Clara 29, ph
 - **Stackable**: clothes and accessories (if they don't cover the same body part), facial and body hair, features, places, several LoRAs.
 - **Offered** = available in this preset, never applied by default (a spare outfit, for example).
 - The **default preset** opens first; its front face becomes the file's thumbnail.
+- **The age stops the memories and the psyche**: when the preset has an age, its Memories offer only what had begun by then (a moment's age, a period's start; a date alone, through the birth year the dated memories give) and its Psyche only the nodes held at that age (appeared, not yet let go). A line counts the rest; “show anyway” shows it greyed out, not tickable. A ticked period brings only its moments lived by that age. An inherited item the age excludes is struck through, with “remove for this preset”. Changing the age afterwards opens a window: deselect what comes later, or keep it and fix the age (the checks report it).
 
 ## 7. Several characters
 
