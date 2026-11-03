@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://yannsouetre.github.io/cof/schemas/1.2/psyche-node.schema.json",
   "title": "COF psyche node (RFC 0004, draft for 1.2)",
-  "description": "elements/psyche/<id>/psyche-node.json — one node of the character's psyche: a value, a belief, a want, a need, a fear, a wound, a stance, a taste, a habit, a contradiction or a rule, in one or two sentences per language, weighted (strength, optional), with its stability, when it appeared (since), a declared risk, the three axes of RFC 0002 and typed links to memories and other nodes, and the people, places and objects it is tied to (RFC 0005). FROZEN for 1.2 (30 October 2026, structure validated on four psyches) — decisions: file name psyche-node.json; one link type `about` (no `toward`); strength optional (tools recommend setting it); stability levels normative, numbers dropped; `risk` field (§ 3 septies); `about: {\"user\": true}` reserved subject; eleventh kind `rule`. Amended 3 November 2026 by RFC 0005 (before any release): who / where / what lists; links no longer target identities.",
+  "description": "elements/psyche/<id>/psyche-node.json — one node of the character's psyche: a value, a belief, a want, a need, a fear, a wound, a stance, a taste, a habit, a contradiction or a rule, in one or two sentences per language, weighted (strength, optional), with its stability, when it appeared (since), a declared risk, the three axes of RFC 0002 and typed links to memories and other nodes, and the people, places and objects it is tied to (RFC 0005). FROZEN for 1.2 (30 October 2026, structure validated on four psyches) — decisions: file name psyche-node.json; one link type `about` (no `toward`); strength optional (tools recommend setting it); stability levels normative, numbers dropped; `risk` field (§ 3 septies); `about: {\"user\": true}` reserved subject; eleventh kind `rule`. Amended 3 November 2026 by RFC 0005 (before any release): who / where / what lists; links no longer target identities. Amended 3 November 2026 (§ 3 nonies, Yann's choices C1–C3): aware, valence (stance and taste), until.",
   "type": "object",
   "required": [
     "gist"
@@ -42,9 +42,28 @@
       "$ref": "#/$defs/point",
       "description": "When the node appeared in the character's life (age and/or date) — places it relative to the memories without making it an event."
     },
+    "until": {
+      "$ref": "#/$defs/point",
+      "description": "(§ 3 nonies) When the character stopped holding the node — the counterpart of since; a node that changes is a second node with derives_from."
+    },
     "false_but_held": {
       "type": "boolean",
       "description": "belief only: the character holds it and the author says it is false (the 'lie')."
+    },
+    "aware": {
+      "enum": [
+        "yes",
+        "partly",
+        "no"
+      ],
+      "default": "yes",
+      "description": "(§ 3 nonies) Whether the character knows this about itself — not disclosure (what it tells others): a `no` node is acted on, never stated."
+    },
+    "valence": {
+      "type": "integer",
+      "minimum": -100,
+      "maximum": 100,
+      "description": "(§ 3 nonies) stance and taste only: which way the feeling leans, −100 (hostile / hates) … +100 (warm / loves). Not strength (the weight in decisions)."
     },
     "about": {
       "$ref": "#/$defs/subject",
@@ -160,6 +179,18 @@
           },
           "by": {
             "type": "string"
+          },
+          "valence": {
+            "type": "integer",
+            "minimum": -100,
+            "maximum": 100
+          },
+          "aware": {
+            "enum": [
+              "yes",
+              "partly",
+              "no"
+            ]
           }
         },
         "additionalProperties": false

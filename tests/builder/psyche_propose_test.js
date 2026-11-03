@@ -72,7 +72,7 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
   await page.click("#psyList [data-ppropose]"); await page.waitForTimeout(200);
   let d = await dlg();
   check(d.on && /cof psyche propose/.test(d.body) && !d.buttons.includes("Envoyer à l'IA") && d.buttons.includes("Relire le JSON collé"), "without a gateway: the dialog says so, offers the paste, no « send » button");
-  await press("Annuler"); check(await nodes() === 22, "cancel: still 22 nodes");
+  await press("Annuler"); check(await nodes() === 23, "cancel: still 23 nodes");
 
   /* ---- the stubbed gateway ---- */
   const BASE = "https://gateway.stub.test/v1"; let sent = null;
@@ -84,31 +84,31 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
   await page.waitForFunction(() => document.querySelectorAll("#dlg [data-ppick]").length > 0, null, { timeout: 10000 });
   const b = JSON.parse(sent.messages[1].content.slice(sent.messages[1].content.lastIndexOf("\n") + 1));   /* the prompt, then the bundle as one JSON line */
   check(sent.model === "stub-model" && sent.temperature === 0 && sent.auth === "Bearer sk-test" && sent.messages[0].role === "system" && /strict JSON/.test(sent.messages[0].content), "the request: model, temperature 0, the key as a bearer, the system message");
-  check(b.contract === "psyche-propose/0.1" && b.preset === "fr-agent" && b.character.language === "fr" && JSON.stringify(b.languages) === '["fr","en"]' && b.psyche.length === 22, "the bundle: contract, preset, language fr, languages fr + en, 22 existing nodes");
+  check(b.contract === "psyche-propose/0.1" && b.preset === "fr-agent" && b.character.language === "fr" && JSON.stringify(b.languages) === '["fr","en"]' && b.psyche.length === 23, "the bundle: contract, preset, language fr, languages fr + en, 23 existing nodes");
   check(b.personality[0].variant === "p2" && b.personality[0].personality && b.personality[1].language === "en" && b.memories.some(m => m.id === "ev2") && !b.memories.some(m => m.id === "ev12") && b.lists.goals.length === 3, "the bundle: the card first, one English variant, memories without the manga copies, the 1.0 lists");
   const rows = await page.evaluate(() => [...document.querySelectorAll("#dlg .psyprow")].map(r => ({ id: r.dataset.prowC, on: r.querySelector("input").checked, dup: r.classList.contains("dup"), text: r.innerText })));
   check(rows.length === 6 && rows.every(r => !r.on), "review panel: six rows, every checkbox off");
   check(rows[0].dup && /val1/.test(rows[0].text) && !rows[1].dup, "the duplicate of val1 is flagged on c1 only");
   check(/card\.description/.test(rows[2].text) && /fausse mais tenue/.test(rows[2].text) && /inappropri/i.test(rows[4].text) && /brusque|bluntness|rudeness/.test(rows[4].text) && /60/.test(rows[2].text) && /shifting/.test(rows[2].text), "rows carry kind, gist, strength, stability, source, lie, risk and its reason");
-  check(await nodes() === 22, "nothing added while the panel is open");
+  check(await nodes() === 23, "nothing added while the panel is open");
   await press("Ajouter les nœuds cochés"); d = await dlg(); check(/Aucun nœud coché/.test(d.body), "« add » with nothing ticked: says nothing was added"); await press("OK");
-  await page.waitForFunction(() => document.querySelectorAll("#dlg [data-ppick]").length === 6); check(await nodes() === 22, "still 22 nodes, the panel is back");
+  await page.waitForFunction(() => document.querySelectorAll("#dlg [data-ppick]").length === 6); check(await nodes() === 23, "still 23 nodes, the panel is back");
   await page.check('#dlg [data-ppick="c4"]'); await press("Ajouter les nœuds cochés"); d = await dlg();
   check(/c4/.test(d.body) && /c3/.test(d.body), "a contradiction ticked without its side is refused"); await press("Retour à la relecture");
   await page.waitForFunction(() => document.querySelectorAll("#dlg [data-ppick]").length === 6);
-  check(await page.evaluate(() => document.querySelector('#dlg [data-ppick="c4"]').checked) && await nodes() === 22, "back to the review with c4 still ticked, nothing added");
+  check(await page.evaluate(() => document.querySelector('#dlg [data-ppick="c4"]').checked) && await nodes() === 23, "back to the review with c4 still ticked, nothing added");
   for (const c of ["c2", "c3", "c5"]) await page.check(`#dlg [data-ppick="${c}"]`);
   await press("Ajouter les nœuds cochés"); await page.waitForTimeout(300);
-  const added = await page.evaluate(() => { const o = {}; for (const v of ["taste3", "bel4", "contra2", "stance3"]) o[v] = S.psyche[v] ? { kind: S.psyche[v].kind, node: S.psyche[v].node, label: S.psyche[v].label } : null; return { n: Object.keys(S.psyche).length, o, cards: [...document.querySelectorAll("#psyList .variant")].map(x => x.dataset.vid), status: document.querySelector("#psyList [data-ppstatus]")?.textContent || "" }; });
-  check(added.n === 26 && Object.values(added.o).every(Boolean), "four ticked candidates became four nodes (taste3, bel4, contra2, stance3): " + added.n);
-  check(added.o.bel4.node.false_but_held === true && JSON.stringify(added.o.bel4.node.links) === '[{"to":"memories/ep1","type":"because"}]' && added.o.bel4.node.origin === "authored" && added.o.bel4.node.visibility === "canon" && added.o.bel4.node.since.age.value === 24, "bel4: the lie, because → ep1, authored, canon, since 24");
-  check(JSON.stringify(added.o.contra2.node.links) === '[{"to":"psyche/bel4","type":"conflicts"},{"to":"psyche/val1","type":"conflicts"}]', "contra2: the candidate side mapped to bel4, the existing val1 kept");
+  const added = await page.evaluate(() => { const o = {}; for (const v of ["taste3", "bel5", "contra2", "stance3"]) o[v] = S.psyche[v] ? { kind: S.psyche[v].kind, node: S.psyche[v].node, label: S.psyche[v].label } : null; return { n: Object.keys(S.psyche).length, o, cards: [...document.querySelectorAll("#psyList .variant")].map(x => x.dataset.vid), status: document.querySelector("#psyList [data-ppstatus]")?.textContent || "" }; });
+  check(added.n === 27 && Object.values(added.o).every(Boolean), "four ticked candidates became four nodes (taste3, bel5, contra2, stance3): " + added.n);
+  check(added.o.bel5.node.false_but_held === true && JSON.stringify(added.o.bel5.node.links) === '[{"to":"memories/ep1","type":"because"}]' && added.o.bel5.node.origin === "authored" && added.o.bel5.node.visibility === "canon" && added.o.bel5.node.since.age.value === 24, "bel5: the lie, because → ep1, authored, canon, since 24");
+  check(JSON.stringify(added.o.contra2.node.links) === '[{"to":"psyche/bel5","type":"conflicts"},{"to":"psyche/val1","type":"conflicts"}]', "contra2: the candidate side mapped to bel5, the existing val1 kept");
   check(added.o.stance3.node.about.user === true && added.o.stance3.node.risk === "inappropriate" && added.o.taste3.label.startsWith("Aime le silence"), "stance3 about the user with its risk; labels from the gist");
-  check(["taste3", "bel4", "contra2", "stance3"].some(v => added.cards.includes(v)) && /4/.test(added.status), "the new cards are in the list, the status line counts them");
+  check(["taste3", "bel5", "contra2", "stance3"].some(v => added.cards.includes(v)) && /4/.test(added.status), "the new cards are in the list, the status line counts them");
   check(await page.evaluate(() => !S.psyche.val5 && !Object.values(S.psyche).some(m => /La légèreté : faire moins, mieux — une page doit coûter le moins possible à la planète et à celui/.test(m.node.gist.fr || "") && m.label !== S.psyche.val1.label)), "the unticked duplicate c1 was not written");
   const t1 = path.join(WORK, "t1-proposed.cof"); await build(t1); let v = validate(t1); const m1 = readManifest(t1);
   check(v.ok, "built file validates: " + v.out.split("\n").filter(l => /ERROR|^OK|NOT/.test(l)).join(" | "));
-  check(Object.keys(m1.psyche).length === 26 && m1.content.includes("psyche-inappropriate") && m1.slots["fr-agent"] && m1.slots["fr-agent"].includes("bel4") && !(m1.slots["fr-12"] || []).includes("bel4"), "26 nodes written, the risk tag, fr-agent holds them and fr-12 does not");
+  check(Object.keys(m1.psyche).length === 27 && m1.content.includes("psyche-inappropriate") && (m1.slots["fr-agent"] || m1.slots["fr"] || m1.slots["default"] || []).includes("bel5") && !(m1.slots["fr-12"] || []).includes("bel5"), "27 nodes written, the risk tag, fr-agent holds them (its own list or the one it inherits: fr-agent → fr → default) and fr-12 does not");
 
   /* ---- a pasted proposal that breaks the contract is refused ---- */
   await page.evaluate(() => go("psyche")); await page.click("#psyList [data-ppropose]"); await page.waitForTimeout(200);
@@ -116,7 +116,7 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
   await page.fill("#dlg [data-pppaste]", JSON.stringify({ nodes: [{ id: "c1", kind: "opinion", gist: { fr: "x" }, because: ["memories/ev99"], source: "inferred" }] }));
   await press("Relire le JSON collé"); d = await dlg();
   check(/opinion/.test(d.body) && /ev99/.test(d.body), "a pasted proposal with a bad kind and an unknown memory is refused, both reasons listed");
-  await press("OK"); check(await nodes() === 26, "nothing added by a refused proposal");
+  await press("OK"); check(await nodes() === 27, "nothing added by a refused proposal");
 
   /* ---- the inverse: the « Who she is » text equals cof-cli's ---- */
   await open(clara); await page.click("#nav button[data-step=psyche]"); await page.waitForTimeout(300);

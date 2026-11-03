@@ -303,12 +303,14 @@ def cmd_psyche_add(a):
     gists = _gists(a)
     if gists is None:
         return 2
-    if a.since_age is not None and not (math.isfinite(a.since_age) and 0 <= a.since_age <= 200):
-        print("ERROR  --since-age must be a number of years between 0 and 200", file=sys.stderr); return 2
+    for opt, val in (("--since-age", a.since_age), ("--until-age", a.until_age)):
+        if val is not None and not (math.isfinite(val) and 0 <= val <= 200):
+            print(f"ERROR  {opt} must be a number of years between 0 and 200", file=sys.stderr); return 2
     return _add_node(a, "Psyche node", lambda work: psyche_add(
         work, identity=a.identity, kind=a.kind, gists=gists, label=a.label, strength=a.strength, stability=a.stability, since_age=a.since_age,
         since_date=a.since_date, approx=a.approx, links=a.link, about=a.about, lie=a.lie, tags=a.tag, risk=a.risk, origin=a.origin,
-        personal=not a.canon, disclosure=a.disclosure, presets=a.preset, who=a.who, where=a.where, what=a.what))
+        personal=not a.canon, disclosure=a.disclosure, presets=a.preset, who=a.who, where=a.where, what=a.what,
+        aware=a.aware, valence=a.valence, until_age=a.until_age, until_date=a.until_date))
 
 
 def cmd_psyche_propose(a):
@@ -517,7 +519,11 @@ def main(argv=None) -> int:
     pa.add_argument("--kind", choices=["value", "belief", "want", "need", "fear", "wound", "stance", "taste", "habit", "contradiction", "rule"], required=True)
     pa.add_argument("--gist", action="append", required=True, metavar="LANG=TEXT", help="the node in one or two sentences; repeat per language")
     pa.add_argument("--label"); pa.add_argument("--strength", type=int, help="0–100 (default 50)"); pa.add_argument("--stability", choices=["core", "settled", "shifting", "fragile"], help="default settled")
-    pa.add_argument("--since-age", type=float, help="age (years) when it appeared"); pa.add_argument("--since-date", help="YYYY, YYYY-MM or YYYY-MM-DD"); pa.add_argument("--approx", action="store_true")
+    pa.add_argument("--since-age", type=float, help="age (years) when it appeared"); pa.add_argument("--since-date", help="YYYY, YYYY-MM or YYYY-MM-DD")
+    pa.add_argument("--until-age", "--until", dest="until_age", type=float, metavar="AGE", help="age (years) when the character stopped holding it (RFC 0004 § 3 nonies)"); pa.add_argument("--until-date", help="YYYY, YYYY-MM or YYYY-MM-DD")
+    pa.add_argument("--approx", action="store_true", help="the ages and dates given (since, until) are approximate")
+    pa.add_argument("--aware", choices=["yes", "partly", "no"], help="whether the character knows this about itself (default yes; no = acted on, never stated)")
+    pa.add_argument("--valence", type=int, metavar="N", help="stance or taste only: -100 (hostile / hates) … +100 (warm / loves) — not the strength")
     pa.add_argument("--link", action="append", metavar="TYPE=REF", help="because=memories/ev3, about=psyche/bel1, supports=psyche/val1, conflicts=psyche/bel3 (memories and psyche nodes; a person goes in --who); repeat")
     pa.add_argument("--who", action="append", metavar="LABEL[|identity=ID][|real]", help="a person the node is tied to (RFC 0005): a name and/or identity=<cast id>, 'real' for a real person who is not a character of the file; repeat")
     pa.add_argument("--where", action="append", metavar="LABEL[|environment=REF]", help="a place the node is tied to: a name and/or environment=<category>/<id> (an environment of the character); repeat")

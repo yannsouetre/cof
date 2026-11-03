@@ -3,7 +3,7 @@
    Usage: node tests/builder/psyche_test.js [repo-root] [work-dir]
    Needs: playwright (npm i playwright && npx playwright install chromium), python with cof-cli importable from <root>/cli.
    Packs copies of examples 10 (Clara 1.2) and 01 (Clara text-only, 1.0 lists) into the work dir, serves the repo over HTTP
-   (the graph button embeds viewer/index.html), then: opens Clara 1.2 → step 4 shows the 22 nodes, kind chips and filter;
+   (the graph button embeds viewer/index.html), then: opens Clara 1.2 → step 4 shows the 23 nodes, kind chips and filter;
    edits a gist and a strength; adds a rule, a stance about the user, a contradiction with two conflicts; derives a node;
    deletes one; ticks a node in a preset's Psyché subsection; checks a deliberately broken node; builds with every purge
    choice and re-validates each output with `cof validate`; converts the 1.0 lists of example 01; then, on a copy of example 10 with the
@@ -73,7 +73,7 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
   /* ---- Clara 1.2: load, list, filter, edit, build ---- */
   await open(clara12); await page.click("#nav button[data-step=psyche]"); await page.waitForTimeout(300);
   const info = await page.evaluate(() => ({ n: Object.keys(S.psyche).length, cards: document.querySelectorAll("#psyList .variant").length, kinds: document.querySelectorAll("#psyList [data-pkind]").length, first: document.querySelector("#psyList .variant")?.dataset.vid, passthrough: Object.keys(S.passthrough.elements).length }));
-  check(info.n === 22 && info.cards === 22, `22 nodes loaded and shown (${info.n} / ${info.cards})`);
+  check(info.n === 23 && info.cards === 23, `23 nodes loaded and shown (${info.n} / ${info.cards})`);
   check(info.kinds === 11 && info.first === "wound1", "kind chips (all + 10 kinds present) and the wound first");
   check(info.passthrough === 0, "the category left the passthrough");
   await page.click("#psyList [data-pkind=value]"); await page.waitForTimeout(200);
@@ -86,7 +86,7 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
   check(await page.evaluate(() => S.psyche.val1.node.gist.fr === "La légèreté : faire moins, mieux." && S.psyche.val1.node.strength === 96), "gist and strength edited in the model");
   const t1 = path.join(WORK, "t1.cof"); await build(t1); let v = validate(t1); check(v.ok, "built Clara 1.2 validates: " + v.out.split("\n").filter(l => /ERROR|^OK|NOT/.test(l)).join(" | "));
   let m = readManifest(t1);
-  check(m.cof === "1.2" && m.auto.includes("has-psyche") && Object.keys(m.psyche).length === 22, "cof 1.2, has-psyche, 22 variants written");
+  check(m.cof === "1.2" && m.auto.includes("has-psyche") && Object.keys(m.psyche).length === 23, "cof 1.2, has-psyche, 23 variants written");
   check(m.psyche.val1.strength === 96 && m.nodes.val1.strength === 96 && m.nodes.val1.gist.fr, "strength mirrored on the variant, gist written");
   check(JSON.stringify(m.slots.default) === JSON.stringify(["wound1", "val1", "val2", "val3", "val4", "bel1", "bel2", "bel3", "want1", "want2", "want3", "need1", "fear1", "fear2", "fear3", "stance1", "stance2", "taste1", "taste2", "hab1", "hab2", "contra1"]) && JSON.stringify(m.slots["en-12"]) === JSON.stringify(["val4", "taste1", "hab2"]) && m.slots["en-manga"] === null, "preset slots kept (en-12 three nodes, en-manga inherits)");
 

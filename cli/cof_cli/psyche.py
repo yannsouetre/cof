@@ -112,14 +112,16 @@ _WORDS = {
                     "`guarded` — not opened with, only when it matters; `lived` — came from use, not from the author.",
            "kinds": {"wound": "Wound", "value": "Values", "belief": "Beliefs", "want": "Wants", "need": "Needs", "fear": "Fears", "stance": "Stances",
                      "taste": "Tastes", "habit": "Habits", "contradiction": "Contradictions", "rule": "Rules"},
-           "secret": "There are things {pron} does not tell.", "user": "the user", "lie": "lie", "guarded": "guarded", "lived": "lived", "about": "about"},
+           "secret": "There are things {pron} does not tell.", "user": "the user", "lie": "lie", "guarded": "guarded", "lived": "lived", "about": "about",
+           "partly": "half aware", "unaware": "acts on it without knowing it — never says it", "warmth": "warmth", "likes": "Likes:", "dislikes": "Dislikes:"},
     "fr": {"title": "Qui {pron} est", "pron": {"female": "elle", "male": "il"}, "pron_default": "iel",
            "intro": "Rendu depuis les nœuds de la psyché (RFC 0004) dans un ordre fixe : blessure, valeurs, croyances, désirs et besoins, peurs, positions, goûts, habitudes, contradictions, règles. "
                     "Une phrase entière pèse le plus (force {full} ou plus) ; une courte proposition pèse moins. Marqueurs : `mensonge` — une croyance qu'{pron} tient pour vraie et qui est fausse ; "
                     "`réservé` — jamais d'emblée, seulement quand cela compte ; `vécu` — venu de l'usage, pas de l'auteur.",
            "kinds": {"wound": "Blessure", "value": "Valeurs", "belief": "Croyances", "want": "Désirs", "need": "Besoins", "fear": "Peurs", "stance": "Positions",
                      "taste": "Goûts", "habit": "Habitudes", "contradiction": "Contradictions", "rule": "Règles"},
-           "secret": "Il y a des choses qu'{pron} ne dit pas.", "user": "l'utilisateur", "lie": "mensonge", "guarded": "réservé", "lived": "vécu", "about": "envers"},
+           "secret": "Il y a des choses qu'{pron} ne dit pas.", "user": "l'utilisateur", "lie": "mensonge", "guarded": "réservé", "lived": "vécu", "about": "envers",
+           "partly": "en partie à son insu", "unaware": "agit ainsi à son insu — ne le dit jamais", "warmth": "chaleur", "likes": "Aime :", "dislikes": "N'aime pas :"},
 }
 
 
@@ -138,10 +140,22 @@ def _subject(manifest: dict, about: dict | None, lang: str, W: dict) -> str:
     return text_in(about.get("label"), lang)
 
 
+def valence_text(v) -> str:
+    """A valence as rendered after a stance's subject (§ 3 nonies): signed, « +60 », « -10 », « 0 »."""
+    return f"{int(v):+d}" if int(v) else "0"
+
+
+def has_valence(node: dict) -> bool:
+    v = node.get("valence")
+    return isinstance(v, int) and not isinstance(v, bool)
+
+
 def soul_section(manifest: dict, nodes: dict[str, dict], pid: str | None, keep_personal: bool = False, keep_dangerous: bool = False) -> tuple[str, dict]:
     """The "Who she is" section of SOUL.md (RFC 0004 § 3 quinquies): one line per node in the fixed kind order, the whole
     gist at strength ≥ 70 and a short clause below, lies and guarded nodes marked, secret nodes left out with one line
-    saying so. Texts in the preset's language, each node falling back to the languages it has. Returns (markdown, stats)."""
+    saying so; a stance's warmth after its subject, half-aware and unaware nodes marked, tastes split into likes and
+    dislikes when one has a valence (§ 3 nonies). A node whose `until` is before the preset's age is still rendered when
+    the preset holds it (the validator's coherence warning covers it). Texts in the preset's language, each node falling back to the languages it has. Returns (markdown, stats)."""
     from .cast import preset_gender
     from .memories import preset_language
     from .model import preset_owner
@@ -176,11 +190,25 @@ def soul_section(manifest: dict, nodes: dict[str, dict], pid: str | None, keep_p
                 subj = _subject(manifest, n.get("about"), lang, W)
                 if subj:
                     marks.append(f"{W['about']}: {subj}")
+                if has_valence(n):                                 # § 3 nonies: which way the stance leans, after its subject
+                    marks.append(f"{W['warmth']} {valence_text(n['valence'])}")
+            if n.get("aware") == "partly":                         # § 3 nonies: what the character knows of itself
+                marks.append(W["partly"])
+            elif n.get("aware") == "no":
+                marks.append(W["unaware"])
             if n.get("disclosure") == "guarded":
                 marks.append(W["guarded"])
             if n.get("origin") == "lived":
                 marks.append(W["lived"])
-            rows.append(f"- {text}" + (f"  ·  {' · '.join(marks)}" if marks else ""))
+            rows.append((n, f"- {text}" + (f"  ·  {' · '.join(marks)}" if marks else "")))
+        if kind == "taste" and any(has_valence(n) for n, _ in rows):   # likes (> 0), dislikes (< 0), then the tastes without a lean
+            likes = [r for n, r in rows if has_valence(n) and n["valence"] > 0]
+            dislikes = [r for n, r in rows if has_valence(n) and n["valence"] < 0]
+            plain = [r for n, r in rows if not (has_valence(n) and n["valence"])]
+            rows = ([f"- {W['likes']}", *("  " + r for r in likes)] if likes else []) + \
+                   ([f"- {W['dislikes']}", *("  " + r for r in dislikes)] if dislikes else []) + plain
+        else:
+            rows = [r for _, r in rows]
         if rows:
             lines += [f"### {W['kinds'][kind]}", *rows, ""]
     if secret:
@@ -216,6 +244,10 @@ def drop_nodes(dst: Path, m: dict, vids: list[str]) -> list[str]:
     gone = [v for v in V if v not in keep]
     if not gone:
         return []
+    for vid in keep:                                    # a kept node derived from a removed one (§ 3 nonies: bel4 from bel3) keeps what it inherited
+        if V[vid].get("derives_from") in gone:
+            V[vid] = {k: x for k, x in (resolve_variant(m, "psyche", vid) or {}).items() if k != "_id"}
+    still = {str(V[k].get("node") or "") for k in keep if k in V}            # a node file a kept (derived) variant still reads stays
     for vid in gone:
         V.pop(vid, None)
         for p in (m.get("presets") or {}).values():
@@ -225,7 +257,7 @@ def drop_nodes(dst: Path, m: dict, vids: list[str]) -> list[str]:
                     if not p[key]["psyche"]:
                         del p[key]["psyche"]
         folder = dst / "elements" / "psyche" / vid
-        if folder.is_dir():
+        if folder.is_dir() and not any(r.startswith(f"elements/psyche/{vid}/") for r in still):
             shutil.rmtree(folder)
     if not V:
         m["elements"].pop("psyche", None)

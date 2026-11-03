@@ -19,7 +19,7 @@ node tests/builder/psyche_test.js [repo-root] [work-dir]
 ```
 
 Packs copies of examples 10 (Clara 1.2) and 01 (Clara text-only, 1.0 lists) into the work dir, serves the repository over
-HTTP and drives the builder: the 22 nodes of Clara in step 4 (kind chips, filter), a gist and a strength edited, a rule, a
+HTTP and drives the builder: the 23 nodes of Clara in step 4 (kind chips, filter), a gist and a strength edited, a rule, a
 stance about the user and a contradiction added, a node derived and one deleted, a preset's Psyché subsection ticked, the
 checks on a deliberately broken node, every purge choice built and re-validated with `cof validate`, the conversion of
 the 1.0 lists. Needs `python` with cof-cli importable from `cli/`. Then, on a copy of example 10 with the people, places and objects of

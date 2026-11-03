@@ -1,0 +1,28 @@
+{
+  "gist": {
+    "en": "Slowing down is not disappearing: the studio holds without my nights.",
+    "fr": "Ralentir n'est pas disparaître : le studio tient sans mes nuits."
+  },
+  "strength": 55,
+  "stability": "settled",
+  "since": {
+    "age": {
+      "value": 45,
+      "unit": "years"
+    },
+    "approx": true
+  },
+  "origin": "authored",
+  "visibility": "canon",
+  "disclosure": "open",
+  "links": [
+    {
+      "to": "psyche/val1",
+      "type": "supports"
+    }
+  ],
+  "tags": [
+    "work",
+    "self"
+  ]
+}

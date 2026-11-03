@@ -241,17 +241,35 @@ def validate(proposal: dict, bundle: dict) -> tuple[list[str], list[str]]:
             errors.append(f"{where}: stability must be one of {', '.join(STABILITIES)}")
         if kind == "rule" and st not in (None, "core"):
             notes.append(f"{where}: a rule is naturally core (stability {st})")
-        since = n.get("since")
-        if since is not None:
-            if not isinstance(since, dict) or not since or not set(since) <= {"age", "date", "approx"}:
-                errors.append(f"{where}: since must be {{age: {{value}}}} and/or {{date}}")
-            else:
-                a = since.get("age")
-                if a is not None and not (isinstance(a, dict) and isinstance(a.get("value"), (int, float)) and not isinstance(a["value"], bool) and a["value"] >= 0):
-                    errors.append(f"{where}: since.age must be {{value: n}}")
-                d = since.get("date")
-                if d is not None and not (isinstance(d, str) and re.fullmatch(r"-?[0-9]{1,4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?", d)):
-                    errors.append(f"{where}: since.date must be YYYY, YYYY-MM or YYYY-MM-DD")
+        good_pts = []
+        for key in ("since", "until"):                                # until: when the character stopped holding it (RFC 0004 § 3 nonies)
+            pt = n.get(key)
+            if pt is None:
+                continue
+            if not isinstance(pt, dict) or not pt or not set(pt) <= {"age", "date", "approx"}:
+                errors.append(f"{where}: {key} must be {{age: {{value}}}} and/or {{date}}"); continue
+            a = pt.get("age")
+            bad = len(errors)
+            if a is not None and not (isinstance(a, dict) and isinstance(a.get("value"), (int, float)) and not isinstance(a["value"], bool) and a["value"] >= 0):
+                errors.append(f"{where}: {key}.age must be {{value: n}}")
+            d = pt.get("date")
+            if d is not None and not (isinstance(d, str) and re.fullmatch(r"-?[0-9]{1,4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?", d)):
+                errors.append(f"{where}: {key}.date must be YYYY, YYYY-MM or YYYY-MM-DD")
+            if len(errors) == bad:
+                good_pts.append(key)
+        if good_pts == ["since", "until"]:
+            from .validate import _point_before
+            if _point_before(n["until"], n["since"]):
+                errors.append(f"{where}: until is before since")
+        aw = n.get("aware")
+        if aw is not None and aw not in ("yes", "partly", "no"):
+            errors.append(f"{where}: aware must be yes, partly or no")
+        va = n.get("valence")
+        if va is not None:
+            if kind not in ("stance", "taste"):
+                errors.append(f"{where}: valence is for a stance or a taste only")
+            elif not (isinstance(va, int) and not isinstance(va, bool) and -100 <= va <= 100):
+                errors.append(f"{where}: valence must be an integer between -100 and 100")
         def ref_ok(r, allow_mem: bool) -> str | None:
             if not isinstance(r, str):
                 return "not a string"
@@ -328,7 +346,7 @@ def validate(proposal: dict, bundle: dict) -> tuple[list[str], list[str]]:
         elif src_.startswith("memory ") and src_.split("@")[0][7:] not in mem_ids:
             errors.append(f"{where}: source names a memory the character does not have ({src_[7:]!r})")
         for k in n:
-            if k not in ("id", "kind", "gist", "strength", "stability", "since", "because", "supports", "between", "about", "false_but_held", "risk", "tags", "source", "label", "note"):
+            if k not in ("id", "kind", "gist", "strength", "stability", "since", "until", "aware", "valence", "because", "supports", "between", "about", "false_but_held", "risk", "tags", "source", "label", "note"):
                 notes.append(f"{where}: field {k!r} is not part of the contract (ignored)")
     dup = [x for x in cand_ids if cand_ids.count(x) > 1]
     if dup:
@@ -462,8 +480,13 @@ def table(proposal: dict, bundle: dict, notes: list[str] | None = None, applying
         if isinstance(ab, dict):
             k, v = next(iter(ab.items()))
             extra.append("about: " + ("the user" if k == "user" else (v if isinstance(v, str) else next(iter(v.values()), "")) if k != "label" else next(iter(v.values()), "")))
-        if n.get("since"):
-            s = n["since"]; extra.append("since " + (f"age {s['age']['value']}" if s.get("age") else "") + (f" {s['date']}" if s.get("date") else ""))
+        for key in ("since", "until"):
+            if n.get(key):
+                s = n[key]; extra.append(f"{key} " + (f"age {s['age']['value']}" if s.get("age") else "") + (f" {s['date']}" if s.get("date") else ""))
+        if n.get("aware") in ("partly", "no"):
+            extra.append("aware " + n["aware"])
+        if isinstance(n.get("valence"), int):
+            extra.append(f"valence {n['valence']:+d}")
         if isinstance(r, dict) and r.get("value", "none") != "none":
             extra.append(f"risk {r['value']}: {r.get('why') or '(no reason given)'}")
         if n.get("tags"):
@@ -540,8 +563,14 @@ def apply(src: Path, proposal: dict, accept: list[str] | str, iid: str | None = 
         node["stability"] = n.get("stability") or ("core" if n["kind"] == "rule" else "settled")
         if n.get("since"):
             node["since"] = n["since"]
+        if n.get("until"):                                               # § 3 nonies: optional, kept as given
+            node["until"] = n["until"]
         if n["kind"] == "belief" and n.get("false_but_held"):
             node["false_but_held"] = True
+        if n.get("aware") in ("partly", "no"):
+            node["aware"] = n["aware"]
+        if n["kind"] in ("stance", "taste") and isinstance(n.get("valence"), int) and not isinstance(n.get("valence"), bool):
+            node["valence"] = n["valence"]
         if n["kind"] == "stance" and isinstance(n.get("about"), dict):
             k, v = next(iter(n["about"].items()))
             if k == "node":

@@ -11,7 +11,15 @@
       "unit": "years"
     }
   },
+  "until": {
+    "age": {
+      "value": 45,
+      "unit": "years"
+    },
+    "approx": true
+  },
   "false_but_held": true,
+  "aware": "no",
   "origin": "authored",
   "visibility": "canon",
   "disclosure": "open",
