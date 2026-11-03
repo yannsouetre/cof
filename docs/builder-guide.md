@@ -41,6 +41,7 @@ The character's past, node by node. A **moment** (green ●, code `ev`) is a poi
 
 - **The gist**: a few first-person sentences in the character's primary language; other languages are optional (an English agent reads the English gist).
 - **When, where, with whom**: an age or a date, a place in words or one of the character's places, the people present — and who is **shown** in the media.
+- **Objects**: what the memory holds on to — one of the character's accessories (picked from the list) or a free name (“the notebook”); tick “shown” when the object appears in a media. Written as `what` (COF 1.2, RFC 0005); a memory with objects makes the file 1.2.
 - **Felt then / now, fidelity, salience**: what makes a memory alive rather than a record.
 - **Origin, visibility, disclosure**: authored or lived during use; canon or personal (a user's data, never shared unless asked); open, guarded or secret (what the character does not say).
 - **Media**: one to three traces — image, sound, a short video, a few lines — or the same media as another memory (two characters, one evening, one photo).
@@ -52,7 +53,8 @@ The character's past, node by node. A **moment** (green ●, code `ev`) is a poi
 The character's inner life, as a graph (COF 1.2). Eleven kinds of nodes: wound, value, belief, want, need, fear, stance, taste, habit, contradiction, rule. Each node is one or two sentences per language.
 
 - **Strength** (0–100, set node by node), **stability** (core, settled, shifting, fragile: what a host may change at use time), **since** (the age it appeared), origin, visibility, disclosure.
-- **Links**: “because” and “about” to a memory, a node or a character; “supports” and “conflicts” between nodes. A contradiction carries exactly two “conflicts”; a wound almost always comes from a memory.
+- **Links**: “because” and “about” to a memory or a node; “supports” and “conflicts” between nodes. A contradiction carries exactly two “conflicts”; a wound almost always comes from a memory.
+- **People, places, objects**: what the node is tied to without going through a memory (RFC 0005) — self or a character of the file, an environment, an accessory, or a free name (“my grandmother”, “Lyon”, “the notebook”), with “real person” for someone real who is not a character. Folded on one line while empty. A link to a character written by an older draft becomes a person when the file is opened (the checks say how many).
 - **Declared risk**: none, inappropriate, dangerous. A host that gives the character tools never loads a dangerous node; fiction may load everything. At build, the “no risk” purge drops them.
 - A belief can be **false but held** (the lie the character tells itself); a stance has a **subject** (a character, the user, a memory, a label).
 - **Presets** pick their nodes like a library; a node that changes with age is a second node, derived from the first. “Graph view” shows the constellation in the explorer.

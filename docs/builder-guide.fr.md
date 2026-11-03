@@ -41,6 +41,7 @@ Le passé du personnage, nœud par nœud. Un **moment** (● vert, code `ev`) es
 
 - **Le gist** : quelques phrases à la première personne, dans la langue maîtresse du personnage ; les autres langues sont facultatives (un agent anglais lit le gist anglais).
 - **Quand, où, avec qui** : un âge ou une date, un lieu en texte ou un lieu du personnage, les personnes présentes — et qui est **montré** sur les médias.
+- **Objets** : ce que le souvenir garde — un accessoire du personnage (choisi dans la liste) ou un nom libre (« le carnet ») ; cochez « montré » si l'objet apparaît sur un média. Écrit en `what` (COF 1.2, RFC 0005) ; un souvenir avec des objets fait passer le fichier en 1.2.
 - **Ressenti alors / aujourd'hui, clarté, importance** : ce qui rend un souvenir vivant plutôt qu'une fiche.
 - **Origine, visibilité, confidence** : écrit par l'auteur ou vécu à l'usage ; canon ou personnel (les données d'un utilisateur, jamais partagées sans demande) ; ouvert, réservé ou secret (ce que le personnage ne dit pas).
 - **Médias** : une à trois traces — image, son, courte vidéo, quelques lignes — ou les mêmes médias qu'un autre souvenir (deux personnages, une soirée, une photo).
@@ -52,7 +53,8 @@ Le passé du personnage, nœud par nœud. Un **moment** (● vert, code `ev`) es
 La vie intérieure du personnage, en graphe (COF 1.2). Onze sortes de nœuds : blessure, valeur, croyance, désir, besoin, peur, position, goût, habitude, contradiction, règle. Chaque nœud tient en une ou deux phrases par langue.
 
 - **Force** (0–100, à régler nœud par nœud), **stabilité** (noyau, établi, mouvant, fragile : ce qu'un hôte peut changer à l'usage), **depuis** (l'âge d'apparition), origine, visibilité, confidence.
-- **Liens** : « à cause de » et « à propos de » vers un souvenir, un nœud ou un personnage ; « soutient » et « contredit » entre nœuds. Une contradiction porte exactement deux « contredit » ; une blessure vient presque toujours d'un souvenir.
+- **Liens** : « à cause de » et « à propos de » vers un souvenir ou un nœud ; « soutient » et « contredit » entre nœuds. Une contradiction porte exactement deux « contredit » ; une blessure vient presque toujours d'un souvenir.
+- **Personnes, lieux, objets** : ce à quoi le nœud tient sans passer par un souvenir (RFC 0005) — soi-même ou un personnage du fichier, un environnement, un accessoire, ou un nom libre (« ma grand-mère », « Lyon », « le carnet »), avec « personne réelle » pour quelqu'un de réel qui n'est pas un personnage. Repliés sur une ligne tant qu'ils sont vides. Un lien vers un personnage écrit par un ancien brouillon devient une personne à l'ouverture du fichier (les contrôles disent combien).
 - **Risque déclaré** : aucun, inapproprié, dangereux. Un hôte qui donne des outils au personnage ne charge jamais un nœud dangereux ; la fiction peut tout charger. Au build, la purge « sans risque » les retire.
 - Une croyance peut être **fausse mais tenue** (le mensonge que le personnage se raconte) ; une position a un **sujet** (un personnage, l'utilisateur, un souvenir, un libellé).
 - Les **presets** choisissent leurs nœuds comme une bibliothèque ; un nœud qui change avec l'âge est un second nœud, dérivé du premier. « Visualisation graphe » montre la constellation dans l'explorateur.
