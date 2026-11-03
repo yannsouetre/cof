@@ -89,5 +89,7 @@ validator's error (`expect`) — other implementations only need to reject the f
 | `memory-object-unresolved.cof` | a memory's object (`what[].item`) names an existing element |
 | `memory-objects-in-a-1.1-file.cof` | a file using objects on a memory declares cof 1.2 |
 | `object-of-another-character.cof` | in a cast file, a node's places and objects are its own character's elements |
+| `psyche-valence-on-a-belief.cof` | `valence` is on a stance or a taste only (RFC 0004 § 3 nonies) |
+| `psyche-until-before-since.cof` | a node's `until` is not before its `since` (RFC 0004 § 3 nonies) |
 
 Regenerate with `python tests/invalid/build.py` (it also checks every case against the reference validator).

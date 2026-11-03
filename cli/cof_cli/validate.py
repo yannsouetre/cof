@@ -1323,6 +1323,30 @@ def _memory_rules(manifest: dict, src: Path, rep: "Report") -> None:
 
 # ---------------------------------------------------------------- psyche (RFC 0004) ----------------------------------------------------------------
 
+def _point_text(pt: dict) -> str:
+    a = _age_value((pt or {}).get("age"))
+    return " / ".join(x for x in ((f"age {a:g}" if a is not None else ""), str((pt or {}).get("date") or "")) if x) or "?"
+
+
+def _point_before(a: dict, b: dict, birth: float | None = None) -> bool:
+    """Is point `a` strictly before point `b` (RFC 0004 § 3 nonies, `until` against `since`)? Ages when both carry one,
+    else dates at their common precision, else an age against a date through the character's implied birth year (one
+    year of tolerance: an age covers a year); False when nothing can be compared."""
+    from .memories import _year
+    aa, ba = _age_value(a.get("age")), _age_value(b.get("age"))
+    if aa is not None and ba is not None:
+        return aa < ba
+    ad, bd = a.get("date"), b.get("date")
+    if isinstance(ad, str) and isinstance(bd, str) and ad and bd:
+        n = min(len(ad), len(bd))
+        return ad[:n] < bd[:n]
+    if birth is None:
+        return False
+    ya = _year(ad) - birth if aa is None and _year(ad) is not None else aa
+    yb = _year(bd) - birth if ba is None and _year(bd) is not None else ba
+    return ya is not None and yb is not None and ya < yb - 1
+
+
 
 
 def _psyche_rules(manifest: dict, src: Path, rep: "Report") -> None:
@@ -1360,6 +1384,17 @@ def _psyche_rules(manifest: dict, src: Path, rep: "Report") -> None:
         ok = cat_ != "identities" and bool(tgt) and tgt in (((E.get(cat_) or {}).get("variants")) or {})
         return cat_, tgt, ok
 
+    births: dict = {}
+
+    def birth_of(iid):
+        """The character's implied birth year (the median of what its dated and aged memories imply), None when unknown."""
+        if iid not in births:
+            from .memories import birth_years, load_nodes as load_memories
+            mem = {k: n for k, n in load_memories(src, manifest).items() if not ids or owner("memories", k) == iid}
+            by = sorted(birth_years(manifest, mem))
+            births[iid] = by[len(by) // 2] if by else None
+        return births[iid]
+
     no_lang: dict[tuple, list[str]] = {}
     for vid, node in nodes.items():
         where = f"psyche.{vid}"
@@ -1383,6 +1418,13 @@ def _psyche_rules(manifest: dict, src: Path, rep: "Report") -> None:
             rep.note(f"{where}: a wound with no `because` link to a memory — a wound is almost always because of something lived")
         if "false_but_held" in node and kind != "belief":
             rep.errors.append(f"{where}: `false_but_held` is for a belief only (this node is a {kind})")
+        # awareness, valence, end (§ 3 nonies)
+        if "valence" in node and kind not in ("stance", "taste"):
+            rep.errors.append(f"{where}: `valence` is for a stance or a taste only (this node is a {kind}) — the weight in decisions is `strength`")
+        if node.get("until") and node.get("since") and _point_before(node["until"], node["since"], birth_of(me)):
+            rep.errors.append(f"{where}: `until` ({_point_text(node['until'])}) is before `since` ({_point_text(node['since'])}) — a node ends after it appears")
+        if node.get("aware") == "no" and node.get("disclosure") == "secret":
+            rep.warnings.append(f"{where}: `aware: no` on a secret node — one does not hide what one does not know (a secret is known and kept; an unconscious node is acted on, never stated)")
         a = node.get("about")
         if a is not None and kind != "stance":
             rep.errors.append(f"{where}: the `about` field is for a stance only (this node is a {kind}) — use a link of type `about`")
@@ -1448,13 +1490,19 @@ def _psyche_rules(manifest: dict, src: Path, rep: "Report") -> None:
     unset = [vid for vid, n in nodes.items() if "strength" not in n]
     if nodes and len(unset) * 2 > len(nodes):
         rep.note(f"psyche: strength unset on {len(unset)} of {len(nodes)} nodes (default 50) — set it node by node for a finished psyche")
-    # a preset younger than a node's `since` (coherence, § 3 ter)
+    # a preset younger than a node's `since` (coherence, § 3 ter), older than its `until` (§ 3 nonies). The preset's age is the
+    # age it shows: its memories legitimately show other ages (Clara at 65 remembers herself at 29) and do not count here
     for pid in preset_ids(manifest):
-        pa = preset_age(manifest, pid)
+        pa = preset_age(manifest, pid, ignore={"memories"})
+        if pa is None:
+            continue
         for vid in resolve_preset_slots(manifest, pid).get("psyche") or []:
             sa = _age_value(((nodes.get(vid) or {}).get("since") or {}).get("age"))
-            if pa is not None and sa is not None and sa > pa:
+            ua = _age_value(((nodes.get(vid) or {}).get("until") or {}).get("age"))
+            if sa is not None and sa > pa:
                 rep.warnings.append(f"presets.{pid}: psyche.{vid} appeared at {sa:g}, after the age this preset shows ({pa:g}) (coherence)")
+            if ua is not None and pa > ua:
+                rep.warnings.append(f"presets.{pid}: psyche.{vid} was held until {ua:g}, before the age this preset shows ({pa:g}) (coherence)")
     # declared risk ↔ file-level tags.content (§ 3 septies): both ways
     risks = {(n.get("risk") or "none") for n in nodes.values()}
     for r, tag in PSYCHE_TAGS.items():

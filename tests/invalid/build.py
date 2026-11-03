@@ -380,6 +380,13 @@ def _(d):
     m["presets"]["marc"]["slots"]["appearance"] = ["x-marc"]; save(d, m)
     with_psyche(d, nodes={"val1": {"what": [{"item": "appearance/x-marc"}]}}, variants={v: {"identity": "lea"} for v in PSY})
 
+# ---------- awareness, valence, end (RFC 0004 § 3 nonies) ----------
+@case("psyche-valence-on-a-belief", "`valence` is on a stance or a taste only", "RFC 0004 § 3 nonies", "`valence` is for a stance or a taste only")
+def _(d): with_psyche(d, nodes={"bel1": {"valence": 40}})
+
+@case("psyche-until-before-since", "a node's `until` is not before its `since`", "RFC 0004 § 3 nonies", "is before `since`")
+def _(d): with_psyche(d, nodes={"val1": {"since": {"age": {"value": 30, "unit": "years"}}, "until": {"age": {"value": 25, "unit": "years"}}}})
+
 # ---------- archive-level cases (pack the valid base, then tamper) ----------
 def rewrite(src: Path, dst: Path, entries):
     with zipfile.ZipFile(dst, "w") as z:

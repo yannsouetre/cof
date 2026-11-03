@@ -446,6 +446,18 @@
       "expect": "belongs to another character"
     },
     {
+      "file": "psyche-valence-on-a-belief.cof",
+      "rule": "`valence` is on a stance or a taste only",
+      "spec": "RFC 0004 § 3 nonies",
+      "expect": "`valence` is for a stance or a taste only"
+    },
+    {
+      "file": "psyche-until-before-since.cof",
+      "rule": "a node's `until` is not before its `since`",
+      "spec": "RFC 0004 § 3 nonies",
+      "expect": "is before `since`"
+    },
+    {
       "file": "mimetype-not-first.cof",
       "rule": "`mimetype` is the first entry",
       "spec": "§ 1.1",

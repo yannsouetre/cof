@@ -1318,18 +1318,23 @@ def _pnode(d, vid, **kw):
 
 
 def test_example_10_psyche_is_valid(tmp_path):
-    """Clara's 22 nodes (RFC 0004 § 7 bis) in the flagship example: valid, listed by presets like memories; an extract keeps
-    what the preset holds and drops the links to nodes left behind."""
+    """Clara's 22 nodes (RFC 0004 § 7 bis) and bel4 (§ 3 nonies) in the flagship example: valid, listed by presets like
+    memories; an extract keeps what the preset holds and drops the links to nodes left behind."""
     src = ROOT / "spec/examples/10-clara-mercier"
     rep = Report(); m = validate_dir(src, rep, recompute=False)
     assert rep.ok, rep.errors
-    assert m["cof"] == "1.2" and len(m["elements"]["psyche"]["variants"]) == 22
+    assert m["cof"] == "1.2" and len(m["elements"]["psyche"]["variants"]) == 23
     assert not [w for w in rep.warnings if "psyche" in w], rep.warnings            # part B: every node carries Clara's French (her primary language)
     from cof_cli.psyche import load_nodes as load_psyche
     assert all(set(n["gist"]) == {"en", "fr"} for n in load_psyche(src, m).values())
     from cof_cli.model import resolve_preset_slots
     assert len(resolve_preset_slots(m, "default")["psyche"]) == 22 and len(resolve_preset_slots(m, "fr")["psyche"]) == 22
     assert resolve_preset_slots(m, "en-12")["psyche"] == ["val4", "taste1", "hab2"]
+    for pid in ("en-65", "fr-65"):                                                   # § 3 nonies: at 65 she no longer holds bel3 and contra1, she holds bel4
+        L = resolve_preset_slots(m, pid)["psyche"]
+        assert len(L) == 21 and "bel4" in L and "bel3" not in L and "contra1" not in L
+    assert [p for p in m["presets"] if "bel4" in resolve_preset_slots(m, p).get("psyche", [])] == ["en-65", "fr-65"]
+    assert not rep.warnings, rep.warnings
     from cof_cli.validate import auto_tags
     assert "has-psyche" in auto_tags(m)
     from cof_cli.ops import extract_presets
@@ -1394,6 +1399,63 @@ def test_psyche_information_and_warnings(tmp_path):
     assert any("psyche of id1: 1 node(s) without a gist in the character's primary language (fr): val1" in w for w in _val(d).warnings)
     from cof_cli.cli import _print_report
     assert _print_report(_val(d), False) == 0
+
+
+def test_psyche_aware_valence_until_rules(tmp_path):
+    """RFC 0004 § 3 nonies: `valence` off a stance / taste and `until` before `since` are errors (ages, dates, or an age
+    against a date through the implied birth year); `aware: no` on a secret node and a preset older than a node's `until`
+    are warnings; the preset's age is the age it shows (its memories do not lower it)."""
+    d, m = _psy(tmp_path)
+    errs = lambda: _val(d).errors
+    _pnode(d, "stance1", valence=60, aware="partly"); _pnode(d, "bel1", aware="no")
+    rep = _val(d); assert rep.ok and not rep.warnings, (rep.errors, rep.warnings)
+    _pnode(d, "val1", valence=20); assert any("psyche.val1: `valence` is for a stance or a taste only (this node is a value)" in e for e in errs())
+    _pnode(d, "val1", valence=None)
+    _pnode(d, "stance1", valence=140); assert any("psyche-node.schema" in e for e in errs())       # −100 … +100, the schema
+    _pnode(d, "stance1", valence=-100, aware="maybe"); assert any("psyche-node.schema" in e for e in errs())
+    _pnode(d, "stance1", aware=None); assert not errs()
+    # until against since: ages
+    _pnode(d, "val1", until={"age": {"value": 20, "unit": "years"}})
+    assert any("psyche.val1: `until` (age 20) is before `since` (age 28)" in e for e in errs())
+    _pnode(d, "val1", until={"age": {"value": 28, "unit": "years"}}); assert not errs()             # the same age: not before
+    # dates, at their common precision
+    _pnode(d, "val1", since={"date": "2019-06"}, until={"date": "2019"}); assert not errs()
+    _pnode(d, "val1", until={"date": "2018-12"}); assert any("is before `since`" in e for e in errs())
+    # an age against a date: through the birth year the memories imply (m3: 29 in 2019-03 → born 1990), one year of tolerance
+    from cof_cli.memories import birth_years, load_nodes as load_memories
+    assert birth_years(m, load_memories(d, m))
+    _pnode(d, "val1", since={"date": "2019"}, until={"age": {"value": 20, "unit": "years"}})
+    by = sorted(birth_years(m, load_memories(d, m)))[len(birth_years(m, load_memories(d, m))) // 2]
+    assert (2019.5 - by) > 21 and any("is before `since`" in e for e in errs()), by
+    _pnode(d, "val1", until={"age": {"value": round(2019.5 - by), "unit": "years"}}); assert not errs()
+    _pnode(d, "val1", since={"age": {"value": 28, "unit": "years"}}, until=None)
+    # warnings: aware no on a secret node; a preset older than a node's until (its memories do not count in its age)
+    _pnode(d, "bel1", disclosure="secret")
+    assert any("psyche.bel1: `aware: no` on a secret node" in w for w in _val(d).warnings)
+    _pnode(d, "bel1", disclosure="open", until={"age": {"value": 25, "unit": "years"}})
+    m["presets"]["default"]["age_override"] = {"value": 40, "unit": "years", "basis": "declared"}; _write(d, m)
+    rep = _val(d); assert rep.ok, rep.errors
+    assert any("presets.default: psyche.bel1 was held until 25, before the age this preset shows (40) (coherence)" in w for w in rep.warnings), rep.warnings
+    from cof_cli.model import preset_age
+    mm = rep.manifest
+    assert preset_age(mm, "default", ignore={"memories"}) == 40
+    m["presets"]["default"]["age_override"] = {"value": 25, "unit": "years", "basis": "declared"}; _write(d, m)
+    assert not any("was held until" in w for w in _val(d).warnings)                                  # 25 is not older than 25
+
+
+def test_psyche_coherence_uses_the_age_the_preset_shows(tmp_path):
+    """The `since` / `until` coherence rules read the preset's own age: a 65-year-old preset that remembers a moment shown
+    at 29 is 65 here (Clara's en-65 holds bel4, since 45). Held bel3 (until 45), it is warned."""
+    src = ROOT / "spec/examples/10-clara-mercier"
+    d = tmp_path / "c"; shutil.copytree(src, d)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    rep = Report(); validate_dir(d, rep, recompute=False); assert rep.ok and not rep.warnings, rep.warnings
+    m["presets"]["en-65"]["slots"]["psyche"] += ["bel3"]; _write(d, m)
+    rep = Report(); validate_dir(d, rep, recompute=False)
+    assert rep.warnings == ["presets.en-65: psyche.bel3 was held until 45, before the age this preset shows (65) (coherence)"], rep.warnings
+    m["presets"]["en-12"]["slots"]["psyche"] += ["bel4"]; _write(d, m)
+    rep = Report(); validate_dir(d, rep, recompute=False)
+    assert "presets.en-12: psyche.bel4 appeared at 45, after the age this preset shows (12) (coherence)" in rep.warnings, rep.warnings
 
 
 def test_psyche_version_gate_and_risk_tags(tmp_path):
@@ -1533,6 +1595,107 @@ def test_soul_md_who_she_is(tmp_path):
     assert soul.index("### Blessure") < soul.index("### Valeurs") < soul.index("### Contradictions") < soul.index("## Boundaries") and "## Goals" not in soul
 
 
+def test_soul_md_awareness_warmth_likes(tmp_path):
+    """§ 3 nonies in « Who she is »: a half-aware and an unaware node marked, a stance's warmth after its subject (signed),
+    tastes split into likes and dislikes once one taste leans (a taste without valence, or 0, stays a plain line), both
+    languages; without any valence the tastes stay one list; Clara at 65 holds bel4 instead of bel3 and contra1."""
+    from cof_cli.psyche import load_nodes as load_psyche, soul_section
+    d, m = _psy(tmp_path)
+    for vid, node in [("taste1", {"gist": {"fr": "Aime l'odeur du papier.", "en": "Loves the smell of paper."}, "strength": 50, "valence": 70}),
+                      ("taste2", {"gist": {"fr": "Déteste les notifications.", "en": "Hates notifications."}, "strength": 60, "valence": -80}),
+                      ("taste3", {"gist": {"fr": "Le thé vert, sans plus.", "en": "Green tea, no more."}, "strength": 30, "valence": 0}),
+                      ("taste4", {"gist": {"fr": "Les vieux trains.", "en": "Old trains."}, "strength": 40})]:
+        (d / f"elements/psyche/{vid}").mkdir(); (d / f"elements/psyche/{vid}/psyche-node.json").write_text(json.dumps(node), "utf-8")
+        m["elements"]["psyche"]["variants"][vid] = {"kind": "taste", "label": vid, "node": f"elements/psyche/{vid}/psyche-node.json", "identity": "id1", "strength": node["strength"]}
+        m["presets"]["default"]["slots"]["psyche"].append(vid)
+    m["identities"]["id1"]["gender"] = "female"; _write(d, m)
+    _pnode(d, "stance1", valence=60); _pnode(d, "bel1", aware="no"); _pnode(d, "val1", aware="partly")
+    rep = _val(d); assert rep.ok, rep.errors
+    m = rep.manifest
+    fr, _ = soul_section(m, load_psyche(d, m), "default")
+    assert "- La légèreté.  ·  en partie à son insu" in fr
+    assert "- Si je ralentis, je disparais  ·  mensonge · agit ainsi à son insu — ne le dit jamais" in fr
+    assert "- Envers l'utilisateur : une collègue  ·  envers: l'utilisateur · chaleur +60" in fr
+    tastes = fr[fr.index("### Goûts"):].split("\n\n")[0].splitlines()
+    assert tastes == ["### Goûts", "- Aime :", "  - Aime l'odeur du papier", "- N'aime pas :", "  - Déteste les notifications",
+                      "- Le thé vert, sans plus", "- Les vieux trains"], tastes
+    m["identities"]["id1"]["language"] = "en"
+    _pnode(d, "stance1", valence=-10)
+    en, _ = soul_section(m, load_psyche(d, m), "default")
+    assert "- Lightness.  ·  half aware" in en and "- If I slow down, I disappear  ·  lie · acts on it without knowing it — never says it" in en
+    assert "- Toward the user: a colleague  ·  about: the user · warmth -10" in en
+    assert "### Tastes\n- Likes:\n  - Loves the smell of paper\n- Dislikes:\n  - Hates notifications\n- Green tea, no more\n- Old trains\n" in en
+    _pnode(d, "stance1", valence=0); assert "about: the user · warmth 0" in soul_section(m, load_psyche(d, m), "default")[0]
+    for vid in ("taste1", "taste2", "taste3"):
+        _pnode(d, vid, valence=None)
+    en, _ = soul_section(m, load_psyche(d, m), "default")
+    assert "### Tastes\n- Loves the smell of paper\n- Hates notifications\n- Green tea, no more\n- Old trains\n" in en and "Likes" not in en
+    # Clara: the default preset and the 65-year-old
+    src = ROOT / "spec/examples/10-clara-mercier"
+    cm = json.loads((src / "manifest.json").read_text("utf-8")); cn = load_psyche(src, cm)
+    s29, st29 = soul_section(cm, cn, "fr"); s65, st65 = soul_section(cm, cn, "fr-65")
+    assert st29["rendered"] == 22 and st65["rendered"] == 21
+    assert "- Si je ralentis, je disparais  ·  mensonge · agit ainsi à son insu — ne le dit jamais" in s29 and "Ralentir" not in s29
+    assert "- Accepter d'être aidée  ·  en partie à son insu" in s29 and "envers: le Martien · chaleur +60" in s29 and "envers: les agences de design · chaleur -10" in s29
+    assert "### Goûts\n- Aime :\n  - Aime l'odeur du papier" in s29 and "- N'aime pas :\n  - Déteste les notifications" in s29
+    assert "- Ralentir n'est pas disparaître : le studio tient sans mes nuits\n" in s65 and "Si je ralentis" not in s65 and "### Contradictions" not in s65
+
+
+def test_psyche_add_aware_valence_until(tmp_path):
+    """`cof psyche add --aware / --valence / --until-age / --until-date`: written on the node (and in the first revision),
+    the default `aware: yes` not written, `--valence` refused on another kind, `--until` before `--since` refused by the
+    validation of the copy."""
+    from cof_cli.selfdesc import psyche_add
+    from cof_cli.cli import main
+    d, m = _psy(tmp_path)
+    vid = psyche_add(d, identity=None, kind="stance", gists={"fr": "Envers l'utilisateur : de la chaleur, désormais."}, about="user", valence=45,
+                     aware="partly", stability="shifting", since_age=29, until_date="2027", approx=True)
+    n = json.loads((d / f"elements/psyche/{vid}/psyche-node.json").read_text("utf-8"))
+    assert n["valence"] == 45 and n["aware"] == "partly" and n["since"] == {"age": {"value": 29, "unit": "years"}, "approx": True} and n["until"] == {"date": "2027", "approx": True}
+    assert n["revisions"][0]["valence"] == 45 and n["revisions"][0]["aware"] == "partly"
+    vid2 = psyche_add(d, identity=None, kind="taste", gists={"fr": "Le café noir."}, valence=-30, aware="yes", until_age=40)
+    n2 = json.loads((d / f"elements/psyche/{vid2}/psyche-node.json").read_text("utf-8"))
+    assert "aware" not in n2 and n2["valence"] == -30 and n2["until"] == {"age": {"value": 40, "unit": "years"}} and "aware" not in n2["revisions"][0]
+    assert _val(d).ok
+    for kw in (dict(kind="value", valence=10), dict(kind="stance", valence=101), dict(kind="fear", aware="maybe")):
+        with pytest.raises(ValueError):
+            psyche_add(d, identity=None, gists={"fr": "x"}, **kw)
+    with pytest.raises(ValueError, match="stance or a taste only"):
+        psyche_add(d, identity=None, kind="belief", gists={"fr": "x"}, valence=10)
+    f = tmp_path / "f"; shutil.copytree(d, f)
+    assert main(["psyche", "add", str(f), "--kind", "belief", "--gist", "fr=x", "--valence", "10"]) == 2            # refused before anything is written
+    assert main(["psyche", "add", str(f), "--kind", "fear", "--gist", "fr=Être oubliée.", "--since-age", "30", "--until", "20"]) == 1   # until before since: not written
+    assert main(["psyche", "add", str(f), "--kind", "fear", "--gist", "fr=Être oubliée.", "--since-age", "30", "--until-age", "40", "--aware", "no", "--canon"]) == 0
+    mf = json.loads((f / "manifest.json").read_text("utf-8"))
+    new = [v for v in mf["elements"]["psyche"]["variants"] if v.startswith("fear")]
+    nf = json.loads((f / f"elements/psyche/{new[-1]}/psyche-node.json").read_text("utf-8"))
+    assert nf["aware"] == "no" and nf["until"] == {"age": {"value": 40.0, "unit": "years"}} and nf["since"]["age"]["value"] == 30
+
+
+def test_extract_keeps_the_node_a_psyche_variant_derives_from(tmp_path):
+    """§ 3 nonies / § 7: a node that changes is a second node with `derives_from` on its variant (Clara's bel4 from bel3).
+    `cof extract --preset fr-65` keeps bel3 as the parent the variant resolves through (not listed by the preset), drops
+    contra1; a purge that removes the parent leaves the derived node whole (its inherited fields written on it)."""
+    from cof_cli.ops import extract_presets
+    from cof_cli.model import resolve_variant
+    from cof_cli.psyche import drop_nodes
+    src = ROOT / "spec/examples/10-clara-mercier"
+    out = tmp_path / "x"; m = extract_presets(src, out, ["fr-65"])
+    V = m["elements"]["psyche"]["variants"]
+    assert "bel3" in V and "bel4" in V and V["bel4"]["derives_from"] == "bel3" and "contra1" not in V
+    assert (out / "elements/psyche/bel3/psyche-node.json").is_file() and "bel3" not in m["presets"]["fr-65"]["slots"]["psyche"]
+    rep = Report(); validate_dir(out, rep, recompute=False)
+    assert rep.ok and not [w for w in rep.warnings if "psyche" in w], (rep.errors, rep.warnings)        # the parent is no backstage leftover
+    from cof_cli.convert import export_soul
+    assert "Ralentir n'est pas disparaître" in export_soul(out, "fr-65")[0] and "Si je ralentis" not in export_soul(out, "fr-65")[0]
+    # a derived variant that only overrides its label inherits the rest; dropping the parent writes the rest on it
+    V["bel5"] = {"derives_from": "bel3", "label": "bel3 at 50"}; m["presets"]["fr-65"]["slots"]["psyche"].append("bel5")
+    assert resolve_variant(m, "psyche", "bel5")["kind"] == "belief"
+    gone = drop_nodes(out, m, ["bel3"])
+    assert gone == ["bel3"] and "derives_from" not in V["bel5"] and V["bel5"]["kind"] == "belief" and V["bel5"]["node"] == "elements/psyche/bel3/psyche-node.json"
+    assert (out / "elements/psyche/bel3/psyche-node.json").is_file()                 # the file bel5 still reads stays
+
+
 def test_migrate_psyche_from_the_lists(tmp_path):
     """§ 3 quater: psyche.json goals / fears / values and the card's cof.goals / cof.fears / cof.behavior become want (70),
     fear (70), value ("Word."), habit nodes; duplicates merged by text and by id; the lists stay; the presets holding the
@@ -1556,10 +1719,10 @@ def test_migrate_psyche_from_the_lists(tmp_path):
     r2 = migrate_psyche(d)
     assert r2["written"] == [] and r2["skipped"] == 8 and sorted(p.name for p in (d / "elements/psyche").iterdir()) == sorted(r["written"])
     assert main(["migrate", str(d), "--psyche"]) == 0
-    # a psyche written by hand is left alone: the lists are not poured on top (example 10 holds Clara's 22 nodes)
+    # a psyche written by hand is left alone: the lists are not poured on top (example 10 holds Clara's 23 nodes)
     c = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/10-clara-mercier", c)
     r3 = migrate_psyche(c)
-    assert r3["written"] == [] and r3["untouched"] == {"id1": 15} and r3["skipped"] == 1 and len(json.loads((c / "manifest.json").read_text("utf-8"))["elements"]["psyche"]["variants"]) == 22
+    assert r3["written"] == [] and r3["untouched"] == {"id1": 15} and r3["skipped"] == 1 and len(json.loads((c / "manifest.json").read_text("utf-8"))["elements"]["psyche"]["variants"]) == 23
     # a bilingual card (a second personality variant, English, same lists): one node per entry, a gist per language
     e = tmp_path / "e"; shutil.copytree(MEM, e)
     me = json.loads((e / "manifest.json").read_text("utf-8"))
@@ -1642,7 +1805,7 @@ def test_psyche_propose_contract_and_table(tmp_path):
     assert len(b["lists"]["goals"]) == 3 and len(b["lists"]["values"]) == 6 and len(b["lists"]["behavior"]) == 4
     assert [x["id"] for x in b["memories"]] == ["ev1", "ep1", "ev2", "ev3", "ev4", "ev5", "ev6", "ev7", "ev8", "ep2", "ev9", "ev10"]   # the manga copies left out
     assert b["memories"][1]["kind"] == "period" and b["memories"][1]["when"] and "agence" in b["memories"][1]["gist"].lower()
-    assert len(b["psyche"]) == 22 and b["psyche"][0] == {"id": "wound1", "kind": "wound", "gist": b["psyche"][0]["gist"], "strength": 85} and "livrer" in b["psyche"][0]["gist"]
+    assert len(b["psyche"]) == 23 and b["psyche"][0] == {"id": "wound1", "kind": "wound", "gist": b["psyche"][0]["gist"], "strength": 85} and "livrer" in b["psyche"][0]["gist"]
     prop = P.normalize(json.loads(PROPOSAL.read_text("utf-8")))
     errors, notes = P.validate(prop, b)
     assert errors == [], errors
@@ -1679,6 +1842,31 @@ def test_psyche_propose_contract_and_table(tmp_path):
     assert P.parse_answer({"choices": [{"message": {"content": "Here you are:\n```json\n{\"nodes\": []}\n```"}}]}) == {"nodes": []}
     with pytest.raises(ValueError):
         P.parse_answer({"choices": [{"message": {"content": "I cannot."}}]})
+
+
+def test_psyche_propose_aware_valence_until(tmp_path):
+    """docs/psyche-propose.md: a candidate MAY carry `aware`, `valence` (stance / taste) and `until` (RFC 0004 § 3 nonies) —
+    checked like the node file (enum, range, kind, shape, until not before since) and kept through --apply."""
+    from cof_cli import propose as P
+    d = tmp_path / "c10"; shutil.copytree(ROOT / "spec/examples/10-clara-mercier", d)
+    m = json.loads((d / "manifest.json").read_text("utf-8")); b = P.build_bundle(d, m, "fr-agent")
+    g = {"fr": "y" * 120, "en": "y" * 120}
+    good = {"nodes": [{"id": "c1", "kind": "stance", "gist": g, "about": {"user": True}, "valence": -40, "aware": "partly", "source": "inferred"},
+                      {"id": "c2", "kind": "habit", "gist": g, "aware": "no", "since": {"age": {"value": 30}}, "until": {"age": {"value": 44}, "approx": True}, "source": "inferred"}]}
+    e, n = P.validate(P.normalize(good), b)
+    assert e == [] and not any("not part of the contract" in x for x in n), (e, n)
+    assert "aware partly · valence -40" in P.table(P.normalize(good), b, n) and "until age 44" in P.table(P.normalize(good), b, n)
+    def bad(**kw):
+        return P.validate(P.normalize({"nodes": [{"id": "x1", "kind": "value", "gist": g, "source": "inferred", **kw}]}), b)[0]
+    assert any("valence is for a stance or a taste only" in x for x in bad(valence=10))
+    assert any("valence must be an integer between -100 and 100" in x for x in bad(kind="taste", valence=150))
+    assert any("aware must be yes, partly or no" in x for x in bad(aware="maybe"))
+    assert any("until must be" in x for x in bad(until="2020"))
+    assert any("until is before since" in x for x in bad(since={"date": "2020"}, until={"date": "2019-12"}))
+    written, _ = P.apply(d, P.normalize(good), "all", bundle=b)
+    nodes = {v: json.loads((d / f"elements/psyche/{v}/psyche-node.json").read_text("utf-8")) for v in written}
+    st = next(x for k, x in nodes.items() if k.startswith("stance")); hb = next(x for k, x in nodes.items() if k.startswith("hab"))
+    assert st["valence"] == -40 and st["aware"] == "partly" and hb["aware"] == "no" and hb["until"] == {"age": {"value": 44}, "approx": True} and "valence" not in hb
 
 
 def test_psyche_propose_cli_rules_zodiac_and_accept(tmp_path):
@@ -1722,27 +1910,27 @@ def test_psyche_propose_cli_rules_zodiac_and_accept(tmp_path):
     assert main(["psyche", "propose", str(d), "--preset", "fr-agent", "--from-file", str(po), "--apply", "--accept", "c2,c3,c4,c5"]) == 0
     m = json.loads((d / "manifest.json").read_text("utf-8"))
     V = m["elements"]["psyche"]["variants"]
-    assert [v for v in V][-4:] == ["taste3", "bel4", "contra2", "stance3"] and "c1" not in str(V) and len(V) == 26
+    assert [v for v in V][-4:] == ["taste3", "bel5", "contra2", "stance3"] and "c1" not in str(V) and len(V) == 27       # bel4 is Clara's own (§ 3 nonies)
     n = lambda v: json.loads((d / f"elements/psyche/{v}/psyche-node.json").read_text("utf-8"))
-    assert n("bel4")["false_but_held"] is True and n("bel4")["since"] == {"age": {"value": 24}} and n("bel4")["links"] == [{"to": "memories/ep1", "type": "because"}] and n("bel4")["origin"] == "authored" and n("bel4")["visibility"] == "canon"
-    assert n("contra2")["links"] == [{"to": "psyche/bel4", "type": "conflicts"}, {"to": "psyche/val1", "type": "conflicts"}]
+    assert n("bel5")["false_but_held"] is True and n("bel5")["since"] == {"age": {"value": 24}} and n("bel5")["links"] == [{"to": "memories/ep1", "type": "because"}] and n("bel5")["origin"] == "authored" and n("bel5")["visibility"] == "canon"
+    assert n("contra2")["links"] == [{"to": "psyche/bel5", "type": "conflicts"}, {"to": "psyche/val1", "type": "conflicts"}]
     assert n("stance3")["about"] == {"user": True} and n("stance3")["risk"] == "inappropriate" and m["tags"]["content"] == ["psyche-inappropriate"]
     assert V["stance3"]["strength"] == 50 and V["taste3"]["label"].startswith("Aime le silence") and V["taste3"]["identity"] == "id1"
     from cof_cli.model import resolve_preset_slots
-    assert resolve_preset_slots(m, "fr-agent")["psyche"][-4:] == ["taste3", "bel4", "contra2", "stance3"] and resolve_preset_slots(m, "default")["psyche"][-4:] == ["taste3", "bel4", "contra2", "stance3"]
-    assert m["presets"]["en-manga"]["slots"]["psyche"][-4:] == ["taste3", "bel4", "contra2", "stance3"]                          # holds p6 through extends
-    assert resolve_preset_slots(m, "en-12")["psyche"] == ["val4", "taste1", "hab2"] and "bel4" not in resolve_preset_slots(m, "fr-65")["psyche"]   # other personalities: untouched
+    assert resolve_preset_slots(m, "fr-agent")["psyche"][-4:] == ["taste3", "bel5", "contra2", "stance3"] and resolve_preset_slots(m, "default")["psyche"][-4:] == ["taste3", "bel5", "contra2", "stance3"]
+    assert m["presets"]["en-manga"]["slots"]["psyche"][-4:] == ["taste3", "bel5", "contra2", "stance3"]                          # holds p6 through extends
+    assert resolve_preset_slots(m, "en-12")["psyche"] == ["val4", "taste1", "hab2"] and "bel5" not in resolve_preset_slots(m, "fr-65")["psyche"]   # other personalities: untouched
     rep = _val(d); assert rep.ok, rep.errors
     # idempotence of the review: the same proposal now flags its own candidates as duplicates of what was written
     b2 = P.build_bundle(d, m, "fr-agent"); dups = P.duplicates(P.normalize(json.loads(po.read_text("utf-8"))), b2)
-    assert dups["c2"] == "psyche/taste3" and dups["c3"] == "psyche/bel4"
+    assert dups["c2"] == "psyche/taste3" and dups["c3"] == "psyche/bel5"
     # on a .cof, with --accept all (c1 included: the author's choice) and --out-cof
     cof = tmp_path / "c.cof"; pack(d, cof)
     out_cof = tmp_path / "d.cof"
     assert main(["psyche", "propose", str(cof), "--preset", "fr-agent", "--from-file", str(po), "--apply", "--accept", "all", "--out-cof", str(out_cof)]) == 0
     u = tmp_path / "u"; unpack(out_cof, u)
     mu = json.loads((u / "manifest.json").read_text("utf-8"))
-    assert len(mu["elements"]["psyche"]["variants"]) == 32 and validate_cof(out_cof).ok
+    assert len(mu["elements"]["psyche"]["variants"]) == 33 and validate_cof(out_cof).ok
     # the inverse: `psyche text` prints the section, --into-card appends it to the card (never replaces)
     import io, contextlib
     buf = io.StringIO()
