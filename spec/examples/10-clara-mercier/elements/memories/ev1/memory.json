@@ -31,6 +31,14 @@
       }
     }
   ],
+  "what": [
+    {
+      "label": {
+        "fr": "le carnet",
+        "en": "the notebook"
+      }
+    }
+  ],
   "felt_then": {
     "category": {
       "set": "everyday",

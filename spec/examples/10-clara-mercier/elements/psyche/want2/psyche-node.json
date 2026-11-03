@@ -14,6 +14,11 @@
   "origin": "authored",
   "visibility": "canon",
   "disclosure": "open",
+  "where": [
+    {
+      "environment": "appearance/e1"
+    }
+  ],
   "links": [
     {
       "to": "psyche/val1",

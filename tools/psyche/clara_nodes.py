@@ -1,11 +1,12 @@
 """Clara's psyche — the 22 nodes of RFC 0004 § 7 bis as node files, the generator of example 10's `elements/psyche/`.
 
     python tools/psyche/clara_nodes.py OUTDIR                     # writes OUTDIR/elements/psyche/<id>/psyche-node.json + OUTDIR/psyche-variants.json
-    python tools/psyche/clara_nodes.py OUTDIR --identity martien  # the cast form: the stance toward the Martian names his identity (example 11)
+    python tools/psyche/clara_nodes.py OUTDIR --identity martien  # the cast form: the stance toward the Martian names his identity in `who` (example 11)
 
 Nothing here is invented beyond the RFC table: gists are its sentences (English, and the French the file carries since
-cof-cli part B — Clara's primary language), links its links. In the one-character file (example 10) the stance toward the
-Martian names him by label; `--identity <id>` writes the `about.identity` form for a cast file."""
+cof-cli part B — Clara's primary language), links its links; the people, places and objects of RFC 0005 § 3 (`AXES`).
+In the one-character file (example 10) the stance toward the Martian names him by label; `--identity <id>` adds him as a
+person of the cast file, `who: [{"identity": <id>}]` (the stance keeps its label subject — RFC 0004 § 7 bis)."""
 import json, sys
 from pathlib import Path
 
@@ -53,8 +54,8 @@ N = [  # id, kind, gist {en, fr}, strength, stability, since, links [(type, to)]
                   "fr":"Garde un petit carnet en papier recyclé à portée de main pour croquer des parcours utilisateurs."},70,"settled",None,[("supports","psyche/val1")],["work"],{}),
  ("hab2","habit",{"en":"Takes a moment to structure her ideas before answering.",
                   "fr":"Prend un temps pour structurer ses idées avant de répondre."},75,"core",None,[("supports","psyche/bel2")],["speech"],{}),
- ("contra1","contradiction",{"en":"Preaches slowness, works at night.",
-                             "fr":"Prône la lenteur, travaille la nuit."},60,"settled",None,[("conflicts","psyche/val1"),("conflicts","psyche/bel3")],["self"],{}),
+ ("contra1","contradiction",{"en":"Preaches slowness, works at night — after a few guitar chords, her only slowness.",
+                             "fr":"Prône la lenteur, travaille la nuit — après quelques accords de guitare, sa seule lenteur."},60,"settled",None,[("conflicts","psyche/val1"),("conflicts","psyche/bel3")],["self"],{}),
 ]
 LABEL = {  # bilingual « FR / EN », the convention of Clara's memories (readers keep the half of their language)
  "wound1": "Les années d'agence / The agency years",
@@ -80,15 +81,24 @@ LABEL = {  # bilingual « FR / EN », the convention of Clara's memories (reader
  "hab2": "Structurer avant de parler / Structure before speaking",
  "contra1": "La lenteur, la nuit / Slowness, at night"}
 
+GRANDMOTHER = {"label": {"fr": "ma grand-mère", "en": "my grandmother"}}                   # the labels her memories use (ev1)
+AXES = {  # RFC 0005 § 3: the people, places and objects a node is tied to directly, beside its links
+ "val4": {"who": [GRANDMOTHER]},
+ "taste1": {"where": [{"label": {"fr": "la maison de ma grand-mère, au pied des Alpes", "en": "my grandmother's house, at the foot of the Alps"}}]},
+ "want2": {"where": [{"environment": "appearance/e1"}]},                                  # her studio facing the park
+ "hab1": {"what": [{"label": {"fr": "le carnet", "en": "the notebook"}}]},                 # the notebook of ev1, kept since childhood
+ "contra1": {"what": [{"item": "appearance/x1"}]}}                                         # the folk guitar with the peace motif
+
 def main(out: Path, martian_identity: str | None = None, identity: str | None = "id1"):
     variants = {}
     for nid, kind, gist, strength, stab, since, links, tags, extra in N:
         node = {"gist": {"en": gist["en"], "fr": gist["fr"]}, "strength": strength, "stability": stab}
         if since is not None: node["since"] = A(since)
         node.update(json.loads(json.dumps(extra)))
-        if nid == "stance1" and martian_identity:
-            node["about"] = {"identity": martian_identity}
         node.update({"origin": "authored", "visibility": "canon", "disclosure": "open"})
+        node.update(json.loads(json.dumps(AXES.get(nid) or {})))
+        if nid == "stance1" and martian_identity:               # the cast form: the Martian is a person of the file (RFC 0005 § 2.3)
+            node["who"] = [{"identity": martian_identity}]
         if links: node["links"] = [{"to": t, "type": ty} for ty, t in links]
         node["tags"] = tags
         d = out / "elements" / "psyche" / nid; d.mkdir(parents=True, exist_ok=True)

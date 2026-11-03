@@ -14,6 +14,14 @@
   "origin": "authored",
   "visibility": "canon",
   "disclosure": "open",
+  "who": [
+    {
+      "label": {
+        "fr": "ma grand-mère",
+        "en": "my grandmother"
+      }
+    }
+  ],
   "links": [
     {
       "to": "memories/ev1",
