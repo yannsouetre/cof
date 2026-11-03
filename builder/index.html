@@ -1324,6 +1324,12 @@ Object.assign(I18N.de,{"Périodes seulement":"Nur Perioden","N'afficher que les 
 Object.assign(I18N.es,{"Périodes seulement":"Solo periodos","N'afficher que les périodes et les groupes de moments (vue seulement, rien dans le fichier)":"Mostrar solo los periodos y los grupos de momentos (solo vista, nada en el archivo)","en partie":"en parte","clic : tout cocher ou tout décocher":"clic: marcar o desmarcar todo","moments sans période":"momentos sin periodo","sans période ni date":"sin periodo ni fecha","petite enfance":"primera infancia","enfance":"infancia","adolescence":"adolescencia","études, premiers pas":"estudios, primeros pasos","jeune adulte":"adulto joven","adulte":"adulto","plus tard":"años posteriores"});
 Object.assign(I18N.zh,{"Périodes seulement":"仅时期","N'afficher que les périodes et les groupes de moments (vue seulement, rien dans le fichier)":"只显示时期和瞬间分组（仅视图，不写入文件）","en partie":"部分","clic : tout cocher ou tout décocher":"点击：全选或全部取消","moments sans période":"没有时期的瞬间","sans période ni date":"无时期无日期","petite enfance":"幼年","enfance":"童年","adolescence":"青春期","études, premiers pas":"求学、初入社会","jeune adulte":"青年","adulte":"中年","plus tard":"晚年"});
 Object.assign(I18N.ja,{"Périodes seulement":"期間のみ","N'afficher que les périodes et les groupes de moments (vue seulement, rien dans le fichier)":"期間と瞬間のグループだけを表示（表示のみ、ファイルには書き込まれません）","en partie":"一部","clic : tout cocher ou tout décocher":"クリック：全てチェック／全て解除","moments sans période":"期間のない瞬間","sans période ni date":"期間も日付もなし","petite enfance":"幼児期","enfance":"児童期","adolescence":"思春期","études, premiers pas":"学生・社会人初期","jeune adulte":"青年期","adulte":"壮年期","plus tard":"老年期"});
+/* 1.2 § 3 nonies: « Conscience de soi : partiellement » has its own key (« en partie » means "some" in the memories chips) */
+Object.assign(I18N.en,{"partiellement":"partly"});
+Object.assign(I18N.de,{"partiellement":"teilweise"});
+Object.assign(I18N.es,{"partiellement":"en parte"});
+Object.assign(I18N.zh,{"partiellement":"部分"});
+Object.assign(I18N.ja,{"partiellement":"部分的に"});
 CAT_LABEL.memories="Souvenirs";
 S.memories=S.memories||{};S.memFiles=S.memFiles||new Map();S.memPresets=S.memPresets||{};S.memLang=S.memLang||{};S.memSeq=S.memSeq||{ev:0,ep:0};
 const MEM_LINKS=["after","part-of","about","because","same-event"],MEM_LINK_LABEL={after:"après","part-of":"fait partie de",about:"à propos de",because:"à cause de","same-event":"même événement"},MEM_NATURE=[["experienced","vécu"],["learned","appris"],["witnessed","rapporté"],["imagined","imaginé"]],MEM_FID=[["vivid","vive"],["clear","nette"],["faded","estompée"],["fragment","fragment"]];
@@ -1643,7 +1649,7 @@ function psyHtml(vid,m){const n=m.node,L=psyLangs(),me=psyOwner(vid),K=PSY_KIND[
     <fieldset class="memfs"><legend>${t("Origine")}</legend>${rad("origin",[["authored","écrit par l'auteur"],["lived","vécu à l'usage"]],n.origin||"authored")}${(n.revisions||[]).length?`<div class="hint">${(n.revisions||[]).length} ${t("révision(s) conservée(s) (versions antérieures écrites par un hôte)")}</div>`:""}</fieldset>
     <fieldset class="memfs"><legend>${t("Visibilité")}</legend>${rad("visibility",[["canon","canon"],["personal","personnel (données d'un utilisateur)"]],n.visibility||"canon")}</fieldset>
     <fieldset class="memfs"><legend>${t("Confidence")}</legend>${rad("disclosure",[["open","ouvert"],["guarded","réservé"],["secret","secret"]],n.disclosure||"open")}</fieldset>
-    <fieldset class="memfs"><legend>${t("Conscience de soi")}</legend>${rad("aware",[["yes","oui"],["partly","en partie"],["no","non"]],n.aware||"yes")}<div class="hint">${t("ce que le personnage sait de lui-même — pas ce qu'il dit aux autres (la confidence)")}</div></fieldset>
+    <fieldset class="memfs"><legend>${t("Conscience de soi")}</legend>${rad("aware",[["yes","oui"],["partly","partiellement"],["no","non"]],n.aware||"yes")}<div class="hint">${t("ce que le personnage sait de lui-même — pas ce qu'il dit aux autres (la confidence)")}</div></fieldset>
   </div></div>`}
 function psyValTxt(v){v=Number(v);return !isFinite(v)?"?":v>0?"+"+v:v<0?"−"+(-v):"0"}
 function psyHay(vid){const m=S.psyche[vid];return [vid,m.kind,t(PSY_KIND[m.kind]?.[1]||m.kind),m.label,...Object.values(m.node.gist||{}),...(m.node.tags||[]),...Object.values(m.node.about?.label||{})].join(" ")}
