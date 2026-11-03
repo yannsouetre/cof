@@ -10,6 +10,8 @@
    RFC 0005 entries written in (and an older draft's link to `identities/id1` on val2): the people, places and objects of a card (folded
    while empty, lazy pickers, self / environments / accessories), the conversion of the identity link to `who` with its information line,
    a link picker without identities, the three lists written and schema-valid, their checks, the words in the six languages.
+   Then RFC 0004 § 3 nonies on a copy of example 10: until, self-awareness and valence on the cards, written back unchanged when untouched,
+   edited, cleared, dropped on a change of kind; their checks; the six languages.
    Exit code 1 on any failure. */
 const fs = require("fs"), path = require("path"), http = require("http"), { spawnSync } = require("child_process");
 const { chromium } = require("playwright");
@@ -28,6 +30,8 @@ function pack(example, out) {
 }
 /* RFC 0005 § 3 on psyche nodes of a copy of example 10, and a link to an identity as older drafts wrote it */
 const PATCH0005 = { hab1: { what: [{ label: { fr: "le carnet", en: "the notebook" } }] }, contra1: { what: [{ item: "appearance/x1" }] }, val4: { who: [{ label: { fr: "ma grand-mère", en: "my grandmother" } }] }, want2: { where: [{ environment: "appearance/e1" }] }, val2: n => ({ links: [...(n.links || []), { to: "identities/id1", type: "about" }] }) };
+/* RFC 0004 § 3 nonies on a copy of example 10: awareness, valence, end */
+const PATCHNONIES = { bel3: { aware: "no", until: { age: { value: 45, unit: "years" }, approx: true } }, need1: { aware: "partly" }, stance1: { valence: 60 }, stance2: { valence: -10 }, taste1: { valence: 70 }, taste2: { valence: -80 }, contra1: { until: { age: { value: 45, unit: "years" }, approx: true } } };
 function packPatched(example, out, patch) {
   const src = path.join(WORK, "src-" + example + "-0005");
   fs.rmSync(src, { recursive: true, force: true });
@@ -182,6 +186,64 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
     await page.evaluate(x => { setLang(x); go("psyche"); }, l); await page.waitForTimeout(150);
     const txt = await page.evaluate(c => document.querySelector(c + " [data-axdet] > summary").textContent.trim() + " | " + [...document.querySelectorAll(c + " [data-axbox] > .hint")].map(x => x.textContent).join(" "), pc("val1"));
     check(re.test(txt) && !/Personnes|Lieux|Objets/.test(txt), `${l}: ${txt}`);
+  }
+  await page.evaluate(() => setLang("fr"));
+
+  /* ---- awareness, valence, end (RFC 0004 § 3 nonies) ---- */
+  const claraN = path.join(WORK, "clara12-nonies.cof"); packPatched("10-clara-mercier", claraN, PATCHNONIES);
+  const srcN = readManifest(claraN).nodes;
+  await open(claraN); await page.click("#nav button[data-step=psyche]"); await page.waitForTimeout(300);
+  await page.evaluate(() => { for (const v of ["bel3", "need1", "stance1", "taste2", "val1", "contra1"]) S._fold["m:psyche:" + v] = false; renderPsyche(); }); await page.waitForTimeout(200);
+  const card = await page.evaluate(() => { const q = (v, s) => document.querySelector(`#psyList .variant[data-vid="${v}"] ${s}`); const legends = v => [...document.querySelectorAll(`#psyList .variant[data-vid="${v}"] legend`)].map(x => x.textContent.trim());
+    const a = q("bel3", "[data-pu=age]").getBoundingClientRect(), b = q("bel3", "[data-pu=date]").getBoundingClientRect();
+    return { untilAge: q("bel3", "[data-pu=age]").value, untilApprox: q("bel3", "[data-pu=approx]").checked, aligned: Math.abs(a.top - b.top) < 2, tip: q("bel3", "[data-pu=date]").title, ph: q("bel3", "[data-pu=date]").placeholder,
+      bel3: q("bel3", "input[data-pr=aware]:checked")?.value, need1: q("need1", "input[data-pr=aware]:checked")?.value, val1: q("val1", "input[data-pr=aware]:checked")?.value,
+      s1: [q("stance1", "[data-pn=valence]").value, q("stance1", "[data-pvalv]").textContent, q("stance1", ".psyval").parentNode.textContent.includes("hostile") && q("stance1", ".psyval").parentNode.textContent.includes("chaleureux"), !!q("stance1", "[data-pvalclear]")],
+      t2: [q("taste2", "[data-pvalv]").textContent, q("taste2", ".psyval").parentNode.textContent.includes("déteste") && q("taste2", ".psyval").parentNode.textContent.includes("adore")],
+      val1Legends: legends("val1"), stLegends: legends("stance1") }; });
+  check(card.untilAge === "45" && card.untilApprox && card.aligned && /AAAA/.test(card.tip) && card.ph === "ex. 2019-06", "« Jusqu'à » age and date on one line, as « Depuis » (bel3: 45, approximate, formats in the tooltip)");
+  check(card.bel3 === "no" && card.need1 === "partly" && card.val1 === "yes" && card.val1Legends.includes("Conscience de soi"), `« Conscience de soi » on every card: bel3 non, need1 en partie, val1 oui by default (${card.bel3} / ${card.need1} / ${card.val1})`);
+  check(card.s1.join() === "60,+60,true,true" && card.t2.join() === "−80,true" && card.stLegends.includes("Valence") && !card.val1Legends.includes("Valence"), `valence on stance and taste only: stance1 ${card.s1.slice(0, 2).join(" ")} (hostile ↔ chaleureux, ✕), taste2 ${card.t2[0]} (déteste ↔ adore), none on a value`);
+  const tR = path.join(WORK, "t8-nonies-untouched.cof"); await build(tR); m = readManifest(tR);
+  const diffN = Object.keys(srcN).filter(k => JSON.stringify(srcN[k]) !== JSON.stringify(m.nodes[k]));
+  check(!diffN.length && Object.keys(m.nodes).length === 22, "built untouched: every node file unchanged" + (diffN.length ? " — differs: " + diffN.join(", ") : ""));
+  check(m.nodes.bel3.aware === "no" && m.nodes.need1.aware === "partly" && !("aware" in m.nodes.val1) && m.nodes.stance2.valence === -10 && m.nodes.taste2.valence === -80 && m.nodes.contra1.until.age.value === 45 && !schemaBad(tR).length, "aware, valence, until written as read; the default « yes » not added; schema-valid");
+  /* edits: until, awareness (the default not written unless read), valence on a new taste, a stance turned belief */
+  await page.evaluate(() => go("psyche")); await page.waitForTimeout(200);
+  await setE(pc("val1") + " [data-pu=age]", "50"); await setE(pc("val1") + " [data-pu=date]", "2071");
+  const radio = (vid, v) => page.evaluate(([c, v]) => { const x = document.querySelector(`${c} input[data-pr=aware][value=${v}]`); x.checked = true; x.dispatchEvent(new Event("change")); }, [pc(vid), v]);
+  await radio("val1", "partly"); const aw1 = await page.evaluate(() => S.psyche.val1.node.aware); await radio("val1", "yes");
+  await radio("bel3", "yes"); await page.evaluate(() => { S.psyche.hab2.node.aware = "yes"; S._fold["m:psyche:hab2"] = false; renderPsyche(); }); await page.waitForTimeout(150); await radio("hab2", "no"); await radio("hab2", "yes");
+  check(aw1 === "partly" && await page.evaluate(() => !("aware" in S.psyche.val1.node) && !("aware" in S.psyche.bel3.node) && S.psyche.hab2.node.aware === "yes" && JSON.stringify(S.psyche.val1.node.until) === '{"age":{"value":50,"unit":"years"},"date":"2071"}'), "until written when filled; « oui » removes aware unless the node had it explicitly (hab2 keeps « yes »)");
+  const tn = await page.evaluate(() => psyNew("taste", false)); await page.waitForTimeout(200);
+  const un = await page.evaluate(c => ({ txt: document.querySelector(c + " [data-pvalv]").textContent, unset: document.querySelector(c + " .psyval").classList.contains("unset"), x: !!document.querySelector(c + " [data-pvalclear]"), has: "valence" in S.psyche[document.querySelector(c).dataset.vid].node }), pc(tn));
+  check(un.txt === "non définie" && un.unset && !un.x && !un.has, "a new taste: valence « non définie », greyed, no ✕, absent from the node");
+  await setE(pc(tn) + " [data-pg=fr]", "Le café noir du matin, sans sucre."); await setE(pc(tn) + " [data-pn=valence]", "-40");
+  const vv = await page.evaluate(([c, v]) => [S.psyche[v].node.valence, document.querySelector(c + " [data-pvalv]").textContent, !!document.querySelector(c + " [data-pvalclear]"), document.querySelector(c + " .psyval").classList.contains("unset")], [pc(tn), tn]);
+  await page.click(pc(tn) + " [data-pvalclear]"); await page.waitForTimeout(100); const cleared = await page.evaluate(v => !("valence" in S.psyche[v].node), tn);
+  await setE(pc(tn) + " [data-pn=valence]", "85");
+  check(vv.join() === "-40,−40,true,false" && cleared, `moving the slider sets it (${vv[0]}, ✕ shown), ✕ clears it`);
+  await setE(pc("stance1") + " [data-pk=kind]", "belief"); await page.waitForTimeout(150);
+  const gone = await page.evaluate(c => [!("valence" in S.psyche.stance1.node), document.querySelector(c + " [data-pvalgone]")?.textContent || "", !document.querySelector(c + " [data-pn=valence]")], pc("stance1"));
+  check(gone[0] && /Valence \+60 retirée/.test(gone[1]) && gone[2], "a stance turned belief drops its valence and the card says so: " + gone[1]);
+  await setE(pc("stance1") + " [data-pk=kind]", "stance"); await page.waitForTimeout(150);
+  const tE = path.join(WORK, "t9-nonies-edited.cof"); await build(tE); m = readManifest(tE); const badE = schemaBad(tE);
+  check(m.nodes[tn].valence === 85 && JSON.stringify(m.nodes.val1.until) === '{"age":{"value":50,"unit":"years"},"date":"2071"}' && !("aware" in m.nodes.val1) && !("aware" in m.nodes.bel3) && m.nodes.hab2.aware === "yes" && !("valence" in m.nodes.stance1) && !badE.length, "edited file: valence, until and the explicit default written, schema-valid" + (badE.length ? ": " + badE.slice(0, 3).join(" | ") : ""));
+  /* checks */
+  await page.evaluate(() => { const P = S.psyche; P.bel3.node.aware = "no"; P.bel3.node.disclosure = "secret"; P.val2.node.valence = 10; P.val3.node.since = { age: { value: 20, unit: "years" } }; P.val3.node.until = { age: { value: 18, unit: "years" } };
+    P.val4.node.since = { date: "2019-06" }; P.val4.node.until = { date: "2018-12" }; P.want1.node.since = { date: "2019-06" }; P.want1.node.until = { date: "2019" }; P.want2.node.since = { age: { value: 20, unit: "years" } }; P.want2.node.until = { date: "1990" }; });
+  L = await checks(/psyche\.(val[234]|want[12]|bel3|contra1)\b/); const has3 = re => L.some(l => re.test(l));
+  check(has3(/✖ psyche\.val2 : valence sur une autre sorte/) && has3(/✖ psyche\.val3 : « jusqu'à » avant « depuis ».*18 < 20/) && has3(/✖ psyche\.val4 : « jusqu'à ».*2018-12 < 2019-06/) && !has3(/psyche\.want[12] :/), "errors: valence on a value, until before since (ages, dates); none for 2019 vs 2019-06 nor an age against a date");
+  check(has3(/psyche\.bel3 : « conscience de soi : non » sur un nœud secret/) && !has3(/✖ psyche\.bel3/) && ["en-65", "fr-65"].every(p => has3(new RegExp(`Preset ${p} : psyche\\.bel3 tenu jusqu'à 45 ans, avant l'âge que montre ce preset \\(65\\)`)) && has3(new RegExp(`Preset ${p} : psyche\\.contra1 tenu jusqu'à 45`))) && !has3(/Preset (default|en-12) : psyche\.(bel3|contra1)/), "warnings: unaware secret; the 65-year-old presets hold bel3 and contra1 ended at 45");
+  await page.evaluate(() => { go("psyche"); S._fold["m:psyche:val2"] = false; renderPsyche(); }); await page.waitForTimeout(200);
+  const misplaced = await page.evaluate(c => document.querySelector(c + " [data-pvaldrop]")?.closest(".hint").textContent || "", pc("val2"));
+  await page.click(pc("val2") + " [data-pvaldrop]"); await page.waitForTimeout(100);
+  check(/Valence \+10 : elle ne vaut que pour une position ou un goût/.test(misplaced) && await page.evaluate(() => !("valence" in S.psyche.val2.node)), "a value carrying a valence: the card says so and « retirer » removes it");
+  for (const [l, words, msg] of [["en", ["Until (age)", "Self-awareness", "Valence", "hostile", "warm"], /“until” before “since”/], ["de", ["Bis (Alter)", "Selbstwahrnehmung", "Valenz", "feindselig", "herzlich"], /„bis“ vor „seit“/], ["es", ["Hasta (edad)", "Conciencia de sí", "Valencia", "hostil", "cálido"], /«hasta» antes de «desde»/], ["zh", ["直到（年龄）", "自我觉察", "效价", "敌意", "热情"], /“直到”早于“自”/], ["ja", ["いつまで（年齢）", "自覚", "感情価", "敵対的", "温かい"], /「いつまで」が「いつから」より前/]]) {
+    await page.evaluate(x => { setLang(x); go("psyche"); S._fold["m:psyche:stance2"] = false; renderPsyche(); }, l); await page.waitForTimeout(150);
+    const txt = await page.evaluate(c => document.querySelector(c).textContent, pc("stance2"));
+    const miss = words.filter(w => !txt.includes(w)); const iss = (await checks(/val3/)).join(" ");
+    check(!miss.length && msg.test(iss) && !/Jusqu|Conscience de soi|chaleureux/.test(txt), `${l}: card words and the until check translated` + (miss.length ? " — missing " + miss.join(", ") : ""));
   }
   await page.evaluate(() => setLang("fr"));
   check(!errors.length, "no page errors" + (errors.length ? ": " + errors.join(" | ") : ""));

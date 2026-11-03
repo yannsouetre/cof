@@ -25,7 +25,11 @@ checks on a deliberately broken node, every purge choice built and re-validated 
 the 1.0 lists. Needs `python` with cof-cli importable from `cli/`. Then, on a copy of example 10 with the people, places and objects of
 RFC 0005 written in (and an older draft's link to `identities/id1`): the « Personnes, lieux, objets » fold of a psyche card (one line while
 empty, pickers filled on first use: self, the environments, the accessories), the identity link converted to `who` with its information
-line in the checks, a link picker without identities, the three lists written and valid against `spec/schemas`, their checks, the six languages.
+line in the checks, a link picker without identities, the three lists written and valid against `spec/schemas`, their checks, the six languages. Last, on a copy of example 10 with the values of RFC 0004 § 3 nonies (bel3 `aware: no` and `until` 45,
+need1 `partly`, valences on the two stances and the two tastes, contra1 `until` 45): « Jusqu'à » next to « Depuis », « Conscience de soi » on
+every card, the valence slider on stances and tastes only; the untouched file written back unchanged; until, awareness (the default « yes »
+not added, kept when read), a valence moved, cleared and dropped by a change of kind; the checks (valence off a stance or taste, until
+before since, an unconscious secret, the 65-year-old presets holding nodes ended at 45); the six languages.
 
 ## Objects of a memory and the RFC 0005 round trip (builder 0.14, RFC 0005)
 
