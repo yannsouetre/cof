@@ -6,7 +6,11 @@
    (the graph button embeds viewer/index.html), then: opens Clara 1.2 → step 4 shows the 22 nodes, kind chips and filter;
    edits a gist and a strength; adds a rule, a stance about the user, a contradiction with two conflicts; derives a node;
    deletes one; ticks a node in a preset's Psyché subsection; checks a deliberately broken node; builds with every purge
-   choice and re-validates each output with `cof validate`; converts the 1.0 lists of example 01. Exit code 1 on any failure. */
+   choice and re-validates each output with `cof validate`; converts the 1.0 lists of example 01; then, on a copy of example 10 with the
+   RFC 0005 entries written in (and an older draft's link to `identities/id1` on val2): the people, places and objects of a card (folded
+   while empty, lazy pickers, self / environments / accessories), the conversion of the identity link to `who` with its information line,
+   a link picker without identities, the three lists written and schema-valid, their checks, the words in the six languages.
+   Exit code 1 on any failure. */
 const fs = require("fs"), path = require("path"), http = require("http"), { spawnSync } = require("child_process");
 const { chromium } = require("playwright");
 const ROOT = path.resolve(process.argv[2] || path.join(__dirname, "..", ".."));
@@ -22,6 +26,18 @@ function pack(example, out) {
   const r = py(["-m", "cof_cli.cli", "pack", src, "-o", out], path.join(ROOT, "cli"));
   if (r.status !== 0) throw new Error("pack failed: " + r.stdout + r.stderr);
 }
+/* RFC 0005 § 3 on psyche nodes of a copy of example 10, and a link to an identity as older drafts wrote it */
+const PATCH0005 = { hab1: { what: [{ label: { fr: "le carnet", en: "the notebook" } }] }, contra1: { what: [{ item: "appearance/x1" }] }, val4: { who: [{ label: { fr: "ma grand-mère", en: "my grandmother" } }] }, want2: { where: [{ environment: "appearance/e1" }] }, val2: n => ({ links: [...(n.links || []), { to: "identities/id1", type: "about" }] }) };
+function packPatched(example, out, patch) {
+  const src = path.join(WORK, "src-" + example + "-0005");
+  fs.rmSync(src, { recursive: true, force: true });
+  fs.cpSync(path.join(ROOT, "spec", "examples", example), src, { recursive: true });
+  const man = JSON.parse(fs.readFileSync(path.join(src, "manifest.json"), "utf8"));
+  for (const [vid, add] of Object.entries(patch)) { const f = path.join(src, man.elements.psyche.variants[vid].node); const n = JSON.parse(fs.readFileSync(f, "utf8")); fs.writeFileSync(f, JSON.stringify({ ...n, ...(typeof add === "function" ? add(n) : add) }, null, 2) + "\n"); }
+  const r = py(["-m", "cof_cli.cli", "pack", src, "-o", out, "--force"], path.join(ROOT, "cli"));   /* --force: the identity link is an error for a 1.2 validator, on purpose */
+  if (r.status !== 0) throw new Error("pack failed: " + r.stdout + r.stderr);
+}
+const schemaBad = file => JSON.parse(py(["-c", "import json,zipfile,sys\nfrom jsonschema import Draft202012Validator as V\nZ=zipfile.ZipFile(sys.argv[1]);m=json.loads(Z.read('manifest.json'));s=V(json.load(open(sys.argv[2],encoding='utf-8')))\nprint(json.dumps([k+': '+e.message for k,v in m['elements'].get('psyche',{}).get('variants',{}).items() for e in s.iter_errors(json.loads(Z.read(v['node'])))]))", file, path.join(ROOT, "spec", "schemas", "psyche-node.schema.json")]).stdout);
 function validate(file) {
   const r = py(["-m", "cof_cli.cli", "validate", file], path.join(ROOT, "cli"));
   return { ok: /^OK/m.test(r.stdout), out: r.stdout + r.stderr };
@@ -128,6 +144,46 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
   check(await page.evaluate(() => Object.values(S.psyche).filter(x => x.kind === "value").every(x => /^[A-ZÀ-Ý].*\.$/.test(Object.values(x.node.gist)[0]))), "a value's word becomes a sentence");
   const t6 = path.join(WORK, "t6-converted.cof"); await build(t6); v = validate(t6); m = readManifest(t6);
   check(v.ok && m.cof === "1.2" && Object.keys(m.psyche).length === 8, "converted file validates as 1.2 with 8 nodes");
+  /* ---- people, places, objects of a node (RFC 0005) ---- */
+  const clara0005 = path.join(WORK, "clara12-0005.cof"); packPatched("10-clara-mercier", clara0005, PATCH0005);
+  await open(clara0005); await page.click("#nav button[data-step=psyche]"); await page.waitForTimeout(300);
+  const pc = vid => `#psyList .variant[data-vid="${vid}"]`;
+  const axOf = vids => page.evaluate(vs => Object.fromEntries(vs.map(v => { const c = document.querySelector(`#psyList .variant[data-vid="${v}"]`); return [v, { open: c.querySelector("[data-axdet]").open, sum: c.querySelector("[data-axdet] > summary").textContent, rows: [...c.querySelectorAll("[data-axrow]")].map(r => [r.dataset.axrow, r.querySelector("[data-axsel]").value, r.querySelector("[data-axlab]").value, r.querySelector("[data-axsel]").options.length].join(":")) }]; })), vids);
+  let A = await axOf(["hab1", "contra1", "val4", "want2", "val1"]);
+  check(A.hab1.rows.join() === "what::le carnet:1" && A.contra1.rows.join() === "what:appearance/x1::1" && A.val4.rows.join() === "who::ma grand-mère:1" && A.want2.rows.join() === "where:appearance/e1::1" && A.hab1.open && A.want2.open, "the cards show their people, places and objects, one option per picker until used: " + ["hab1", "contra1", "val4", "want2"].map(v => A[v].rows.join()).join(" · "));
+  check(!A.val1.open && !A.val1.rows.length && /Personnes, lieux, objets\s+👤 0 · 🏠 0 · 🧸 0/.test(A.val1.sum), "a node without them: one folded line (" + A.val1.sum.trim() + ")");
+  check(await page.evaluate(() => JSON.stringify(S.psyche.val2.node.who) === '[{"identity":"id1"}]' && !(S.psyche.val2.node.links || []).some(l => /^identities\//.test(l.to))), "an older draft's link to identities/id1 became who [{identity: id1}] at load");
+  L = await checks(/RFC 0005|identities/); check(L.length === 1 && /^ℹ 1 lien\(s\) vers un personnage converti/.test(L[0]), "the checks say so on one information line: " + L.join(" | "));
+  await page.evaluate(() => go("psyche")); await page.evaluate(() => { S._fold["m:psyche:val1"] = false; renderPsyche(); }); await page.waitForTimeout(200);
+  await page.focus(pc("val1") + ' [data-plink="0"] [data-plk=to]');
+  check(await page.evaluate(c => { const o = [...document.querySelector(c + ' [data-plink="0"] [data-plk=to]').options].map(o => o.value); return o.length > 20 && !o.some(x => x.startsWith("identities/")); }, pc("val1")) && !/personnage ;/.test(await page.evaluate(c => document.querySelector(c).textContent, pc("val1"))), "the link picker offers memories and nodes, no identity");
+  await page.click(pc("val1") + " [data-axdet] > summary"); await page.click(pc("val1") + " [data-axadd=who]"); await page.waitForTimeout(200);
+  const optsOf = (vid, ax, i) => page.evaluate(([c, ax, i]) => [...document.querySelector(`${c} [data-axrow=${ax}][data-axi="${i}"] [data-axsel]`).options].map(o => o.value).join(), [pc(vid), ax, i]);
+  await page.focus(pc("val1") + ' [data-axrow=who][data-axi="0"] [data-axsel]'); const whoOpts = await optsOf("val1", "who", 0);
+  await setE(pc("val1") + ' [data-axrow=who][data-axi="0"] [data-axsel]', "self");
+  await page.click(pc("val1") + " [data-axadd=who]"); await page.waitForTimeout(200);
+  await setE(pc("val1") + ' [data-axrow=who][data-axi="1"] [data-axlab]', "Théo"); await page.evaluate(c => { const x = document.querySelector(c + ' [data-axrow=who][data-axi="1"] [data-axflag=real]'); x.checked = true; x.dispatchEvent(new Event("change")); }, pc("val1"));
+  await page.click(pc("val1") + " [data-axadd=where]"); await page.waitForTimeout(200); await page.focus(pc("val1") + ' [data-axrow=where][data-axi="0"] [data-axsel]'); const whereOpts = await optsOf("val1", "where", 0);
+  await setE(pc("val1") + ' [data-axrow=where][data-axi="0"] [data-axlab]', "Lyon");
+  await page.click(pc("val1") + " [data-axadd=what]"); await page.waitForTimeout(200); await page.focus(pc("val1") + ' [data-axrow=what][data-axi="0"] [data-axsel]'); const whatOpts = await optsOf("val1", "what", 0);
+  await setE(pc("val1") + ' [data-axrow=what][data-axi="0"] [data-axsel]', "appearance/x3");
+  check(whoOpts === ",self" && whereOpts === ",appearance/e1,appearance/e2,appearance/e3,appearance/e4,appearance/e5" && whatOpts === ",appearance/x1,appearance/x2,appearance/x3", "pickers: a free name or self (one character), the five environments, the three accessories");
+  const val1 = await page.evaluate(() => JSON.stringify(["who", "where", "what"].map(k => S.psyche.val1.node[k])));
+  check(val1 === JSON.stringify([[{ identity: "self" }, { label: { fr: "Théo" }, real: true }], [{ label: { fr: "Lyon" } }], [{ item: "appearance/x3" }]]), "self, a real person by name, a place by name, an accessory: " + val1);
+  check(await page.evaluate(c => !document.querySelector(c + ' [data-axrow=who][data-axi="0"] [data-axflag=real]') && !!document.querySelector(c + ' [data-axrow=who][data-axi="1"] [data-axflag=real]'), pc("val1")), "« personne réelle » is offered on a free name, not on self");
+  const t7 = path.join(WORK, "t7-0005.cof"); await build(t7); m = readManifest(t7); const bad = schemaBad(t7);
+  check(m.cof === "1.2" && JSON.stringify(["who", "where", "what"].map(k => m.nodes.val1[k])) === val1 && JSON.stringify(m.nodes.hab1.what) === JSON.stringify(PATCH0005.hab1.what) && JSON.stringify(m.nodes.val2.who) === '[{"identity":"id1"}]' && !(m.nodes.val2.links || []).some(l => /^identities\//.test(l.to)) && !("who" in m.nodes.val3) && !bad.length, "written as who / where / what in psyche-node.json (absent when empty), no identity link, schema-valid" + (bad.length ? ": " + bad.slice(0, 3).join(" | ") : ""));
+  await page.evaluate(() => { const n = S.psyche.bel1.node; n.who = [{ identity: "nobody" }, { label: { fr: "X" }, real: true }, {}]; n.where = [{ environment: "appearance/c1" }]; n.what = [{ item: "appearance/e1" }, { item: "appearance/nope" }]; S.psyche.bel2.node.links = [...(S.psyche.bel2.node.links || []), { to: "identities/id1", type: "about" }]; });
+  L = await checks(/psyche\.bel[12]/); const has2 = re => L.some(l => re.test(l));
+  check(has2(/✖ psyche\.bel1\.who\[0\].*nobody/) && has2(/✖ psyche\.bel1\.who\[2\]/) && has2(/✖ psyche\.bel1\.what\[1\].*nope/) && has2(/✖ psyche\.bel2.*identities\/id1/), "errors: unknown person, an entry with neither reference nor name, an unresolved item, a link to an identity");
+  check(has2(/psyche\.bel1\.who\[1\]/) && has2(/psyche\.bel1\.where\[0\].*clothing/) && has2(/psyche\.bel1\.what\[0\].*environment/) && !has2(/✖ psyche\.bel1\.(where\[0\]|what\[0\]|who\[1\])/), "warnings: real without identity, a place that is not an environment, an object that is not an accessory");
+  await page.evaluate(() => { const n = S.psyche.bel1.node; delete n.who; delete n.where; delete n.what; S.psyche.bel2.node.links.pop(); });
+  for (const [l, re] of [["en", /^People, places, objects/], ["de", /^Personen, Orte, Gegenstände/], ["es", /^Personas, lugares, objetos/], ["zh", /^人物、地点、物品/], ["ja", /^人物・場所・物品/]]) {
+    await page.evaluate(x => { setLang(x); go("psyche"); }, l); await page.waitForTimeout(150);
+    const txt = await page.evaluate(c => document.querySelector(c + " [data-axdet] > summary").textContent.trim() + " | " + [...document.querySelectorAll(c + " [data-axbox] > .hint")].map(x => x.textContent).join(" "), pc("val1"));
+    check(re.test(txt) && !/Personnes|Lieux|Objets/.test(txt), `${l}: ${txt}`);
+  }
+  await page.evaluate(() => setLang("fr"));
   check(!errors.length, "no page errors" + (errors.length ? ": " + errors.join(" | ") : ""));
   await browser.close(); server.close();
   console.log(ok ? "ALL OK" : "FAILURES"); process.exit(ok ? 0 : 1);

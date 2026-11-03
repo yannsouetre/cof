@@ -22,7 +22,24 @@ Packs copies of examples 10 (Clara 1.2) and 01 (Clara text-only, 1.0 lists) into
 HTTP and drives the builder: the 22 nodes of Clara in step 4 (kind chips, filter), a gist and a strength edited, a rule, a
 stance about the user and a contradiction added, a node derived and one deleted, a preset's Psyché subsection ticked, the
 checks on a deliberately broken node, every purge choice built and re-validated with `cof validate`, the conversion of
-the 1.0 lists. Needs `python` with cof-cli importable from `cli/`.
+the 1.0 lists. Needs `python` with cof-cli importable from `cli/`. Then, on a copy of example 10 with the people, places and objects of
+RFC 0005 written in (and an older draft's link to `identities/id1`): the « Personnes, lieux, objets » fold of a psyche card (one line while
+empty, pickers filled on first use: self, the environments, the accessories), the identity link converted to `who` with its information
+line in the checks, a link picker without identities, the three lists written and valid against `spec/schemas`, their checks, the six languages.
+
+## Objects of a memory and the RFC 0005 round trip (builder 0.14, RFC 0005)
+
+```
+node tests/builder/objects_test.js [repo-root] [work-dir]
+```
+
+Packs a copy of example 10 with the entries of RFC 0005 § 3 (the notebook and the pendant by name, the folk guitar as `appearance/x1`; a
+person, a place and two objects on psyche nodes) and example 11 (the duo, 1.1). The « 🧸 Objets » field of a memory card, its picker (one
+option until used, then a free name and the character's accessories only — in a cast file, that character's); **the file built without any
+edit carries every memory and psyche node unchanged**; objects added (a free name with « montré », an accessory), renamed (the other
+languages kept), removed (`what` absent when empty); the checks (no reference nor name, unresolved item, not an accessory, another
+character's element, a real person who is not a character); a 1.1 file is written as 1.2 once a memory has an object; the six languages.
+Node files are checked against `spec/schemas` (needs `jsonschema`), and with `cof validate` when the repository's cli knows RFC 0005.
 
 ## Psyche converter (docs/psyche-propose.md)
 
