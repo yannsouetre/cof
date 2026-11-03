@@ -10,7 +10,7 @@
    RFC 0005 entries written in (and an older draft's link to `identities/id1` on val2): the people, places and objects of a card (folded
    while empty, lazy pickers, self / environments / accessories), the conversion of the identity link to `who` with its information line,
    a link picker without identities, the three lists written and schema-valid, their checks, the words in the six languages.
-   Then RFC 0004 § 3 nonies on a copy of example 10: until, self-awareness and valence on the cards, written back unchanged when untouched,
+   Then RFC 0004 § 3 nonies on example 10: until, self-awareness and valence on the cards, written back unchanged when untouched,
    edited, cleared, dropped on a change of kind; their checks; the six languages.
    Exit code 1 on any failure. */
 const fs = require("fs"), path = require("path"), http = require("http"), { spawnSync } = require("child_process");
@@ -30,8 +30,6 @@ function pack(example, out) {
 }
 /* RFC 0005 § 3 on psyche nodes of a copy of example 10, and a link to an identity as older drafts wrote it */
 const PATCH0005 = { hab1: { what: [{ label: { fr: "le carnet", en: "the notebook" } }] }, contra1: { what: [{ item: "appearance/x1" }] }, val4: { who: [{ label: { fr: "ma grand-mère", en: "my grandmother" } }] }, want2: { where: [{ environment: "appearance/e1" }] }, val2: n => ({ links: [...(n.links || []), { to: "identities/id1", type: "about" }] }) };
-/* RFC 0004 § 3 nonies on a copy of example 10: awareness, valence, end */
-const PATCHNONIES = { bel3: { aware: "no", until: { age: { value: 45, unit: "years" }, approx: true } }, need1: { aware: "partly" }, stance1: { valence: 60 }, stance2: { valence: -10 }, taste1: { valence: 70 }, taste2: { valence: -80 }, contra1: { until: { age: { value: 45, unit: "years" }, approx: true } } };
 function packPatched(example, out, patch) {
   const src = path.join(WORK, "src-" + example + "-0005");
   fs.rmSync(src, { recursive: true, force: true });
@@ -190,9 +188,8 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
   await page.evaluate(() => setLang("fr"));
 
   /* ---- awareness, valence, end (RFC 0004 § 3 nonies) ---- */
-  const claraN = path.join(WORK, "clara12-nonies.cof"); packPatched("10-clara-mercier", claraN, PATCHNONIES);
-  const srcN = readManifest(claraN).nodes;
-  await open(claraN); await page.click("#nav button[data-step=psyche]"); await page.waitForTimeout(300);
+  const srcN = readManifest(clara12).nodes;   /* example 10 carries them since cof-cli's § 3 nonies pass: bel3 aware no and until 45, need1 partly, four valences, contra1 until 45, bel4 */
+  await open(clara12); await page.click("#nav button[data-step=psyche]"); await page.waitForTimeout(300);
   await page.evaluate(() => { for (const v of ["bel3", "need1", "stance1", "taste2", "val1", "contra1"]) S._fold["m:psyche:" + v] = false; renderPsyche(); }); await page.waitForTimeout(200);
   const card = await page.evaluate(() => { const q = (v, s) => document.querySelector(`#psyList .variant[data-vid="${v}"] ${s}`); const legends = v => [...document.querySelectorAll(`#psyList .variant[data-vid="${v}"] legend`)].map(x => x.textContent.trim());
     const a = q("bel3", "[data-pu=age]").getBoundingClientRect(), b = q("bel3", "[data-pu=date]").getBoundingClientRect();
@@ -206,7 +203,7 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
   check(card.s1.join() === "60,+60,true,true" && card.t2.join() === "−80,true" && card.stLegends.includes("Valence") && !card.val1Legends.includes("Valence"), `valence on stance and taste only: stance1 ${card.s1.slice(0, 2).join(" ")} (hostile ↔ chaleureux, ✕), taste2 ${card.t2[0]} (déteste ↔ adore), none on a value`);
   const tR = path.join(WORK, "t8-nonies-untouched.cof"); await build(tR); m = readManifest(tR);
   const diffN = Object.keys(srcN).filter(k => JSON.stringify(srcN[k]) !== JSON.stringify(m.nodes[k]));
-  check(!diffN.length && Object.keys(m.nodes).length === 22, "built untouched: every node file unchanged" + (diffN.length ? " — differs: " + diffN.join(", ") : ""));
+  check(!diffN.length && Object.keys(m.nodes).length === 23, "built untouched: every node file unchanged" + (diffN.length ? " — differs: " + diffN.join(", ") : ""));
   check(m.nodes.bel3.aware === "no" && m.nodes.need1.aware === "partly" && !("aware" in m.nodes.val1) && m.nodes.stance2.valence === -10 && m.nodes.taste2.valence === -80 && m.nodes.contra1.until.age.value === 45 && !schemaBad(tR).length, "aware, valence, until written as read; the default « yes » not added; schema-valid");
   /* edits: until, awareness (the default not written unless read), valence on a new taste, a stance turned belief */
   await page.evaluate(() => go("psyche")); await page.waitForTimeout(200);
@@ -232,9 +229,10 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
   /* checks */
   await page.evaluate(() => { const P = S.psyche; P.bel3.node.aware = "no"; P.bel3.node.disclosure = "secret"; P.val2.node.valence = 10; P.val3.node.since = { age: { value: 20, unit: "years" } }; P.val3.node.until = { age: { value: 18, unit: "years" } };
     P.val4.node.since = { date: "2019-06" }; P.val4.node.until = { date: "2018-12" }; P.want1.node.since = { date: "2019-06" }; P.want1.node.until = { date: "2019" }; P.want2.node.since = { age: { value: 20, unit: "years" } }; P.want2.node.until = { date: "1990" }; });
-  L = await checks(/psyche\.(val[234]|want[12]|bel3|contra1)\b/); const has3 = re => L.some(l => re.test(l));
+  await page.evaluate(() => { for (const p of ["en-65", "fr-65"]) S.psyPresets[p] = psyOrder([...psyPresetList(p).list, "bel3", "contra1"]); });
+  L = await checks(/psyche\.(val[234]|want[12]|bel[34]|contra1)\b/); const has3 = re => L.some(l => re.test(l));
   check(has3(/✖ psyche\.val2 : valence sur une autre sorte/) && has3(/✖ psyche\.val3 : « jusqu'à » avant « depuis ».*18 < 20/) && has3(/✖ psyche\.val4 : « jusqu'à ».*2018-12 < 2019-06/) && !has3(/psyche\.want[12] :/), "errors: valence on a value, until before since (ages, dates); none for 2019 vs 2019-06 nor an age against a date");
-  check(has3(/psyche\.bel3 : « conscience de soi : non » sur un nœud secret/) && !has3(/✖ psyche\.bel3/) && ["en-65", "fr-65"].every(p => has3(new RegExp(`Preset ${p} : psyche\\.bel3 tenu jusqu'à 45 ans, avant l'âge que montre ce preset \\(65\\)`)) && has3(new RegExp(`Preset ${p} : psyche\\.contra1 tenu jusqu'à 45`))) && !has3(/Preset (default|en-12) : psyche\.(bel3|contra1)/), "warnings: unaware secret; the 65-year-old presets hold bel3 and contra1 ended at 45");
+  check(has3(/psyche\.bel3 : « conscience de soi : non » sur un nœud secret/) && !has3(/✖ psyche\.bel3/) && ["en-65", "fr-65"].every(p => has3(new RegExp(`Preset ${p} : psyche\\.bel3 tenu jusqu'à 45 ans, avant l'âge que montre ce preset \\(65\\)`)) && has3(new RegExp(`Preset ${p} : psyche\\.contra1 tenu jusqu'à 45`))) && !has3(/Preset (default|en-12) : psyche\.(bel3|contra1)/) && !has3(/psyche\.bel4/), "warnings: unaware secret; the 65-year-old presets made to hold bel3 and contra1, ended at 45 (bel4, from 45, is fine)");
   await page.evaluate(() => { go("psyche"); S._fold["m:psyche:val2"] = false; renderPsyche(); }); await page.waitForTimeout(200);
   const misplaced = await page.evaluate(c => document.querySelector(c + " [data-pvaldrop]")?.closest(".hint").textContent || "", pc("val2"));
   await page.click(pc("val2") + " [data-pvaldrop]"); await page.waitForTimeout(100);
