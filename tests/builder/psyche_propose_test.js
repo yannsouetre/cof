@@ -61,8 +61,8 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
 
   /* ---- the date inputs of a psyche card and of a memory card are on one line ---- */
   await page.evaluate(() => { S._fold["m:psyche:wound1"] = false; renderPsyche(); }); await page.waitForTimeout(200);
-  const tops = await page.evaluate(() => { const d = document.querySelector('#psyList .variant[data-vid="wound1"]'); const a = d.querySelector("[data-ps=age]").getBoundingClientRect(), b = d.querySelector("[data-ps=date]").getBoundingClientRect(); return [a.top, b.top, d.querySelector("[data-ps=date]").placeholder]; });
-  check(Math.abs(tops[0] - tops[1]) < 2 && /AAAA/.test(tops[2]), `psyche card: « since » age and date inputs aligned (${tops[0].toFixed(1)} / ${tops[1].toFixed(1)}), formats in the placeholder`);
+  const tops = await page.evaluate(() => { const d = document.querySelector('#psyList .variant[data-vid="wound1"]'); const a = d.querySelector("[data-ps=age]").getBoundingClientRect(), b = d.querySelector("[data-ps=date]").getBoundingClientRect(); return [a.top, b.top, d.querySelector("[data-ps=date]").title]; });
+  check(Math.abs(tops[0] - tops[1]) < 2 && /AAAA/.test(tops[2]), `psyche card: « since » age and date inputs aligned (${tops[0].toFixed(1)} / ${tops[1].toFixed(1)}), formats in the tooltip`);
   await page.evaluate(() => { go("memories"); S._fold["m:memories:ev1"] = false; renderMemories(); }); await page.waitForTimeout(300);
   const mtops = await page.evaluate(() => { const d = document.querySelector('#memList .variant[data-vid="ev1"]'); const a = d.querySelector("[data-mw=age]").getBoundingClientRect(), b = d.querySelector("[data-mw=date]").getBoundingClientRect(); return [a.top, b.top]; });
   check(Math.abs(mtops[0] - mtops[1]) < 2, `memory card: « when » age and date inputs aligned (${mtops[0].toFixed(1)} / ${mtops[1].toFixed(1)})`);
