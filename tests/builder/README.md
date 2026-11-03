@@ -25,7 +25,11 @@ checks on a deliberately broken node, every purge choice built and re-validated 
 the 1.0 lists. Needs `python` with cof-cli importable from `cli/`. Then, on a copy of example 10 with the people, places and objects of
 RFC 0005 written in (and an older draft's link to `identities/id1`): the « Personnes, lieux, objets » fold of a psyche card (one line while
 empty, pickers filled on first use: self, the environments, the accessories), the identity link converted to `who` with its information
-line in the checks, a link picker without identities, the three lists written and valid against `spec/schemas`, their checks, the six languages.
+line in the checks, a link picker without identities, the three lists written and valid against `spec/schemas`, their checks, the six languages. Last, on example 10 and its values of RFC 0004 § 3 nonies (bel3 `aware: no` and `until` 45,
+need1 `partly`, valences on the two stances and the two tastes, contra1 `until` 45, bel4 derived from bel3): « Jusqu'à » next to « Depuis », « Conscience de soi » on
+every card, the valence slider on stances and tastes only; the untouched file written back unchanged; until, awareness (the default « yes »
+not added, kept when read), a valence moved, cleared and dropped by a change of kind; the checks (valence off a stance or taste, until
+before since, an unconscious secret, the 65-year-old presets made to hold the nodes ended at 45); the six languages.
 
 ## Objects of a memory and the RFC 0005 round trip (builder 0.14, RFC 0005)
 
@@ -53,6 +57,7 @@ without a gateway says so and offers the paste; with one, the request carries th
 six rows, all unticked, the duplicate of `val1` flagged; nothing is added until rows are ticked; a contradiction without its side
 is refused; the four ticked rows become `taste3`, `bel4`, `contra2`, `stance3` (links mapped, risk tag, the presets holding the
 personality read list them, the others keep their list) and the built file validates; a pasted proposal that breaks the contract
-is refused. The inverse: « Texte depuis la psyché » renders exactly the « Who she is » section of `cof export --format agent`
+is refused; a pasted candidate carrying `until`, `aware` and `valence` is checked (a valence on a belief, an unknown `aware`, an `until`
+before its `since` refused) and kept on the node written. The inverse: « Texte depuis la psyché » renders exactly the « Who she is » section of `cof export --format agent`
 for `fr-agent`, `default` and `en-12`, and « append » appends it to the card's personality. Also: the date inputs of a psyche
 and a memory card sit on one line; the buttons and dialogs in the six languages.

@@ -6,7 +6,8 @@
    the paste; with a gateway configured, the fetch to <base>/chat/completions is intercepted and answered with
    tests/fixtures/psyche-propose/clara-proposal.json — the review panel shows one row per candidate, every checkbox off, the duplicate
    flagged; nothing is added until ticked; a contradiction without its side is refused; the ticked rows become cards; the built file
-   validates; a pasted proposal breaking the contract is refused. The inverse: the « Who she is » text rendered by the builder equals
+   validates; a pasted proposal breaking the contract is refused; a pasted candidate's until / aware / valence (RFC 0004 § 3 nonies)
+   are checked and kept. The inverse: the « Who she is » text rendered by the builder equals
    the section of `cof export --format agent` for three presets, and « append » appends to the card's personality (never replaces).
    The date inputs of a psyche card and of a memory card sit on one line. Exit code 1 on any failure. */
 const fs = require("fs"), path = require("path"), http = require("http"), { spawnSync } = require("child_process");
@@ -117,6 +118,20 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
   await press("Relire le JSON collé"); d = await dlg();
   check(/opinion/.test(d.body) && /ev99/.test(d.body), "a pasted proposal with a bad kind and an unknown memory is refused, both reasons listed");
   await press("OK"); check(await nodes() === 27, "nothing added by a refused proposal");
+  /* ---- the optional until / aware / valence of the contract (RFC 0004 § 3 nonies) ---- */
+  const G = { fr: "Le café noir du matin, sans sucre, bu debout devant la fenêtre de l'atelier avant que la journée ne commence vraiment.", en: "Black coffee in the morning, no sugar, drunk standing at the studio window before the day really begins." };
+  await page.click("#psyList [data-ppropose]"); await page.waitForTimeout(200); await page.click("#dlg details summary");
+  await page.fill("#dlg [data-pppaste]", JSON.stringify({ contract: "psyche-propose/0.1", nodes: [{ id: "c1", kind: "belief", gist: G, valence: 20, aware: "maybe", since: { age: { value: 30 } }, until: { age: { value: 25 } }, source: "inferred" }] }));
+  await press("Relire le JSON collé"); d = await dlg();
+  check(/valence/.test(d.body) && /aware/.test(d.body) && /until/.test(d.body) && /since/.test(d.body), "refused: a valence on a belief, an unknown aware, an until before the since");
+  await press("OK");
+  await page.click("#psyList [data-ppropose]"); await page.waitForTimeout(200); await page.click("#dlg details summary");
+  await page.fill("#dlg [data-pppaste]", JSON.stringify({ contract: "psyche-propose/0.1", nodes: [{ id: "c1", kind: "taste", gist: G, valence: -30, aware: "partly", since: { age: { value: 20 } }, until: { age: { value: 40 } }, source: "inferred" }] }));
+  await press("Relire le JSON collé"); await page.waitForFunction(() => document.querySelectorAll("#dlg [data-ppick]").length === 1);
+  const row9 = await page.evaluate(() => document.querySelector("#dlg .psyprow").innerText);
+  await page.check('#dlg [data-ppick="c1"]'); await press("Ajouter les nœuds cochés"); await page.waitForTimeout(300);
+  const t9 = await page.evaluate(() => { const v = Object.keys(S.psyche).pop(); return [v, JSON.stringify([S.psyche[v].node.valence, S.psyche[v].node.aware, S.psyche[v].node.until, S.psyche[v].node.since])]; });
+  check(/Valence −30/.test(row9) && /jusqu'à 40/.test(row9) && /Conscience de soi : en partie/.test(row9) && t9[1] === '[-30,"partly",{"age":{"value":40}},{"age":{"value":20}}]', `accepted and kept: the row shows them, ${t9[0]} carries valence, aware and until (${t9[1]})`);
 
   /* ---- the inverse: the « Who she is » text equals cof-cli's ---- */
   await open(clara); await page.click("#nav button[data-step=psyche]"); await page.waitForTimeout(300);
