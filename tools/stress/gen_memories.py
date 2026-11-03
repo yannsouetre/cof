@@ -1,15 +1,26 @@
 """Stress file for the memories views: N moments, P periods, links everywhere, people and places as hubs (a few frequent, many rare), no media, minimal gists, normal labels.
 Usage: python3 tools/stress/gen_memories.py 100 10 out-dir  (then `cof pack out-dir -o x.cof`). Not an example: a test input for the explorer graph and the builder lists.
-Periods split ages 3–63 evenly (fractional bounds when P > 60); moments get one decimal of age so that short periods still hold some."""
-import json, random, shutil, sys
+Periods split ages 3–63 evenly (fractional bounds when P > 60); moments get one decimal of age so that short periods still hold some.
+Options: --photos (a picture on every moment); --objects SHARE (objects, `what` of RFC 0005, on that share of the moments: names
+from a small pool, plus the base file's accessories as `item` when it has some — the file then declares cof 1.2); --base DIR
+(the folder to start from, default spec/examples/01-clara-text-only; example 10 brings three accessories)."""
+import argparse, json, random, shutil, sys
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "cli"))
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "cli"))
 from cof_cli.selfdesc import memory_add
-N, P, out = int(sys.argv[1]), int(sys.argv[2]), Path(sys.argv[3])
-PHOTOS = len(sys.argv) > 4 and sys.argv[4] == "--photos"   # a distinct 1024×683 JPEG on every moment (≈ 120–200 KB each): the graph with media
+ap = argparse.ArgumentParser(description="stress file for the memories views")
+ap.add_argument("moments", type=int); ap.add_argument("periods", type=int); ap.add_argument("out")
+ap.add_argument("--photos", action="store_true", help="a distinct 1024×683 JPEG on every moment (≈ 120–200 KB each): the graph with media")
+ap.add_argument("--objects", type=float, default=0, metavar="SHARE", help="share of the moments (0–1) that name objects (RFC 0005 `what`)")
+ap.add_argument("--base", default=str(ROOT / "spec/examples/01-clara-text-only"), help="folder to start from")
+args = ap.parse_args()
+N, P, out, PHOTOS = args.moments, args.periods, Path(args.out), args.photos
 random.seed(N)
 if out.exists(): shutil.rmtree(out)
-shutil.copytree(Path(__file__).resolve().parents[2] / "spec/examples/01-clara-text-only", out)
+shutil.copytree(args.base, out)
+OBJ_NAMES = "le carnet|la guitare|le vélo rouge|la lampe de bureau|la photo de mes parents|le doudou|les clés de la maison|la tasse ébréchée|le pendentif|le parapluie".split("|")
+ACCESSORIES = [f"appearance/{k}" for k, v in ((json.loads((out / "manifest.json").read_text("utf-8")).get("elements") or {}).get("appearance") or {}).get("variants", {}).items() if v.get("kind") == "accessory"]
 W = "matin soir quai jardin gare atelier pluie neige lettre fenêtre train velo cafe river lampe rue plage cahier musique silence".split()
 label = lambda: " ".join(random.choice(W) for _ in range(random.randint(2, 5))).capitalize()
 NAMES = "Léo Théo Anna Marc Inès Paul Jade Hugo Lina Noé Rose Yann Zoé Malo Elsa Tom Iris Sacha Lou Nina".split()
@@ -33,7 +44,12 @@ for i in range(N):
         for _ in range(40): x, y = random.randint(0, 1024), random.randint(0, 683); d.ellipse([x, y, x + random.randint(20, 200), y + random.randint(20, 200)], fill=tuple(random.randint(0, 255) for _ in range(3)))
         noise = Image.effect_noise((1024, 683), 48).convert("RGB"); im = Image.blend(im, noise, .45)   # fine grain: a real scene's weight (≈ 250 KB at 0.7 MP, like a phone JPEG), not a flat drawing's
         pf = out / f"photo{i}.jpg"; im.save(pf, "JPEG", quality=88); media = [pf]
-    vid = memory_add(out, identity=None, kind="moment", gists={"fr": f"Souvenir {i+1}.", "en": f"Memory {i+1}."}, label=lab + " / " + lab.lower(), age=age, who=who, where=where, approx=random.random() < .3, lang="fr", fidelity=random.choice(["vivid", "clear", "faded"]), media=media, salience=random.randint(10, 95), tags=[random.choice(W)])
+    what = []
+    if random.random() < args.objects:                       # one or two objects: a name from the pool (hubs), or an accessory of the file when there is one
+        for _ in range(random.choice([1, 1, 2])):
+            o = f"item={random.choice(ACCESSORIES)}" if ACCESSORIES and random.random() < .3 else zipf(OBJ_NAMES)
+            if o not in what: what.append(o)
+    vid = memory_add(out, identity=None, kind="moment", gists={"fr": f"Souvenir {i+1}.", "en": f"Memory {i+1}."}, label=lab + " / " + lab.lower(), age=age, who=who, where=where, approx=random.random() < .3, lang="fr", fidelity=random.choice(["vivid", "clear", "faded"]), media=media, salience=random.randint(10, 95), tags=[random.choice(W)], what=what)
     moments.append((vid, age))
 mp = {v: json.loads((out / "elements/memories" / v / "memory.json").read_text("utf-8")) for v, _ in moments}
 for i, (v, age) in enumerate(moments):
@@ -47,5 +63,7 @@ for i, (v, age) in enumerate(moments):
     (out / "elements/memories" / v / "memory.json").write_text(json.dumps(mp[v], ensure_ascii=False, indent=2), "utf-8")
 for pf in out.glob("photo*.jpg"): pf.unlink()   # the copies live under elements/memories/<id>/
 m = json.loads((out / "manifest.json").read_text("utf-8")); m["name"] = f"Stress {N}+{P}" + (" photos" if PHOTOS else "")
+if m.get("default_identity") in (m.get("identities") or {}):   # a base with an identities table: the root mirrors the default character
+    m["identities"][m["default_identity"]]["name"] = m["name"]
 (out / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2), "utf-8")
-print("ok", N, P)
+print("ok", N, P, f"objects on {sum(1 for v in mp.values() if v.get('what'))} moments" if args.objects else "")
