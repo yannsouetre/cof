@@ -113,14 +113,15 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
 
   /* ---- presets subsection ---- */
   await page.evaluate(() => go("presets")); await page.waitForTimeout(500);
-  const pf = await page.evaluate(() => { const d = [...document.querySelectorAll("#presetList .variant")].find(x => x.dataset.pid === "en-12"); const fs = d && d.querySelector("[data-psyfs]"); return fs ? { groups: fs.querySelectorAll(".psygrp").length, ticked: [...fs.querySelectorAll("[data-prow][data-state=def]")].map(b => b.dataset.prow), bar: !!fs.querySelector("[data-subbar]") } : null; });
-  check(pf && pf.groups >= 5 && pf.bar, "en-12 has a Psyché subsection grouped by kind with its filter bar");
-  await page.evaluate(() => { const d = [...document.querySelectorAll("#presetList .variant")].find(x => x.dataset.pid === "en-12"); d.querySelector("[data-psyfs] [data-prow=wound1]").click(); }); await page.waitForTimeout(300);
-  check(await page.evaluate(() => S.psyPresets["en-12"].includes("wound1")), "ticking a chip adds the node to the preset");
+  const pf = await page.evaluate(() => { const d = [...document.querySelectorAll("#presetList .variant")].find(x => x.dataset.pid === "en-12"); const fs = d && d.querySelector("[data-psyfs]"); return fs ? { groups: fs.querySelectorAll(".psygrp").length, ticked: [...fs.querySelectorAll("[data-prow][data-state=def]")].map(b => b.dataset.prow), wound: !!fs.querySelector("[data-prow=wound1]"), bar: !!document.querySelector('#presetList .variant[data-pid="default"] [data-psyfs] [data-subbar]') } : null; });
+  check(pf && pf.groups >= 5 && pf.bar && !pf.wound, "en-12 has a Psyché subsection grouped by kind (wound1, since 24, not offered at 12); default's, over 20 nodes, its filter bar");
+  await page.evaluate(() => { const d = [...document.querySelectorAll("#presetList .variant")].find(x => x.dataset.pid === "en-12"); d.querySelector("[data-psyfs] [data-prow=val2]").click(); }); await page.waitForTimeout(300);
+  check(await page.evaluate(() => S.psyPresets["en-12"].includes("val2")), "ticking a chip adds the node to the preset");
+  await page.evaluate(() => { S.psyPresets["en-12"] = psyOrder([...S.psyPresets["en-12"], "wound1"]); });   /* as a file can carry it: the subsection no longer offers it at 12 */
   let L = await checks(/psyche|Psyche/i);
   check(L.some(l => /en-12/.test(l) && /wound1/.test(l)), "a preset younger than the node's since is a finding");
   check(L.some(l => /psyche-inappropriate/.test(l)), "the declared risk announces its content tag");
-  await page.evaluate(() => { S.psyPresets["en-12"] = S.psyPresets["en-12"].filter(v => v !== "wound1"); });
+  await page.evaluate(() => { S.psyPresets["en-12"] = S.psyPresets["en-12"].filter(v => v !== "wound1" && v !== "val2"); });
 
   /* ---- purges ---- */
   const t2 = path.join(WORK, "t2-none.cof"); await build(t2); v = validate(t2); m = readManifest(t2);

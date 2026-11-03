@@ -68,6 +68,7 @@ Un preset = un personnage + une combinaison de déclinaisons. Par exemple : « C
 - **Se cumulent** : vêtements et accessoires (s'ils ne couvrent pas la même partie du corps), pilosité, particularités, lieux, plusieurs LoRA.
 - **Proposé** = disponible dans ce preset, jamais appliqué d'office (une tenue de rechange, par exemple).
 - Le **preset par défaut** s'ouvre en premier ; son visage de face devient la vignette du fichier.
+- **L'âge arrête les souvenirs et la psyché** : quand le preset a un âge, ses Souvenirs ne proposent que ce qui a commencé à cet âge (l'âge d'un moment, le début d'une période ; une date seule, par l'année de naissance que donnent les souvenirs datés) et sa Psyché que les nœuds tenus à cet âge (apparus, pas encore quittés). Une ligne compte le reste ; « afficher quand même » le montre grisé, sans pouvoir le cocher. Une période cochée n'emporte que ses moments vécus à cet âge. Un élément hérité que l'âge exclut est barré, avec « retirer pour ce preset ». Changer l'âge après coup ouvre une fenêtre : désélectionner ce qui vient après, ou le garder pour corriger l'âge (les contrôles le signalent).
 
 ## 7. Plusieurs personnages
 
