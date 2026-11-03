@@ -841,6 +841,14 @@
           "identity": "id1",
           "strength": 60
         },
+        "bel4": {
+          "kind": "belief",
+          "label": "Ralentir n'est pas disparaître / Slowing down is not disappearing",
+          "derives_from": "bel3",
+          "node": "elements/psyche/bel4/psyche-node.json",
+          "identity": "id1",
+          "strength": 55
+        },
         "want1": {
           "kind": "want",
           "label": "Un outil carbone pour le web / A carbon tool for the web",
@@ -1236,7 +1244,7 @@
           "val4",
           "bel1",
           "bel2",
-          "bel3",
+          "bel4",
           "want1",
           "want2",
           "want3",
@@ -1249,8 +1257,7 @@
           "taste1",
           "taste2",
           "hab1",
-          "hab2",
-          "contra1"
+          "hab2"
         ]
       },
       "alternatives": {
@@ -1657,7 +1664,7 @@
           "val4",
           "bel1",
           "bel2",
-          "bel3",
+          "bel4",
           "want1",
           "want2",
           "want3",
@@ -1670,8 +1677,7 @@
           "taste1",
           "taste2",
           "hab1",
-          "hab2",
-          "contra1"
+          "hab2"
         ]
       },
       "alternatives": {
@@ -3557,7 +3563,7 @@
       "memories",
       "psyche"
     ],
-    "variants": 92,
+    "variants": 93,
     "presets": 12,
     "identities": 1
   }

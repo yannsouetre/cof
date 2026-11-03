@@ -56,7 +56,7 @@ def self_description(manifest: dict) -> str:
         ]
     if has_psy:
         lines += [
-            "- **Psyche** (`elements/psyche`, COF 1.2 / RFC 0004): what the character is inside and why, as a graph of short nodes — `value`, `belief` (a lie it tells itself is `false_but_held`), `want`, `need`, `fear`, `wound`, `stance` (toward a character, a node, the user or a label), `taste`, `habit`, `contradiction` (owns a tension between two nodes), `rule` (a boundary kept whatever the pressure) — each in `psyche-node.json` (gist per language, `strength` 0–100, `stability` core / settled / shifting / fragile, `since`, links `because` / `about` / `supports` / `conflicts` to memories and nodes, and the people, places and objects it is tied to — `who`, `where`, `what`, RFC 0005: a character of the file, an environment, an accessory, or a name). Presets pick nodes in `slots.psyche`. `disclosure: secret` nodes are context, never quoted; `personal` nodes are one user's data. **Declared risk**: a node's `risk` is `inappropriate` (unsuitable for some audiences) or `dangerous` (would make the character harmful if it acted on it), mirrored at file level by `tags.content` `psyche-inappropriate` / `psyche-dangerous` — a host that gives the character tools or data access MUST NOT load `dangerous` nodes (`cof export --format agent` leaves them out unless `--keep-dangerous`; `cof extract --no-risk` drops both levels); a fiction host may load everything and should say so. `cof export --format agent` renders the nodes as the « Who she is » section of `SOUL.md`.",
+            "- **Psyche** (`elements/psyche`, COF 1.2 / RFC 0004): what the character is inside and why, as a graph of short nodes — `value`, `belief` (a lie it tells itself is `false_but_held`), `want`, `need`, `fear`, `wound`, `stance` (toward a character, a node, the user or a label), `taste`, `habit`, `contradiction` (owns a tension between two nodes), `rule` (a boundary kept whatever the pressure) — each in `psyche-node.json` (gist per language, `strength` 0–100, `stability` core / settled / shifting / fragile, `since` and `until` (when it appeared, when it was let go), `aware` (yes / partly / no: whether the character knows this about itself — a `no` node is acted on, never stated), `valence` on a stance or a taste (−100 hostile / hates … +100 warm / loves; the affinity toward the user is a stance `about: user`), links `because` / `about` / `supports` / `conflicts` to memories and nodes, and the people, places and objects it is tied to — `who`, `where`, `what`, RFC 0005: a character of the file, an environment, an accessory, or a name). Presets pick nodes in `slots.psyche`. `disclosure: secret` nodes are context, never quoted; `personal` nodes are one user's data. **Declared risk**: a node's `risk` is `inappropriate` (unsuitable for some audiences) or `dangerous` (would make the character harmful if it acted on it), mirrored at file level by `tags.content` `psyche-inappropriate` / `psyche-dangerous` — a host that gives the character tools or data access MUST NOT load `dangerous` nodes (`cof export --format agent` leaves them out unless `--keep-dangerous`; `cof extract --no-risk` drops both levels); a fiction host may load everything and should say so. `cof export --format agent` renders the nodes as the « Who she is » section of `SOUL.md`.",
         ]
     lines += [
         "",
@@ -66,7 +66,7 @@ def self_description(manifest: dict) -> str:
         "2. Declare it in `manifest.json` › `elements.memories.variants.<id>`: `{\"kind\": \"moment\", \"label\": \"…\", \"memory\": \"elements/memories/<id>/memory.json\", \"identity\": \"<character>\"}`, and list the id in the `slots.memories` of the presets that may recall it. Media go under the same folder, declared in `assets` with role `memory-media` and their `sha256`; say who is in them — `who: [{\"identity\": \"self\", \"shown\": true}]` with the character's `age` on the variant, `{\"label\": {…}, \"shown\": true, \"real\": true}` for the user — a validator warns on image media with nobody declared shown.",
         "3. Set `cof` to `\"1.1\"` if it says `\"1.0\"`, then run `cof validate` — or let the tool do all of it: `cof memory add <file.cof> --identity <id> --gist fr=\"…\" --date 2026-10-25 --personal` (add `--self-shown --age 29` when the character is in the media, `--who \"Sam|shown|34|real\"` for someone else).",
         "Do not rewrite existing nodes; a changed feeling is a new `lived` node linked `about` the old one. Never add a memory that shows a real person who is not a consenting identity of this file.",
-        "What the character came to think or want at use time is a **lived psyche node** (COF 1.2): `cof psyche add <file.cof> --kind stance --gist fr=\"…\" --about user --strength 60 --stability shifting --link because=memories/ev3 --since-date 2026-10-25` writes `elements/psyche/<id>/psyche-node.json` with `origin: \"lived\"`, `visibility: \"personal\"` (add `--canon` for a node that belongs to the character for everyone) and a first `revisions` entry, declares it and lists it in the presets. A `core` node is never changed at use time; a `settled` one only through a lived node that declares it; `shifting` with evidence, the previous value kept in `revisions`; `fragile` within one conversation.",
+        "What the character came to think or want at use time is a **lived psyche node** (COF 1.2): `cof psyche add <file.cof> --kind stance --gist fr=\"…\" --about user --strength 60 --stability shifting --link because=memories/ev3 --since-date 2026-10-25` writes `elements/psyche/<id>/psyche-node.json` with `origin: \"lived\"`, `visibility: \"personal\"` (add `--canon` for a node that belongs to the character for everyone) and a first `revisions` entry, declares it and lists it in the presets. A `core` node is never changed at use time; a `settled` one only through a lived node that declares it; `shifting` with evidence, the previous value kept in `revisions`; `fragile` within one conversation. A stance's warmth toward the user is `--valence N` (−100 … +100); `--aware partly|no` marks what the character only half knows or does not know about itself; `--until-age` / `--until-date` close a node the character no longer holds.",
         "",
         f"_Written by cof-cli for COF {SELFDESC_VERSION}; regenerate with `cof pack`. Not part of the character._",
     ]
@@ -245,7 +245,8 @@ def psyche_add(src: Path, *, identity: str | None, kind: str, gists: dict[str, s
                stability: str | None = None, since_age: float | None = None, since_date: str | None = None, approx: bool = False,
                links: list[str] | None = None, about: str | None = None, lie: bool = False, tags: list[str] | None = None, risk: str = "none",
                origin: str = "lived", personal: bool = True, disclosure: str = "open", presets: list[str] | None = None,
-               who: list[str] | None = None, where: list[str] | None = None, what: list[str] | None = None) -> str:
+               who: list[str] | None = None, where: list[str] | None = None, what: list[str] | None = None,
+               aware: str | None = None, valence: int | None = None, until_age: float | None = None, until_date: str | None = None) -> str:
     """Append one psyche node to an unpacked character folder — the host's write path (RFC 0004 § 3 bis, § 3 ter):
     `origin: lived` and `visibility: personal` by default like a memory lived with one user, a first `revisions` entry on a
     lived node, the node listed by the character's presets, `tags.content` following `risk`. Returns the new node id."""
@@ -266,6 +267,12 @@ def psyche_add(src: Path, *, identity: str | None, kind: str, gists: dict[str, s
         raise ValueError("--about is for a stance only; other kinds say what they bear on with --link about=<ref>")
     if risk not in RISK_TAGS and risk != "none":
         raise ValueError("risk must be none, inappropriate or dangerous")
+    if aware is not None and aware not in ("yes", "partly", "no"):                    # § 3 nonies
+        raise ValueError("--aware is yes, partly or no")
+    if valence is not None and kind not in ("stance", "taste"):
+        raise ValueError(f"--valence is for a stance or a taste only (which way the feeling leans); a {kind} weighs through --strength")
+    if valence is not None and not (-100 <= int(valence) <= 100):
+        raise ValueError("--valence is an integer between -100 and 100")
     ids = m.get("identities") or {}
     iid = identity or m.get("default_identity") or (next(iter(ids)) if ids else None)
     if ids and iid not in ids:
@@ -281,15 +288,20 @@ def psyche_add(src: Path, *, identity: str | None, kind: str, gists: dict[str, s
         node["stability"] = stability
     if risk != "none":
         node["risk"] = risk
-    pt: dict = {}
-    if since_age is not None:
-        pt["age"] = {"value": since_age, "unit": "years"}
-    if since_date:
-        pt["date"] = since_date
-    if approx and pt:
-        pt["approx"] = True
-    if pt:
-        node["since"] = pt
+    for key, age_, date_ in (("since", since_age, since_date), ("until", until_age, until_date)):
+        pt: dict = {}
+        if age_ is not None:
+            pt["age"] = {"value": age_, "unit": "years"}
+        if date_:
+            pt["date"] = date_
+        if approx and pt:
+            pt["approx"] = True
+        if pt:
+            node[key] = pt
+    if aware is not None and aware != "yes":                            # the default is not written
+        node["aware"] = aware
+    if valence is not None:
+        node["valence"] = int(valence)
     if lie:
         node["false_but_held"] = True
     if about is not None:                                              # user | identity=<id> | node=<category>/<id> | label=<text> | <text>
@@ -331,6 +343,10 @@ def psyche_add(src: Path, *, identity: str | None, kind: str, gists: dict[str, s
             rev["strength"] = int(strength)
         if stability:
             rev["stability"] = stability
+        if valence is not None:
+            rev["valence"] = int(valence)
+        if "aware" in node:
+            rev["aware"] = node["aware"]
         node["revisions"] = [rev]
     d = src / "elements" / "psyche" / vid
     d.mkdir(parents=True, exist_ok=True)

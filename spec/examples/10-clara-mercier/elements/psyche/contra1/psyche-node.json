@@ -5,6 +5,13 @@
   },
   "strength": 60,
   "stability": "settled",
+  "until": {
+    "age": {
+      "value": 45,
+      "unit": "years"
+    },
+    "approx": true
+  },
   "origin": "authored",
   "visibility": "canon",
   "disclosure": "open",

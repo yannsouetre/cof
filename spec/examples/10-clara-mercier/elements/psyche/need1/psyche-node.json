@@ -5,6 +5,7 @@
   },
   "strength": 65,
   "stability": "fragile",
+  "aware": "partly",
   "origin": "authored",
   "visibility": "canon",
   "disclosure": "open",

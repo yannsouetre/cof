@@ -5,6 +5,7 @@
   },
   "strength": 60,
   "stability": "settled",
+  "valence": -80,
   "origin": "authored",
   "visibility": "canon",
   "disclosure": "open",
