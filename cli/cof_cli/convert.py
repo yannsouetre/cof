@@ -343,6 +343,33 @@ def export_soul(src: Path, preset: str | None = None, keep_personal: bool = Fals
     return soul, identity
 
 
+def _accessory_link(manifest: dict, ln: dict) -> str | None:
+    """The target of a 1.1 memory link to an `accessory` variant (`about` → appearance/x1), else None."""
+    from .model import resolve_variant
+    cat, _, vid = str((ln or {}).get("to", "")).partition("/")
+    return f"{cat}/{vid}" if cat and cat != "memories" and (resolve_variant(manifest, cat, vid) or {}).get("kind") == "accessory" else None
+
+
+def memory_objects(manifest: dict, node: dict, lang: str) -> list[str]:
+    """The objects of a memory as short names (RFC 0005 § 2.2): each `what` entry's label, else the label of the element
+    its `item` names; a 1.1 link to an accessory variant is read as an object too (once per element)."""
+    from .memories import text_in
+    from .model import resolve_variant
+    out, seen = [], set()
+    entries = [o for o in node.get("what") or [] if isinstance(o, dict)]
+    entries += [{"item": r} for r in (_accessory_link(manifest, ln) for ln in node.get("links") or [] if isinstance(ln, dict)) if r]
+    for o in entries:
+        ref = o.get("item")
+        if ref and not o.get("label") and ref in seen:
+            continue
+        seen.add(ref)
+        cat, _, vid = str(ref or "").partition("/")
+        name = text_in(o.get("label"), lang) or ((resolve_variant(manifest, cat, vid) or {}).get("label") if ref else "") or ref
+        if name and name not in out:
+            out.append(name)
+    return out
+
+
 def memory_section(src: Path, manifest: dict, pid: str | None, keep_personal: bool = False) -> tuple[str, list[tuple[str, dict, dict]], int]:
     """The "Memories" section of MEMORY.md (RFC 0002 § 6.4): canon gists in timeline order, each with its
     when-marker, disclosure and fidelity. Returns (markdown, [(vid, variant, node)] exported, personal nodes dropped)."""
@@ -388,9 +415,12 @@ def memory_section(src: Path, manifest: dict, pid: str | None, keep_personal: bo
         lines.append(text.strip())
         where = text_in((node.get("where") or {}).get("label"), lang)
         who = [text_in(w.get("label"), lang) for w in node.get("who") or [] if w.get("label")]
-        ctx = [f"where: {where}" if where else "", f"with: {', '.join(who)}" if who else ""]
+        objs = memory_objects(manifest, node, lang)
+        ctx = [f"where: {where}" if where else "", f"with: {', '.join(who)}" if who else "", f"objects: {', '.join(objs)}" if objs else ""]
         links = []
         for ln in node.get("links") or []:
+            if _accessory_link(manifest, ln):         # read as an object of the memory (RFC 0005 § 2.2), listed above
+                continue
             tgt = str(ln.get("to", "")).partition("/")[2]
             tl = (resolve_variant(manifest, "memories", tgt) or {}).get("label") or tgt
             lab = text_in(ln.get("label"), lang)

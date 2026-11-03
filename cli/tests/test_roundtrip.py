@@ -1346,9 +1346,9 @@ def test_psyche_fixture_and_structural_rules(tmp_path):
     assert "has-psyche" in rep.manifest["tags"]["auto"] and "psyche" in rep.manifest["coverage"]["elements"]
     errs = lambda: _val(d).errors
     _pnode(d, "bel1", links=[{"to": "psyche/zz", "type": "because"}, {"to": "identities/nobody", "type": "about"}])
-    assert sum("unknown node or identity" in e for e in errs()) == 2
+    assert sum("unknown node" in e for e in errs()) == 1 and sum("people go in `who`" in e for e in errs()) == 1   # RFC 0005 § 2.3
     _pnode(d, "bel1", links=[{"to": "memories/m1", "type": "supports"}]); assert any("targets a psyche node only" in e for e in errs())
-    _pnode(d, "bel1", links=[{"to": "identities/id1", "type": "about"}]); assert not errs()
+    _pnode(d, "bel1", links=None, who=[{"identity": "id1"}]); assert not errs()          # the person of the draft's identity link
     _pnode(d, "contra1", links=[{"to": "psyche/val1", "type": "conflicts"}]); assert any("exactly two `conflicts`" in e and "found 1" in e for e in errs())
     _pnode(d, "contra1", links=[{"to": "psyche/val1", "type": "conflicts"}, {"to": "psyche/bel1", "type": "conflicts"}])
     _pnode(d, "val1", false_but_held=True); assert any("`false_but_held` is for a belief only" in e for e in errs())
@@ -1431,6 +1431,9 @@ def test_psyche_in_a_cast_hangs_on_its_own_past(tmp_path):
     errs = _val(d).errors
     assert any("psyche.leo1: `because` memories/m1 is a memory of id1" in e for e in errs), errs
     (d / "elements/psyche/leo1/psyche-node.json").write_text(json.dumps({"gist": {"en": "Losing his mother's attention."}, "strength": 40, "links": [{"to": "identities/id1", "type": "about"}]}), "utf-8")
+    errs = _val(d).errors
+    assert any("psyche.leo1: link about to identities/id1" in e and "people go in `who`" in e for e in errs), errs   # RFC 0005: no identity links
+    (d / "elements/psyche/leo1/psyche-node.json").write_text(json.dumps({"gist": {"en": "Losing his mother's attention."}, "strength": 40, "who": [{"identity": "id1"}]}), "utf-8")
     rep = _val(d); assert rep.ok, rep.errors
 
 
@@ -1752,3 +1755,205 @@ def test_psyche_propose_cli_rules_zodiac_and_accept(tmp_path):
     after = json.loads((d / "elements/personality/p2/card.json").read_text("utf-8"))["data"]["personality"]
     assert after.startswith(card_before.rstrip()) and after.rstrip().endswith(txt.strip()[-40:])
     assert main(["psyche", "text", str(ex1)]) == 1                                         # no node: nothing to render
+
+
+# ---------------------------------------------------------------- people, places and objects (RFC 0005, 1.2) ----------------------------------------------------------------
+
+def _axes(tmp_path):
+    """The psyche fixture (cof 1.2) with three elements of the character: an accessory, an environment and a garment."""
+    d, m = _psy(tmp_path)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    m["elements"]["appearance"] = {"variants": {"x1": {"kind": "accessory", "label": "Folk guitar", "accessory_use": "not-worn"},
+                                                "e1": {"kind": "environment", "label": "The studio"},
+                                                "c1": {"kind": "clothing", "label": "Cream sweater"}}}
+    _write(d, m)
+    return d, m
+
+
+def test_memory_objects_rules(tmp_path):
+    """RFC 0005 § 2.2 / § 2.5 on memories: `what` needs cof 1.2 (the declared-minor rule); an unresolved `item` is an error;
+    an item that is not an accessory, and a place that is not an environment, are warnings (legitimate stretches)."""
+    d, m = _axes(tmp_path)
+    assert _val(d).ok, _val(d).errors
+    n = _node(d, "m1"); n["what"] = [{"label": {"en": "the notebook"}}, {"item": "appearance/x1", "shown": True}]; _write(d, None, "m1", n)
+    rep = _val(d); assert rep.ok and not [w for w in rep.warnings if "what" in w], (rep.errors, rep.warnings)
+    m["cof"] = "1.1"; _write(d, m)
+    errs = _val(d).errors
+    assert any("cof 1.1 declared but the file uses 1.2 additions" in e and "memories.m1.what" in e and "RFC 0005" in e for e in errs), errs
+    m["cof"] = "1.2"; _write(d, m)
+    n["what"] = [{"item": "appearance/zz"}]; _write(d, None, "m1", n)
+    assert any("memories.m1: what.item appearance/zz: unknown element" in e for e in _val(d).errors)
+    n["what"] = [{"shown": True}]; _write(d, None, "m1", n)              # neither a reference nor a name: the schema refuses it
+    assert not _val(d).ok
+    n["what"] = [{"item": "appearance/c1"}]; n["where"] = {"environment": "appearance/x1"}; _write(d, None, "m1", n)
+    rep = _val(d); assert rep.ok, rep.errors
+    assert any("what.item appearance/c1 is of kind 'clothing', not 'accessory'" in w for w in rep.warnings), rep.warnings
+    assert any("where.environment appearance/x1 is of kind 'accessory', not 'environment'" in w for w in rep.warnings), rep.warnings
+
+
+def test_psyche_people_places_objects_rules(tmp_path):
+    """RFC 0005 § 2.3 / § 2.5 on psyche nodes: who / where / what resolve (unknown identity, unknown element = errors),
+    `self` is known without an identities table, `real` without an identity warns, a cof 1.1 file names the fields it uses."""
+    d, m = _axes(tmp_path)
+    _pnode(d, "val1", who=[{"identity": "id1"}, {"label": {"fr": "ma grand-mère"}}], where=[{"environment": "appearance/e1"}, {"label": {"en": "Lyon"}, "geo": {"lat": 45.76, "lon": 4.84}}],
+           what=[{"item": "appearance/x1"}, {"label": {"en": "the notebook"}}])
+    rep = _val(d); assert rep.ok and not [w for w in rep.warnings if "psyche." in w], (rep.errors, rep.warnings)
+    _pnode(d, "bel1", who=[{"identity": "nobody"}], what=[{"item": "appearance/zz"}], where=[{"environment": "memories/zz"}])
+    errs = _val(d).errors
+    assert any("psyche.bel1: who: unknown identity nobody" in e for e in errs), errs
+    assert any("psyche.bel1: what.item appearance/zz: unknown element" in e for e in errs), errs
+    assert any("psyche.bel1: where.environment memories/zz: unknown element" in e for e in errs), errs
+    _pnode(d, "bel1", who=[{"label": {"en": "my ex"}, "real": True}], what=None, where=[{"environment": "appearance/c1"}])
+    rep = _val(d); assert rep.ok, rep.errors
+    assert any("psyche.bel1: names a real person who is not an identity" in w for w in rep.warnings), rep.warnings
+    assert any("psyche.bel1: where.environment appearance/c1 is of kind 'clothing'" in w for w in rep.warnings), rep.warnings
+    _pnode(d, "bel1", who=None, where=None, what=[{}])                  # an entry with neither its reference nor a name
+    assert not _val(d).ok
+    _pnode(d, "bel1", what=None)
+    m = json.loads((d / "manifest.json").read_text("utf-8")); m["cof"] = "1.1"; _write(d, m)
+    errs = _val(d).errors
+    assert any("1.2 additions" in e and "psyche.val1.who" in e and "psyche.val1.where" in e for e in errs), errs
+    # a file without an identities table only knows "self"
+    m["cof"] = "1.2"; m.pop("identities", None); m.pop("default_identity", None)
+    for e_ in m["elements"].values():
+        for v in e_["variants"].values():
+            v.pop("identity", None)
+    for p in m["presets"].values():
+        p.pop("identity", None)
+    _write(d, m)
+    _pnode(d, "val1", who=[{"identity": "self"}])
+    rep = _val(d); assert rep.ok, rep.errors
+    _pnode(d, "val1", who=[{"identity": "id1"}])
+    assert any("who: unknown identity id1 (a file without an `identities` table only knows \"self\")" in e for e in _val(d).errors)
+
+
+def test_axes_in_a_cast_file_stay_with_their_character(tmp_path):
+    """RFC 0005 § 2.5: in a cast file a node names its own character's elements — an environment or an item of another
+    character is an error; `who` may name any character of the file."""
+    d, m = _axes(tmp_path)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    m["identities"]["id2"] = {"name": "Léo", "fictional": True, "morphology": {"class": "human"}}
+    m["presets"]["leo"] = {"label": "Léo", "identity": "id2", "slots": {"appearance": ["x2"]}, "age_override": {"value": 20, "unit": "years", "basis": "declared"}}
+    for e_ in m["elements"].values():
+        for v in e_["variants"].values():
+            v["identity"] = "id1"
+    m["elements"]["appearance"]["variants"]["x2"] = {"kind": "accessory", "label": "Léo's bike", "accessory_use": "not-worn", "identity": "id2"}
+    for p in m["presets"].values():
+        p.setdefault("identity", "id1")
+    _write(d, m)
+    _pnode(d, "val1", who=[{"identity": "id2"}], what=[{"item": "appearance/x1"}])
+    rep = _val(d); assert rep.ok, rep.errors
+    _pnode(d, "val1", what=[{"item": "appearance/x2"}], where=[{"environment": "appearance/x2"}])
+    errs = _val(d).errors
+    assert any("psyche.val1: what.item appearance/x2 belongs to another character (id2)" in e for e in errs), errs
+    assert any("psyche.val1: where.environment appearance/x2 belongs to another character" in e for e in errs), errs
+    _pnode(d, "val1", what=None, where=None)
+    n = _node(d, "m1"); n["what"] = [{"item": "appearance/x2"}]; _write(d, None, "m1", n)
+    assert any("memories.m1: what.item appearance/x2 belongs to another character" in e for e in _val(d).errors)
+
+
+def test_example_10_people_places_objects(tmp_path):
+    """Clara's three objects (RFC 0005 § 3) and the direct people and places of her psyche: valid, no warning on them;
+    `cof extract --preset fr-65` carries the guitar (named by ev2 and contra1, listed by no preset) and the studio."""
+    from cof_cli.ops import extract_presets
+    from cof_cli.memories import load_nodes
+    from cof_cli.psyche import load_nodes as load_psyche
+    src = ROOT / "spec/examples/10-clara-mercier"
+    rep = Report(); m = validate_dir(src, rep, recompute=False); assert rep.ok, rep.errors
+    assert not [w for w in rep.warnings if "what" in w or "where" in w or "who" in w], rep.warnings
+    mem, psy = load_nodes(src, m), load_psyche(src, m)
+    assert {v for v, n in mem.items() if n.get("what")} == {"ev1", "ev11", "ev2", "ev12", "ev5"}
+    assert mem["ev2"]["what"] == mem["ev12"]["what"] == [{"item": "appearance/x1"}] == psy["contra1"]["what"]
+    assert mem["ev1"]["what"] == psy["hab1"]["what"] == [{"label": {"fr": "le carnet", "en": "the notebook"}}]
+    assert psy["val4"]["who"] == mem["ev1"]["who"] and psy["taste1"]["where"] == [mem["ev1"]["where"]]
+    assert psy["want2"]["where"] == [{"environment": "appearance/e1"}] and "who" not in psy["stance1"]
+    out = tmp_path / "fr65"; extract_presets(src, out, ["fr-65"])
+    mo = json.loads((out / "manifest.json").read_text("utf-8"))
+    assert {"x1", "e1"} <= set(mo["elements"]["appearance"]["variants"])
+    rep = Report(); validate_dir(out, rep); assert rep.ok, rep.errors
+
+
+def test_extract_carries_the_items_of_kept_psyche_nodes(tmp_path):
+    """RFC 0005 § 2.6: the element a psyche node's `what.item` or `where.environment` names travels with the node."""
+    from cof_cli.ops import extract_presets
+    d, m = _axes(tmp_path)
+    _pnode(d, "val1", what=[{"item": "appearance/x1"}], where=[{"environment": "appearance/e1"}])
+    assert _val(d).ok
+    out = tmp_path / "x"; extract_presets(d, out, ["default"])
+    mo = json.loads((out / "manifest.json").read_text("utf-8"))
+    assert set(mo["elements"]["appearance"]["variants"]) == {"x1", "e1"}            # c1 is named by nothing kept
+    rep = Report(); validate_dir(out, rep); assert rep.ok, rep.errors
+
+
+def test_merge_renames_items_places_and_people(tmp_path):
+    """RFC 0005 § 2.6: on a merge whose ids collide, `what[].item`, a psyche node's `where[].environment` follow their
+    element; the result validates."""
+    from cof_cli.ops import merge_dirs
+    C = ROOT / "spec/examples/10-clara-mercier"
+    out = tmp_path / "m2"; merge_dirs([C, C], out)
+    rep = Report(); validate_dir(out, rep); assert rep.ok, rep.errors
+    m = json.loads((out / "manifest.json").read_text("utf-8"))
+    n = json.loads((out / m["elements"]["memories"]["variants"]["m1-ev2"]["memory"]).read_text("utf-8"))
+    assert n["what"] == [{"item": "appearance/m1-x1"}] and n["where"]["environment"] == "appearance/m1-e1"
+    p = json.loads((out / m["elements"]["psyche"]["variants"]["m1-want2"]["node"]).read_text("utf-8"))
+    assert p["where"] == [{"environment": "appearance/m1-e1"}]
+    p = json.loads((out / m["elements"]["psyche"]["variants"]["m1-contra1"]["node"]).read_text("utf-8"))
+    assert p["what"] == [{"item": "appearance/m1-x1"}]
+
+
+def test_extract_identity_relabels_psyche_people(tmp_path):
+    """A psyche node's `who` naming a character who leaves the file becomes a plain person (as a memory's, RFC 0005 § 2.6)."""
+    from cof_cli.ops import relabel_departed_identities
+    d, m = _psy(tmp_path)
+    _pnode(d, "val1", who=[{"identity": "id9"}])
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    lines = relabel_departed_identities(d, m, {"id9": {"name": "Léo", "language": "fr", "fictional": True}})
+    assert lines and json.loads((d / "elements/psyche/val1/psyche-node.json").read_text("utf-8"))["who"] == [{"label": {"fr": "Léo"}}]
+
+
+def test_memory_md_lists_objects(tmp_path):
+    """`MEMORY.md`: the context line gains `objects: …` after where and with — a name, else the element's label; a 1.1
+    link to an accessory is read as an object, not as a link (RFC 0005 § 2.2, § 2.6)."""
+    from cof_cli.convert import export_agent
+    out = tmp_path / "a"; export_agent(ROOT / "spec/examples/10-clara-mercier", out, preset="fr")
+    txt = (out / "MEMORY.md").read_text("utf-8")
+    assert "objects: le carnet_" in txt and "objects: Guitare folk « peace » / Folk guitar with peace motif" in txt
+    export_agent(ROOT / "spec/examples/10-clara-mercier", out, preset="fr-65")         # the wedding is a memory of the older presets
+    txt = (out / "MEMORY.md").read_text("utf-8")
+    assert "objects: le pendentif de ma grand-mère" in txt
+    line = next(l for l in txt.splitlines() if "objects: le pendentif" in l)
+    assert line.index("where:") < line.index("with:") < line.index("objects:")
+    d, m = _axes(tmp_path)
+    n = _node(d, "m1"); n["links"] = [{"to": "appearance/x1", "type": "about"}]; n.pop("what", None); _write(d, None, "m1", n)
+    out2 = tmp_path / "b"; export_agent(d, out2)
+    t2 = (out2 / "MEMORY.md").read_text("utf-8")
+    assert "objects: Folk guitar" in t2 and "about “x1”" not in t2
+
+
+def test_add_commands_write_people_places_objects(tmp_path):
+    """`cof memory add --what` and `cof psyche add --who / --where / --what` (the `--who` syntax: name, `key=ref`, words);
+    a psyche `--link` to an identity is refused with a pointer to `--who`."""
+    from cof_cli.cli import main
+    from cof_cli.selfdesc import axis_entry
+    assert axis_entry("ma guitare|item=appearance/x1|shown", "fr", "item", ("shown",)) == {"item": "appearance/x1", "label": {"fr": "ma guitare"}, "shown": True}
+    with pytest.raises(ValueError):
+        axis_entry("a|b", "en", "item")
+    d, m = _axes(tmp_path)
+    m["cof"] = "1.1"
+    for vid in list(m["elements"]["psyche"]["variants"]):
+        shutil.rmtree(d / f"elements/psyche/{vid}")
+    m["elements"].pop("psyche"); m["presets"]["default"]["slots"].pop("psyche", None); _write(d, m)
+    assert _val(d).ok, _val(d).errors
+    assert main(["memory", "add", str(d), "--gist", "en=The guitar, this morning.", "--date", "2026-11-03", "--what", "item=appearance/x1|shown", "--what", "the pick"]) == 0
+    m = json.loads((d / "manifest.json").read_text("utf-8")); assert m["cof"] == "1.2"           # objects are a 1.2 field
+    vid = next(v for v in m["elements"]["memories"]["variants"] if v.startswith("ev"))
+    assert _node(d, vid)["what"] == [{"item": "appearance/x1", "shown": True}, {"label": {"en": "the pick"}}]
+    assert main(["memory", "add", str(d), "--gist", "en=x", "--what", "item=appearance/zz"]) == 1   # would not validate: nothing written
+    assert main(["psyche", "add", str(d), "--kind", "fear", "--gist", "en=Losing the guitar.", "--canon", "--who", "identity=id1", "--who", "my grandmother",
+                 "--where", "environment=appearance/e1", "--where", "Lyon", "--what", "my guitar|item=appearance/x1"]) == 0
+    n = json.loads((d / "elements/psyche/fear1/psyche-node.json").read_text("utf-8"))
+    assert n["who"] == [{"identity": "id1"}, {"label": {"en": "my grandmother"}}]
+    assert n["where"] == [{"environment": "appearance/e1"}, {"label": {"en": "Lyon"}}]
+    assert n["what"] == [{"item": "appearance/x1", "label": {"en": "my guitar"}}]
+    assert main(["psyche", "add", str(d), "--kind", "fear", "--gist", "en=x", "--link", "about=identities/id1"]) == 2
+    assert not (d / "elements/psyche/fear2").exists()

@@ -175,6 +175,9 @@ def _schema_msg(e) -> str:
     """Readable jsonschema message; enum errors always list every allowed value (agents rely on it)."""
     if e.validator == "enum":
         return f"{e.instance!r} is not an allowed value — allowed values: {', '.join(map(str, e.validator_value))}"
+    if e.validator == "anyOf" and isinstance(e.instance, dict) and all(set(s.get("required") or []) & {"identity", "environment", "item", "label"} for s in e.validator_value):
+        keys = " or ".join(f"`{k}`" for s in e.validator_value for k in s.get("required") or [])     # a person, place or object entry (RFC 0005 § 2.1)
+        return f"{e.message[:120]} — an entry carries its reference or a label ({keys})"
     return e.message if len(e.message) <= 300 else e.message[:300] + "…"
 
 
@@ -280,8 +283,12 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
     if str(manifest.get("cof")) in ("1.0", "1.1"):              # 1.2 additions (RFC 0004): the psyche category and its two content tags
         used12 = ["elements.psyche"] if (manifest.get("elements") or {}).get("psyche") else []
         used12 += [f"tags.content '{t_}'" for t_ in PSYCHE_TAGS.values() if t_ in set(((manifest.get("tags") or {}).get("content")) or [])]
+        axes12 = uses_axes_fields(manifest, src)                 # RFC 0005: objects on memories, people / places / objects on psyche nodes
+        if len(axes12) > 4:
+            axes12 = axes12[:3] + [f"… {len(axes12)} in all"]
+        used12 += axes12
         if used12:
-            rep.errors.append(f"cof {manifest.get('cof')} declared but the file uses 1.2 additions ({', '.join(used12)}): declare cof \"1.2\" — a file declares the lowest minor that defines everything it uses (SPEC § 12, RFC 0004 § 3 ter)")
+            rep.errors.append(f"cof {manifest.get('cof')} declared but the file uses 1.2 additions ({', '.join(used12)}): declare cof \"1.2\" — a file declares the lowest minor that defines everything it uses (SPEC § 12, RFC 0004 § 3 ter" + (", RFC 0005 § 6)" if axes12 else ")"))
     lang = (manifest.get("languages") or ["en"])[0]
     A = asset_index(manifest)
     elements = manifest.get("elements", {}) or {}
@@ -1045,6 +1052,37 @@ def _age_rules(manifest: dict, pid: str | None, res: dict, perms_all: dict, rep:
 _LANG_RE = re.compile(r"^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$")
 
 
+def uses_axes_fields(manifest: dict, src: Path) -> list[str]:
+    """The RFC 0005 fields a file uses (for the 'declare 1.2' rule): `what` on a memory node, `who` / `where` / `what`
+    on a psyche node — "memories.ev1.what", "psyche.hab1.what"… Unreadable node files are reported elsewhere."""
+    used = []
+    E = manifest.get("elements") or {}
+    for cat, fld, keys in (("memories", "memory", ("what",)), ("psyche", "node", ("who", "where", "what"))):
+        for vid in (((E.get(cat) or {}).get("variants")) or {}):
+            rel = (resolve_variant(manifest, cat, vid) or {}).get(fld)
+            try:
+                node = json.loads((src / rel).read_text("utf-8")) if isinstance(rel, str) else None
+            except Exception:
+                node = None
+            if isinstance(node, dict):
+                used += [f"{cat}.{vid}.{k}" for k in keys if node.get(k)]
+    return used
+
+
+def _element_entry(manifest: dict, ids: dict, me: str | None, where: str, field_: str, ref: str, kind: str, rep: "Report") -> None:
+    """RFC 0005 § 2.5, one place's `environment` or one object's `item`: a qualified reference to a variant of the same
+    character (error otherwise — unresolved, or another character's in a cast file); a variant of another kind than
+    `kind` (environment / accessory) is a legitimate stretch — a photo element, a vehicle used as a place —, hence a warning."""
+    cat_, _, tgt = str(ref).partition("/")
+    tv = resolve_variant(manifest, cat_, tgt) if cat_ and tgt else None
+    if not tv:
+        rep.errors.append(f"{where}: {field_} {ref}: unknown element (a qualified reference <category>/<variant> of the character)")
+    elif ids and variant_owner(manifest, cat_, tgt) != me:
+        rep.errors.append(f"{where}: {field_} {ref} belongs to another character ({variant_owner(manifest, cat_, tgt)}) — a character's places and objects are its own elements")
+    elif tv.get("kind") != kind:
+        rep.warnings.append(f"{where}: {field_} {ref} is of kind '{tv.get('kind')}', not '{kind}' — a stretch the format allows; check it is meant (RFC 0005 § 2.5)")
+
+
 def _memory_rules(manifest: dict, src: Path, rep: "Report") -> None:
     """RFC 0002 § 5 and § 6.1. The node file is validated against memory.schema.json by the sub-file mechanism;
     this function holds the semantic rules: references, explicit nodes and ages, real persons, personal nodes."""
@@ -1149,15 +1187,14 @@ def _memory_rules(manifest: dict, src: Path, rep: "Report") -> None:
                 rep.errors.append(f"{where}: part-of points to a period ({to} is not one)")
             elif ln.get("type") == "part-of" and kind != "moment":
                 rep.errors.append(f"{where}: only a moment is part-of a period")
-        # where.environment: an environment variant of the same character
+        # where.environment: an element of the same character (RFC 0002 § 4.2), of kind environment (warning, RFC 0005 § 2.5)
         env = (node.get("where") or {}).get("environment")
         if env:
-            cat_, _, tgt = env.partition("/")
-            tv = resolve_variant(manifest, cat_, tgt) if cat_ and tgt else None
-            if not tv or tv.get("kind") != "environment":
-                rep.errors.append(f"{where}: where.environment {env}: not an environment variant")
-            elif ids and variant_owner(manifest, cat_, tgt) != me:
-                rep.errors.append(f"{where}: where.environment {env} belongs to another character")
+            _element_entry(manifest, ids, me, where, "where.environment", env, "environment", rep)
+        # what (1.2, RFC 0005 § 2.2): objects — an element of the same character (an accessory) and/or a free name
+        for o_ in node.get("what") or []:
+            if o_.get("item"):
+                _element_entry(manifest, ids, me, where, "what.item", o_["item"], "accessory", rep)
         # who: identities exist; shown persons; real third parties
         shown_unknown, shown_minor, real_third = [], [], []
         self_shown = False
@@ -1318,9 +1355,9 @@ def _psyche_rules(manifest: dict, src: Path, rep: "Report") -> None:
     owner = lambda cat, vid: variant_owner(manifest, cat, vid)
 
     def target(ref: str):
-        """(category, id, exists) of a qualified reference: <category>/<variant id> or identities/<id>."""
+        """(category, id, exists) of a qualified reference: <category>/<variant id> (identities are no link target, RFC 0005)."""
         cat_, _, tgt = str(ref).partition("/")
-        ok = tgt in ids if cat_ == "identities" else bool(tgt) and tgt in (((E.get(cat_) or {}).get("variants")) or {})
+        ok = cat_ != "identities" and bool(tgt) and tgt in (((E.get(cat_) or {}).get("variants")) or {})
         return cat_, tgt, ok
 
     no_lang: dict[tuple, list[str]] = {}
@@ -1332,8 +1369,10 @@ def _psyche_rules(manifest: dict, src: Path, rep: "Report") -> None:
         for ln in links:
             ty = ln.get("type")
             cat_, tgt, ok = target(ln.get("to"))
-            if not ok:
-                rep.errors.append(f"{where}: link {ty} to {ln.get('to')}: unknown node or identity")
+            if cat_ == "identities":
+                rep.errors.append(f"{where}: link {ty} to {ln.get('to')}: links target memories and psyche nodes — people go in `who` ({{\"identity\": \"{tgt}\"}}, RFC 0005 § 2.3)")
+            elif not ok:
+                rep.errors.append(f"{where}: link {ty} to {ln.get('to')}: unknown node")
             elif ty in ("supports", "conflicts") and cat_ != "psyche":
                 rep.errors.append(f"{where}: a `{ty}` link targets a psyche node only ({ln.get('to')} is not one)")
             elif ty in ("because", "about") and cat_ == "memories" and ids and owner("memories", tgt) != me:
@@ -1358,6 +1397,22 @@ def _psyche_rules(manifest: dict, src: Path, rep: "Report") -> None:
                     rep.errors.append(f"{where}: about.node {a['node']} is a memory of {owner('memories', tgt)} — a character's psyche hangs on its own past")
         elif kind == "stance":
             rep.warnings.append(f"{where}: a stance with no `about` — say what it bears on (an identity, a node, the user or a label)")
+        # people, places and objects the node is tied to (RFC 0005 § 2.3, § 2.5); the schema requires a reference or a label
+        real_free = []
+        for w_ in node.get("who") or []:
+            iid = w_.get("identity")
+            if iid is not None and iid != "self" and iid not in ids:
+                rep.errors.append(f"{where}: who: unknown identity {iid}" + ("" if ids else " (a file without an `identities` table only knows \"self\")"))
+            if w_.get("real") and not iid:
+                real_free.append(next(iter((w_.get("label") or {}).values()), "?"))
+        if real_free:
+            rep.warnings.append(f"{where}: names a real person who is not an identity of the file ({', '.join(real_free[:3])}) — no consent can be recorded for them (SPEC § 11.4)")
+        for p_ in node.get("where") or []:
+            if p_.get("environment"):
+                _element_entry(manifest, ids, me, where, "where.environment", p_["environment"], "environment", rep)
+        for o_ in node.get("what") or []:
+            if o_.get("item"):
+                _element_entry(manifest, ids, me, where, "what.item", o_["item"], "accessory", rep)
         if kind == "rule" and node.get("stability", "settled") != "core":
             rep.warnings.append(f"{where}: a rule that is not `core` (stability {node.get('stability', 'settled')}) — a rule is kept whatever the pressure")
         if "strength" in rv and "strength" in node and rv["strength"] != node["strength"]:
