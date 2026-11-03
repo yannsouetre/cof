@@ -1,3 +1,13 @@
+# Révision du 3 novembre 2026 — après la 1.2, avant la version professionnelle
+
+- **1.2** (en cours) : la psyché en graphe (RFC 0004, avec conscience de soi, valence et fin d'un nœud), les personnes, lieux et objets partagés par les souvenirs et la psyché (RFC 0005), le convertisseur personnalité ↔ psyché.
+- **Ensuite** : personnages de démonstration profonds (Clara à 5 000 souvenirs, bifurcations par preset) ; sélection pondérée (softmax) ; frise par date et contrôles de cohérence (1.1.2).
+- **Avant la version professionnelle** :
+  - **la skill de création mise à jour et rendue portable** : un contrat « brouillon » en JSON pur que le builder et `cof-cli` transforment en `.cof`, plus un kit (schémas, exemples, un packer-validateur Python d'un seul fichier) utilisable par n'importe quel LLM ;
+  - **le builder en modes automatique et assisté** : un kit de départ fictif sous licence libre, des API LLM et image, des exports JSON et CHARX ;
+  - **un player COF** : une page autonome qui fait vivre le personnage avec la clé de l'utilisateur et lui rend un `.cof` augmenté de ce qui a été vécu.
+- **Builder de bureau** (Tauri / Rust) quand le navigateur ne suffit plus.
+
 # Révision du 25 octobre 2026 — COF 1.1 (souvenirs, cast), puis 1.2 (psyché)
 
 > **COF 1.1.0 publiée le 30 octobre 2026** — release [v1.1.0](https://github.com/yannsouetre/cof/releases/tag/v1.1.0), cof-cli 1.1.0 sur PyPI, ComfyUI-COF 0.6.0 (registre Comfy), DOI 10.5281/zenodo.23805416. RFC 0002 et 0003 ouvertes aux commentaires jusqu'au 14 novembre 2026. **1.1.1 publiée le 2 novembre 2026** (outils seulement, aucun changement de format) : le graphe des souvenirs à l'échelle d'une vie, des pages dans toutes les listes, le builder ouvre 5 000 souvenirs en quelques secondes — release [v1.1.1](https://github.com/yannsouetre/cof/releases/tag/v1.1.1) (fichiers de stress en pièces jointes), cof-cli 1.1.1 sur PyPI, DOI 10.5281/zenodo.23879507, `docs/release-notes-1.1.1.md`.
