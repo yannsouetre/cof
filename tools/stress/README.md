@@ -12,7 +12,7 @@ python3 tools/stress/gen_psyche.py 500 stress-500.cof stress-psyche-500.cof   # 
 cof pack out-dir -o stress-500.cof
 ```
 
-Both start from `spec/examples/01-clara-text-only` and write a `cof: "1.1"` manifest (`gen_memories.py --base DIR` starts from another folder). Moments get people and places from small pools (a few frequent names, many rare ones), ages with one decimal, and periods that stay valid above 60; link targets are drawn among the earlier moments, so the first ones accumulate incoming links (useful to test the « n memories link here » section of a card).
+Both start from `spec/examples/01-clara-text-only` and write a `cof: "1.1"` manifest; a preset younger than the last memory (the base's are 34) gets the age just after it (`age_override`), since a preset with an age shows nothing after it (`gen_memories.py --base DIR` starts from another folder). Moments get people and places from small pools (a few frequent names, many rare ones), ages with one decimal, and periods that stay valid above 60; link targets are drawn among the earlier moments, so the first ones accumulate incoming links (useful to test the « n memories link here » section of a card).
 
 The three memory files used for the 1.1.1 measurements (100, 500 and 5 000 moments) are attached to the [v1.1.1 release](https://github.com/yannsouetre/cof/releases/tag/v1.1.1); the photo files (18–28 MB) are regenerated on demand.
 
