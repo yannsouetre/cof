@@ -65,5 +65,11 @@ for pf in out.glob("photo*.jpg"): pf.unlink()   # the copies live under elements
 m = json.loads((out / "manifest.json").read_text("utf-8")); m["name"] = f"Stress {N}+{P}" + (" photos" if PHOTOS else "")
 if m.get("default_identity") in (m.get("identities") or {}):   # a base with an identities table: the root mirrors the default character
     m["identities"][m["default_identity"]]["name"] = m["name"]
+# a preset with a declared age shows nothing after it (explorer and builder, 3 Nov. 2026): the base's presets (34 for the
+# default base) would hide most of the generated life, so a preset younger than the last memory gets the age just after it
+life = int(max([a for _, a in moments] + [b for _, _, b in periods] + [0])) + 1
+for pid, pr in (m.get("presets") or {}).items():
+    if isinstance(pr, dict) and ((pr.get("age_override") or {}).get("value") or 0) < life:
+        pr["age_override"] = {"value": life, "unit": "years", "basis": "declared"}
 (out / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2), "utf-8")
 print("ok", N, P, f"objects on {sum(1 for v in mp.values() if v.get('what'))} moments" if args.objects else "")
