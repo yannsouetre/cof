@@ -455,6 +455,13 @@ def drop_personal_memories(dst: Path) -> list[str]:
         folder = dst / "elements" / "memories" / vid
         if folder.is_dir():
             shutil.rmtree(folder)
+    # a psyche node illustrated by a personal memory's image (RFC 0004 § 3 decies) loses that image: the file leaves with the
+    # memory, a user's data does not stay behind as an illustration; the node itself stays
+    for pv in ((m.get("elements") or {}).get("psyche") or {}).get("variants", {}).values():
+        if isinstance(pv.get("media"), list) and freed & set(pv["media"]):
+            pv["media"] = [x for x in pv["media"] if x not in freed]
+            if not pv["media"]:
+                pv.pop("media")
     if not V:
         m["elements"].pop("memories", None)
         md = dst / "elements/memories"

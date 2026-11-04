@@ -430,6 +430,18 @@ def cmd_psyche_text(a):
     return _add_node(aa, "Psyche text", add)
 
 
+def _refresh_auto_tags(dst: Path) -> None:
+    """tags.auto recomputed on the written folder: an extraction and its purges may have removed what a tag said
+    (`has-memories` after the personal memories left, `has-psyche`, an age bucket of a preset not kept…)."""
+    from .validate import auto_tags
+    mp = dst / "manifest.json"
+    m = json.loads(mp.read_text("utf-8"))
+    auto = auto_tags(m)
+    if (m.get("tags") or {}).get("auto") != auto:
+        m.setdefault("tags", {})["auto"] = auto
+        mp.write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
+
+
 def cmd_extract(a):
     src = Path(a.src)
     with tempfile.TemporaryDirectory() as td:
@@ -461,6 +473,7 @@ def cmd_extract(a):
             from .psyche import strip_risk
             gone = strip_risk(Path(a.out))
             print(f"--no-risk: psyche nodes removed: {', '.join(gone) or 'none'} (inappropriate and dangerous, with the contradictions that lost a side); tags.content updated")
+    _refresh_auto_tags(Path(a.out))
     rep = Report(); validate_dir(Path(a.out), rep, recompute=True)
     what = 'tags ' + '+'.join(a.tag) if a.tag else ('character ' + a.identity if getattr(a, "identity", None) else 'preset ' + a.preset)
     print(f"{what} extracted to: {a.out}")

@@ -2516,3 +2516,25 @@ def test_added_media_types_and_digital_source_type(tmp_path):
     assert md["mediaType"] == "text/markdown" and md.get("language") and tx["mediaType"] == "text/plain" and tx.get("language")
     assert all(a["digitalSourceType"] == DIGITAL_CAPTURE for a in A.values())
     rep = _val(d); assert rep.ok, rep.errors
+
+
+def test_extract_recomputes_auto_tags(tmp_path):
+    """`cof extract` rewrites tags.auto on what it wrote: with every memory personal, the purge leaves no memory, so no
+    `has-memories` (reported by the Character.AI import work, 4 Nov. 2026); one preset kept, no `multi-preset`."""
+    import glob, subprocess, sys
+    src = tmp_path / "src"; shutil.copytree(ROOT / "spec/examples/10-clara-mercier", src)
+    for f in glob.glob(str(src / "elements/memories/*/*.json")):
+        d = json.loads(Path(f).read_text("utf-8"))
+        if "gist" in d:
+            d["visibility"] = "personal"; Path(f).write_text(json.dumps(d, ensure_ascii=False), "utf-8")
+    out = tmp_path / "out"
+    r = subprocess.run([sys.executable, "-c", "import sys; from cof_cli.cli import main; sys.exit(main())", "extract", str(src), "--preset", "default", "-o", str(out)], capture_output=True, text=True)
+    assert r.returncode == 0, r.stdout + r.stderr
+    m = json.loads((out / "manifest.json").read_text("utf-8"))
+    assert "memories" not in m["elements"] and "has-memories" not in m["tags"]["auto"] and "multi-preset" not in m["tags"]["auto"]
+    from cof_cli.validate import auto_tags
+    assert m["tags"]["auto"] == auto_tags(m) and "has-psyche" in m["tags"]["auto"]
+    # hab1 was illustrated by ev1's image: it leaves with the personal memory, the node stays (no missing asset)
+    hab1 = m["elements"]["psyche"]["variants"]["hab1"]
+    assert "a-mem-ev1-1" not in (hab1.get("media") or []) and not any(a["id"] == "a-mem-ev1-1" for a in m["assets"])
+    assert "ERROR" not in r.stdout, r.stdout

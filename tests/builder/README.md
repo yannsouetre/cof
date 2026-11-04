@@ -110,3 +110,12 @@ Imports a PersonaText-style card (a user's conversation in `data.extensions.chat
 `avatar_data_url`) into Clara's card variant: neither is kept in the variant nor written by `buildCard`, the reader is told
 (translated message), `character_book`, `extensions.character_ai` and `creator` stay; a card that still holds a chat draws one
 « minor » check; both strings exist in en, de, es, zh, ja. Same keys as cof-cli `convert.CARD_PAYLOADS`.
+
+## Personal memory images (builder 0.14, fix of 5 Nov. 2026)
+
+```
+node tests/builder/personal_media_test.js [repo-root] [work-dir]
+```
+
+On a copy of example 10 where ev1 (hab1's illustration) is personal: the default build leaves ev1 out and its image with it
+(not hab1's illustration, no asset, no file); `cof validate` OK. Same rule as cof-cli `drop_personal_memories`.
