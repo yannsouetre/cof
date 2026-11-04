@@ -34,7 +34,7 @@ A `.cof` is a ZIP archive with a `mimetype` entry first and a `manifest.json` se
 | Part | Content |
 |---|---|
 | `manifest.json` | Identities, element variants, presets, tags, permissions, provenance, completeness KPI |
-| `elements/` | 8 categories — personality (Character Card V3, psyche, free text), appearance (face/body views, character sheets, loose photos, hair/body codes), identity weights (LoRA), 3D, voice (samples + profile), postures, motion, **memories** (moments and periods of the character's life, with their media — COF 1.1) — plus a `files` library (agent skills, documents) |
+| `elements/` | 8 categories — personality (Character Card V3, psyche, free text), appearance (face/body views, character sheets, loose photos, hair/body codes), identity weights (LoRA), 3D, voice (samples + profile), postures, motion, **memories** (moments and periods of the character's life, with their media — COF 1.1), **psyche** (values, beliefs, fears… as a graph of nodes, with the people, places and objects they hold on to — COF 1.2) — plus a `files` library (agent skills, documents) |
 | `rights/` | Consent record and proofs when a real person is depicted |
 | Presets | Named combinations of variants (e.g. adult / young, realistic / anime), each with its own depicted age and coherence report |
 
@@ -53,6 +53,9 @@ Since 1.1, a character can carry **memories**: moments and periods of its life, 
 <p align="center"><a href="https://yannsouetre.github.io/cof/viewer/"><img src="docs/img/cof-memories-scale.jpg" alt="The explorer's memory graph on a 500-memory file: a window of four years on the density strip, periods with their moments in columns, a hovered memory showing its link and the place it happened, people and places as tags under the graph" width="100%"></a></p>
 
 Since 1.1.1 the graph holds a whole life: periods with their moments in columns, the loose moments by life stage, a time window on a density strip, people and places as tags (hover one to see its memories), and a network view when the window is small enough to read. Tested on 5 000 memories — the order of magnitude of [a life](https://yannsouetre.github.io/cof/memories/how-much.html).
+
+## An inner life, and what it holds on to
+Since 1.2, a character can also carry a **psyche**: its values, beliefs, wants, needs, fears, wounds, stances, tastes, habits and owned contradictions, as a graph of short nodes, each tied to the memory it comes from. A node says how strong it is, how stable, since when and until when, whether the character knows it about itself, which way a taste or a stance leans, and what it would rather not tell. **People, places and objects** — a grandmother, a house, a guitar — are named the same way in memories and in the psyche. The explorer has a Psyche tab with a time cursor you can play through a life; the builder has a Psyche step and a converter that **proposes** nodes (never writes them on its own) from a character card, a pasted proposal, the 1.0 lists, a horoscope sign, a Myers-Briggs type, an Enneagram type or Big Five scores. Everything is optional: every 1.0 and 1.1 file stays valid. Rules: [RFC 0004](rfcs/0004-psyche-graph.md) (psyche) and [RFC 0005](rfcs/0005-people-places-objects.md) (people, places, objects), open for comments; see the [1.2 release notes](docs/release-notes-1.2.0.md).
 
 ## Its rights travel with it
 <p align="center"><img src="docs/img/cof-rights.jpg" alt="A rights card: voice cloning no, training no, redistribution no, commercial use personal and non-profit, AI disclosure yes" width="100%"></p>

@@ -1,6 +1,6 @@
 # RFC 0005 — people, places and objects: three axes shared by memories and the psyche
 
-- Status: **proposed** (3 November 2026; implemented with COF 1.2 on a private branch, with RFC 0004)
+- Status: **open for comments with COF 1.2 (November 2026)**, which implements it, together with RFC 0004; what the comments change ships in 1.2.1 <!-- TODO: exact date of the 1.2 release and comment deadline --> (proposed on 3 November 2026)
 - Author: Yann Souetre (with Claude)
 - Date: 2026-11-03
 - Target: COF **1.2** — additive only; every 1.0 and 1.1 file stays valid and every earlier reader keeps working (§ 6)
