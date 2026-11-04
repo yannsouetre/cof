@@ -458,6 +458,36 @@
       "expect": "is before `since`"
     },
     {
+      "file": "psyche-image-not-an-image.cof",
+      "rule": "a psyche node is illustrated by images only",
+      "spec": "RFC 0004 § 3 decies",
+      "expect": "illustrated by images only"
+    },
+    {
+      "file": "psyche-image-unknown-asset.cof",
+      "rule": "an image of a psyche node is an asset of the file",
+      "spec": "RFC 0004 § 3 decies",
+      "expect": "media: unknown asset"
+    },
+    {
+      "file": "psyche-image-shows-character-without-age.cof",
+      "rule": "an image that shows the character makes the variant carry an age",
+      "spec": "RFC 0004 § 3 decies / RFC 0002 § 5.2",
+      "expect": "the variant must carry `age`"
+    },
+    {
+      "file": "psyche-image-of-a-minor-in-an-adult-preset.cof",
+      "rule": "the age of an image enters the preset's lowest age: a minor image makes a minor preset",
+      "spec": "RFC 0004 § 3 decies / SPEC § 9.4",
+      "expect": "intimate variant combined with an element under 18"
+    },
+    {
+      "file": "psyche-image-nudity-without-adult.cof",
+      "rule": "an image with nudity shows an adult whose age is known",
+      "spec": "RFC 0004 § 3 decies / RFC 0002 § 5.4",
+      "expect": "at an unknown age or under 18"
+    },
+    {
       "file": "mimetype-not-first.cof",
       "rule": "`mimetype` is the first entry",
       "spec": "§ 1.1",

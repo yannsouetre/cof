@@ -1,6 +1,6 @@
 # Schémas JSON (draft 2020-12) — COF 1.2
 
-1.2 ajoute à 1.1, par addition seulement (RFC 0004) : la catégorie `psyche` (kinds `value`, `belief`, `want`, `need`, `fear`, `wound`, `stance`, `taste`, `habit`, `contradiction`, `rule`), les champs de variante `node` et `strength`, les tags de contenu `psyche-inappropriate` et `psyche-dangerous`, et `psyche-node.schema.json` ; avec la RFC 0005, les objets d'un souvenir (`what`) et les personnes, lieux et objets d'un nœud de psyché (`who`, `where`, `what`). Les schémas 1.1 restent publiés sous `schemas/1.1/`.
+1.2 ajoute à 1.1, par addition seulement (RFC 0004) : la catégorie `psyche` (kinds `value`, `belief`, `want`, `need`, `fear`, `wound`, `stance`, `taste`, `habit`, `contradiction`, `rule`), les champs de variante `node` et `strength`, les tags de contenu `psyche-inappropriate` et `psyche-dangerous`, et `psyche-node.schema.json` ; avec la RFC 0005, les objets d'un souvenir (`what`) et les personnes, lieux et objets d'un nœud de psyché (`who`, `where`, `what`). Avec le § 3 decies, les images d'un nœud de psyché : `media` sur sa variante (images seulement), le rôle d'asset `psyche-media`, `shown` et `age` sur les personnes d'un nœud. Les schémas 1.1 restent publiés sous `schemas/1.1/`.
 
 | Schéma | Fichier validé | Référencé par | Notes |
 |---|---|---|---|

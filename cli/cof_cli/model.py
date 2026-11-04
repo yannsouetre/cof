@@ -317,7 +317,7 @@ def variant_asset_ids(v: dict) -> set[str]:
 
 
 # Age is a property of the REPRESENTATION, never of the identity (v0.5).
-AGE_CATEGORIES = {"appearance", "volume3d", "identity_weights", "memories"}       # variants that MAY carry `age` (memories: when a media shows the character, RFC 0002 § 5)
+AGE_CATEGORIES = {"appearance", "volume3d", "identity_weights", "memories", "psyche"}       # variants that MAY carry `age` (memories and psyche nodes: when a media / an illustration shows the character, RFC 0002 § 5, RFC 0004 § 3 decies)
 AGELESS_KINDS = {"clothing", "accessory", "feature", "description", "environment"}    # variants that never do
 AGE_REQUIRED_KINDS = {"face", "body", "character-sheet", "reference-set"}   # MUST carry `age` for human-form morphologies
 HUMAN_FORM = {"human", "humanoid", "anthropomorphic-animal"}
@@ -382,7 +382,7 @@ def lowest_age(manifest: dict) -> float | None:
 
 def preset_age(manifest: dict, pid: str | None, ignore: set[str] = frozenset()) -> float | None:
     """Age of a preset = min(ages of its applied AND offered morphological variants, age_override). None = no age known (e.g. text only).
-    `ignore`: categories left out — the age buckets of tags.auto ignore `memories` (a memory legitimately shows another
+    `ignore`: categories left out — the age buckets of tags.auto ignore `memories` and `psyche` (a memory or an illustrated node legitimately shows another
     age; the builder, which does not read that category, computes the same buckets), the minor rules never do."""
     res = resolved_all(manifest, pid)
     va = [x for cat in AGE_CATEGORIES - set(ignore) for v in res.get(cat, []) if v.get("kind") not in AGELESS_KINDS for x in [_age_value(v.get("age"))] if x is not None]

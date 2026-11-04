@@ -56,7 +56,7 @@ def self_description(manifest: dict) -> str:
         ]
     if has_psy:
         lines += [
-            "- **Psyche** (`elements/psyche`, COF 1.2 / RFC 0004): what the character is inside and why, as a graph of short nodes — `value`, `belief` (a lie it tells itself is `false_but_held`), `want`, `need`, `fear`, `wound`, `stance` (toward a character, a node, the user or a label), `taste`, `habit`, `contradiction` (owns a tension between two nodes), `rule` (a boundary kept whatever the pressure) — each in `psyche-node.json` (gist per language, `strength` 0–100, `stability` core / settled / shifting / fragile, `since` and `until` (when it appeared, when it was let go), `aware` (yes / partly / no: whether the character knows this about itself — a `no` node is acted on, never stated), `valence` on a stance or a taste (−100 hostile / hates … +100 warm / loves; the affinity toward the user is a stance `about: user`), links `because` / `about` / `supports` / `conflicts` to memories and nodes, and the people, places and objects it is tied to — `who`, `where`, `what`, RFC 0005: a character of the file, an environment, an accessory, or a name). Presets pick nodes in `slots.psyche`. `disclosure: secret` nodes are context, never quoted; `personal` nodes are one user's data. **Declared risk**: a node's `risk` is `inappropriate` (unsuitable for some audiences) or `dangerous` (would make the character harmful if it acted on it), mirrored at file level by `tags.content` `psyche-inappropriate` / `psyche-dangerous` — a host that gives the character tools or data access MUST NOT load `dangerous` nodes (`cof export --format agent` leaves them out unless `--keep-dangerous`; `cof extract --no-risk` drops both levels); a fiction host may load everything and should say so. `cof export --format agent` renders the nodes as the « Who she is » section of `SOUL.md`.",
+            "- **Psyche** (`elements/psyche`, COF 1.2 / RFC 0004): what the character is inside and why, as a graph of short nodes — `value`, `belief` (a lie it tells itself is `false_but_held`), `want`, `need`, `fear`, `wound`, `stance` (toward a character, a node, the user or a label), `taste`, `habit`, `contradiction` (owns a tension between two nodes), `rule` (a boundary kept whatever the pressure) — each in `psyche-node.json` (gist per language, `strength` 0–100, `stability` core / settled / shifting / fragile, `since` and `until` (when it appeared, when it was let go), `aware` (yes / partly / no: whether the character knows this about itself — a `no` node is acted on, never stated), `valence` on a stance or a taste (−100 hostile / hates … +100 warm / loves; the affinity toward the user is a stance `about: user`), links `because` / `about` / `supports` / `conflicts` to memories and nodes, and the people, places and objects it is tied to — `who`, `where`, `what`, RFC 0005: a character of the file, an environment, an accessory, or a name). A node may be illustrated: `media` on its variant lists images only (an asset of another type is an error), the first replaces the kind's icon, the others are references, at most 3 (RFC 0004 § 3 decies); an image that shows the character makes the variant carry `age`, as a memory's media do. Presets pick nodes in `slots.psyche`. `disclosure: secret` nodes are context, never quoted; `personal` nodes are one user's data. **Declared risk**: a node's `risk` is `inappropriate` (unsuitable for some audiences) or `dangerous` (would make the character harmful if it acted on it), mirrored at file level by `tags.content` `psyche-inappropriate` / `psyche-dangerous` — a host that gives the character tools or data access MUST NOT load `dangerous` nodes (`cof export --format agent` leaves them out unless `--keep-dangerous`; `cof extract --no-risk` drops both levels); a fiction host may load everything and should say so. `cof export --format agent` renders the nodes as the « Who she is » section of `SOUL.md`.",
         ]
     lines += [
         "",
@@ -246,7 +246,8 @@ def psyche_add(src: Path, *, identity: str | None, kind: str, gists: dict[str, s
                links: list[str] | None = None, about: str | None = None, lie: bool = False, tags: list[str] | None = None, risk: str = "none",
                origin: str = "lived", personal: bool = True, disclosure: str = "open", presets: list[str] | None = None,
                who: list[str] | None = None, where: list[str] | None = None, what: list[str] | None = None,
-               aware: str | None = None, valence: int | None = None, until_age: float | None = None, until_date: str | None = None) -> str:
+               aware: str | None = None, valence: int | None = None, until_age: float | None = None, until_date: str | None = None,
+               images: list[Path] | None = None, self_shown: bool = False, image_age: float | None = None) -> str:
     """Append one psyche node to an unpacked character folder — the host's write path (RFC 0004 § 3 bis, § 3 ter):
     `origin: lived` and `visibility: personal` by default like a memory lived with one user, a first `revisions` entry on a
     lived node, the node listed by the character's presets, `tags.content` following `risk`. Returns the new node id."""
@@ -323,8 +324,22 @@ def psyche_add(src: Path, *, identity: str | None, kind: str, gists: dict[str, s
         if to.startswith("identities/"):
             raise ValueError(f"--link {ln!r}: links target memories and psyche nodes — a person goes in --who identity={to.partition('/')[2]} (RFC 0005)")
         L.append({"to": to, "type": ty})
-    for key, specs, ref_key, words in (("who", who, "identity", ("real",)), ("where", where, "environment", ()), ("what", what, "item", ())):
-        E_ = [axis_entry(x, lang, ref_key, words, f"--{key}") for x in specs or []]     # people, places, objects (RFC 0005 § 2.3)
+    if self_shown and image_age is None:
+        raise ValueError("--self-shown needs --age: an image showing the character carries the character's age (RFC 0004 § 3 decies)")
+    if image_age is not None and not (0 <= image_age <= 200):
+        raise ValueError("--age is a number of years between 0 and 200")
+    for key, specs, ref_key, words in (("who", who, "identity", ("real", "shown")), ("where", where, "environment", ()), ("what", what, "item", ())):
+        E_ = []
+        for x in specs or []:                                           # people, places, objects (RFC 0005 § 2.3); a person's image age: a bare number, "Léo|shown|34"
+            parts = [q.strip() for q in str(x).split("|")]
+            num = [q for q in parts if re.fullmatch(r"\d+(\.\d+)?", q)] if key == "who" else []
+            e_ = axis_entry("|".join(q for q in parts if q not in num), lang, ref_key, words, f"--{key}")
+            if num:
+                e_["age"] = {"value": float(num[0]) if "." in num[0] else int(num[0]), "unit": "years"}
+            E_.append(e_)
+        if self_shown:
+            if key == "who":
+                E_.insert(0, {"identity": "self", "shown": True})
         if E_:
             node[key] = E_
     if L:
@@ -356,6 +371,27 @@ def psyche_add(src: Path, *, identity: str | None, kind: str, gists: dict[str, s
         var["identity"] = iid
     if strength is not None:
         var["strength"] = int(strength)
+    media_ids = []
+    for f in images or []:                                             # the illustrations of the node (§ 3 decies): images only, the first is the picture
+        f = Path(f)
+        if not f.is_file():
+            raise ValueError(f"image not found: {f}")
+        mt = mimetypes.guess_type(f.name)[0] or "application/octet-stream"
+        if not mt.startswith("image/"):
+            raise ValueError(f"--image {f.name}: {mt} is not an image — a psyche node is illustrated by images only (a sound, a video or a text belongs to a memory)")
+        dest = d / f.name
+        shutil.copy(f, dest)
+        data = dest.read_bytes()
+        aid = f"a-psy-{vid}-{re.sub(r'[^a-z0-9]+', '-', f.stem.lower()).strip('-') or 'image'}"
+        m.setdefault("assets", []).append({"id": aid, "path": f"elements/psyche/{vid}/{f.name}", "role": "psyche-media", "mediaType": mt, "bytes": len(data),
+                                           "sha256": hashlib.sha256(data).hexdigest(), "license": "LicenseRef-Personal", "digitalSourceType": "digitalCapture"})
+        media_ids.append(aid)
+    if media_ids:
+        var["media"] = media_ids
+        if image_age is not None:
+            var["age"] = {"value": image_age, "unit": "years"}
+    elif self_shown or image_age is not None:
+        raise ValueError("--self-shown / --age go with --image: they describe what an image shows")
     V[vid] = var
     P = m.get("presets") or {}
     targets = presets or [p for p, q in P.items() if (q.get("identity") or m.get("default_identity") or iid) == iid]

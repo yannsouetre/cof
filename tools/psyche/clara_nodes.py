@@ -95,6 +95,8 @@ AXES = {  # RFC 0005 § 3: the people, places and objects a node is tied to dire
  "want2": {"where": [{"environment": "appearance/e1"}]},                                  # her studio facing the park
  "hab1": {"what": [{"label": {"fr": "le carnet", "en": "the notebook"}}]},                 # the notebook of ev1, kept since childhood
  "contra1": {"what": [{"item": "appearance/x1"}]}}                                         # the folk guitar with the peace motif
+MEDIA = {"contra1": ["a-ac-x1"],        # the folk guitar of appearance/x1: the same asset, illustrating the node too (RFC 0004 § 3 decies; the first image replaces the kind's icon)
+         "hab1": ["a-mem-ev1-1"]}       # the photo of ev1 (the grandmother's house, where the notebook was kept); no person shown, so no `age`
 DERIVES = {"bel4": "bel3"}   # a node that changes is a second node (RFC 0004 § 7, § 3 nonies): `derives_from` on the manifest variant
 
 def main(out: Path, martian_identity: str | None = None, identity: str | None = "id1"):
@@ -111,7 +113,7 @@ def main(out: Path, martian_identity: str | None = None, identity: str | None = 
         node["tags"] = tags
         d = out / "elements" / "psyche" / nid; d.mkdir(parents=True, exist_ok=True)
         (d / "psyche-node.json").write_text(json.dumps(node, ensure_ascii=False, indent=2) + "\n", "utf-8")
-        variants[nid] = {"kind": kind, "label": LABEL[nid], **({"derives_from": DERIVES[nid]} if nid in DERIVES else {}), "node": f"elements/psyche/{nid}/psyche-node.json", **({"identity": identity} if identity else {}), "strength": strength}
+        variants[nid] = {"kind": kind, "label": LABEL[nid], **({"derives_from": DERIVES[nid]} if nid in DERIVES else {}), "node": f"elements/psyche/{nid}/psyche-node.json", **({"media": MEDIA[nid]} if nid in MEDIA else {}), **({"identity": identity} if identity else {}), "strength": strength}
     (out / "psyche-variants.json").write_text(json.dumps({"psyche": {"variants": variants}}, ensure_ascii=False, indent=2) + "\n", "utf-8")
     print(f"{len(N)} nodes → {out}")
 

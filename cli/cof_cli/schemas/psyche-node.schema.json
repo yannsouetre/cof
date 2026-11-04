@@ -289,6 +289,14 @@
         "real": {
           "type": "boolean",
           "description": "A real person who is not modelled as an identity."
+        },
+        "shown": {
+          "type": "boolean",
+          "description": "(RFC 0004 § 3 decies) Appears in an image of this node (absent = only tied to it). Read by the minor rules and the real-person guard, as `shown` on a memory."
+        },
+        "age": {
+          "$ref": "#/$defs/age",
+          "description": "(RFC 0004 § 3 decies) That person's age in the image; the character's own age is the variant's `age`."
         }
       },
       "anyOf": [

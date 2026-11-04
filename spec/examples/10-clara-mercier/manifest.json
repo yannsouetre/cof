@@ -930,6 +930,9 @@
           "kind": "habit",
           "label": "Le carnet / The notebook",
           "node": "elements/psyche/hab1/psyche-node.json",
+          "media": [
+            "a-mem-ev1-1"
+          ],
           "identity": "id1",
           "strength": 70
         },
@@ -944,6 +947,9 @@
           "kind": "contradiction",
           "label": "La lenteur, la nuit / Slowness, at night",
           "node": "elements/psyche/contra1/psyche-node.json",
+          "media": [
+            "a-ac-x1"
+          ],
           "identity": "id1",
           "strength": 60
         }
@@ -1041,7 +1047,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-03T21:24:10Z"
+        "computed_at": "2026-11-04T08:11:08Z"
       },
       "prompts": {
         "greeting": {
@@ -1132,7 +1138,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-03T21:24:10Z"
+        "computed_at": "2026-11-04T08:11:08Z"
       }
     },
     "en-12": {
@@ -1198,7 +1204,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-03T21:24:10Z"
+        "computed_at": "2026-11-04T08:11:08Z"
       }
     },
     "en-65": {
@@ -1290,7 +1296,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-03T21:24:10Z"
+        "computed_at": "2026-11-04T08:11:08Z"
       }
     },
     "en-future": {
@@ -1376,7 +1382,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-03T21:24:10Z"
+        "computed_at": "2026-11-04T08:11:08Z"
       }
     },
     "en-agent": {
@@ -1419,7 +1425,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-03T21:24:10Z"
+        "computed_at": "2026-11-04T08:11:08Z"
       }
     },
     "fr": {
@@ -1461,7 +1467,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-03T21:24:10Z"
+        "computed_at": "2026-11-04T08:11:08Z"
       },
       "prompts": {
         "greeting": {
@@ -1552,7 +1558,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-03T21:24:10Z"
+        "computed_at": "2026-11-04T08:11:08Z"
       }
     },
     "fr-12": {
@@ -1618,7 +1624,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-03T21:24:10Z"
+        "computed_at": "2026-11-04T08:11:08Z"
       }
     },
     "fr-65": {
@@ -1710,7 +1716,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-03T21:24:10Z"
+        "computed_at": "2026-11-04T08:11:08Z"
       }
     },
     "fr-futur": {
@@ -1796,7 +1802,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-03T21:24:10Z"
+        "computed_at": "2026-11-04T08:11:08Z"
       }
     },
     "fr-agent": {
@@ -1839,7 +1845,7 @@
           "archive"
         ],
         "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-03T21:24:10Z"
+        "computed_at": "2026-11-04T08:11:08Z"
       }
     }
   },
@@ -3401,7 +3407,7 @@
   },
   "provenance": {
     "created": "2026-10-11T10:32:23Z",
-    "modified": "2026-11-03T21:24:10Z",
+    "modified": "2026-11-04T08:11:08Z",
     "generator": "cof-builder/0.7.1",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/10-clara-mercier",
@@ -3550,7 +3556,7 @@
       "archive"
     ],
     "computed_by": "cof-cli/1.2.0",
-    "computed_at": "2026-11-03T21:24:10Z"
+    "computed_at": "2026-11-04T08:11:08Z"
   },
   "coverage": {
     "elements": [

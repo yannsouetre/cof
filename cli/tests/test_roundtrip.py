@@ -2145,3 +2145,177 @@ def test_add_commands_write_people_places_objects(tmp_path):
     assert n["what"] == [{"item": "appearance/x1", "label": {"en": "my guitar"}}]
     assert main(["psyche", "add", str(d), "--kind", "fear", "--gist", "en=x", "--link", "about=identities/id1"]) == 2
     assert not (d / "elements/psyche/fear2").exists()
+
+
+# ---------------------------------------------------------------- illustrations of a psyche node (RFC 0004 § 3 decies, 1.2) ----------------------------------------------------------------
+
+def _pimage(d, m, vid, name="pic.png", shown=None, **variant):
+    """Give psyche node `vid` one more image of its own (asset `a-psy-<vid>-<name>`, role psyche-media) on the manifest dict `m`
+    (written back); `shown`: who[] of the node file; `variant`: fields merged into the manifest variant (age, nudity…)."""
+    from PIL import Image
+    rel = f"elements/psyche/{vid}/{name}"
+    Image.new("RGB", (8, 8), (120, 60, 30)).save(d / rel)
+    aid = f"a-psy-{vid}-{name.split('.')[0]}"
+    m.setdefault("assets", []).append({"id": aid, "path": rel, "role": "psyche-media", "mediaType": "image/png", "bytes": 1, "sha256": "0" * 64, "license": "CC0-1.0"})
+    v = m["elements"]["psyche"]["variants"][vid]
+    v.setdefault("media", []).append(aid); v.update(variant)
+    if shown is not None:
+        _pnode(d, vid, who=shown)
+    from cof_cli.container import refresh_asset_index
+    refresh_asset_index(d, m); _write(d, m)
+    return aid
+
+
+def test_psyche_images_rules(tmp_path):
+    """RFC 0004 § 3 decies: `media` on a psyche variant — images only (error otherwise), unknown asset = error, more than 3 =
+    a warning (a memory fits better), `media_from` is for memories; a valid illustrated node adds no warning."""
+    d, m = _psy(tmp_path)
+    a1 = _pimage(d, m, "val1")
+    rep = _val(d); assert rep.ok and not [w for w in rep.warnings if "val1" in w], (rep.errors, rep.warnings)
+    m["elements"]["psyche"]["variants"]["val1"]["media"] = [a1, "a-m3-meeting"]            # the image of a memory may illustrate a node too (the same asset in two places)
+    _write(d, m); rep = _val(d); assert rep.ok, rep.errors
+    m["elements"]["psyche"]["variants"]["val1"]["media"] = [a1, "a-nowhere"]
+    _write(d, m); assert any("psyche.val1: media: unknown asset a-nowhere" in e for e in _val(d).errors)
+    m["assets"].append({"id": "a-snd", "path": "elements/psyche/val1/s.mp3", "role": "psyche-media", "mediaType": "audio/mpeg", "bytes": 1, "sha256": "0" * 64, "license": "CC0-1.0"})
+    (d / "elements/psyche/val1/s.mp3").write_bytes(b"ID3")
+    m["elements"]["psyche"]["variants"]["val1"]["media"] = [a1, "a-snd"]
+    from cof_cli.container import refresh_asset_index
+    refresh_asset_index(d, m); _write(d, m)
+    assert any("psyche.val1: media: a-snd is audio/mpeg" in e and "images only" in e for e in _val(d).errors)
+    m["elements"]["psyche"]["variants"]["val1"]["media"] = [a1]
+    for n in ("b", "c", "d"):
+        _pimage(d, m, "val1", f"{n}.png")
+    rep = _val(d); assert rep.ok, rep.errors
+    assert any("psyche.val1: 4 images — more than 3 make it a memory: link a memory instead" in w for w in rep.warnings), rep.warnings
+    m["elements"]["psyche"]["variants"]["val1"]["media_from"] = "memories/m3"
+    _write(d, m); assert any("psyche.val1: `media_from` is for memories" in e for e in _val(d).errors)
+
+
+def test_psyche_images_enter_the_minor_rules(tmp_path):
+    """RFC 0004 § 3 decies / RFC 0002 § 5: an image that shows the character carries the variant `age`, which enters the preset's
+    lowest age like a memory's; the text of a node never does; an age with no image is a warning."""
+    from cof_cli.model import preset_age
+    d, m = _psy(tmp_path)
+    assert preset_age(m, "default") == 29                                      # the memory m3 (29) and the override (34): the psyche alone adds nothing
+    _pimage(d, m, "val1", shown=[{"identity": "self", "shown": True}])
+    assert any("psyche.val1: an image shows the character — the variant must carry `age`" in e for e in _val(d).errors)
+    m["elements"]["psyche"]["variants"]["val1"]["age"] = {"value": 12, "unit": "years", "basis": "declared"}; _write(d, m)
+    rep = _val(d); assert rep.ok, rep.errors
+    assert preset_age(rep.manifest, "default") == 12                           # a node illustrated with a child: a minor preset
+    assert "has-minor-preset" in rep.manifest["tags"]["auto"]
+    was = json.loads(json.dumps(m["rights"])); m["rights"].setdefault("permissions", {})["allowSexualUsage"] = True; _write(d, m)
+    errs = _val(d).errors; assert any("allowSexualUsage" in e for e in errs), errs
+    m["rights"] = was
+    m["elements"]["psyche"]["variants"]["val1"].pop("media"); _write(d, m)
+    rep = _val(d); assert preset_age(rep.manifest, "default") == 12            # the age stays until it is removed: that is what the warning says
+    assert any("variant `age` on a node with no image" in w for w in rep.warnings), rep.warnings
+    m["elements"]["psyche"]["variants"]["val1"].pop("age"); _pnode(d, "val1", who=None); _write(d, m)
+    assert preset_age(_val(d).manifest, "default") == 29
+
+
+def test_psyche_images_nudity_and_real_persons(tmp_path):
+    """Nudity on a node's image: the memory rules — nobody declared shown, the character under 18 or at an unknown age, a person
+    shown without a known age, a real person without consent are errors; adults who are consenting identities pass."""
+    d, m = _psy(tmp_path)
+    m["tags"] = {**m.get("tags", {}), "content": ["nudity"]}
+    _pimage(d, m, "val1", nudity=True)
+    assert any("psyche.val1: nudity with nobody declared shown" in e for e in _val(d).errors)
+    _pnode(d, "val1", who=[{"identity": "self", "shown": True}]); v = m["elements"]["psyche"]["variants"]["val1"]
+    v["age"] = {"value": 17, "unit": "years", "basis": "declared"}; _write(d, m)
+    errs = _val(d).errors
+    assert any("shows the character at an unknown age or under 18" in e for e in errs) and any("shows nudity in a preset under 18" in e for e in errs), errs
+    v["age"] = {"value": 30, "unit": "years", "basis": "declared"}; _write(d, m)
+    rep = _val(d); assert rep.ok, rep.errors
+    _pnode(d, "val1", who=[{"identity": "self", "shown": True}, {"label": {"en": "a friend"}, "shown": True}])
+    assert any("every person shown must have a known age of 18 or more (unknown: a friend" in e for e in _val(d).errors)
+    _pnode(d, "val1", who=[{"identity": "self", "shown": True}, {"label": {"en": "a friend"}, "shown": True, "age": {"value": 40, "unit": "years"}, "real": True}])
+    assert any("shows a real person who is not an identity of the file — never allowed" in e or "real person" in e for e in _val(d).errors) or _val(d).ok
+    m["identities"]["id1"]["fictional"] = False; _write(d, m)
+    assert any("shows the real person 'id1' without consent scope nudity / intimate" in e for e in _val(d).errors)
+    m["identities"]["id1"]["consent"] = {"scope": ["nudity", "conversational-persona", "likeness-image"], "given_by": "id1", "date": "2026-11-04", "evidence": "signed"}; _write(d, m)
+    assert not [e for e in _val(d).errors if "real person" in e and "psyche.val1" in e]
+
+
+def test_psyche_images_purges_extract_and_guard(tmp_path):
+    """RFC 0004 § 3 decies: the all-audiences purge drops the images of a node with nudity and keeps the node (and any asset another
+    variant shares); `cof extract` carries the assets of the nodes it keeps; a personal node leaves with its images;
+    extracting one character leaves behind the images of a real person of the other."""
+    from cof_cli.ops import extract_presets, strip_intimate, drop_personal_memories
+    from cof_cli.psyche import drop_personal_nodes
+    d, m = _psy(tmp_path)
+    m["tags"] = {**m.get("tags", {}), "content": ["nudity"]}
+    a1 = _pimage(d, m, "val1", shown=[{"identity": "self", "shown": True}], nudity=True, age={"value": 30, "unit": "years", "basis": "declared"})
+    m["elements"]["psyche"]["variants"]["bel1"]["media"] = ["a-m3-meeting"]; _write(d, m)    # a shared asset: a memory's image on a node
+    assert _val(d).ok, _val(d).errors
+    out = tmp_path / "ex"; extract_presets(d, out, ["default"])
+    mx = json.loads((out / "manifest.json").read_text("utf-8"))
+    assert a1 in {a["id"] for a in mx["assets"]} and (out / "elements/psyche/val1/pic.png").is_file()
+    assert validate_dir(out, Report(), recompute=True) is not None
+    gone = strip_intimate(out)
+    assert "psyche.val1 (images only)" in gone
+    mp = json.loads((out / "manifest.json").read_text("utf-8")); vv = mp["elements"]["psyche"]["variants"]["val1"]
+    assert "val1" in mp["elements"]["psyche"]["variants"] and not vv.get("media") and "nudity" not in vv and "age" not in vv
+    assert a1 not in {a["id"] for a in mp["assets"]} and not (out / "elements/psyche/val1/pic.png").exists()
+    assert "who" in json.loads((out / "elements/psyche/val1/psyche-node.json").read_text("utf-8")) and "shown" not in json.dumps(json.loads((out / "elements/psyche/val1/psyche-node.json").read_text("utf-8")))
+    assert mp["elements"]["psyche"]["variants"]["bel1"]["media"] == ["a-m3-meeting"] and (out / "elements/memories/m3/meeting.jpg").is_file()
+    rep = Report(); validate_dir(out, rep, recompute=True); assert rep.ok, rep.errors
+    # a personal node leaves with its images
+    _pnode(d, "val1", visibility="personal"); out2 = tmp_path / "ex2"; extract_presets(d, out2, ["default"])
+    assert drop_personal_nodes(out2) == ["contra1", "val1"] and not (out2 / "elements/psyche/val1").exists()
+    mp = json.loads((out2 / "manifest.json").read_text("utf-8")); assert a1 not in {a["id"] for a in mp["assets"]} and "a-m3-meeting" in {a["id"] for a in mp["assets"]}
+    rep = Report(); validate_dir(out2, rep, recompute=True); assert rep.ok, rep.errors
+
+
+def test_psyche_image_guard_on_extracting_a_character(tmp_path):
+    """RFC 0002 § 4.5 read for § 3 decies: an image that shows another real person of the cast is left behind when one character
+    is extracted — the node stays, with a note."""
+    from cof_cli.ops import extract_identity
+    d, m = _psy(tmp_path)
+    m["identities"]["marc"] = {"name": "Marc", "fictional": False, "morphology": {"class": "human"}, "language": "fr"}
+    m["identities"]["id1"]["consent"] = {"scope": ["conversational-persona"], "given_by": "id1", "date": "2026-11-04", "evidence": "x"}
+    for cat, e in m["elements"].items():
+        for v in e["variants"].values():
+            v.setdefault("identity", "id1")
+    m["presets"]["marc"] = {"label": "Marc", "slots": {}, "identity": "marc", "age_override": {"value": 40, "unit": "years", "basis": "declared"}}
+    a1 = _pimage(d, m, "val1", shown=[{"identity": "marc", "shown": True, "age": {"value": 40, "unit": "years"}}])
+    out = tmp_path / "id1"; notes = []
+    extract_identity(d, out, "id1", notes)
+    assert any(n.startswith("psyche.val1: images showing another real person left behind") for n in notes), notes
+    mx = json.loads((out / "manifest.json").read_text("utf-8"))
+    assert "val1" in mx["elements"]["psyche"]["variants"] and not mx["elements"]["psyche"]["variants"]["val1"].get("media") and a1 not in {a["id"] for a in mx["assets"]}
+
+
+def test_psyche_add_image(tmp_path):
+    """`cof psyche add --image`: the first image illustrates the node (asset role psyche-media, in the node's folder); a non-image
+    is refused; --self-shown needs --age, which lands on the variant and enters the preset's lowest age."""
+    from PIL import Image
+    from cof_cli.cli import main
+    d, m = _psy(tmp_path)
+    img = tmp_path / "logo.png"; Image.new("RGB", (8, 8), (10, 20, 30)).save(img)
+    img2 = tmp_path / "second.png"; Image.new("RGB", (8, 8), (30, 20, 10)).save(img2)
+    assert main(["psyche", "add", str(d), "--kind", "taste", "--gist", "en=Loves the old logo.", "--canon", "--image", str(img), "--image", str(img2)]) == 0
+    m = json.loads((d / "manifest.json").read_text("utf-8")); v = m["elements"]["psyche"]["variants"]["taste1"]
+    assert v["media"] == ["a-psy-taste1-logo", "a-psy-taste1-second"] and "age" not in v
+    A = {a["id"]: a for a in m["assets"]}
+    assert A["a-psy-taste1-logo"]["role"] == "psyche-media" and A["a-psy-taste1-logo"]["path"] == "elements/psyche/taste1/logo.png" and (d / A["a-psy-taste1-logo"]["path"]).is_file()
+    txt = tmp_path / "notes.txt"; txt.write_text("x", "utf-8")
+    assert main(["psyche", "add", str(d), "--kind", "taste", "--gist", "en=x", "--image", str(txt)]) == 2
+    assert main(["psyche", "add", str(d), "--kind", "taste", "--gist", "en=x", "--image", str(img), "--self-shown"]) == 2            # needs --age
+    assert main(["psyche", "add", str(d), "--kind", "taste", "--gist", "en=x", "--self-shown", "--age", "12"]) == 2                   # no image
+    assert main(["psyche", "add", str(d), "--kind", "taste", "--gist", "en=A selfie.", "--canon", "--image", str(img), "--self-shown", "--age", "12"]) == 0
+    from cof_cli.model import preset_age
+    m = json.loads((d / "manifest.json").read_text("utf-8")); v = m["elements"]["psyche"]["variants"]["taste2"]
+    assert v["age"]["value"] == 12 and preset_age(m, "default") == 12
+    n = json.loads((d / "elements/psyche/taste2/psyche-node.json").read_text("utf-8")); assert n["who"] == [{"identity": "self", "shown": True}]
+
+
+def test_example_10_illustrated_nodes():
+    """Example 10: contra1 is illustrated by the folk guitar of appearance/x1 (the same asset, referenced twice) and hab1 by the image
+    of ev1; both extract with their assets and the file validates with no new warning."""
+    src = ROOT / "spec/examples/10-clara-mercier"
+    rep = Report(); m = validate_dir(src, rep, recompute=False)
+    assert rep.ok, rep.errors
+    V = m["elements"]["psyche"]["variants"]
+    assert V["contra1"]["media"] == ["a-ac-x1"] and V["hab1"]["media"] == ["a-mem-ev1-1"]
+    assert m["elements"]["appearance"]["variants"]["x1"]["images"] == ["a-ac-x1"]
+    assert not [w for w in rep.warnings if "psyche" in w], rep.warnings

@@ -248,6 +248,11 @@ def drop_nodes(dst: Path, m: dict, vids: list[str]) -> list[str]:
         if V[vid].get("derives_from") in gone:
             V[vid] = {k: x for k, x in (resolve_variant(m, "psyche", vid) or {}).items() if k != "_id"}
     still = {str(V[k].get("node") or "") for k in keep if k in V}            # a node file a kept (derived) variant still reads stays
+    from .model import variant_asset_ids
+    from .ops import _prune_assets
+    freed: set[str] = set()                                                 # the illustrations of a removed node leave with it (§ 3 decies); one a kept node shares stays
+    for vid in gone:
+        freed |= variant_asset_ids(V.get(vid) or {})
     for vid in gone:
         V.pop(vid, None)
         for p in (m.get("presets") or {}).values():
@@ -256,8 +261,11 @@ def drop_nodes(dst: Path, m: dict, vids: list[str]) -> list[str]:
                     p[key]["psyche"] = [x for x in p[key]["psyche"] if x != vid]
                     if not p[key]["psyche"]:
                         del p[key]["psyche"]
+    _prune_assets(dst, m, freed)
+    kept_paths = {a.get("path") or "" for a in m.get("assets") or []}
+    for vid in gone:
         folder = dst / "elements" / "psyche" / vid
-        if folder.is_dir() and not any(r.startswith(f"elements/psyche/{vid}/") for r in still):
+        if folder.is_dir() and not any(r.startswith(f"elements/psyche/{vid}/") for r in still) and not any(r.startswith(f"elements/psyche/{vid}/") for r in kept_paths):
             shutil.rmtree(folder)
     if not V:
         m["elements"].pop("psyche", None)
@@ -279,6 +287,60 @@ def drop_personal_nodes(dst: Path) -> list[str]:
     gone = drop_nodes(dst, m, hit)
     (dst / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
     return gone
+
+
+def _images_off(dst: Path, m: dict, vid: str) -> set[str]:
+    """Take the illustrations off one node (the words stay): the variant's `media`, `nudity` and `age` (the age was that of an
+    image), the `shown` / `age` of the node's people. Returns the freed asset ids."""
+    v = (((m.get("elements") or {}).get("psyche") or {}).get("variants") or {}).get(vid) or {}
+    freed = set(v.pop("media", None) or [])
+    v.pop("nudity", None); v.pop("age", None)
+    rel = v.get("node")
+    if rel and (dst / rel).is_file():
+        try:
+            node = json.loads((dst / rel).read_text("utf-8"))
+            for w in node.get("who") or []:
+                w.pop("shown", None); w.pop("age", None)
+            (dst / rel).write_text(json.dumps(node, ensure_ascii=False, indent=2) + "\n", "utf-8")
+        except (OSError, ValueError):
+            pass
+    return freed
+
+
+def strip_nude_images(dst: Path) -> list[str]:
+    """§ 3 decies, all-audiences purge: a node whose images show nudity (variant `nudity: true`) keeps its words and loses its
+    images. Returns the ids touched."""
+    from .ops import _prune_assets
+    m = json.loads((dst / "manifest.json").read_text("utf-8"))
+    V = ((m.get("elements") or {}).get("psyche") or {}).get("variants") or {}
+    hit = [vid for vid in V if (resolve_variant(m, "psyche", vid) or {}).get("nudity") is True]
+    if not hit:
+        return []
+    freed: set[str] = set()
+    for vid in hit:
+        freed |= _images_off(dst, m, vid)
+    _prune_assets(dst, m, freed)
+    (dst / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
+    return hit
+
+
+def strip_foreign_real_images(dst: Path, kept_identities: set[str], identities: dict | None = None) -> list[str]:
+    """Extraction guard (RFC 0002 § 4.5, read for § 3 decies): the images of a node that show a real person who is not among
+    `kept_identities` are dropped, the node stays. Returns the ids touched."""
+    from .memories import shows_other_real_person
+    from .ops import _prune_assets
+    m = json.loads((dst / "manifest.json").read_text("utf-8"))
+    V = ((m.get("elements") or {}).get("psyche") or {}).get("variants") or {}
+    nodes = load_nodes(dst, m)
+    hit = [vid for vid, node in nodes.items() if (resolve_variant(m, "psyche", vid) or {}).get("media") and shows_other_real_person(m, vid, node, kept_identities, identities)]
+    if not hit:
+        return []
+    freed: set[str] = set()
+    for vid in hit:
+        freed |= _images_off(dst, m, vid)
+    _prune_assets(dst, m, freed)
+    (dst / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
+    return hit
 
 
 def strip_risk(dst: Path, levels: tuple[str, ...] = ("inappropriate", "dangerous")) -> list[str]:

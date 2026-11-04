@@ -91,5 +91,10 @@ validator's error (`expect`) — other implementations only need to reject the f
 | `object-of-another-character.cof` | in a cast file, a node's places and objects are its own character's elements |
 | `psyche-valence-on-a-belief.cof` | `valence` is on a stance or a taste only (RFC 0004 § 3 nonies) |
 | `psyche-until-before-since.cof` | a node's `until` is not before its `since` (RFC 0004 § 3 nonies) |
+| `psyche-image-not-an-image.cof` | a psyche node is illustrated by images only (RFC 0004 § 3 decies) |
+| `psyche-image-unknown-asset.cof` | an image of a psyche node is an asset of the file |
+| `psyche-image-shows-character-without-age.cof` | an image that shows the character makes the variant carry an `age` |
+| `psyche-image-of-a-minor-in-an-adult-preset.cof` | the age of an image enters the preset's lowest age: a minor image makes a minor preset |
+| `psyche-image-nudity-without-adult.cof` | an image with nudity shows an adult whose age is known |
 
 Regenerate with `python tests/invalid/build.py` (it also checks every case against the reference validator).
