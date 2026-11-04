@@ -151,6 +151,36 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
   check(await page.evaluate(() => document.querySelector("#dlg .dbtns .btn.primary").disabled), "a preset whose personality is not a card: « append » is disabled (copy only)");
   await press("Fermer");
   /* ---- the six languages: the buttons and the dialog are translated ---- */
+  /* ---- the horoscope entry (« Depuis un signe astrologique »): the same table as `cof psyche propose --zodiac`, offline ---- */
+  await page.evaluate(() => { setLang("fr"); go("psyche"); }); await page.waitForTimeout(200);
+  const nz = await nodes();
+  const cliZ = JSON.parse(py(["-c", "import json;from cof_cli import zodiac;print(json.dumps({'v':zodiac.candidates('virgo',['fr','en','de']),'n':len(zodiac.TABLE['virgo'])}))"], CLI).stdout);
+  check(await page.evaluate(() => JSON.stringify(psypZodiac("virgo", ["fr", "en", "de"]).nodes)) === JSON.stringify(cliZ.v), "the builder builds Virgo's candidates exactly as cof-cli does (ids, kinds, gists with the English fallback, strength 50, shifting, tag, source)");
+  await page.click("#psyList [data-ppropose]"); await page.waitForTimeout(200);
+  d = await dlg();
+  check(d.on && /Depuis un signe astrologique/.test(d.body) && d.buttons.includes("♈ Proposer depuis le signe"), "the dialog offers « ♈ Depuis un signe astrologique » with its button");
+  check(await page.evaluate(() => [...document.querySelectorAll("#dlg .dbtns button")].find(b => b.textContent.startsWith("♈")).disabled), "the button waits for a sign");
+  check(await page.evaluate(() => [...document.querySelectorAll("#dlg [data-ppzodiac] option")].length) === 13, "a select of the 12 signs (and its empty choice)");
+  await page.selectOption("#dlg [data-ppzodiac]", "virgo");
+  check(!(await page.evaluate(() => [...document.querySelectorAll("#dlg .dbtns button")].find(b => b.textContent.startsWith("♈")).disabled)), "a sign chosen: the button is enabled");
+  await press("♈ Proposer depuis le signe");
+  await page.waitForFunction(() => document.querySelectorAll("#dlg [data-ppick]").length > 0, null, { timeout: 10000 });
+  let zrows = await page.evaluate(() => [...document.querySelectorAll("#dlg .psyprow")].map(r => ({ id: r.dataset.prowC, on: r.querySelector("input").checked, text: r.innerText })));
+  check(zrows.length === cliZ.n && zrows.every(r => !r.on) && zrows.every(r => /zodiac/.test(r.text)), `the review panel: ${cliZ.n} rows (Virgo), every checkbox off, source zodiac`);
+  check(await nodes() === nz, "nothing is written while the panel is open");
+  await page.check('#dlg [data-ppick="z1"]'); await press("Ajouter les nœuds cochés"); await page.waitForTimeout(300);
+  const zn = await page.evaluate(() => Object.values(S.psyche).filter(m => (m.node.tags || []).includes("zodiac:virgo")).map(m => ({ kind: m.kind, st: m.node.stability, str: m.node.strength, tags: m.node.tags, gist: m.node.gist })));
+  check(await nodes() === nz + 1 && zn.length === 1 && zn[0].kind === cliZ.v[0].kind && zn[0].st === "shifting" && zn[0].str === 50 && zn[0].gist.fr === cliZ.v[0].gist.fr && zn[0].gist.en === cliZ.v[0].gist.en, "one ticked row, one node, tag zodiac:virgo, shifting, strength 50, the gists of the table");
+  const tz = path.join(WORK, "t2-zodiac.cof"); await build(tz); v = validate(tz);
+  check(v.ok, "the file with the zodiac node validates: " + v.out.split("\n").filter(l => /ERROR|^OK|NOT/.test(l)).join(" | "));
+  for (const [l, vir] of [["fr", "Vierge"], ["en", "Virgo"], ["de", "Jungfrau"], ["es", "Virgo"], ["zh", "处女座"], ["ja", "乙女座"]]) {
+    await page.evaluate(x => { setLang(x); go("psyche"); }, l); await page.waitForTimeout(150);
+    await page.click("#psyList [data-ppropose]"); await page.waitForTimeout(150);
+    const z = await page.evaluate(() => ({ virgo: document.querySelector('#dlg [data-ppzodiac] option[value="virgo"]').textContent, n: [...document.querySelectorAll("#dlg [data-ppzodiac] option")].filter(o => o.value && o.textContent === o.value).length, btn: [...document.querySelectorAll("#dlg .dbtns button")].map(b => b.textContent).find(t => t.startsWith("♈")) }));
+    check(z.virgo === vir && z.n === 0 && z.btn && (l === "fr" || !/Proposer depuis/.test(z.btn)), `${l}: the sign is « ${z.virgo} », the button « ${z.btn} »`);
+    await page.keyboard.press("Escape"); await page.waitForTimeout(100);
+  }
+  await page.evaluate(() => setLang("fr"));
   for (const [l, re] of [["en", /Propose a psyche/], ["de", /Psyche aus der Persönlichkeit/], ["es", /Proponer una psique/], ["zh", /根据性格提议心理/], ["ja", /性格から心理を提案/]]) {
     await page.evaluate(x => { setLang(x); go("psyche"); }, l); await page.waitForTimeout(150);
     const txt = await page.evaluate(() => document.querySelector("#psyList [data-ppropose]").textContent + " | " + document.querySelector("#psyList [data-ppsoul]").textContent);

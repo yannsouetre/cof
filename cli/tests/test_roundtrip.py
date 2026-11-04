@@ -2145,3 +2145,40 @@ def test_add_commands_write_people_places_objects(tmp_path):
     assert n["what"] == [{"item": "appearance/x1", "label": {"en": "my guitar"}}]
     assert main(["psyche", "add", str(d), "--kind", "fear", "--gist", "en=x", "--link", "about=identities/id1"]) == 2
     assert not (d / "elements/psyche/fear2").exists()
+
+
+def test_life_age_is_the_declared_age_safety_keeps_the_lowest(tmp_path):
+    """4 Nov. 2026: the declared age_override bounds the life (psyche since/until), the minimum stays the safety age; a declared age
+    above the variants' is a coherence warning, never an error."""
+    from cof_cli.model import preset_age, preset_life_age
+    d = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/10-clara-mercier", d)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    m["presets"]["default"]["age_override"] = {"value": 40, "unit": "years", "basis": "declared"}
+    m["presets"]["en-12"]["age_override"] = {"value": 12, "unit": "years", "basis": "declared"}
+    del m["presets"]["fr"]["age_override"]; _write(d, m)
+    mm = _val(d).manifest
+    assert preset_age(mm, "default", ignore={"memories"}) == 29 and preset_life_age(mm, "default", ignore={"memories"}) == 40
+    assert preset_life_age(mm, "fr", ignore={"memories"}) == 40                                           # inherited through extends
+    assert preset_life_age(mm, "en-65") == 65 and preset_age(mm, "en-12") == 12
+    rep = _val(d)                                                                                           # default holds bel3 (until 45); assert rep.ok, rep.errors
+    assert "presets.default: declares age 40 but its variants show 29 (coherence)" in rep.warnings, rep.warnings
+    assert not any("was held until" in w for w in rep.warnings)                                            # 40 is not past 45
+    m["presets"]["default"]["age_override"] = {"value": 50, "unit": "years", "basis": "declared"}; _write(d, m)
+    rep = _val(d); assert rep.ok
+    assert any("psyche.bel3 was held until 45, before the age this preset shows (50)" in w for w in rep.warnings), rep.warnings
+    m["presets"]["default"]["age_override"] = {"value": 29, "unit": "years", "basis": "declared"}; _write(d, m)
+    assert not any("declares age" in w for w in _val(d).warnings)
+
+
+def test_builder_zodiac_table_is_zodiac_py():
+    """The builder embeds the horoscope table (tools/psyche/zodiac_to_builder.py): it must be exactly cof_cli.zodiac's, names of the six languages included."""
+    import re
+    from cof_cli import zodiac
+    html = (ROOT / "builder/index.html").read_text("utf-8")
+    m = re.search(r"/\*zodiac:begin\*/(.*?)/\*zodiac:end\*/", html, re.S)
+    assert m, "no embedded table in builder/index.html"
+    emb = json.loads(m.group(1))
+    assert emb["signs"] == list(zodiac.SIGNS)
+    assert emb["names"] == zodiac.NAMES and all(set(n) == {"en", "fr", "de", "es", "zh", "ja"} for n in emb["names"].values())
+    assert emb["table"] == {s: [[k, g] for k, g in zodiac.TABLE[s]] for s in zodiac.SIGNS}, "run tools/psyche/zodiac_to_builder.py"
+    assert all(3 <= len(v) <= 4 for v in emb["table"].values())

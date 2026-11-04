@@ -16,7 +16,7 @@ from jsonschema import Draft202012Validator
 from . import SPEC_VERSION, __version__
 from .completeness import compute as compute_completeness
 from .container import ContainerError, inspect, read_manifest, unpack, verify_hashes
-from .model import HUMAN_FORM, AGE_REQUIRED_KINDS, extends_cycle, garments, ADULT, implicit_resolved, AGELESS_KINDS, AGE_CATEGORIES, CATEGORIES, KINDS, MULTI_KINDS, _age_value, age_required, asset_index, default_preset_id, first, lowest_age, preset_age, preset_identity, preset_ids, region_conflicts, resolve_preset_slots, resolve_variant, resolved, single_kind_violations, by_kind, preset_alternatives, preset_primary_image, resolved_all, backstage, variant_owner, preset_owner, is_likeness, is_neutral, neutrality, effective_permissions, identity_rights, variant_asset_ids
+from .model import HUMAN_FORM, AGE_REQUIRED_KINDS, extends_cycle, garments, ADULT, implicit_resolved, AGELESS_KINDS, AGE_CATEGORIES, CATEGORIES, KINDS, MULTI_KINDS, _age_value, age_required, asset_index, default_preset_id, first, lowest_age, preset_age, preset_life_age, preset_variant_age, preset_age_override, preset_identity, preset_ids, region_conflicts, resolve_preset_slots, resolve_variant, resolved, single_kind_violations, by_kind, preset_alternatives, preset_primary_image, resolved_all, backstage, variant_owner, preset_owner, is_likeness, is_neutral, neutrality, effective_permissions, identity_rights, variant_asset_ids
 from .psyche import RISK_TAGS as PSYCHE_TAGS     # node risk → file-level tags.content (RFC 0004 § 3 septies); one table for the validator and the purges
 from .tokens import count as count_tokens, tokenizer_name
 
@@ -1005,6 +1005,11 @@ def _age_rules(manifest: dict, pid: str | None, res: dict, perms_all: dict, rep:
     label = f"presets.{pid}" if pid else "implicit preset"
     p = (manifest.get("presets", {}) or {}).get(pid or "", {}) or {}
     pa = preset_age(manifest, pid)
+    # a declared age above the age the variants show: the declared age bounds the life (memories, psyche), the safety rules keep the lowest
+    if pid:
+        da, va = _age_value(preset_age_override(manifest, pid)), preset_variant_age(manifest, pid, ignore={"memories"})
+        if da is not None and va is not None and da > va:
+            rep.warnings.append(f"{label}: declares age {da:g} but its variants show {va:g} (coherence)")
     for cat in AGE_CATEGORIES:
         for v in res.get(cat, []):
             if v.get("kind") in AGELESS_KINDS:
@@ -1490,10 +1495,11 @@ def _psyche_rules(manifest: dict, src: Path, rep: "Report") -> None:
     unset = [vid for vid, n in nodes.items() if "strength" not in n]
     if nodes and len(unset) * 2 > len(nodes):
         rep.note(f"psyche: strength unset on {len(unset)} of {len(nodes)} nodes (default 50) — set it node by node for a finished psyche")
-    # a preset younger than a node's `since` (coherence, § 3 ter), older than its `until` (§ 3 nonies). The preset's age is the
-    # age it shows: its memories legitimately show other ages (Clara at 65 remembers herself at 29) and do not count here
+    # a preset younger than a node's `since` (coherence, § 3 ter), older than its `until` (§ 3 nonies). The age compared is the
+    # preset's life age (its declared age_override, else the age it shows): its memories legitimately show other ages (Clara at 65
+    # remembers herself at 29) and do not count here; a declared age above the apparent one is its own warning (_age_rules)
     for pid in preset_ids(manifest):
-        pa = preset_age(manifest, pid, ignore={"memories"})
+        pa = preset_life_age(manifest, pid, ignore={"memories"})
         if pa is None:
             continue
         for vid in resolve_preset_slots(manifest, pid).get("psyche") or []:

@@ -121,6 +121,7 @@ Stability is normative for engines the way fidelity is: `core` — never changed
 ## 3 ter. Presets, purges, compatibility
 
 - A preset lists the nodes it holds in `slots.psyche`, inherited through `extends` like every library; a preset younger than a node's `since` is a coherence finding (as RFC 0002 § 4.4). Clara at 12 does not hold `wound1`.
+- **The age that bounds a preset's life** (Yann, 4 November 2026): the *life age* of a preset is its declared `age_override` (through `extends`, the nearest declaration wins) when present, else its lowest age. It is the only age the time rules above use — memories and nodes after it are not offered, not shown, and reported when listed (`since` after it, `until` at or before it). The **safety rules keep the lowest age** (the minimum of the variants and the `age_override`: minors, intimacy and nudity gates, the age buckets of `tags.auto`). A declared age above the age the variants show (a 40-year-old shown at 25) is a coherence warning, nothing more.
 - `visibility: personal` nodes leave a file exactly as personal memories do (`cof extract`, `cof export`, the builder's purge, `--keep-personal`); `disclosure: secret` nodes are context, never quoted.
 - Nothing in a psyche node is a media: no age, no `nudity`, no `explicit`. The category never enters the minor rules. A node *about* an explicit memory is text and falls under `tags.content` like a card.
 - A 1.0 or 1.1 reader sees the category as a library and ignores it (cof-cli 1.0.1 rule); a file that uses it declares `cof: "1.2"`.
