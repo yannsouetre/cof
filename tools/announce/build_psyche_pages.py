@@ -61,7 +61,7 @@ KINDS = {"wound": "#e8876b", "value": "#4cc2a8", "belief": "#a98ae8", "want": "#
 
 EXTRA_CSS = """
 /* 1.2: the psyche pages (same system as the memories pages) */
-.hero::before{background:linear-gradient(90deg,rgba(7,11,18,.9) 0%,rgba(7,11,18,.78) 42%,rgba(7,11,18,.35) 72%,rgba(7,11,18,.2) 100%),linear-gradient(180deg,rgba(7,11,18,.55) 0%,rgba(7,11,18,0) 30%,rgba(7,11,18,0) 75%,rgba(13,19,18,1) 100%)}
+.hero::before{background:linear-gradient(180deg,rgba(7,11,18,.55) 0%,rgba(7,11,18,0) 30%,rgba(7,11,18,0) 75%,rgba(13,19,18,1) 100%),linear-gradient(90deg,rgba(7,11,18,.9) 0%,rgba(7,11,18,.78) 42%,rgba(7,11,18,.35) 72%,rgba(7,11,18,.2) 100%)}   /* the fade into the page first: the first layer is drawn on top (the bottom edge was the darkening layer's night, not the page colour) */
 .hero .sub{font:500 clamp(18px,2vw,23px)/1.45 Plex,system-ui,sans-serif;color:#dfe8e5;max-width:680px;margin:0 0 26px}
 figure.node{margin:30px 0 8px;padding:22px 24px;border:1px solid var(--line);border-radius:18px;background:var(--panel)}
 figure.node .nk{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px}
@@ -108,7 +108,7 @@ table.cmp td.y{color:var(--mint)}table.cmp td.n{color:#d9a0a0}
 
 
 def head(title, desc, ogt, ogd, img, url):
-    css = CSS.replace("url(img/electric-sheep.jpg) center 70%/cover", f"url({img}) right center/" + ("auto 100%" if "inner" in img else "cover"))
+    css = CSS.replace("url(img/electric-sheep.jpg) center 70%/cover", f"url({img}) " + ("76%" if "inner" in img else "72%") + " center/cover")   # both images are wide (hero-inner outpainted to 21:9 by Gemini, 4 Nov.): cover, held so that the head / the person stays in view on a phone
     return f"""<!doctype html>
 <html lang="en">
 <head>
