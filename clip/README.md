@@ -15,4 +15,4 @@ ffmpeg -i clip-16x9-music.mp4 -i cof-clip-1.1.mp4 -filter_complex "[0:v]trim=end
   -map "[v]" -map 1:a -c:v libx264 -pix_fmt yuv420p -crf 20 -preset slow -c:a copy -movflags +faststart cof-clip.mp4
 ```
 
-The hero is that video at 15 fps, 1280 px, as `render.py`'s `hero()` writes it (WebP lossy q85, kmin 3 / kmax 10, method 6).
+The hero is that video at 15 fps, 1280 px, as `render.py`'s `hero()` writes it (WebP lossy, kmin 3 / kmax 10, method 6; q80 for the 1.2 recap, to stay under 10 MB).
