@@ -16,8 +16,8 @@ ROOT = Path(__file__).resolve().parents[2]
 
 # Hero images, one line each: the companion's own image will come from Gemini later (e.g. "img/how-many.jpg", relative to
 # psyche/); until then both pages use the studio memory of example 10.
-HERO_INDEX = "../memories/img/ev2.jpg"
-HERO_HOW_MANY = "../memories/img/ev2.jpg"
+HERO_INDEX = "img/hero-inner.jpg"
+HERO_HOW_MANY = "img/hero-how-many.jpg"
 COMPANION = "how-many.html"
 EX = ROOT / "spec/examples/10-clara-mercier"
 MAN = json.loads((EX / "manifest.json").read_text("utf-8"))
@@ -108,7 +108,7 @@ table.cmp td.y{color:var(--mint)}table.cmp td.n{color:#d9a0a0}
 
 
 def head(title, desc, ogt, ogd, img, url):
-    css = CSS.replace("url(img/electric-sheep.jpg) center 70%/cover", f"url({img}) center 45%/cover")
+    css = CSS.replace("url(img/electric-sheep.jpg) center 70%/cover", f"url({img}) right center/" + ("auto 100%" if "inner" in img else "cover"))
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -118,10 +118,10 @@ def head(title, desc, ogt, ogd, img, url):
 <meta name="description" content="{desc}">
 <meta property="og:title" content="{ogt}">
 <meta property="og:description" content="{ogd}">
-<meta property="og:image" content="https://yannsouetre.github.io/cof/psyche/img/og-psyche.jpg">
+<meta property="og:image" content="https://yannsouetre.github.io/cof/psyche/img/{'og-how-many.jpg' if url.startswith('how-many') else 'og-psyche.jpg'}">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://yannsouetre.github.io/cof/psyche/img/og-psyche.jpg">
+<meta name="twitter:image" content="https://yannsouetre.github.io/cof/psyche/img/{'og-how-many.jpg' if url.startswith('how-many') else 'og-psyche.jpg'}">
 <link rel="canonical" href="https://yannsouetre.github.io/cof/psyche/{url}">
 <link rel="icon" type="image/svg+xml" href="../builder/icon/cof-icon-dark.svg">
 {css}{EXTRA_CSS}</style>
