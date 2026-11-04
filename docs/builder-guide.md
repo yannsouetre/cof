@@ -32,7 +32,7 @@ Elements are sorted into 8 categories: Personality, Appearance, Identity weights
 
 - Age belongs to each **representation** (face, body, sheet, loose photos, LoRA, 3D), not to the character: Clara can have a face at 12 and another at 29.
 - Clothes, accessories, places and descriptions have no age.
-- A preset takes the lowest age of its variants.
+- For the safety rules, a preset takes the lowest age of its variants; when it declares an age, that age bounds its life (memories, psyche: see Presets).
 - One image can never serve both an age under 18 and an adult age.
 
 ## 4. Memories

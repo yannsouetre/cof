@@ -244,7 +244,7 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
   const miss = await page.evaluate(K => ["en", "de", "es", "zh", "ja"].flatMap(l => K.filter(k => !I18N[l] || typeof I18N[l][k] !== "string" || !I18N[l][k]).map(k => l + ":" + k)), KEYS);
   check(!miss.length, "every new string in en, de, es, zh, ja " + miss.slice(0, 5).join(" | "));
   const gd = await page.evaluate(() => ["fr", "en", "de", "es", "zh", "ja"].map(l => GUIDE[l][5].h.split("<li>").length - 1));
-  check(gd.every(n => n === 5), "the guide's Presets page has the age bullet in the six languages");
+  check(gd.every(n => n === 6), "the guide's Presets page has the two age bullets (life age, declared vs apparent) in the six languages " + gd.join(","));
   for (const l of ["en", "de", "ja"]) {
     await page.evaluate(x => { setLang(x); }, l); await presets(false);
     const txt = await line("en-12", "data-memfs");
