@@ -1,16 +1,24 @@
-"""The two announcement pages of COF 1.2 (the psyche): psyche/index.html and psyche/why.html.
+"""The two announcement pages of COF 1.2 (the psyche): psyche/index.html and psyche/how-many.html.
 
     python3 tools/announce/build_psyche_pages.py
 
 They reuse the style of the memories page (memories/index.html, same hero, column, fonts, share menu, footer) so the
-site reads as one; the data of the graph and of the « why » chain is Clara's (spec/examples/10-clara-mercier), read
-here, not copied by hand. Text in English, like the rest of the site. Decided with Yann on 3 Nov. 2026: title « AI
-characters now have an inner life », subtitle « A psyche you can read, edit and take with you — every conviction tied
-to the memory that made it. », and the companion page « Why did she say no? »."""
+site reads as one; the data of the graph, of the « why » chain and of the simulator is Clara's
+(spec/examples/10-clara-mercier), read here, not copied by hand. Text in English, like the rest of the site. Decided
+with Yann on 3 Nov. 2026: title « AI characters now have an inner life », subtitle « A psyche you can read, edit and
+take with you — every conviction tied to the memory that made it. »; on 4 Nov. 2026 the companion page became « How
+many convictions make a person? » (psyche/how-many.html, the companion of memories/how-much.html), with « Why did she
+say no? » as its opening section. The earlier name psyche/why.html was never published and is no longer written."""
 import json, re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+
+# Hero images, one line each: the companion's own image will come from Gemini later (e.g. "img/how-many.jpg", relative to
+# psyche/); until then both pages use the studio memory of example 10.
+HERO_INDEX = "../memories/img/ev2.jpg"
+HERO_HOW_MANY = "../memories/img/ev2.jpg"
+COMPANION = "how-many.html"
 EX = ROOT / "spec/examples/10-clara-mercier"
 MAN = json.loads((EX / "manifest.json").read_text("utf-8"))
 PV = MAN["elements"]["psyche"]["variants"]
@@ -122,8 +130,8 @@ def head(title, desc, ogt, ogd, img, url):
 """
 
 
-def tail(scripts):
-    return f"""{FOOT.replace("Clara Mercier and the Martian are fictional example characters; their images are AI-generated.", "Clara Mercier is a fictional example character; her images are AI-generated, her psyche is written by hand.")}
+def tail(scripts, note=""):
+    return f"""{FOOT.replace("Clara Mercier and the Martian are fictional example characters; their images are AI-generated.", "Clara Mercier is a fictional example character; her images are AI-generated, her psyche is written by hand." + note)}
 <script>{SHARE_JS}</script>
 {scripts}
 {COUNTER}
@@ -194,7 +202,7 @@ INDEX = head("AI characters now have an inner life — COF 1.2",
              "COF 1.2 gives AI characters a psyche you can read, edit and take with you: values, beliefs, wants, needs, fears, wounds, each tied to the memory that made it — in the same open file as their face, voice and rights.",
              "AI characters now have an inner life",
              "A psyche you can read, edit and take with you — every conviction tied to the memory that made it.",
-             "../memories/img/ev2.jpg", "") + f"""
+             HERO_INDEX, "") + f"""
 <header class="hero">
   {TOP12}
   <div class="text">
@@ -268,9 +276,9 @@ INDEX = head("AI characters now have an inner life — COF 1.2",
 </div>
 <p class="cap" style="margin-top:14px">Agents get it as text: <code>cof export --format agent</code> writes a <code>SOUL.md</code> whose « Who she is » is rendered from the nodes. Every 1.0 and 1.1 file stays valid.</p>
 
-<h2>Why did she say no?</h2>
-<p>A natural question follows: is a graph really better than a paragraph — and isn't the real future of a character in a model's weights, a latent space, rather than in a file? A companion page takes one refusal of Clara's and asks <i>why</i> five times, down to the four years that began at twenty-four. Then it puts the three ways of keeping a mind side by side — a description, a graph, weights — and says honestly what each can and cannot do.</p>
-<p class="btns" style="margin:18px 0 0"><a class="btn main" href="why.html">Why did she say no? →</a></p>
+<h2>How many convictions make a person?</h2>
+<p>Natural questions follow. How many nodes does a character need — and a person? What are the popular profiles worth, the Big Five, a Myers-Briggs type, an Enneagram number, a sign? And isn't the real future of a character in a model's weights rather than in a file? A companion page starts from one refusal of Clara's and asks <i>why</i> five times, down to the four years that began at twenty-four. Then it gives what psychology has actually counted, with its sources, a simulator to test your own numbers, and the three ways of keeping a mind side by side — a description, a graph, weights — with what each can and cannot do.</p>
+<p class="btns" style="margin:18px 0 0"><a class="btn main" href="{COMPANION}">How many convictions make a person? →</a></p>
 </main>
 
 <section class="close">
@@ -325,23 +333,275 @@ b.onclick=go;r.onclick=()=>{steps.forEach(s=>{s.hidden=true;s.classList.remove("
 })();
 """
 
-WHY = head("Why did she say no? — COF 1.2",
-           "One refusal of an AI character, asked why five times: from a sentence to the years that made her. And what a description, a graph and a model's weights can each keep of a mind.",
-           "Why did she say no?",
-           "Ask an AI character why, five times. Only one way of keeping a mind can answer.",
-           "../memories/img/ev2.jpg", "why.html") + f"""
+# ---------------------------------------------------------------------------------------------------- how-many.html
+# Measures of Clara's psyche, read from example 10: what one node weighs, how long a gist is, how many hang on a memory.
+PSY_FILES = sum((EX / "elements/psyche" / vid / "psyche-node.json").stat().st_size for vid in PV)
+PSY_MAN = sum(len(json.dumps({vid: v}, ensure_ascii=False).encode()) for vid, v in PV.items())
+_G = [json.loads((EX / "elements/psyche" / vid / "psyche-node.json").read_text("utf-8")).get("gist") or {} for vid in PV]
+LANGS = sorted({k for g in _G for k in g})
+GIST = sum(len(g.get(l, "").encode()) for g in _G for l in LANGS) / (len(_G) * len(LANGS))   # bytes of one gist in one language
+GIST_EN = sum(len(g.get("en", "")) for g in _G) / len(_G)                                    # characters of the English gist
+PER_NODE = (PSY_FILES + PSY_MAN) / len(PV)                                                   # node file + its manifest entry
+FIXED = PER_NODE - len(LANGS) * (GIST + 12)                                                  # what does not depend on the languages
+TIED = sum(1 for n in N if any(to.startswith("memories/") for _, to in n["links"])) / len(N)
+LINKS = sum(len(n["links"]) for n in N)
+WEDDING = (EX / "elements/memories/ev5/ev5.jpg").stat().st_size
+COF_FILE = (ROOT / "viewer/samples/clara-mercier.cof").stat().st_size
+CLARA_AGE = 65
+CLARA_CURVE = [[t, sum(1 for n in N if (n["since"] is None or n["since"] <= t) and (n["until"] is None or t < n["until"])),
+                sum(1 for n in N if n["until"] is not None and n["until"] <= t)] for t in range(CLARA_AGE + 1)]
+HELD_65 = CLARA_CURVE[-1][1]
+# « Who she is » as `cof psyche text --preset en-agent` renders it: 1,943 characters for 22 nodes, i.e. a header of about
+# 430 characters and, per node, its gist plus about 8 characters of list marks and markers (measured 4 Nov. 2026).
+TEXT_HEAD, TEXT_PER = 430, 8
+
+SIM = {"F": round(FIXED), "LX": 12, "G": round(GIST), "GEN": round(GIST_EN), "HEAD": TEXT_HEAD, "PER": TEXT_PER,
+       "PSY": PSY_FILES + PSY_MAN, "WED": WEDDING, "COF": COF_FILE, "CLARA": CLARA_CURVE, "N": len(N)}
+
+HOWMANY_CSS = """
+/* the companion page: tiles, the ladder of counts, the simulator (same language as memories/how-much.html) */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:26px 0 8px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 16px 14px}
+.tile b{display:block;font:700 30px/1 Bricolage,sans-serif;color:var(--teal);letter-spacing:-.02em;margin-bottom:8px}
+.tile span{font-size:13.5px;color:var(--muted);line-height:1.4;display:block}
+.ladder{list-style:none;margin:26px 0 6px;padding:18px 18px 10px;background:var(--panel);border:1px solid var(--line);border-radius:18px}
+.ladder li{display:grid;grid-template-columns:230px 1fr 92px;gap:12px;align-items:center;padding:6px 0}
+.ladder .l{font-size:14.5px;color:#d9e0dd;line-height:1.25}.ladder .l small{display:block;font:500 11.5px PlexMono,monospace;color:#8b9b97;margin-top:2px}
+.ladder .tr{position:relative;height:14px;border-radius:7px;background:repeating-linear-gradient(90deg,transparent 0,transparent calc(20% - 1px),#2a3533 calc(20% - 1px),#2a3533 20%)}
+.ladder .tr i{position:absolute;top:2px;height:10px;border-radius:5px;background:#35a38b;min-width:10px}
+.ladder li.me .tr i{background:#9a7ae0}.ladder li.me .l{color:#cbbcf0}
+.ladder .v{font:500 13px PlexMono,monospace;color:var(--mint);text-align:right}
+.ladder .ax{display:grid;grid-template-columns:230px 1fr 92px;gap:12px;font:500 11px PlexMono,monospace;color:#7d8d89;padding:6px 0 0;border-top:1px solid var(--line);margin-top:6px}
+.ladder .ax span{position:relative;height:14px}.ladder .ax b{position:absolute;top:0;transform:translateX(-50%);font-weight:500;white-space:nowrap}.ladder .ax b:first-child{transform:none}.ladder .ax b:last-child{transform:translateX(-100%)}
+.sim{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;margin:28px 0 10px}
+.sim .row{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.sim fieldset{border:1px solid var(--line);border-radius:12px;padding:12px 14px 14px;margin:0 0 14px;min-width:0}
+.sim legend{font:500 12px PlexMono,monospace;color:var(--mint);letter-spacing:.06em;text-transform:uppercase;padding:0 6px}
+.sim label{display:block;font-size:13.5px;color:var(--muted);margin:8px 0 3px}.sim label b{color:var(--ink);font-weight:500}
+.sim input[type=number],.sim select{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:500 14px PlexMono,monospace}
+.sim input[type=range]{width:100%;accent-color:var(--teal)}
+.sim .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.sim .g2>div{display:flex;flex-direction:column;justify-content:flex-end}
+.sim .hint{font-size:12.5px;color:#7d8d89;margin:6px 0 0}
+.scen{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+.scen button{font:500 13px Plex,sans-serif;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer}
+.scen button:hover,.scen button:focus-visible,.scen button.on{border-color:var(--teal);color:var(--teal);outline:none}
+.res{background:linear-gradient(135deg,#102a25,#0f1d2b);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:12px}
+.res .t{font:700 44px/1 Bricolage,sans-serif;color:var(--ink);letter-spacing:-.02em}.res .t small{font:500 16px Plex,sans-serif;color:var(--muted);letter-spacing:0;margin-left:8px}
+.res .s{font-size:13.5px;color:var(--muted);margin-top:8px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.kpi{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.kpi b{display:block;font:700 20px/1.1 Bricolage,sans-serif;color:var(--ink)}.kpi span{font-size:12px;color:var(--muted);line-height:1.35;display:block;margin-top:3px}
+.simchart{position:relative;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 10px 4px}
+.simchart svg{display:block;width:100%;height:230px;font-family:Plex,system-ui,sans-serif;outline:none}
+.simchart svg:focus-visible{box-shadow:0 0 0 2px var(--teal);border-radius:8px}
+.simchart .lg{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12.5px;color:var(--muted);margin:2px 4px 6px}
+.simchart .lg i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:6px;vertical-align:3px}
+.simchart .tip{position:absolute;pointer-events:none;background:#0b100f;border:1px solid var(--line);border-radius:8px;padding:6px 9px;font:500 12px/1.5 PlexMono,monospace;color:var(--ink);white-space:nowrap;opacity:0;transition:opacity .15s}
+.simchart .tip.on{opacity:1}
+.sbars{margin-top:16px}.sbars h4{font:500 12px PlexMono,monospace;color:var(--mint);letter-spacing:.06em;text-transform:uppercase;margin:14px 0 6px}
+.sbars .b{display:grid;grid-template-columns:190px 1fr 84px;gap:10px;align-items:center;font-size:13px;color:var(--muted);margin:6px 0}
+.sbars .b .t{height:12px;background:var(--bg);border-radius:4px;overflow:hidden}.sbars .b .f{display:block;height:100%;background:#3a4a47;border-radius:0 4px 4px 0}
+.sbars .b.me{color:var(--teal)}.sbars .b.me .f{background:var(--teal)}.sbars .b .x{text-align:right;font:500 12px PlexMono,monospace}
+table.prof{width:100%;border-collapse:collapse;margin:22px 0 8px;font-size:14.5px}
+table.prof th,table.prof td{text-align:left;vertical-align:top;padding:9px 8px;border-bottom:1px solid var(--line)}
+table.prof thead th{font:500 12px PlexMono,monospace;color:var(--mint);letter-spacing:.05em;text-transform:uppercase}
+table.prof tbody th{font-weight:500;color:var(--ink);width:22%}
+.refs{font-size:14px;color:var(--muted)}.refs p{margin:0 0 9px;color:var(--muted)}.refs a{word-break:break-word}
+.refs h3{font:500 13px PlexMono,monospace;color:var(--mint);letter-spacing:.06em;text-transform:uppercase;margin:22px 0 8px}
+@media (max-width:720px){.tiles{grid-template-columns:1fr 1fr}.sim .row{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}
+ .ladder li,.ladder .ax{grid-template-columns:1fr 70px}.ladder .l{grid-column:1/-1}.ladder .ax>span:first-child,.ladder .ax b.odd{display:none}.hero .top .crumb{display:none}
+ .sbars .b{grid-template-columns:118px 1fr 70px}.res .t{font-size:36px}table.prof{font-size:13px}table.prof th,table.prof td{padding:7px 4px}}
+"""
+
+# ---- the ladder: what has been counted, on one logarithmic axis (1 to 100,000) — not counts of the same thing
+LADDER = [
+    ("The Big Five", "five broad domains of personality", 5, 5, False),
+    ("Basic human values", "Schwartz 1992: ten · 2012: nineteen", 10, 19, False),
+    ("“Who am I?”", "the Twenty Statements Test asks for twenty", 20, 20, False),
+    ("Clara, as written", f"example 10 of the format · {len(N)} nodes", len(N), len(N), True),
+    ("Facets of the NEO PI-R", "six under each of the five domains", 30, 30, False),
+    ("The Rokeach Value Survey", "18 terminal + 18 instrumental values", 36, 36, False),
+    ("A main character, written with care", "our estimate", 50, 150, True),
+    ("A whole life, modelled", "our estimate, with what began and ended", 300, 600, True),
+    ("The upper bound we tested", "the tools still draw it", 1000, 1000, True),
+    ("English words for stable traits", "Allport & Odbert 1936, “column I”", 4504, 4504, False),
+    ("English words about personality", "Allport & Odbert 1936, all four columns", 17953, 17953, False),
+]
+def _lx(v): return __import__("math").log10(v) / 5 * 100
+def _ladder_row(l, s, lo, hi, me):
+    a, b = _lx(lo), _lx(hi)
+    val = f"{lo:,}" if lo == hi else f"{lo:,}–{hi:,}"
+    return (f'<li class="{"me" if me else ""}"><span class="l">{l}<small>{s}</small></span>'
+            f'<span class="tr" title="{l}: {val}"><i style="left:calc({a:.2f}% - 5px);width:calc({b - a:.2f}% + 10px)"></i></span><span class="v">{val}</span></li>')
+LADDER_HTML = ('<ul class="ladder" aria-label="Counts that psychology and fiction writing have produced, and COF\'s estimates, on a logarithmic scale">'
+               + "".join(_ladder_row(*r) for r in LADDER)
+               + '<li class="ax" aria-hidden="true"><span></span><span>' + "".join(f'<b style="left:{i * 20}%"{" class=odd" if i in (1, 3) else ""}>{t}</b>' for i, t in enumerate(["1", "10", "100", "1 k", "10 k", "100 k"])) + '</span><span></span></li></ul>')
+
+PROFILES = [
+    ("Big Five", "five scores, 0–100: openness, conscientiousness, extraversion, agreeableness, neuroticism",
+     "the best-validated model in personality psychology; links to life outcomes largely replicate",
+     "a score of 70 or more, or 30 or less, proposes one or two candidates for that pole"),
+    ("Myers-Briggs type", "four letters, sixteen types",
+     "the four scales track four of the Big Five; the types themselves are not well supported, and a letter near the middle often flips on retest",
+     "three or four common readings of the type: a value, a taste, a habit, a fear or a want"),
+    ("Enneagram", "one type out of nine, with its basic fear and desire",
+     "mixed evidence of reliability and validity; the nine types are not recovered as nine factors",
+     "the basic fear, the basic desire, a value and a habit of the type"),
+    ("Astrology", "a sun sign, twelve",
+     "no predictive validity in controlled, double-blind tests",
+     "three or four traits commonly attached to the sign"),
+]
+PROF_HTML = "".join(f"<tr><th>{a}</th><td>{b}</td><td>{c}</td><td>{d}</td></tr>" for a, b, c, d in PROFILES)
+
+SIM_JS = """
+(function(){
+const D=__SIM__,$=s=>document.querySelector(s);
+const nf=n=>Math.round(n).toLocaleString("en-US");
+function fb(b){if(!isFinite(b)||b<=0)return "0 KB";if(b<1e6)return (b/1e3).toLocaleString("en-US",{maximumFractionDigits:b<1e4?1:0})+" KB";if(b<1e9)return (b/1e6).toLocaleString("en-US",{maximumFractionDigits:b<1e7?1:0})+" MB";return (b/1e9).toLocaleString("en-US",{maximumFractionDigits:1})+" GB"}
+function ft(t){return t<1e4?nf(t):(t/1e3).toLocaleString("en-US",{maximumFractionDigits:t<1e5?1:0})+" k"}
+const LEN={short:D.G,sentence:150,paragraph:300};
+/* expected numbers, year by year: new convictions from age 5 at a steady rate; each held one is let go with the same
+   yearly probability h; a share r of those let go are revised into a new node (derives_from), which joins the pool */
+function run(A,R,h,r){let held=0,ever=0,end=0;const rows=[[0,0,0]];for(let t=0;t<A;t++){const e=held*h;held-=e;end+=e;const nw=(t>=5?R/10:0)+e*r;held+=nw;ever+=nw;rows.push([t+1,held,end])}return {held,ever,end,rows}}
+function solve(A,R,p,r){if(p<=0)return run(A,R,0,r);let lo=0,hi=1;for(let i=0;i<48;i++){const m=(lo+hi)/2,s=run(A,R,m,r);if(s.ever>0&&s.end/s.ever<p)lo=m;else hi=m}return run(A,R,lo,r)}
+const num=(id,lo,hi,def)=>{let v=parseFloat($("#"+id).value);if(!isFinite(v))v=def;return Math.min(hi,Math.max(lo,v))};
+let S=null,cur=null;
+function calc(){
+ const A=Math.round(num("sAge",1,120,65)),R=num("sRate",0,500,4),p=num("sEnd",0,60,9)/100,r=num("sRev",0,100,50)/100,L=Math.round(num("sLang",1,12,2)),g=LEN[$("#sLen").value]||D.G,m=num("sMem",0,100,39)/100,k=Math.round(num("sTurn",1,200,8));
+ $("#sEndV").textContent=Math.round(p*100)+" %";$("#sRevV").textContent=Math.round(r*100)+" %";$("#sMemV").textContent=Math.round(m*100)+" %";
+ S=solve(A,R,p,r);const per=D.F+L*(g+D.LX),bytes=S.ever*per,gt=g*D.GEN/D.G,tokAll=(D.HEAD+S.held*(gt+D.PER))/4,tokTurn=Math.min(k,S.held)*(gt+D.PER)/4;
+ $("#oHeld").firstChild.textContent=nf(S.held);
+ $("#oSub").textContent=`at ${A}: ${nf(S.ever)} formed in all (${nf(S.ever-S.end*r)} new, ${nf(S.end*r)} revision${Math.round(S.end*r)===1?"":"s"}), ${nf(S.end)} let go — every one stays in the file, closed by its until`;
+ $("#oSize").textContent=fb(bytes);$("#oAll").textContent=ft(tokAll);$("#oTurn").textContent=ft(tokTurn);$("#oMem").textContent=nf(S.ever*m);
+ $("#oSizeS").textContent=`${nf(S.ever)} nodes × ${nf(per)} bytes, ${L} language${L>1?"s":""}`;
+ $("#oTurnS").textContent=`the ${Math.min(k,Math.round(S.held))} nodes the moment calls for`;
+ draw();bars(bytes,tokAll,tokTurn)}
+/* ---- held and let go over the years, Clara's own curve when it fits */
+const svg=$("#simsvg"),tip=$("#simtip"),NS="http://www.w3.org/2000/svg";
+function draw(){const W=Math.max(280,svg.clientWidth||680),H=230,l=44,rt=W-14,tp=14,b=H-28;svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+ const rows=S.rows,A=rows.length-1,top=Math.max(4,...rows.map(x=>Math.max(x[1],x[2])));const clara=top<=120&&A>=20;const ymax=niceMax(Math.max(top,clara?Math.max(...D.CLARA.map(c=>c[1])):0));
+ const x=a=>l+(a/Math.max(1,A))*(rt-l),y=v=>b-(v/ymax)*(b-tp);
+ const dv=ymax/Math.pow(10,Math.floor(Math.log10(ymax)))===2?4:5;let s="";for(let i=0;i<=dv;i++){const v=ymax*i/dv;s+=`<line x1="${l}" x2="${rt}" y1="${y(v)}" y2="${y(v)}" stroke="${i?"#222c2a":"#3a4a47"}" stroke-width="1"/><text x="${l-8}" y="${y(v)+4}" text-anchor="end" style="font:500 11px PlexMono,monospace;fill:#7d8d89">${nf(v)}</text>`}
+ const step=A>60?20:A>24?10:5;for(let a=0;a<=A;a+=step)if(x(a)<rt-34)s+=`<text x="${x(a)}" y="${b+18}" text-anchor="middle" style="font:500 11px PlexMono,monospace;fill:#7d8d89">${a}</text>`;
+ s+=`<text x="${rt}" y="${b+18}" text-anchor="end" style="font:500 11px PlexMono,monospace;fill:#7d8d89">age</text>`;
+ const pth=k=>rows.map((q,i)=>(i?"L":"M")+x(q[0]).toFixed(1)+" "+y(q[k]).toFixed(1)).join(" ");
+ s+=`<path d="${pth(1)} L${x(A)} ${b} L${x(0)} ${b} Z" fill="rgba(53,163,139,.16)"/><path d="${pth(1)}" fill="none" stroke="#35a38b" stroke-width="2"/>`;
+ s+=`<path d="${pth(2)}" fill="none" stroke="#c08528" stroke-width="2" stroke-dasharray="6 4"/>`;
+ if(clara){const c=D.CLARA.filter(q=>q[0]<=A);s+=`<path d="${c.map((q,i)=>(i?"L":"M")+x(q[0]).toFixed(1)+" "+y(q[1]).toFixed(1)).join(" ")}" fill="none" stroke="#9a7ae0" stroke-width="2" stroke-dasharray="2 3"/>`}
+ $("#lgClara").hidden=!clara;
+ const last=rows[A];s+=`<text x="${x(A)-4}" y="${y(last[1])-8}" text-anchor="end" style="font:500 12px Plex,sans-serif;fill:#dfe8e5">held · ${nf(last[1])}</text>`;
+ if(last[2]>=.5)s+=`<text x="${x(A)-4}" y="${Math.min(b-6,y(last[2])+16)}" text-anchor="end" style="font:500 12px Plex,sans-serif;fill:#dfe8e5">let go · ${nf(last[2])}</text>`;
+ s+=`<line id="simx" x1="0" x2="0" y1="${tp}" y2="${b}" stroke="#93a39e" stroke-width="1" opacity="0"/><rect x="${l}" y="${tp}" width="${rt-l}" height="${b-tp}" fill="transparent" id="simhit"/>`;
+ svg.innerHTML=s;svg.setAttribute("aria-label",`Convictions held and let go from birth to age ${A}: ${nf(last[1])} held, ${nf(last[2])} let go at the end.`);
+ const hit=$("#simhit");const at=a=>{a=Math.max(0,Math.min(A,Math.round(a)));cur=a;const q=rows[a],X=x(a);const ln=$("#simx");ln.setAttribute("x1",X);ln.setAttribute("x2",X);ln.setAttribute("opacity",".7");
+  const cl=clara&&a<=D.CLARA.length-1?`<br>Clara · ${D.CLARA[a][1]}`:"";tip.innerHTML=`age ${a}<br>held · ${nf(q[1])}<br>let go · ${nf(q[2])}${cl}`;tip.classList.add("on");
+  const bw=svg.getBoundingClientRect().width,sx=bw/W;tip.style.left=Math.min(bw-tip.offsetWidth-4,Math.max(4,X*sx+12))+"px";tip.style.top="18px"};
+ hit.addEventListener("pointermove",e=>{const r=svg.getBoundingClientRect(),sx=W/r.width;at(((e.clientX-r.left)*sx-l)/(rt-l)*A)});
+ hit.addEventListener("pointerleave",()=>{tip.classList.remove("on");$("#simx").setAttribute("opacity","0")});
+ svg.onkeydown=e=>{if(!["ArrowLeft","ArrowRight","Home","End"].includes(e.key))return;e.preventDefault();const a=cur==null?A:cur;at(e.key==="Home"?0:e.key==="End"?A:a+(e.key==="ArrowLeft"?-1:1))};
+ svg.onblur=()=>{tip.classList.remove("on");const v=$("#simx");if(v)v.setAttribute("opacity","0")}}
+function niceMax(v){const p=Math.pow(10,Math.floor(Math.log10(v))),n=v/p;return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p}
+/* ---- the weight and the tokens, against things one knows */
+function bars(bytes,all,turn){const mk=(el,list,f,lo,hi)=>{el.innerHTML="";list.sort((a,b)=>a[1]-b[1]).forEach(r=>{const me=r[0].startsWith("→"),w=Math.max(1.5,Math.min(100,(Math.log10(Math.max(r[1],1))-lo)/(hi-lo)*100));
+  const d=document.createElement("div");d.className="b"+(me?" me":"");d.innerHTML='<span></span><span class="t"><i class="f"></i></span><span class="x"></span>';d.firstChild.textContent=r[0];d.querySelector(".f").style.width=w+"%";d.lastChild.textContent=f(r[1]);el.appendChild(d)})};
+ mk($("#bSize"),[["Clara's whole psyche",D.PSY],["One picture of her wedding",D.WED],["Clara's whole file (.cof)",D.COF],["→ this psyche",bytes]],fb,3,Math.max(8,Math.log10(bytes)+.5));
+ mk($("#bTok"),[["→ per turn, a handful",turn],["→ all of it, as text",all],["Clara's « Who she is »",(D.HEAD+(D.N-1)*(D.GEN+D.PER))/4],["A 128,000-token context",128000]],ft,1,Math.max(5.5,Math.log10(all)+.5))}
+const SC={clara:{sAge:65,sRate:3.7,sEnd:9,sRev:50,sLang:2,sLen:"short",sMem:39,sTurn:8},
+ novel:{sAge:45,sRate:25,sEnd:20,sRev:50,sLang:2,sLen:"sentence",sMem:40,sTurn:10},
+ life:{sAge:80,sRate:60,sEnd:35,sRev:60,sLang:2,sLen:"sentence",sMem:50,sTurn:12},
+ bound:{sAge:90,sRate:95,sEnd:35,sRev:60,sLang:2,sLen:"sentence",sMem:50,sTurn:12}};
+document.querySelectorAll("#simscen button").forEach(b=>b.onclick=()=>{const s=SC[b.dataset.s];for(const k in s)$("#"+k).value=s[k];document.querySelectorAll("#simscen button").forEach(x=>{x.classList.toggle("on",x===b);x.setAttribute("aria-pressed",x===b)});calc()});
+document.querySelectorAll("#sim input,#sim select").forEach(i=>i.addEventListener("input",()=>{document.querySelectorAll("#simscen button").forEach(x=>{x.classList.remove("on");x.setAttribute("aria-pressed","false")});calc()}));
+let rz;window.addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(draw,120)});
+calc();
+})();
+"""
+
+SIM_HTML = f"""<div class="sim" id="sim">
+  <div class="scen" id="simscen" role="group" aria-label="Presets">
+    <button type="button" data-s="clara" class="on" aria-pressed="true">Clara, as written</button>
+    <button type="button" data-s="novel" aria-pressed="false">A novel's main character</button>
+    <button type="button" data-s="life" aria-pressed="false">A whole life, modelled</button>
+    <button type="button" data-s="bound" aria-pressed="false">The upper bound we tested</button>
+  </div>
+  <div class="row">
+    <div>
+      <fieldset><legend>A life</legend>
+        <div class="g2">
+          <div><label for="sAge">Age</label><input id="sAge" type="number" min="1" max="120" value="65"></div>
+          <div><label for="sRate">New convictions per decade</label><input id="sRate" type="number" min="0" max="500" step="0.1" value="3.7"></div>
+        </div>
+        <p class="hint">Formed at a steady rate from the age of five. Clara's author wrote about four a decade; a novelist knows far more.</p>
+      </fieldset>
+      <fieldset><legend>What changes</legend>
+        <label for="sEnd">Share let go by now: <b id="sEndV">9 %</b></label>
+        <input id="sEnd" type="range" min="0" max="60" step="1" value="9">
+        <label for="sRev">Of those, revised into a new conviction rather than dropped: <b id="sRevV">50 %</b></label>
+        <input id="sRev" type="range" min="0" max="100" step="5" value="50">
+        <p class="hint">Clara at 45 let go of two: one revised (“if I slow down, I disappear” became “slowing down is not disappearing”), one dropped. People underestimate how much they will still change (Quoidbach et al., 2013).</p>
+      </fieldset>
+    </div>
+    <div>
+      <fieldset><legend>The file</legend>
+        <label for="sLen">Each conviction says</label><select id="sLen"><option value="short">a short line, like Clara's</option><option value="sentence">a full sentence</option><option value="paragraph">a short paragraph</option></select>
+        <div class="g2">
+          <div><label for="sLang">Languages</label><input id="sLang" type="number" min="1" max="12" value="2"></div>
+          <div><label for="sTurn">Nodes loaded per turn</label><input id="sTurn" type="number" min="1" max="200" value="8"></div>
+        </div>
+        <label for="sMem">Tied to a memory by <code>because</code>: <b id="sMemV">39 %</b></label>
+        <input id="sMem" type="range" min="0" max="100" step="1" value="39">
+        <p class="hint">Sized on Clara: {PER_NODE:.0f} bytes per node with {len(LANGS)} languages and gists of about {GIST:.0f} characters; text at about 4 characters per token.</p>
+      </fieldset>
+    </div>
+  </div>
+  <div class="res" aria-live="polite"><div class="s">Convictions held now</div><div class="t" id="oHeld">–<small>nodes</small></div><div class="s" id="oSub">–</div></div>
+  <div class="kpis">
+    <div class="kpi"><b id="oSize">–</b><span>in the file, unpacked<br><i id="oSizeS" style="font-style:normal"></i></span></div>
+    <div class="kpi"><b id="oAll">–</b><span>tokens to read all the held ones, as text</span></div>
+    <div class="kpi"><b id="oTurn">–</b><span>tokens per turn<br><i id="oTurnS" style="font-style:normal"></i></span></div>
+    <div class="kpi"><b id="oMem">–</b><span>can say <i>why</i> down to a memory</span></div>
+  </div>
+  <div class="simchart">
+    <div class="lg" aria-hidden="true"><span><i style="background:#35a38b"></i>held</span><span><i style="background:repeating-linear-gradient(90deg,#c08528 0 6px,transparent 6px 10px)"></i>let go, in all</span><span id="lgClara"><i style="background:repeating-linear-gradient(90deg,#9a7ae0 0 2px,transparent 2px 5px)"></i>Clara, as written</span></div>
+    <svg id="simsvg" role="img" tabindex="0" aria-label="Convictions held and let go over the years"></svg>
+    <div class="tip" id="simtip" aria-hidden="true"></div>
+  </div>
+  <div class="sbars"><h4>What it weighs</h4><div id="bSize"></div><h4>What it costs a model to read</h4><div id="bTok"></div></div>
+  <p class="hint" style="margin-top:10px">Logarithmic scales. 1 KB = 1,000 bytes. Expected values of a simple model, not a measurement of anyone: hover or focus the chart and use the arrow keys to read it year by year.</p>
+</div>"""
+
+def L(href, text): return f'<a href="{href}">{text}</a>'
+DOI = lambda d: f"https://doi.org/{d}"
+
+HOWMANY = head("How many convictions make a person? — COF 1.2",
+               "Psychology has never counted a person's convictions. What it has counted instead — values, traits, the levels of personality — a simulator to test your own numbers, what the Big Five, Myers-Briggs types, the Enneagram and astrology are worth, and three ways to keep a mind.",
+               "How many convictions make a person?",
+               "Nobody has counted. What psychology measured instead, a simulator to test your own, and what the popular profiles are worth.",
+               HERO_HOW_MANY, COMPANION) + f"""
 <header class="hero">
-  {TOP12}
+  {TOP12.replace('<span>· Character Open File · 1.2</span>', '<span>·</span><a href="./">psyche</a><span class="crumb">·</span><span class="crumb">how many?</span>')}
   <div class="text">
-    <h1>Why did she say no?</h1>
+    <h1>How many convictions<br>make a person?</h1>
     <div class="rule"></div>
-    <p class="sub">Ask an AI character <i>why</i>, five times. A description improvises; weights can only act. A psyche you can read answers — down to the memory where it started.</p>
+    <p class="sub">Nobody has counted. Here is what psychology measured instead, what a character's file needs, and a simulator to test your own numbers.</p>
+    <p class="voice">“I could give you twenty reasons for the way I work. Three of them matter.”<small>CLARA MERCIER · IF YOU ASKED HER</small></p>
   </div>
   <div class="kicker">COF · CHARACTER OPEN FILE</div>
 </header>
 
 <main>
-<p class="lede">Clara is a fictional designer from Lyon, the example character of the COF format. A prospective client writes to her. Here is the exchange — invented for this page, but played from her file.</p>
+<p class="lede">COF 1.2 gives AI characters a psyche: values, beliefs, wants, needs, fears, wounds, each a node with a weight, a date and a reason, tied to the memories that made it. The obvious question is how many of them a character needs — and how many a person has. This page starts with one refusal, follows it down to where it comes from, then says what the research does and does not know, lets you test your own numbers, and is honest about the popular shortcuts.</p>
+
+<div class="tiles">
+  <div class="tile"><b>none</b><span>studies that count the convictions of one person: psychology measures dimensions, not lists</span></div>
+  <div class="tile"><b>10 → 19</b><span>basic human values in Schwartz's theory, recognised across cultures</span></div>
+  <div class="tile"><b>≈ 4,500</b><span>English words for stable traits, found in the dictionary in 1936</span></div>
+  <div class="tile"><b>50 – 150</b><span>nodes for a main character written with care — our estimate, to be argued with</span></div>
+</div>
+<p class="cap">Orders of magnitude, not measurements. Every figure on this page says where it comes from.</p>
+
+<h2>Why did she say no?</h2>
+<p>Clara is a fictional designer from Lyon, the example character of the COF format. A prospective client writes to her. Here is the exchange — invented for this page, but played from her file. Then ask her <i>why</i>, as many times as it takes.</p>
 
 <div class="chain">
 <div class="chat">
@@ -352,38 +612,133 @@ WHY = head("Why did she say no? — COF 1.2",
 <div class="step" id="whyend" hidden><div class="dot" style="background:#eef3f1">✓</div><div class="card"><p class="t">Five questions, from a sentence to four years that began at twenty-four.</p><p class="why">Every answer above is a node of Clara's file, linked to the next — <i>supports</i>, <i>because</i> — written once by her author, readable by any tool, the same in every model that plays her. Nothing here was improvised.</p></div></div>
 </div>
 <div class="whyb"><button id="whyb" type="button">Why?</button><button id="whyr" class="ghost" type="button">start again</button></div>
+<p style="margin-top:26px">Five nodes answered. Clara's file holds {len(N)}, with {LINKS} links between them and to her memories. Is that a person? Clearly not all of one. So how many would it take?</p>
+
+<h2>How many? What has been counted</h2>
+<p>No study has counted the convictions of a person, and none could: “a conviction” is not a unit the mind keeps. What psychology has counted is the number of <em>dimensions</em> it takes to describe how people differ. Those numbers are small, and they are the closest thing to an answer.</p>
+
+<h3>Values: a few dozen at most</h3>
+<p>Milton Rokeach separated beliefs, attitudes and values, and argued that a person holds far fewer values than attitudes: values are the few central beliefs the rest are organised around. His survey asks people to rank <b>36</b> of them, 18 ends and 18 means ({L("https://en.wikipedia.org/wiki/Rokeach_Value_Survey", "Rokeach, 1973")}). Shalom Schwartz then proposed <b>ten</b> basic values recognised across cultures — security, benevolence, achievement and the rest — arranged in a circle of compatible and conflicting motivations, and tested the structure in twenty countries ({L(DOI("10.1016/S0065-2601(08)60281-6"), "Schwartz, 1992")}); the refined theory distinguishes <b>nineteen</b>, confirmed in fifteen samples from ten countries ({L(DOI("10.1037/a0029393"), "Schwartz et al., 2012")}). A person is not ten values: a person is an order among them. That is why COF's <code>value</code> nodes carry a strength, and why the RFC names Schwartz's list as an optional vocabulary, never as a form to fill.</p>
+
+<h3>Traits: thousands of words, five dimensions</h3>
+<p>The lexical hypothesis holds that whatever matters in how people differ ends up as a word. Gordon Allport and Henry Odbert went through Webster's dictionary — about 400,000 entries — and kept <b>17,953</b> terms that describe personality or behaviour, <b>4,504</b> of them for stable traits ({L("https://en.wikipedia.org/wiki/Lexical_hypothesis", "Allport &amp; Odbert, 1936")}). Decades of factor analysis condensed that vocabulary into <b>five</b> broad domains — the Big Five — which the standard questionnaire measures through <b>30</b> facets, six per domain, with 240 items ({L("https://dlab.sauder.ubc.ca/sjdm/dmidi/NEO%20PI-R.html", "Costa &amp; McCrae, 1992")}). And when sociologists asked people simply to answer “Who am I?”, they gave them <b>twenty</b> lines to fill ({L(DOI("10.2307/2088175"), "Kuhn &amp; McPartland, 1954")}) — a format, not a ceiling, but a telling one.</p>
+
+{LADDER_HTML}
+<p class="cap">What has been counted, on one logarithmic scale — <b>not counts of the same thing</b>: dimensions to describe everyone, items of a questionnaire, words of a language, and in violet COF's own numbers. The range of a novel's or a life's psyche sits between what a questionnaire asks and what a dictionary holds.</p>
+
+<h3>Three levels, and where a psyche sits</h3>
+<p>Dan McAdams answered the question “what do we know when we know a person?” with three levels ({L(DOI("10.1111/j.1467-6494.1995.tb00500.x"), "McAdams, 1995")}; {L(DOI("10.1037/0003-066X.61.3.204"), "McAdams &amp; Pals, 2006")}). <b>Traits</b>, broad and context-free: the Big Five, which give the “psychology of the stranger”. <b>Characteristic adaptations</b>: goals, values, concerns, coping strategies, tied to a time, a place, a role. And <b>narrative identity</b>: the evolving story a person makes of their life, joining the remembered past to the imagined future ({L(DOI("10.1177/0963721413475622"), "McAdams &amp; McLean, 2013")}).</p>
+<p>COF's psyche lives on the second and third levels. Traits stay where they were in 1.0, an optional annex of scores. A node is a characteristic adaptation — a want, a fear, a stance toward someone — and its <code>because</code> link to a memory is a piece of the life story. Memory research describes the same two-way tie: in Martin Conway's self-memory system, what we remember is selected and shaped by the goals of the current self, and the self in turn is grounded in what we remember ({L(DOI("10.1037/0033-295X.107.2.261"), "Conway &amp; Pleydell-Pearce, 2000")}; {L(DOI("10.1016/j.jml.2005.08.005"), "Conway, 2005")}). Memories without a psyche stay anecdotes; a psyche without memories stays slogans.</p>
+
+<h3>What writers count</h3>
+<p>Fiction has its own counts, and they are small at the core. John Truby builds a character on a weakness and a <em>need</em> the hero does not see, a <em>desire</em> the hero pursues, and often a <em>ghost</em> — “the event from the past still haunting the hero in the present” (<i>The Anatomy of Story</i>, 2007). K. M. Weiland adds the <em>lie</em> the character believes, formed by that ghost and undone by the story ({L("https://www.helpingwritersbecomeauthors.com/character-arcs-3/", "Weiland, on want and need")}; {L("https://www.vidlit.com/articles/whats-the-difference-your-characters-ghost-vs-wound-vs-lie-vs-weakness/", "ghost, wound, lie, weakness")}). One wound, one lie, one want, one need: four nodes carry an arc. COF has a kind for each — <code>wound</code>, <code>belief</code> marked false but held, <code>want</code>, <code>need</code> — and everything a novelist knows besides: the tastes, habits, stances that make a character recognisable in a scene where the arc is not at stake.</p>
+
+<h3>And it moves</h3>
+<p>A person's psyche is not a snapshot. A meta-analysis of 92 longitudinal samples found that personality traits keep changing through adulthood, most between twenty and forty, some into old age ({L(DOI("10.1037/0033-2909.132.1.1"), "Roberts, Walton &amp; Viechtbauer, 2006")}). And more than 19,000 people, asked about their personality, their values and their preferences, recalled a lot of change over the past ten years and predicted little over the next ten, at every age — the end of history illusion ({L(DOI("10.1126/science.1229294"), "Quoidbach, Gilbert &amp; Wilson, 2013")}). That is why a node has a <code>since</code> and an <code>until</code>, and why a conviction that changes leaves its earlier self in the file.</p>
+
+<h3>Our estimate</h3>
+<p>So there is no number to take from the literature, only bounds: a handful of dimensions to describe anyone, a few dozen values at most, thousands of words for the rest. Here is ours, from building Clara and from load tests of the tools — an estimate, labelled as one.</p>
+<ul class="orders">
+  <li><b>{len(N)}</b><div>Clara today: enough for an agent to play her consistently, and to answer <i>why</i>.</div></li>
+  <li><b>50 – 150</b><div>a main character written with care: what a novelist would know about her.</div></li>
+  <li><b>300 – 600</b><div>a whole life modelled, with what began and ended along the way.</div></li>
+  <li><b>1,000</b><div>the upper bound we tested: the tools still draw it, a conversation never needs it all.</div></li>
+</ul>
+
+<h2>Test your own</h2>
+<p>Every assumption is a control. The presets reproduce the estimate above; Clara's is fitted on her file — {len(N)} nodes written by hand, {HELD_65} held at {CLARA_AGE}, two let go at forty-five. Change any of it.</p>
+{SIM_HTML}
+<p>Two things stand out whatever the settings. The file stays small: a thousand convictions in two languages weigh under a megabyte — three pictures like the one of her wedding, a seventeenth of her file. And what a model must read <i>per turn</i> barely moves: an agent picks the core nodes and the handful the moment calls for — by tag, by the person or memory the conversation touches, by strength — and leaves the rest on disk. Size is not the constraint; writing them is.</p>
+
+<h2>Popular profiles: what they are worth</h2>
+<p>Many authors do not start from a blank page but from a type: “she's an INFJ”, “a Four”, “very open, not very agreeable”, “a Virgo”. COF's tools take all four as starting points. Their scientific standing is very different, and it is worth saying so plainly — without contempt for anyone who finds them useful. A shorthand that helps someone think about a character is doing a job.</p>
+
+<h3>The Big Five</h3>
+<p>The five domains that came out of the dictionary — openness, conscientiousness, extraversion, agreeableness, neuroticism — are the best-validated model in personality psychology. They are scores, not boxes: everyone is somewhere on each. Their links to what happens in a life hold up: a large replication of 78 published associations between traits and life outcomes reproduced about 87 % of them, though usually with smaller effects than first reported ({L(DOI("10.1177/0956797619831612"), "Soto, 2019")}). Their limit, for a character, is that they say <i>how much</i>, never <i>about what</i>: a high neuroticism score does not say what she is afraid of.</p>
+
+<h3>Myers-Briggs types</h3>
+<p>Four letters for sixteen types, from Jung's theory, hugely popular in workplaces and online. Research finds that the four scales behind the letters measure something real — four of the five Big Five domains — but not types: the scores are not bimodal, they do not split people into two camps on each scale ({L(DOI("10.1111/j.1467-6494.1989.tb00759.x"), "McCrae &amp; Costa, 1989")}). Near the middle a letter is decided by a few answers, and it often flips: among people with intermediate scores, a quarter to a third got the other letter on a given scale when retested a month later (Howes &amp; Carskadon, 1979, reviewed by {L(DOI("10.1037/1065-9293.57.3.210"), "Pittenger, 2005")}). A four-letter type is a less stable summary than the scores beneath it.</p>
+
+<h3>The Enneagram</h3>
+<p>Nine types, each defined by a basic fear and a basic desire, widely used in coaching and spiritual direction. A systematic review of 104 samples found mixed evidence of reliability and validity: some subscales relate to the Big Five in the expected ways and several studies report that people find it helpful for personal growth, but factor analyses usually recover fewer than nine factors, and little supports the wings and movements between types ({L(DOI("10.1002/jclp.23097"), "Hook et al., 2021")}).</p>
+
+<h3>Astrology</h3>
+<p>A sun sign is the oldest personality shorthand there is. In controlled tests it has no predictive power. In a double-blind experiment published in <i>Nature</i>, astrologers matched birth charts to one of three personality profiles from a standard questionnaire, and got it right about one time in three — what chance gives ({L(DOI("10.1038/318419a0"), "Carlson, 1985")}). A review of more than forty controlled studies found astrologers doing no better than chance, and people born minutes apart showed none of the similarities astrology predicts ({L("https://www.ingentaconnect.com/content/imp/jcs/2003/00000010/f0020006/art00010", "Dean &amp; Kelly, 2003")}). In a story, though, a character who reads her horoscope every morning is a fact about her — and that is a node too.</p>
+
+<table class="prof"><thead><tr><th></th><th>what it gives</th><th>what the evidence says</th><th>what COF proposes from it</th></tr></thead><tbody>{PROF_HTML}</tbody></table>
+
+<h3>Only starting points</h3>
+<p>So COF uses all four the same way: as a <b>proposal</b>, never as a field of the format. Give the builder or <code>cof psyche propose</code> a sign, a four-letter type, an Enneagram number or five scores, and it offers a few ordinary nodes — strength 50, stability <i>shifting</i>, tagged with where they came from — every one unticked until the author reads it and decides. There is no “type” field to fill: millions of people share a sign or a type, and a type cannot say why. A person is a graph with reasons. The shorthand is a fine place to start the graph, and a poor place to stop.</p>
 
 <h2>Three ways to keep a mind</h2>
 <p>There are three ways to tell a model who a character is. A <b>description</b>: a few lines in a prompt. A <b>graph</b>: the psyche of COF, convictions linked to each other and to memories. <b>Weights</b>: a model fine-tuned on the character, or a LoRA — the character dissolved in a latent space.</p>
 <table class="cmp"><thead><tr><th></th><th>a description</th><th>a graph</th><th>weights</th></tr></thead><tbody>{CMP}</tbody></table>
 <p class="cap">Orders of magnitude, not measurements. The size of weights depends on the model and the method; the graph's on how much of the life is written.</p>
+<p>The honest ranking is not a ladder. A graph is better than a description: it can be selected from, it answers <i>why</i>, it keeps secrets and moves with time. It is less rich than a latent space, which holds what no list of convictions can — the way a sentence turns, a hesitation, a kind of humour. But a graph is the only one of the three that <b>anyone can make</b> with a pen or a tool that proposes, <b>read</b> node by node, <b>edit</b> one conviction at a time, and <b>carry to any model</b>, today and in ten years.</p>
 
 <h2>Not instead of weights</h2>
-<p>Weights are richer. They hold what no text pins down — a turn of phrase, a hesitation, a way of being funny — and nothing on this page competes with that. But they are mute about themselves: they can produce the no, never the <i>why</i>. You cannot read them, correct one conviction, keep one secret, or take them to another model.</p>
+<p>Weights are richer, and nothing on this page competes with that. But they are mute about themselves: they can produce the no, never the <i>why</i>. You cannot read them, correct one conviction, keep one secret, or take them to another model.</p>
 <p>So the two are not rivals. A graph is the score; weights are a performance of it. The score can be read, argued with, versioned, carried to any orchestra — and one day it can be what a model is tuned from, and what its performance is checked against. Until then, it is the only one of the three that you can write by hand tonight, and that every model can read tomorrow.</p>
 
-<h2>How many convictions make a person?</h2>
-<p>Nobody has counted. Writers' guides and the psychology of personality give no number; here is ours, from building Clara and from load tests of the tools — an estimate, to be argued with.</p>
-<ul class="orders">
-  <li><b>23</b><div>Clara today: enough for an agent to play her consistently, and to answer <i>why</i>.</div></li>
-  <li><b>50 – 150</b><div>a main character written with care: what a novelist would know about her.</div></li>
-  <li><b>300 – 600</b><div>a whole life modelled, with what began and ended along the way.</div></li>
-  <li><b>1,000</b><div>the upper bound we tested: the tools still draw it, a conversation never needs it all.</div></li>
-</ul>
-<p>Even at a thousand, the whole psyche is lighter than one photograph. What makes it useful is not its size but that an agent can pick, for each moment of a conversation, the handful of convictions that matter — and say where they come from.</p>
+<h2>An open question: the score and the performance</h2>
+<p>That last sentence is a research question, and we would like someone to take it on. Can a psyche graph be the <b>supervision signal</b> for a character's weights — and can it be the <b>evaluation set</b>?</p>
+<p>Each node already reads like a test. A core value with strength 95 predicts a refusal; a fragile stance predicts a change of mind within one conversation; a node marked <i>aware: no</i> predicts behaviour the character never names; a <code>because</code> chain predicts the answer to “why?”. So here is the study. Take a few dozen characters with authored graphs of a hundred nodes or so. Turn each node into situations — a client in a hurry, a friend who asks for help — with the expected behaviour derived from its kind, strength and stability. Then measure three things. Whether a model prompted with the graph behaves as the nodes predict, and how that degrades as only a selection of nodes is loaded. Whether an adapter trained on dialogue generated from the graph recovers the <i>because</i> chains when asked, without being shown them. And whether editing one node and retraining changes only the behaviours that node predicts, and nothing else. If the answers are good, the graph becomes what the reference images of a face already are for a LoRA in COF: the readable source a model is derived from, regenerated when the source changes.</p>
+
+<div class="btns">
+  <a class="btn main" href="../viewer/#clara/psyche">Open Clara's psyche</a>
+  <a class="btn" href="../builder/">Write a psyche</a>
+  <a class="btn" href="https://github.com/yannsouetre/cof/blob/main/rfcs/0004-psyche-graph.md">Read RFC 0004</a>
+  <a class="btn" href="./">AI characters now have an inner life</a>
+</div>
+
+<h2>Sources</h2>
+<div class="refs">
+  <h3>Values</h3>
+  <p>Rokeach, M. (1973). <i>The Nature of Human Values</i>. Free Press — {L("https://en.wikipedia.org/wiki/Rokeach_Value_Survey", "the Rokeach Value Survey")}.</p>
+  <p>Schwartz, S. H. (1992). Universals in the content and structure of values: theoretical advances and empirical tests in 20 countries. <i>Advances in Experimental Social Psychology</i>, 25, 1–65. {L(DOI("10.1016/S0065-2601(08)60281-6"), "doi:10.1016/S0065-2601(08)60281-6")}</p>
+  <p>Schwartz, S. H. et al. (2012). Refining the theory of basic individual values. <i>Journal of Personality and Social Psychology</i>, 103(4), 663–688. {L(DOI("10.1037/a0029393"), "doi:10.1037/a0029393")}</p>
+  <h3>Traits and the self</h3>
+  <p>Allport, G. W. &amp; Odbert, H. S. (1936). Trait-names: a psycho-lexical study. <i>Psychological Monographs</i>, 47(1). Summary: {L("https://en.wikipedia.org/wiki/Lexical_hypothesis", "the lexical hypothesis")}.</p>
+  <p>Costa, P. T. &amp; McCrae, R. R. (1992). <i>NEO PI-R Professional Manual</i>. Psychological Assessment Resources — {L("https://dlab.sauder.ubc.ca/sjdm/dmidi/NEO%20PI-R.html", "description of the instrument")}.</p>
+  <p>Kuhn, M. H. &amp; McPartland, T. S. (1954). An empirical investigation of self-attitudes. <i>American Sociological Review</i>, 19(1), 68–76. {L(DOI("10.2307/2088175"), "doi:10.2307/2088175")}</p>
+  <p>McAdams, D. P. (1995). What do we know when we know a person? <i>Journal of Personality</i>, 63(3), 365–396. {L(DOI("10.1111/j.1467-6494.1995.tb00500.x"), "doi:10.1111/j.1467-6494.1995.tb00500.x")}</p>
+  <p>McAdams, D. P. &amp; Pals, J. L. (2006). A new Big Five: fundamental principles for an integrative science of personality. <i>American Psychologist</i>, 61(3), 204–217. {L(DOI("10.1037/0003-066X.61.3.204"), "doi:10.1037/0003-066X.61.3.204")}</p>
+  <p>McAdams, D. P. &amp; McLean, K. C. (2013). Narrative identity. <i>Current Directions in Psychological Science</i>, 22(3), 233–238. {L(DOI("10.1177/0963721413475622"), "doi:10.1177/0963721413475622")}</p>
+  <p>Conway, M. A. &amp; Pleydell-Pearce, C. W. (2000). The construction of autobiographical memories in the self-memory system. <i>Psychological Review</i>, 107(2), 261–288. {L(DOI("10.1037/0033-295X.107.2.261"), "doi:10.1037/0033-295X.107.2.261")}</p>
+  <p>Conway, M. A. (2005). Memory and the self. <i>Journal of Memory and Language</i>, 53(4), 594–628. {L(DOI("10.1016/j.jml.2005.08.005"), "doi:10.1016/j.jml.2005.08.005")}</p>
+  <h3>Change</h3>
+  <p>Roberts, B. W., Walton, K. E. &amp; Viechtbauer, W. (2006). Patterns of mean-level change in personality traits across the life course: a meta-analysis of longitudinal studies. <i>Psychological Bulletin</i>, 132(1), 1–25. {L(DOI("10.1037/0033-2909.132.1.1"), "doi:10.1037/0033-2909.132.1.1")}</p>
+  <p>Quoidbach, J., Gilbert, D. T. &amp; Wilson, T. D. (2013). The end of history illusion. <i>Science</i>, 339(6115), 96–98. {L(DOI("10.1126/science.1229294"), "doi:10.1126/science.1229294")}</p>
+  <h3>Writing characters</h3>
+  <p>Truby, J. (2007). <i>The Anatomy of Story: 22 Steps to Becoming a Master Storyteller</i>. Faber and Faber.</p>
+  <p>Weiland, K. M. (2016). <i>Creating Character Arcs</i>. PenForASword — and, online, {L("https://www.helpingwritersbecomeauthors.com/character-arcs-3/", "the thing your character wants vs. the thing your character needs")} and {L("https://www.vidlit.com/articles/whats-the-difference-your-characters-ghost-vs-wound-vs-lie-vs-weakness/", "your character's ghost vs. wound vs. lie vs. weakness")}.</p>
+  <h3>Popular profiles</h3>
+  <p>Soto, C. J. (2019). How replicable are links between personality traits and consequential life outcomes? The Life Outcomes of Personality Replication Project. <i>Psychological Science</i>, 30(5), 711–727. {L(DOI("10.1177/0956797619831612"), "doi:10.1177/0956797619831612")}</p>
+  <p>McCrae, R. R. &amp; Costa, P. T. (1989). Reinterpreting the Myers-Briggs Type Indicator from the perspective of the five-factor model of personality. <i>Journal of Personality</i>, 57(1), 17–40. {L(DOI("10.1111/j.1467-6494.1989.tb00759.x"), "doi:10.1111/j.1467-6494.1989.tb00759.x")}</p>
+  <p>Pittenger, D. J. (2005). Cautionary comments regarding the Myers-Briggs Type Indicator. <i>Consulting Psychology Journal: Practice and Research</i>, 57(3), 210–221. {L(DOI("10.1037/1065-9293.57.3.210"), "doi:10.1037/1065-9293.57.3.210")}</p>
+  <p>Hook, J. N. et al. (2021). The Enneagram: a systematic review of the literature and directions for future research. <i>Journal of Clinical Psychology</i>, 77(4), 865–883. {L(DOI("10.1002/jclp.23097"), "doi:10.1002/jclp.23097")}</p>
+  <p>Carlson, S. (1985). A double-blind test of astrology. <i>Nature</i>, 318, 419–425. {L(DOI("10.1038/318419a0"), "doi:10.1038/318419a0")}</p>
+  <p>Dean, G. &amp; Kelly, I. W. (2003). Is astrology relevant to consciousness and psi? <i>Journal of Consciousness Studies</i>, 10(6–7), 175–198. {L("https://www.ingentaconnect.com/content/imp/jcs/2003/00000010/f0020006/art00010", "ingentaconnect")}</p>
+  <h3>Counting tokens</h3>
+  <p>OpenAI Help Center, {L("https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them", "What are tokens and how to count them?")} — “1 token ≈ 4 characters in English”, the rule the simulator uses (the same as <code>cof tokens</code> without a tokenizer).</p>
+  <h3>Measured on the format</h3>
+  <p>Clara's psyche, <code>spec/examples/10-clara-mercier</code>, COF 1.2 draft: {len(N)} nodes, {PSY_FILES / 1000:.1f} KB of node files, {(PSY_FILES + PSY_MAN) / 1000:.1f} KB with their manifest entries, {LINKS} links, {round(TIED * len(N))} nodes tied to a memory; her « Who she is » as <code>cof psyche text --preset en-agent</code> renders it, 1,943 characters. The upper bound: generated psyches of 150, 500 and 1,000 nodes, opened in the explorer (load tests, 3 November 2026).</p>
+</div>
 </main>
 
 <section class="close">
   <p class="voice">She said no because of four years she does not talk about. Now you know why. So does any tool that opens her file.</p>
   <div class="btns row3">
-    <a class="btn main" href="index.html">AI characters now have an inner life</a>
+    <a class="btn main" href="./">AI characters now have an inner life</a>
     <a class="btn" href="../viewer/#clara/psyche">Open Clara's psyche</a>
     <a class="btn" href="../builder/">Write a psyche</a>
   </div>
 </section>
-""" + tail("<script>" + WHY_JS + "</script>")
+""" + tail("<script>" + WHY_JS + "</script>\n<script>" + SIM_JS.replace("__SIM__", json.dumps(SIM)) + "</script>",
+           " Myers-Briggs is a trademark of its owner, mentioned here descriptively, with no affiliation.")
+HOWMANY = HOWMANY.replace("</style>", HOWMANY_CSS + "</style>", 1)
 
 (ROOT / "psyche").mkdir(exist_ok=True)
 (ROOT / "psyche/index.html").write_text(INDEX, "utf-8")
-(ROOT / "psyche/why.html").write_text(WHY, "utf-8")
-print("ok", len(INDEX), len(WHY))
+(ROOT / "psyche" / COMPANION).write_text(HOWMANY, "utf-8")
+print("ok", len(INDEX), len(HOWMANY))
