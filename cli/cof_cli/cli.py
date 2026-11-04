@@ -338,6 +338,19 @@ def cmd_psyche_propose(a):
             parts.append(P.rules_proposal(d, manifest, iid, bundle["languages"]))
         if a.zodiac:
             parts.append(P.zodiac_proposal(a.zodiac, bundle["languages"]))
+        if a.mbti:
+            parts.append(P.mbti_proposal(a.mbti, bundle["languages"]))
+        if a.enneagram:
+            parts.append(P.enneagram_proposal(a.enneagram, bundle["languages"]))
+        if a.big_five:
+            from . import profiles as PR
+            if a.big_five == "annex":                           # a bare --big-five reads the preset's psyche.json › traits annex
+                sc = PR.annex_scores(d, manifest, bundle.get("preset"))
+                if not sc:
+                    print("ERROR  --big-five without scores reads the personality's psyche.json › traits › big5 annex, and this file has none", file=sys.stderr); return 2
+                parts.append(P.big_five_proposal(sc, bundle["languages"], where="from the file's psyche.json annex, 0–1 mapped to 0–100"))
+            else:
+                parts.append(P.big_five_proposal(PR.parse_big_five(a.big_five), bundle["languages"]))
         if a.provider:
             if a.provider != "openai-compatible":
                 print(f"ERROR  unknown provider {a.provider!r} (openai-compatible)", file=sys.stderr); return 2
@@ -351,7 +364,7 @@ def cmd_psyche_propose(a):
         if not parts:
             if a.bundle_out:
                 return 0
-            print("ERROR  no proposal: give --from-file <proposal.json>, --rules, --zodiac <sign>, or --provider openai-compatible --base-url … --model … (or --bundle-out to take the bundle to a model yourself)", file=sys.stderr); return 2
+            print("ERROR  no proposal: give --from-file <proposal.json>, --rules, --zodiac <sign>, --mbti <type>, --enneagram <n>, --big-five [O=80,…], or --provider openai-compatible --base-url … --model … (or --bundle-out to take the bundle to a model yourself)", file=sys.stderr); return 2
         proposal = P.normalize(P.merge(*[P.normalize(p) for p in parts]))
         errors, notes = P.validate(proposal, bundle)
         if errors:
@@ -535,7 +548,7 @@ def main(argv=None) -> int:
     pa.add_argument("--personal", action="store_true", help="visibility: personal (the default; kept for symmetry with memory add)")
     pa.add_argument("--disclosure", choices=["open", "guarded", "secret"], default="open"); pa.add_argument("--preset", action="append", help="preset(s) that hold it (default: the character's presets)")
     pa.add_argument("-o", "--out", help="output .cof (default: in place)"); pa.set_defaults(fn=cmd_psyche_add)
-    pp = ps_.add_parser("propose", help="personality → psyche: candidate nodes from a model, the 1.0 lists or a zodiac sign, reviewed in a table, written only for the ids you accept (docs/psyche-propose.md)")
+    pp = ps_.add_parser("propose", help="personality → psyche: candidate nodes from a model, the 1.0 lists, a zodiac sign, a Myers-Briggs type, an Enneagram type or Big Five scores, reviewed in a table, written only for the ids you accept (docs/psyche-propose.md)")
     pp.add_argument("src", help=".cof file or character folder"); pp.add_argument("--preset", help="the preset whose personality and language are read (default: the character's)"); pp.add_argument("--identity", help="character id in a cast (default: the file's default character)")
     pp.add_argument("--lang", help="languages a gist must come in, comma-separated (default: the preset's, then the file's)")
     pp.add_argument("--provider", choices=["openai-compatible"], help="ask a model through an OpenAI-compatible gateway (key from the environment: COF_AI_KEY, never an argument)")
@@ -543,6 +556,9 @@ def main(argv=None) -> int:
     pp.add_argument("--from-file", help="a proposal JSON produced elsewhere (a model's answer, the builder's export, a file saved with --out)")
     pp.add_argument("--rules", action="store_true", help="the rule-based conversion of the 1.0 lists (goals, fears, values, behaviours), as a proposal")
     pp.add_argument("--zodiac", metavar="SIGN", help="a handful of value / taste / habit candidates typical of a sun sign (aries … pisces, or the French names), to review")
+    pp.add_argument("--mbti", metavar="TYPE", help="a Myers-Briggs four-letter type (INFJ, ESTP…): value / taste / habit / need candidates, to review (used descriptively, no affiliation)")
+    pp.add_argument("--enneagram", metavar="N", help="an Enneagram type 1–9, optionally with a wing (4w5; only the main type is used): its basic fear and desire, a value and a habit, to review")
+    pp.add_argument("--big-five", nargs="?", const="annex", metavar="O=80,C=35,E=20,A=70,N=60", help="Big Five scores 0–100 (70 or more proposes the high pole, 30 or less the low pole, in between nothing); without a value, the personality's psyche.json › traits annex (0–1) is read")
     pp.add_argument("--bundle-out", help="write the bundle and the prompt to this JSON file, to take to any model by hand")
     pp.add_argument("--out", help="save the validated proposal to this JSON file (reviewable later with --from-file)")
     pp.add_argument("--apply", action="store_true", help="write the accepted candidates (requires --accept)"); pp.add_argument("--accept", metavar="ID,ID|all", help="the candidate ids to write (nothing is written otherwise)")

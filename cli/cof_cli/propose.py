@@ -18,7 +18,7 @@ MAX_NODES = 40
 RISKS = ("none", "inappropriate", "dangerous")
 CARD_FIELDS = ("description", "personality", "scenario", "first_mes", "mes_example", "system_prompt")
 SOURCE_RE = re.compile(r"^(card\.(description|personality|scenario|first_mes|mes_example|system_prompt)|text|memory [a-z0-9][a-z0-9.-]*"
-                       r"|list (goals|fears|values|behavior)\[\d+\]|inferred|zodiac)(@[a-z0-9][a-z0-9.-]*)?$")
+                       r"|list (goals|fears|values|behavior)\[\d+\]|inferred|zodiac|mbti|enneagram|big-five)(@[a-z0-9][a-z0-9.-]*)?$")
 CAND_RE = re.compile(r"^[a-z][a-z0-9_-]*$")
 
 SYSTEM_PROMPT = "You decompose a fictional character's personality into psyche nodes (COF 1.2, RFC 0004). Answer in strict JSON only."
@@ -224,7 +224,7 @@ def validate(proposal: dict, bundle: dict) -> tuple[list[str], list[str]]:
         if not isinstance(g, dict) or not g or not all(isinstance(k, str) and isinstance(v, str) and v.strip() for k, v in g.items()):
             errors.append(f"{where}: gist must be a non-empty language map of texts")
         else:
-            ruled = str(n.get("source") or "").startswith(("list ", "zodiac"))      # rule-based entries are short by nature: the author completes them
+            ruled = str(n.get("source") or "").startswith(("list ", "zodiac", "mbti", "enneagram", "big-five"))      # rule-based entries are short by nature: the author completes them
             for k, v in g.items():
                 if len(v) > 600:
                     errors.append(f"{where}: gist[{k}] is {len(v)} characters (the node is one or two sentences)")
@@ -342,7 +342,7 @@ def validate(proposal: dict, bundle: dict) -> tuple[list[str], list[str]]:
             errors.append(f"{where}: tags must be a list of slugs")
         src_ = n.get("source")
         if not isinstance(src_, str) or not SOURCE_RE.match(src_.strip()):
-            errors.append(f"{where}: source must name a card field, `text`, `memory <id>`, `list <kind>[n]`, `inferred` or `zodiac` (got {src_!r})")
+            errors.append(f"{where}: source must name a card field, `text`, `memory <id>`, `list <kind>[n]`, `inferred`, `zodiac`, `mbti`, `enneagram` or `big-five` (got {src_!r})")
         elif src_.startswith("memory ") and src_.split("@")[0][7:] not in mem_ids:
             errors.append(f"{where}: source names a memory the character does not have ({src_[7:]!r})")
         for k in n:
@@ -407,6 +407,35 @@ def zodiac_proposal(sign: str, langs: list[str] | None, start: int = 1) -> dict:
         raise ValueError(f"unknown zodiac sign {sign!r}; known: {', '.join(SIGNS)}")
     return {"contract": CONTRACT, "nodes": candidates(sid, langs, start),
             "notes": f"zodiac: {NAMES[sid]['en']} / {NAMES[sid]['fr']} — traits a sun sign suggests, to review by the author; a sign is not a field of the format"}
+
+
+def mbti_proposal(type_: str, langs: list[str] | None, start: int = 1) -> dict:
+    """`--mbti INFJ`: the type's candidates (cof_cli.profiles); « Myers-Briggs type (four letters) » in user-facing text, used descriptively."""
+    from .profiles import mbti_candidates, normalize_mbti
+    tid = normalize_mbti(type_)
+    cands = mbti_candidates(type_, langs, start)           # raises on an unknown type
+    return {"contract": CONTRACT, "nodes": cands,
+            "notes": f"Myers-Briggs type (four letters): {tid.upper()} — common descriptive readings, to review by the author; a type is not a field of the format"}
+
+
+def enneagram_proposal(text: str, langs: list[str] | None, start: int = 1) -> dict:
+    """`--enneagram 4` (or `4w5`: the wing is noted, only the main type is used)."""
+    from .profiles import enneagram_candidates, normalize_enneagram
+    r = normalize_enneagram(text)
+    cands = enneagram_candidates(text, langs, start)
+    wing = f" (wing {r[1]} noted, not used: the main type only)" if r[1] else ""
+    return {"contract": CONTRACT, "nodes": cands,
+            "notes": f"Enneagram type {r[0]}{wing} — the type's classic core (basic fear, basic desire), to review by the author; a type is not a field of the format"}
+
+
+def big_five_proposal(scores: dict[str, float], langs: list[str] | None, start: int = 1, where: str = "scores given") -> dict:
+    """`--big-five O=80,C=35,E=20,A=70,N=60`, or the psyche.json › traits annex: a score of 70 or more proposes the trait's high pole,
+    30 or less its low pole, in between nothing."""
+    from .profiles import HIGH, LOW, TRAITS, big_five_candidates, pole_of
+    cands = big_five_candidates(scores, langs, start)
+    shown = ", ".join(f"{t[0].upper()}={scores[t]:g}" + (f" ({pole_of(scores[t])})" if pole_of(scores[t]) else "") for t in TRAITS if t in scores)
+    return {"contract": CONTRACT, "nodes": cands,
+            "notes": f"Big Five ({where}): {shown} — 0–100; {HIGH} or more proposes the high pole, {LOW} or less the low pole, in between nothing; to review by the author, scores are not a node"}
 
 
 def merge(*proposals: dict) -> dict:

@@ -2182,3 +2182,93 @@ def test_builder_zodiac_table_is_zodiac_py():
     assert emb["names"] == zodiac.NAMES and all(set(n) == {"en", "fr", "de", "es", "zh", "ja"} for n in emb["names"].values())
     assert emb["table"] == {s: [[k, g] for k, g in zodiac.TABLE[s]] for s in zodiac.SIGNS}, "run tools/psyche/zodiac_to_builder.py"
     assert all(3 <= len(v) <= 4 for v in emb["table"].values())
+
+
+def test_psyche_propose_profiles_mbti_enneagram_big_five(tmp_path):
+    """The three profile inputs (cof_cli.profiles): every Myers-Briggs type and every Enneagram type produces valid proposals (3–4
+    candidates, tag, source, strength 50, shifting, English and French) that pass the contract validator; unknown values are refused
+    clearly; Big Five thresholds (70 or more → high pole, 30 or less → low pole, in between nothing); the psyche.json › traits annex
+    (0–1) is read as 0–100; the options combine with --zodiac and --rules."""
+    from cof_cli.cli import main
+    from cof_cli import profiles as PR, propose as P
+    ex1 = ROOT / "spec/examples/01-clara-text-only"
+    m1 = json.loads((ex1 / "manifest.json").read_text("utf-8"))
+    bundle = P.build_bundle(ex1, m1)
+    kinds = ("value", "taste", "habit", "fear", "want", "need")
+    # sixteen types
+    assert len(PR.MBTI_TYPES) == 16 and set(PR.MBTI_TABLE) == set(PR.MBTI_TYPES)
+    for t in PR.MBTI_TYPES:
+        c = PR.mbti_candidates(t.upper(), ["fr", "en"])
+        assert 3 <= len(c) <= 4 and all(n["kind"] in kinds and n["tags"] == [f"mbti:{t}"] and n["source"] == "mbti" and n["strength"] == 50 and n["stability"] == "shifting" for n in c), t
+        assert [n["id"] for n in c] == [f"m{i}" for i in range(1, len(c) + 1)]
+        assert all(set(g) == {"en", "fr"} for _, g in PR.MBTI_TABLE[t]) and all(len(g["en"]) > 30 and len(g["fr"]) > 30 for _, g in PR.MBTI_TABLE[t])
+        assert P.validate(P.normalize(P.mbti_proposal(t, ["fr"])), bundle)[0] == [], t
+    assert PR.mbti_candidates("infj", ["de"])[0]["gist"] == {"de": PR.MBTI_TABLE["infj"][0][1]["en"]}          # another language: the English text
+    assert PR.normalize_mbti(" Infj ") == "infj" and PR.normalize_mbti("INF") is None and PR.normalize_mbti("XXXX") is None
+    # nine types: the basic fear and the basic desire first
+    assert set(PR.ENNEAGRAM_TABLE) == set("123456789")
+    for t in "123456789":
+        c = PR.enneagram_candidates(t, ["fr", "en"])
+        assert 3 <= len(c) <= 4 and [n["kind"] for n in c[:2]] == ["fear", "want"] and all(n["tags"] == [f"enneagram:{t}"] and n["source"] == "enneagram" for n in c), t
+        assert P.validate(P.normalize(P.enneagram_proposal(t, ["fr"])), bundle)[0] == [], t
+    assert PR.normalize_enneagram("4w5") == ("4", "5") and PR.normalize_enneagram("type 4") == ("4", None) and PR.normalize_enneagram("9w1") == ("9", "1")
+    assert PR.normalize_enneagram("4w7") is None and PR.normalize_enneagram("0") is None and PR.normalize_enneagram("10") is None
+    wing = P.enneagram_proposal("4w5", ["en"])
+    assert [n["tags"] for n in wing["nodes"]] == [["enneagram:4"]] * 4 and "wing 5" in wing["notes"] and "main type only" in wing["notes"]
+    # Big Five
+    s = PR.parse_big_five("O=80,C=35,E=20,A=70,N=60")
+    assert s == {"openness": 80, "conscientiousness": 35, "extraversion": 20, "agreeableness": 70, "neuroticism": 60}
+    tags = [n["tags"][0] for n in PR.big_five_candidates(s, ["en"])]
+    assert set(tags) == {"bigfive:openness-high", "bigfive:extraversion-low", "bigfive:agreeableness-high"}       # 35 and 60 propose nothing; 70 and 20 count
+    assert PR.pole_of(70) == "high" and PR.pole_of(69.9) is None and PR.pole_of(30) == "low" and PR.pole_of(30.1) is None
+    assert PR.big_five_candidates({"openness": 50}) == [] and len({n["id"] for n in PR.big_five_candidates({t: 90 for t in PR.TRAITS})}) == sum(len(PR.BIGFIVE_TABLE[t]["high"]) for t in PR.TRAITS)
+    for t in PR.TRAITS:
+        for pole in ("high", "low"):
+            assert 1 <= len(PR.BIGFIVE_TABLE[t][pole]) <= 2 and all(set(g) == {"en", "fr"} for _, g in PR.BIGFIVE_TABLE[t][pole])
+        assert P.validate(P.normalize(P.big_five_proposal({t: 90}, ["fr"])), bundle)[0] == [] and P.validate(P.normalize(P.big_five_proposal({t: 10}, ["fr"])), bundle)[0] == []
+    assert PR.parse_big_five("openness=80, neuroticism=10") == {"openness": 80, "neuroticism": 10} and PR.parse_big_five("o=0,c=100")["conscientiousness"] == 100
+    for bad in ("", "O=101", "O=-1", "O=x", "X=50", "O80", "O"):
+        with pytest.raises(ValueError):
+            PR.parse_big_five(bad)
+    # the annex: example 01 holds big5 openness .78, conscientiousness .8, extraversion .35, agreeableness .76, neuroticism .38
+    assert PR.annex_scores(ex1, m1, "default") == {"openness": 78, "conscientiousness": 80, "extraversion": 35, "agreeableness": 76, "neuroticism": 38}
+    out = tmp_path / "bf.json"
+    assert main(["psyche", "propose", str(ex1), "--big-five", "--out", str(out)]) == 0
+    assert sorted({n["tags"][0] for n in json.loads(out.read_text("utf-8"))["nodes"]}) == ["bigfive:agreeableness-high", "bigfive:conscientiousness-high", "bigfive:openness-high"]
+    # the CLI: combinable with --zodiac and --rules; unknown values refused with a clear error and no proposal
+    assert main(["psyche", "propose", str(ex1), "--rules", "--zodiac", "virgo", "--mbti", "INFJ", "--enneagram", "4w5", "--big-five", "O=80,E=10", "--out", str(out)]) == 0
+    saved = json.loads(out.read_text("utf-8"))
+    ids = [n["id"] for n in saved["nodes"]]
+    assert len(ids) == len(set(ids)) and {n["source"].split(" ")[0] for n in saved["nodes"]} == {"list", "zodiac", "mbti", "enneagram", "big-five"}
+    assert main(["psyche", "propose", str(ex1), "--mbti", "XXXX"]) == 1 and main(["psyche", "propose", str(ex1), "--enneagram", "10"]) == 1
+    assert main(["psyche", "propose", str(ex1), "--enneagram", "4w7"]) == 1 and main(["psyche", "propose", str(ex1), "--big-five", "O=200"]) == 1
+    noann = tmp_path / "noannex"; shutil.copytree(ex1, noann)
+    pj = noann / "elements/personality/p1/psyche.json"; pj.write_text(json.dumps({"model": "cof-psyche/0.1", "traits": {"custom": []}}), "utf-8")
+    assert PR.annex_scores(noann, m1, "default") is None and main(["psyche", "propose", str(noann), "--big-five"]) == 2        # no annex to read: refused
+    assert main(["psyche", "propose", str(noann), "--big-five", "N=95"]) == 0                                                  # explicit scores need no annex
+    # --accept writes the ticked node with its tag, and the file validates
+    d = tmp_path / "c1"; shutil.copytree(ex1, d)
+    assert main(["psyche", "propose", str(d), "--mbti", "enfp", "--apply", "--accept", "m1"]) == 0
+    written = [json.loads(p.read_text("utf-8")) for p in (d / "elements/psyche").rglob("psyche-node.json")]
+    assert len(written) == 1 and written[0]["tags"] == ["mbti:enfp"] and written[0]["strength"] == 50 and written[0]["stability"] == "shifting"
+    assert _val(d).ok
+
+
+def test_builder_profile_tables_are_profiles_py():
+    """The builder embeds the Myers-Briggs / Enneagram / Big Five tables (tools/psyche/profiles_to_builder.py): exactly cof_cli.profiles', names in the six languages, and `--check` agrees."""
+    import re
+    import subprocess
+    import sys
+    from cof_cli import profiles as PR
+    html = (ROOT / "builder/index.html").read_text("utf-8")
+    m = re.search(r"/\*profiles:begin\*/(.*?)/\*profiles:end\*/", html, re.S)
+    assert m, "no embedded profile tables in builder/index.html"
+    emb = json.loads(m.group(1))
+    pairs = lambda rows: [[k, g] for k, g in rows]
+    assert emb["mbti"] == {"types": list(PR.MBTI_TYPES), "table": {t: pairs(PR.MBTI_TABLE[t]) for t in PR.MBTI_TYPES}}, "run tools/psyche/profiles_to_builder.py"
+    assert emb["enneagram"]["names"] == PR.ENNEAGRAM_NAMES and emb["enneagram"]["table"] == {t: pairs(PR.ENNEAGRAM_TABLE[t]) for t in PR.ENNEAGRAM_TYPES}
+    assert emb["bigfive"]["names"] == PR.BIGFIVE_NAMES and (emb["bigfive"]["high"], emb["bigfive"]["low"]) == (PR.HIGH, PR.LOW)
+    assert emb["bigfive"]["table"] == {t: {p: pairs(PR.BIGFIVE_TABLE[t][p]) for p in ("high", "low")} for t in PR.TRAITS}
+    assert all(set(n) == {"en", "fr", "de", "es", "zh", "ja"} for n in [*PR.ENNEAGRAM_NAMES.values(), *PR.BIGFIVE_NAMES.values()])
+    r = subprocess.run([sys.executable, str(ROOT / "tools/psyche/profiles_to_builder.py"), "--check"], capture_output=True, text=True)
+    assert r.returncode == 0, r.stdout
