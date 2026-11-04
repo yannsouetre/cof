@@ -44,7 +44,7 @@ def add_music(video: Path, music: Path, out: Path):
     """Muxes the music under an already encoded video (video stream copied), with the fades."""
     af = f"afade=t=in:d={FADE_IN},afade=t=out:st={DUR - FADE_OUT}:d={FADE_OUT}"
     subprocess.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", str(video), "-i", str(music),
-                    "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-af", af, "-c:a", "aac", "-b:a", "192k", "-shortest",
+                    "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-af", af, "-c:a", "aac", "-b:a", "192k", "-t", str(DUR),   # not -shortest: with a copied video it drops the last frames
                     "-movflags", "+faststart", str(out)], check=True)
 
 
