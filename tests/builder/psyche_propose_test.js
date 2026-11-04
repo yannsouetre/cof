@@ -9,6 +9,7 @@
    validates; a pasted proposal breaking the contract is refused; a pasted candidate's until / aware / valence (RFC 0004 § 3 nonies)
    are checked and kept. The inverse: the « Who she is » text rendered by the builder equals
    the section of `cof export --format agent` for three presets, and « append » appends to the card's personality (never replaces).
+   The three profile entries (Myers-Briggs type, Enneagram type, Big Five scores prefilled from the traits annex) propose the same rows as cof-cli, all unticked, in the six languages.
    The date inputs of a psyche card and of a memory card sit on one line. Exit code 1 on any failure. */
 const fs = require("fs"), path = require("path"), http = require("http"), { spawnSync } = require("child_process");
 const { chromium } = require("playwright");
@@ -173,6 +174,71 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
   check(await nodes() === nz + 1 && zn.length === 1 && zn[0].kind === cliZ.v[0].kind && zn[0].st === "shifting" && zn[0].str === 50 && zn[0].gist.fr === cliZ.v[0].gist.fr && zn[0].gist.en === cliZ.v[0].gist.en, "one ticked row, one node, tag zodiac:virgo, shifting, strength 50, the gists of the table");
   const tz = path.join(WORK, "t2-zodiac.cof"); await build(tz); v = validate(tz);
   check(v.ok, "the file with the zodiac node validates: " + v.out.split("\n").filter(l => /ERROR|^OK|NOT/.test(l)).join(" | "));
+  /* ---- the three profile entries (Myers-Briggs type, Enneagram type, Big Five): the same tables as `cof psyche propose --mbti / --enneagram / --big-five`, offline ---- */
+  const cliP = JSON.parse(py(["-c", "import json,sys;from pathlib import Path;from cof_cli import profiles as P;L=['fr','en','de'];d=Path(sys.argv[1]);m=json.load(open(d/'manifest.json'));print(json.dumps({'m':P.mbti_candidates('infj',L),'e':P.enneagram_candidates('4',L),'b':P.big_five_candidates(P.parse_big_five('O=80,C=35,E=20,A=70,N=60'),L),'annex':P.annex_scores(d,m,'default'),'ab':P.big_five_candidates(P.annex_scores(d,m,'default'),['fr','en'])}))", path.join(WORK, "src-10-clara-mercier")], CLI).stdout);
+  check(await page.evaluate(() => JSON.stringify([psypMbti("infj", ["fr", "en", "de"]).nodes, psypEnneagram("4", ["fr", "en", "de"]).nodes, psypBigFive({ openness: "80", conscientiousness: "35", extraversion: "20", agreeableness: "70", neuroticism: "60" }, ["fr", "en", "de"]).nodes])) === JSON.stringify([cliP.m, cliP.e, cliP.b]), "the builder builds the Myers-Briggs, Enneagram and Big Five candidates exactly as cof-cli does (ids, kinds, gists with the English fallback, strength 50, shifting, tags, sources)");
+  check(cliP.b.length === 6 && cliP.b.every(n => /^bigfive:(openness-high|extraversion-low|agreeableness-high)$/.test(n.tags[0])), "Big Five 80/35/20/70/60: openness and agreeableness high, extraversion low, conscientiousness and neuroticism nothing");
+  await page.evaluate(() => { setLang("fr"); go("psyche"); }); await page.waitForTimeout(150);
+  await page.click("#psyList [data-ppropose]"); await page.waitForTimeout(200); d = await dlg();
+  check(/Depuis un type Myers-Briggs \(quatre lettres\)/.test(d.body) && /Depuis un type de l'ennéagramme/.test(d.body) && /Depuis des scores Big Five/.test(d.body) && !/MBTI/.test(d.body) && /sans affiliation/.test(d.body), "the dialog offers the three blocks, says « Myers-Briggs (quatre lettres) » (never the trademark) and « sans affiliation »");
+  const blk = () => page.evaluate(() => ({ mbti: document.querySelectorAll("#dlg [data-ppmbti] option").length, enn: document.querySelectorAll("#dlg [data-ppenneagram] option").length, big: [...document.querySelectorAll("#dlg [data-ppbig]")].map(i => [i.dataset.ppbig, i.value]), dis: ["mbti", "enneagram", "bigfive"].map(v => document.querySelector(`#dlg [data-dv=${v}]`).disabled) }));
+  let bk = await blk();
+  check(bk.mbti === 17 && bk.enn === 10 && bk.big.length === 5, "a select of the 16 types, a select of the 9 types, five Big Five fields");
+  check(JSON.stringify(bk.big) === JSON.stringify([["openness", String(cliP.annex.openness)], ["conscientiousness", String(cliP.annex.conscientiousness)], ["extraversion", String(cliP.annex.extraversion)], ["agreeableness", String(cliP.annex.agreeableness)], ["neuroticism", String(cliP.annex.neuroticism)]]), "the Big Five fields are prefilled from the file's traits annex (0–1 shown as 0–100): " + JSON.stringify(bk.big));
+  check(JSON.stringify(bk.dis) === JSON.stringify([true, true, false]), "« Proposer » waits for a type in the first two blocks, and is enabled by the prefilled scores");
+  /* Myers-Briggs */
+  await page.selectOption("#dlg [data-ppmbti]", "infj"); check(!(await blk()).dis[0], "a type chosen: its button is enabled");
+  await page.click("#dlg [data-dv=mbti]"); await page.waitForFunction(() => document.querySelectorAll("#dlg [data-ppick]").length > 0, null, { timeout: 10000 });
+  let prows = await page.evaluate(() => [...document.querySelectorAll("#dlg .psyprow")].map(r => ({ on: r.querySelector("input").checked, text: r.innerText })));
+  check(prows.length === cliP.m.length && prows.every(r => !r.on) && prows.every(r => /mbti/.test(r.text)), `Myers-Briggs INFJ: the review panel has ${cliP.m.length} rows, every checkbox off, source mbti`);
+  const np = await nodes();
+  await page.check('#dlg [data-ppick="m1"]'); await press("Ajouter les nœuds cochés"); await page.waitForTimeout(300);
+  let pn = await page.evaluate(() => Object.values(S.psyche).filter(m => (m.node.tags || []).includes("mbti:infj")).map(m => ({ kind: m.kind, st: m.node.stability, str: m.node.strength, gist: m.node.gist })));
+  check(await nodes() === np + 1 && pn.length === 1 && pn[0].kind === cliP.m[0].kind && pn[0].st === "shifting" && pn[0].str === 50 && pn[0].gist.fr === cliP.m[0].gist.fr && pn[0].gist.en === cliP.m[0].gist.en, "one ticked row, one node, tag mbti:infj, shifting, strength 50, the gists of the table");
+  /* Enneagram */
+  await page.click("#psyList [data-ppropose]"); await page.waitForTimeout(200);
+  await page.selectOption("#dlg [data-ppenneagram]", "4"); await page.click("#dlg [data-dv=enneagram]"); await page.waitForFunction(() => document.querySelectorAll("#dlg [data-ppick]").length > 0, null, { timeout: 10000 });
+  prows = await page.evaluate(() => [...document.querySelectorAll("#dlg .psyprow")].map(r => ({ on: r.querySelector("input").checked, text: r.innerText })));
+  check(prows.length === cliP.e.length && prows.every(r => !r.on) && prows.every(r => /enneagram/.test(r.text)) && /peur/.test(prows[0].text) && /désir/.test(prows[1].text), `Enneagram 4: ${cliP.e.length} rows, every checkbox off, the basic fear then the basic desire, source enneagram`);
+  const ne = await nodes(); await page.check('#dlg [data-ppick="e1"]'); await press("Ajouter les nœuds cochés"); await page.waitForTimeout(300);
+  pn = await page.evaluate(() => Object.values(S.psyche).filter(m => (m.node.tags || []).includes("enneagram:4")).map(m => ({ kind: m.kind, str: m.node.strength })));
+  check(await nodes() === ne + 1 && pn.length === 1 && pn[0].kind === "fear" && pn[0].str === 50, "one ticked row, one node, tag enneagram:4, kind fear");
+  /* Big Five, from the annex: 85 90 45 85 30 → openness, conscientiousness, agreeableness high; neuroticism low (30 is the boundary) */
+  await page.click("#psyList [data-ppropose]"); await page.waitForTimeout(200);
+  await page.click("#dlg [data-dv=bigfive]"); await page.waitForFunction(() => document.querySelectorAll("#dlg [data-ppick]").length > 0, null, { timeout: 10000 });
+  prows = await page.evaluate(() => [...document.querySelectorAll("#dlg .psyprow")].map(r => ({ on: r.querySelector("input").checked, text: r.innerText })));
+  check(prows.length === cliP.ab.length && prows.every(r => !r.on) && prows.every(r => /big-five/.test(r.text)), `Big Five from the annex: ${cliP.ab.length} rows (openness, conscientiousness, agreeableness high; neuroticism low), every checkbox off, source big-five`);
+  const nb = await nodes(); await page.check('#dlg [data-ppick="b1"]'); await press("Ajouter les nœuds cochés"); await page.waitForTimeout(300);
+  pn = await page.evaluate(() => Object.values(S.psyche).filter(m => (m.node.tags || []).some(x => x.startsWith("bigfive:"))).map(m => ({ tags: m.node.tags, st: m.node.stability, str: m.node.strength })));
+  check(await nodes() === nb + 1 && pn.length === 1 && pn[0].tags[0] === "bigfive:openness-high" && pn[0].st === "shifting" && pn[0].str === 50, "one ticked row, one node, tag bigfive:openness-high");
+  /* typed scores: a field edited, nothing in between; refused out of range; empty fields refused */
+  await page.click("#psyList [data-ppropose]"); await page.waitForTimeout(200);
+  for (const [k, x] of [["openness", "50"], ["conscientiousness", "50"], ["extraversion", "20"], ["agreeableness", "50"], ["neuroticism", "50"]]) await setE(`#dlg [data-ppbig=${k}]`, x);
+  await page.click("#dlg [data-dv=bigfive]"); await page.waitForFunction(() => document.querySelectorAll("#dlg [data-ppick]").length > 0, null, { timeout: 10000 });
+  prows = await page.evaluate(() => [...document.querySelectorAll("#dlg .psyprow")].map(r => r.innerText));
+  check(prows.length === 2 && prows.every(x => /big-five/.test(x)), "typed scores 50/50/20/50/50: only the two low-extraversion rows");
+  await press("Annuler");
+  await page.click("#psyList [data-ppropose]"); await page.waitForTimeout(200);
+  await setE("#dlg [data-ppbig=openness]", "150"); await page.click("#dlg [data-dv=bigfive]"); await page.waitForTimeout(300); d = await dlg();
+  check(d.on && /échec/.test(d.body) && /0 à 100/.test(d.body), "a score above 100 is refused with a clear message");
+  await press("OK");
+  /* no annex: the fields are empty and the button waits */
+  await page.evaluate(() => { for (const v of Object.values(S.elements.personality.variants)) if (v.card) v.card.big5 = null; });
+  await page.click("#psyList [data-ppropose]"); await page.waitForTimeout(200);
+  bk = await blk(); check(bk.big.every(x => x[1] === "") && bk.dis[2] === true, "without a traits annex: the five fields are empty and « Proposer » is disabled");
+  await setE("#dlg [data-ppbig=neuroticism]", "95"); check(!(await blk()).dis[2], "typing a score enables « Proposer »");
+  await page.click("#dlg [data-dv=bigfive]"); await page.waitForFunction(() => document.querySelectorAll("#dlg [data-ppick]").length > 0, null, { timeout: 10000 });
+  prows = await page.evaluate(() => [...document.querySelectorAll("#dlg .psyprow")].map(r => r.innerText)); check(prows.length === 2, "neuroticism 95: the two high-neuroticism rows");
+  await page.check('#dlg [data-ppick="b1"]'); await press("Ajouter les nœuds cochés"); await page.waitForTimeout(300);
+  const tp = path.join(WORK, "t2-profiles.cof"); await build(tp); v = validate(tp);
+  check(v.ok, "the file with the Myers-Briggs, Enneagram and Big Five nodes validates: " + v.out.split("\n").filter(l => /ERROR|^OK|NOT/.test(l)).join(" | "));
+  for (const [l, want] of [["en", { t: /From a Myers-Briggs type \(four letters\)/, e: /From an Enneagram type/, b: /From Big Five scores/, o: "Openness", n: "Type 4" }], ["de", { t: /Aus einem Myers-Briggs-Typ/, e: /Aus einem Enneagramm-Typ/, b: /Aus Big-Five-Werten/, o: "Offenheit", n: "Typ 4" }], ["es", { t: /Desde un tipo Myers-Briggs/, e: /Desde un tipo del eneagrama/, b: /Desde puntuaciones Big Five/, o: "Apertura", n: "Tipo 4" }], ["zh", { t: /迈尔斯-布里格斯类型/, e: /九型人格类型/, b: /大五人格分数/, o: "开放性", n: "4号" }], ["ja", { t: /マイヤーズ・ブリッグス型/, e: /エニアグラムのタイプから/, b: /ビッグファイブのスコア/, o: "開放性", n: "タイプ4" }], ["fr", { t: /Depuis un type Myers-Briggs/, e: /ennéagramme/, b: /Depuis des scores Big Five/, o: "Ouverture", n: "Type 4" }]]) {
+    await page.evaluate(x => { setLang(x); go("psyche"); }, l); await page.waitForTimeout(150);
+    await page.click("#psyList [data-ppropose]"); await page.waitForTimeout(150); d = await dlg();
+    const lab = await page.evaluate(() => ({ o: document.querySelector("#dlg [data-ppbig=openness]").previousElementSibling.textContent, n: document.querySelector('#dlg [data-ppenneagram] option[value="4"]').textContent, prop: document.querySelector("#dlg [data-dv=mbti]").textContent, ph: document.querySelector("#dlg [data-ppmbti] option").textContent }));
+    check(want.t.test(d.body) && want.e.test(d.body) && want.b.test(d.body) && lab.o === want.o && lab.n === want.n && (l === "fr" || (lab.prop !== "Proposer" && !/choisir/.test(lab.ph))), `${l}: the three blocks are translated (« ${lab.o} », « ${lab.n} », « ${lab.prop} »)`);
+    await page.keyboard.press("Escape"); await page.waitForTimeout(100);
+  }
   for (const [l, vir] of [["fr", "Vierge"], ["en", "Virgo"], ["de", "Jungfrau"], ["es", "Virgo"], ["zh", "处女座"], ["ja", "乙女座"]]) {
     await page.evaluate(x => { setLang(x); go("psyche"); }, l); await page.waitForTimeout(150);
     await page.click("#psyList [data-ppropose]"); await page.waitForTimeout(150);

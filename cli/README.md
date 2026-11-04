@@ -19,7 +19,7 @@ cof psyche add clara.cof --kind stance --gist fr="Envers l'utilisateur : une col
 cof psyche add clara.cof --kind habit --gist fr="Garde la guitare près du bureau." --who "ma grand-mère" --where "environment=appearance/e1" --what "ma guitare|item=appearance/x1" --canon   # personnes, lieux, objets du nœud (RFC 0005) ; une personne du casting : --who identity=<id> (les liens --link ne visent que souvenirs et nœuds)
 cof psyche add clara.cof --kind stance --gist fr="Envers l'utilisateur : de la chaleur." --about user --valence 60 --aware partly --canon   # RFC 0004 § 3 nonies : --valence −100…+100 (position ou goût seulement), --aware yes|partly|no, --until-age / --until-date (quand le nœud a cessé d'être tenu)
 cof psyche propose clara.cof --preset fr-agent --from-file proposition.json   # personnalité → psyché : une proposition validée (docs/psyche-propose.md), affichée en table, rien d'écrit
-cof psyche propose clara.cof --from-file proposition.json --apply --accept c2,c3   # n'écrit que les candidats acceptés ; --rules (listes 1.0), --zodiac vierge, --bundle-out, --provider openai-compatible (clé : COF_AI_KEY)
+cof psyche propose clara.cof --from-file proposition.json --apply --accept c2,c3   # n'écrit que les candidats acceptés ; --rules (listes 1.0), --zodiac vierge, --mbti INFJ, --enneagram 4w5, --big-five O=80,C=35,E=20,A=70,N=60, --bundle-out, --provider openai-compatible (clé : COF_AI_KEY)
 cof psyche text clara.cof --preset fr-agent        # l'inverse : le texte « Qui elle est » ; --into-card l'ajoute à la suite du champ personnalité de la carte
 cof import carte.png -o perso/ --age 30 --lang fr --keep-png   # carte PNG CCv2/V3 → dossier COF
 cof export clara.cof --format png -o clara.png      # → PNG avec chunks chara + ccv3
