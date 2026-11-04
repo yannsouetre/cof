@@ -100,7 +100,7 @@ The builder runs coherence heuristics; you do not have it, so check by looking (
 - **Identity**: same person across one identity's variants (except deliberate age / style changes). **Style**: a preset's variants share its style.
 - **Voice**: perceived age and gender presentation match; sample language = `language`; transcripts match the audio.
 - **Language**: text variants are in their declared language. **Rights**: licences and permissions are the real ones; real person ⇒ consent recorded, or say why not (personal use, public-figure caricature).
-- **Provenance**: AI media carry `digitalSourceType: trainedAlgorithmicMedia`. **Secrets**: no keys or personal data in skills, memories, documents.
+- **Provenance**: AI media carry `digitalSourceType: http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia` (the IPTC URI, as in the schema). **Secrets**: no keys or personal data in skills, memories, documents.
 - **Escape hatches are explicit**: a 3D file without textures needs `self_contained: false`; weights by link are an asset with `uri` (add `sha256` to pin a version) — embedding is the default.
 
 ## 5. Security sweep — before packing anything you did not write yourself

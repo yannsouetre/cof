@@ -232,6 +232,12 @@ def validate_card(card: dict, rep: Report, lang: str, where: str) -> dict:
             rep.warnings.append(f"{where}: {len(const)} 'constant' entry(ies) — show them on import")
     if data.get("post_history_instructions"):
         rep.warnings.append(f"{where}: post_history_instructions present — show it on import ('untrusted' text)")
+    ext = data.get("extensions")
+    if isinstance(ext, dict) and "chat_history" in ext:          # a card imported by cof-cli / the builder ≤ 1.1.1 kept it
+        w = (f"{where}: data.extensions.chat_history holds a user's conversation — personal data, not part of the character, "
+             "and exported with the card: remove it (or re-import the card with cof-cli 1.2)")
+        if w not in rep.warnings:
+            rep.warnings.append(w)
     return tokens
 
 

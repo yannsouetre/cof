@@ -99,3 +99,14 @@ node tests/builder/images_test.js [repo-root] [work-dir]
 ```
 
 Opens Clara (example 10): `contra1` and `hab1` load with their illustration (the guitar, a memory image) and an untouched build keeps them and validates. Then two images are added through the node card's picker (the first is the icon), a non-image is refused, the « more than 3 » warning and the ✕ removal work, a character shown without an age (or nudity without an adult) is an error, and build → `cof validate` → reopen keeps everything. The all-audiences build drops the images of a nudity node and keeps ordinary illustrations. The six languages carry the picker's words; no page error.
+
+## Card payloads (builder 0.14, fix of 4 Nov. 2026)
+
+```
+node tests/builder/card_payloads_test.js [repo-root] [work-dir]
+```
+
+Imports a PersonaText-style card (a user's conversation in `data.extensions.chat_history`, a base64 avatar in
+`avatar_data_url`) into Clara's card variant: neither is kept in the variant nor written by `buildCard`, the reader is told
+(translated message), `character_book`, `extensions.character_ai` and `creator` stay; a card that still holds a chat draws one
+« minor » check; both strings exist in en, de, es, zh, ja. Same keys as cof-cli `convert.CARD_PAYLOADS`.

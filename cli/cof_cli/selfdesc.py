@@ -15,6 +15,18 @@ SELFDESC_PATH = "COF.md"
 SELFDESC_VERSION = "1.2"
 
 
+# the IPTC Digital Source Type of a file the user or host gives (the long form, a URI, as in the schema and the examples)
+DIGITAL_CAPTURE = "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture"
+# fixed before mimetypes, whose answer depends on the Python version and, on Windows, on the registry (a .md could come
+# out as application/octet-stream and lose its text status and its language)
+_MEDIA_TYPES = {".md": "text/markdown", ".markdown": "text/markdown", ".txt": "text/plain", ".webp": "image/webp"}
+
+
+def media_type(name: str) -> str:
+    """The media type of a file name: the fixed table first, then mimetypes, else application/octet-stream."""
+    return _MEDIA_TYPES.get(Path(name).suffix.lower()) or mimetypes.guess_type(name)[0] or "application/octet-stream"
+
+
 def self_description(manifest: dict) -> str:
     """The note for this file: what it is, how to read it, the rules, how to add a lived memory."""
     name = manifest.get("name") or "character"
@@ -200,9 +212,9 @@ def memory_add(src: Path, *, identity: str | None, kind: str, gists: dict[str, s
         shutil.copy(f, dest)
         data = dest.read_bytes()
         aid = f"a-mem-{vid}-{re.sub(r'[^a-z0-9]+', '-', f.stem.lower()).strip('-') or 'media'}"
-        mt = mimetypes.guess_type(f.name)[0] or "application/octet-stream"
+        mt = media_type(f.name)
         asset = {"id": aid, "path": f"elements/memories/{vid}/{f.name}", "role": "memory-media", "mediaType": mt, "bytes": len(data),
-                 "sha256": hashlib.sha256(data).hexdigest(), "license": "LicenseRef-Personal", "digitalSourceType": "digitalCapture"}
+                 "sha256": hashlib.sha256(data).hexdigest(), "license": "LicenseRef-Personal", "digitalSourceType": DIGITAL_CAPTURE}
         if mt.startswith("text/"):
             asset["language"] = lang
         m.setdefault("assets", []).append(asset)
@@ -376,7 +388,7 @@ def psyche_add(src: Path, *, identity: str | None, kind: str, gists: dict[str, s
         f = Path(f)
         if not f.is_file():
             raise ValueError(f"image not found: {f}")
-        mt = mimetypes.guess_type(f.name)[0] or "application/octet-stream"
+        mt = media_type(f.name)
         if not mt.startswith("image/"):
             raise ValueError(f"--image {f.name}: {mt} is not an image — a psyche node is illustrated by images only (a sound, a video or a text belongs to a memory)")
         dest = d / f.name
@@ -384,7 +396,7 @@ def psyche_add(src: Path, *, identity: str | None, kind: str, gists: dict[str, s
         data = dest.read_bytes()
         aid = f"a-psy-{vid}-{re.sub(r'[^a-z0-9]+', '-', f.stem.lower()).strip('-') or 'image'}"
         m.setdefault("assets", []).append({"id": aid, "path": f"elements/psyche/{vid}/{f.name}", "role": "psyche-media", "mediaType": mt, "bytes": len(data),
-                                           "sha256": hashlib.sha256(data).hexdigest(), "license": "LicenseRef-Personal", "digitalSourceType": "digitalCapture"})
+                                           "sha256": hashlib.sha256(data).hexdigest(), "license": "LicenseRef-Personal", "digitalSourceType": DIGITAL_CAPTURE})
         media_ids.append(aid)
     if media_ids:
         var["media"] = media_ids

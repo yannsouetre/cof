@@ -2425,6 +2425,7 @@ def test_psyche_add_image(tmp_path):
     assert v["media"] == ["a-psy-taste1-logo", "a-psy-taste1-second"] and "age" not in v
     A = {a["id"]: a for a in m["assets"]}
     assert A["a-psy-taste1-logo"]["role"] == "psyche-media" and A["a-psy-taste1-logo"]["path"] == "elements/psyche/taste1/logo.png" and (d / A["a-psy-taste1-logo"]["path"]).is_file()
+    assert A["a-psy-taste1-logo"]["digitalSourceType"] == "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture"
     txt = tmp_path / "notes.txt"; txt.write_text("x", "utf-8")
     assert main(["psyche", "add", str(d), "--kind", "taste", "--gist", "en=x", "--image", str(txt)]) == 2
     assert main(["psyche", "add", str(d), "--kind", "taste", "--gist", "en=x", "--image", str(img), "--self-shown"]) == 2            # needs --age
@@ -2446,3 +2447,72 @@ def test_example_10_illustrated_nodes():
     assert V["contra1"]["media"] == ["a-ac-x1"] and V["hab1"]["media"] == ["a-mem-ev1-1"]
     assert m["elements"]["appearance"]["variants"]["x1"]["images"] == ["a-ac-x1"]
     assert not [w for w in rep.warnings if "psyche" in w], rep.warnings
+
+
+def _personatext_card():
+    """A minimal PersonaText-style card (Character Card V2 exported from Character.AI): the conversation and the avatar
+    ride in data.extensions next to what does belong to the character."""
+    return {"spec": "chara_card_v2", "spec_version": "2.0", "data": {
+        "name": "Wren Calloway", "description": "A lighthouse keeper.", "personality": "Calm, dry humour.", "first_mes": "You made it.",
+        "creator": "someone", "tags": ["ocean"],
+        "character_book": {"name": "Wren's lore", "entries": [{"keys": ["lighthouse"], "content": "Built in 1890.", "enabled": True, "insertion_order": 0}]},
+        "extensions": {"character_ai": {"external_id": "abc123", "participant__name": "Wren"},
+                       "chat_history": [{"role": "user", "content": "Hello, my name is Paul and I live in Lyon.", "timestamp": 1730000000000},
+                                        {"role": "assistant", "content": "Welcome, Paul.", "timestamp": 1730000005000}],
+                       "avatar_data_url": "data:image/png;base64," + "A" * 4000}}}
+
+
+def test_import_drops_an_embedded_chat_and_avatar(tmp_path):
+    """`cof import` of a card that carries a user's conversation (PersonaText `data.extensions.chat_history`) and a base64
+    avatar (`avatar_data_url`) copies neither — not into card.json, not into `cof export --format card` — and says so;
+    the rest of the card is intact. Fixes a leak present in cof-cli 1.1.1 (the 1.1 promise: a user's personal data never
+    travels unless asked)."""
+    import subprocess, sys
+    from cof_cli.convert import strip_card_payloads
+    card = _personatext_card()
+    c2 = json.loads(json.dumps(card)); assert strip_card_payloads(c2) == ["chat_history", "avatar_data_url"] and strip_card_payloads(c2) == []
+    src = tmp_path / "wren.personatext.json"; src.write_text(json.dumps(card), "utf-8")
+    out = tmp_path / "wren"
+    r = subprocess.run([sys.executable, "-c", "import sys; from cof_cli.cli import main; sys.exit(main())", "import", str(src), "-o", str(out)], capture_output=True, text=True)
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert "embedded chat / avatar not imported: a user's personal data, not part of the character" in r.stdout
+    imported = (out / "elements/personality/p1/card.json").read_text("utf-8")
+    assert "chat_history" not in imported and "avatar_data_url" not in imported and "Paul" not in imported
+    c = json.loads(imported)["data"]
+    assert c["character_book"] == card["data"]["character_book"] and c["extensions"]["character_ai"] == card["data"]["extensions"]["character_ai"]
+    assert c["creator"] == "someone" and c["name"] == "Wren Calloway"
+    exp = tmp_path / "card.json"
+    r = subprocess.run([sys.executable, "-c", "import sys; from cof_cli.cli import main; sys.exit(main())", "export", str(out), "--format", "card", "-o", str(exp)], capture_output=True, text=True)
+    assert r.returncode == 0, r.stdout + r.stderr
+    t = exp.read_text("utf-8"); assert "chat_history" not in t and "avatar_data_url" not in t and "Paul" not in t and "Built in 1890." in t
+    rep = _val(out); assert not any("chat_history" in w for w in rep.warnings)
+
+
+def test_validate_warns_about_a_chat_kept_in_a_card(tmp_path):
+    """A card.json written by cof-cli / the builder ≤ 1.1.1 may still hold a user's conversation: a warning (once), never an error."""
+    d = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/10-clara-mercier", d)
+    m = json.loads((d / "manifest.json").read_text("utf-8"))
+    cp = next(v["card"] for v in m["elements"]["personality"]["variants"].values() if v.get("card"))
+    card = json.loads((d / cp).read_text("utf-8")); card["data"].setdefault("extensions", {})["chat_history"] = [{"role": "user", "content": "hi"}]
+    (d / cp).write_text(json.dumps(card), "utf-8")
+    rep = _val(d)
+    hits = [w for w in rep.warnings if "chat_history" in w]
+    assert rep.ok and len(hits) == 1 and "personal data" in hits[0]
+
+
+def test_added_media_types_and_digital_source_type(tmp_path):
+    """`memory add` / `psyche add`: a .md is text/markdown with its language whatever the machine's mimetypes table, a
+    .txt text/plain; digitalSourceType is the IPTC URI (the schema's format: uri, as in the examples)."""
+    from cof_cli.selfdesc import DIGITAL_CAPTURE, media_type, memory_add
+    assert media_type("note.md") == "text/markdown" and media_type("a.TXT") == "text/plain" and media_type("x.webp") == "image/webp"
+    assert DIGITAL_CAPTURE == "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture"
+    d, m = _mem_copy(tmp_path)
+    note = tmp_path / "note.md"; note.write_text("— a line", "utf-8")
+    txt = tmp_path / "words.txt"; txt.write_text("two words", "utf-8")
+    vid = memory_add(d, identity=None, kind="moment", gists={"en": "This morning."}, date="2026-10-25", personal=True, media=[note, txt], lang="en")
+    m2 = json.loads((d / "manifest.json").read_text("utf-8"))
+    A = {a["id"]: a for a in m2["assets"] if a["id"].startswith(f"a-mem-{vid}")}
+    md = next(a for a in A.values() if a["path"].endswith("note.md")); tx = next(a for a in A.values() if a["path"].endswith("words.txt"))
+    assert md["mediaType"] == "text/markdown" and md.get("language") and tx["mediaType"] == "text/plain" and tx.get("language")
+    assert all(a["digitalSourceType"] == DIGITAL_CAPTURE for a in A.values())
+    rep = _val(d); assert rep.ok, rep.errors

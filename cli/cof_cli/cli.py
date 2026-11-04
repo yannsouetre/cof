@@ -160,9 +160,12 @@ def cmd_import(a):
         print("expected source: .png (card) or .json (card)", file=sys.stderr)
         return 1
     dest = Path(a.out) if a.out else Path(src.stem)
-    card_to_cof_dir(card, dest, png=png if a.keep_png else None, age=a.age, fictional=not a.real, language=a.lang)
+    removed = []
+    card_to_cof_dir(card, dest, png=png if a.keep_png else None, age=a.age, fictional=not a.real, language=a.lang, removed=removed)
     rep = Report()
     validate_dir(dest, rep, recompute=True)
+    if removed:
+        rep.warnings.insert(0, "embedded chat / avatar not imported: a user's personal data, not part of the character (data.extensions." + ", data.extensions.".join(removed) + ")")
     print(f"COF folder created: {dest}")
     return _print_report(rep, a.json)
 

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import base64
+import copy
 import json
 import re
 import struct
@@ -216,9 +217,35 @@ def default_permissions() -> dict:
             "allowImpersonationOfRealPerson": False, "aiDisclosure": True}
 
 
+# What a card exporter may embed in data.extensions that is not part of the character: a user's whole conversation
+# (PersonaText's `chat_history`, [{role, content, timestamp}]) and a base64 copy of the avatar (`avatar_data_url`, up to
+# ~3 MB). Never copied into a .cof: a user's personal data does not travel without being asked (RFC 0002 § 5).
+CARD_PAYLOADS = ("chat_history", "avatar_data_url")
+
+
+def strip_card_payloads(card: dict) -> list[str]:
+    """Removes, in place, the CARD_PAYLOADS keys from the card's data.extensions; returns the keys it removed (in the
+    order of CARD_PAYLOADS). Nothing else is done with them: turning a conversation into personal memories is the job
+    of a dedicated import, never a side effect of importing a card."""
+    data = card.get("data") if isinstance(card, dict) else None
+    ext = data.get("extensions") if isinstance(data, dict) else None
+    if not isinstance(ext, dict):
+        return []
+    removed = [k for k in CARD_PAYLOADS if k in ext]
+    for k in removed:
+        del ext[k]
+    return removed
+
+
 def card_to_cof_dir(card: dict, dest: Path, *, png: bytes | None = None, age: int | None = None,
-                    fictional: bool = True, language: str = "en") -> Path:
-    """Character Card (V2/V3) → v0.3 directory: elements.personality.p1 (+ face.f1 from the PNG) + preset 'default'."""
+                    fictional: bool = True, language: str = "en", removed: list | None = None) -> Path:
+    """Character Card (V2/V3) → v0.3 directory: elements.personality.p1 (+ face.f1 from the PNG) + preset 'default'.
+    The card is copied without its CARD_PAYLOADS (strip_card_payloads, on a copy: the caller's dict is untouched); the
+    keys left out are appended to `removed` when given, for the caller to say so."""
+    card = copy.deepcopy(card)
+    gone = strip_card_payloads(card)
+    if removed is not None:
+        removed.extend(gone)
     data = card.get("data", {})
     dest.mkdir(parents=True, exist_ok=True)
     pdir = dest / "elements" / "personality" / "p1"

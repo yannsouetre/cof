@@ -44,10 +44,15 @@ The three profiles and the sign are an author's shorthand: they produce ordinary
 
 1.x adds only optional fields: **every 1.0 and 1.1 file stays valid**, and an older tool reads a 1.2 file — the new category appears to it as a library, with a warning. Nothing about the memories of 1.1 changed meaning. Schemas for 1.2 are published at `https://yannsouetre.github.io/cof/schemas/1.2/`; the 1.1 schemas are unchanged.
 
+## Fixed
+
+- **A user's conversation could leave with an imported card (cof-cli 1.1.1, builder 0.13.1).** A card exported from Character.AI by PersonaText carries the whole conversation (`data.extensions.chat_history`) and a base64 avatar; `cof import` and the builder copied them into the `.cof`, and the card exports carried them on. Both are now left out at import, with a warning; `cof validate` and the builder's checks warn about a card that still holds a chat. If you imported such a card with 1.1.x, re-import it.
+- `cof memory add` / `cof psyche add` write `digitalSourceType` as the IPTC URI, and a `.md` / `.txt` media is always `text/markdown` / `text/plain` whatever the machine.
+
 ## For implementers
 
 - The format changes in one place each: the `psyche` element category and its `psyche-node.json` file (RFC 0004), the `what` list on memories and the `who` / `where` / `what` lists on psyche nodes (RFC 0005), the optional `media` list of a psyche variant. The converter's contract is model-agnostic and documented in `docs/psyche-propose.md` (JSON in, JSON out, validation rules every tool shares).
-- Reference implementation: `cof-cli` tests 79 → 101, a negative corpus extended with the psyche, objects and illustration rules, one example (`10-clara-mercier`) with 23 psyche nodes, three objects and a grandmother's pendant.
+- Reference implementation: `cof-cli` tests 79 → 108, a negative corpus extended with the psyche, objects and illustration rules, one example (`10-clara-mercier`) with 23 psyche nodes, three objects and a grandmother's pendant.
 - `docs/builder-guide.md` describes the Psyche step in full.
 
 ## Next
