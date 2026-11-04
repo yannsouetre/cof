@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased — 1.2 (RFC 0004 psyche)
+## 1.2.0 — 2026-11-08 (RFC 0004 psyche, RFC 0005 people, places, objects)
 
 **Images on psyche nodes (RFC 0004 § 3 decies, Yann's choice, 4 November)** — a psyche variant gets an optional `media` list of asset ids, images only, like a memory variant: the first image replaces the kind icon in the node's bubble, the others are references shown in the card. The author uploads them on the node card (a dedicated picker that creates new assets); reusing an existing asset id is merely allowed. Additive, no new format version.
 

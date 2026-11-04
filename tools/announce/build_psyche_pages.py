@@ -722,7 +722,7 @@ HOWMANY = head("How many convictions make a person? — COF 1.2",
   <h3>Counting tokens</h3>
   <p>OpenAI Help Center, {L("https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them", "What are tokens and how to count them?")} — “1 token ≈ 4 characters in English”, the rule the simulator uses (the same as <code>cof tokens</code> without a tokenizer).</p>
   <h3>Measured on the format</h3>
-  <p>Clara's psyche, <code>spec/examples/10-clara-mercier</code>, COF 1.2 draft: {len(N)} nodes, {PSY_FILES / 1000:.1f} KB of node files, {(PSY_FILES + PSY_MAN) / 1000:.1f} KB with their manifest entries, {LINKS} links, {round(TIED * len(N))} nodes tied to a memory; her « Who she is » as <code>cof psyche text --preset en-agent</code> renders it, 1,943 characters. The upper bound: generated psyches of 150, 500 and 1,000 nodes, opened in the explorer (load tests, 3 November 2026).</p>
+  <p>Clara's psyche, <code>spec/examples/10-clara-mercier</code>, COF 1.2: {len(N)} nodes, {PSY_FILES / 1000:.1f} KB of node files, {(PSY_FILES + PSY_MAN) / 1000:.1f} KB with their manifest entries, {LINKS} links, {round(TIED * len(N))} nodes tied to a memory; her « Who she is » as <code>cof psyche text --preset en-agent</code> renders it, 1,943 characters. The upper bound: generated psyches of 150, 500 and 1,000 nodes, opened in the explorer (load tests, 3 November 2026).</p>
 </div>
 </main>
 

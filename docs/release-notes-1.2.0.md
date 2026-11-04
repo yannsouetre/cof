@@ -1,5 +1,4 @@
-<!-- TODO: replace « November 2026 » with the exact day of the publication (title, last paragraph, README status, CHANGELOG heading) -->
-# COF 1.2.0 — release notes (November 2026)
+# COF 1.2.0 — release notes (8 November 2026)
 
 **AI characters now have an inner life.**
 
@@ -57,7 +56,7 @@ The three profiles and the sign are an author's shorthand: they produce ordinary
 
 ## Open for comments
 
-RFC 0004 (psyche) and RFC 0005 (people, places, objects) open with this release and take comments through the [issues](https://github.com/yannsouetre/cof/issues). 1.x is additive only, so what the comments change will ship in 1.2.1 rather than hold the release. <!-- TODO: comment deadline, as RFC 0002 had 14 November -->
+RFC 0004 (psyche) and RFC 0005 (people, places, objects) open with this release and take comments until **8 December 2026** through the [issues](https://github.com/yannsouetre/cof/issues). 1.x is additive only, so what the comments change will ship in 1.2.1 rather than hold the release.
 
 ## Credits
 

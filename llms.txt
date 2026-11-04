@@ -1,12 +1,12 @@
 # COF — Character Open File
 
-> Open container format (.cof, ZIP) for AI characters: identity, personality (Character Card V3 or free text), appearance, identity weights (LoRA), 3D, voice, poses, motion, agent files (skills, a host memory file), and since 1.1 the character's memories as a graph of moments and periods (RFC 0002) and cast fields (gender, archetype, relations — RFC 0003), with rights, organised as elements → variants → presets. Every packed file carries a COF.md that describes it in plain language.
+> Open container format (.cof, ZIP) for AI characters: identity, personality (Character Card V3 or free text), appearance, identity weights (LoRA), 3D, voice, poses, motion, agent files (skills, a host memory file), and since 1.1 the character's memories as a graph of moments and periods (RFC 0002) and cast fields (gender, archetype, relations — RFC 0003), and since 1.2 the character's psyche as a graph of short nodes (values, beliefs, wants, fears, wounds, stances, tastes, habits, contradictions) tied to its memories (RFC 0004), with people, places and objects named the same way in both (RFC 0005), with rights, organised as elements → variants → presets. Every packed file carries a COF.md that describes it in plain language.
 
 - [Specification (normative, EN)](https://github.com/yannsouetre/cof/blob/main/spec/SPEC.md)
 - [Implementer's guide](https://github.com/yannsouetre/cof/blob/main/docs/IMPLEMENTING.md)
 - [Agent Skill for authoring .cof files](https://github.com/yannsouetre/cof/blob/main/skills/cof-author/SKILL.md)
-- [JSON Schemas](https://github.com/yannsouetre/cof/tree/main/spec/schemas) (published at https://yannsouetre.github.io/cof/schemas/1.1/)
-- [RFC 0002 — memories](https://github.com/yannsouetre/cof/blob/main/rfcs/0002-memories.md) · [RFC 0003 — gender, archetype, relations](https://github.com/yannsouetre/cof/blob/main/rfcs/0003-identity-gender-archetype-relations.md)
+- [JSON Schemas](https://github.com/yannsouetre/cof/tree/main/spec/schemas) (published at https://yannsouetre.github.io/cof/schemas/1.2/)
+- [RFC 0002 — memories](https://github.com/yannsouetre/cof/blob/main/rfcs/0002-memories.md) · [RFC 0003 — gender, archetype, relations](https://github.com/yannsouetre/cof/blob/main/rfcs/0003-identity-gender-archetype-relations.md) · [RFC 0004 — psyche](https://github.com/yannsouetre/cof/blob/main/rfcs/0004-psyche-graph.md) · [RFC 0005 — people, places, objects](https://github.com/yannsouetre/cof/blob/main/rfcs/0005-people-places-objects.md)
 - [Examples](https://github.com/yannsouetre/cof/tree/main/spec/examples) — 10-clara-mercier is the flagship (bilingual, 12 presets, tags, agent skill); 11-duo-clara-martien shows two characters in one file
-- [Reference CLI (validate, pack, extract, merge, export, memory add)](https://github.com/yannsouetre/cof/tree/main/cli) — `pip install cof-cli`; `cof memory add` is the write path for hosts and agents that record a lived memory
+- [Reference CLI (validate, pack, extract, merge, export, memory add, psyche add / text / propose)](https://github.com/yannsouetre/cof/tree/main/cli) — `pip install cof-cli`; `cof memory add` is the write path for hosts and agents that record a lived memory
 - [Builder (browser, no upload)](https://yannsouetre.github.io/cof/builder/)
