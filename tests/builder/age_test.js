@@ -46,12 +46,19 @@ function patchLate(src, m) {
   }
   m.presets["en-futur" in m.presets ? "en-futur" : "en-future"].slots.memories.push("ev5");
 }
+/* the life age (Yann, 4 November): the default preset declares 40 while its appearance shows 25; bel4 (psyche) held from 36 instead of ~45 */
+function patchLife(src, m) {
+  m.elements.appearance.variants.a1.age = { value: 25, unit: "years", basis: "apparent" };
+  m.presets.default.age_override = { value: 40, unit: "years", basis: "declared" };
+  const f = path.join(src, "elements/psyche/bel4/psyche-node.json"); const n = JSON.parse(fs.readFileSync(f, "utf8")); n.since.age.value = 36; fs.writeFileSync(f, JSON.stringify(n, null, 2) + "\n");
+}
 const mime = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".json": "application/json", ".css": "text/css", ".svg": "image/svg+xml", ".png": "image/png" };
 const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURIComponent(q.url.split("?")[0])); if (!f.startsWith(ROOT)) { s.writeHead(403); return s.end(); } try { if (fs.statSync(f).isDirectory()) f = path.join(f, "index.html"); } catch (e) {} fs.readFile(f, (e, d) => { if (e) { s.writeHead(404); return s.end(); } s.writeHead(200, { "content-type": mime[path.extname(f)] || "application/octet-stream" }); s.end(d); }); });
 
 (async () => {
   const clara = path.join(WORK, "clara.cof"), late = path.join(WORK, "clara-late.cof");
-  pack(clara); pack(late, patchLate);
+  const life = path.join(WORK, "clara-life.cof");
+  pack(clara); pack(late, patchLate); pack(life, patchLife);
   const srcMan = readMan(clara), lateMan = readMan(late);
   await new Promise(r => server.listen(0, r)); const URL = `http://localhost:${server.address().port}/builder/`;
   const browser = await chromium.launch();
@@ -212,8 +219,28 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
   iss = await checks(/ev16/);
   check(iss.some(l => /memories\.ev16 : souvenir plus vieux que l'âge du preset en-65 \(≈ 39 > 30\)/.test(l)), "and the check reports it: « (≈ 39 > 30) »");
 
+  /* ---- the life age: the declared age bounds the offer, the lowest age stays the safety age ---- */
+  await open(life); await presets(false);
+  const LA = await page.evaluate(() => ({ safety: presetAge("default"), life: lifeAge("default"), fr: lifeAge("fr"), en12: lifeAge("en-12"), allM: memAllOf(ownerP("default")).filter(v => S.memories[v].kind === "moment").map(v => [v, memAfter(v, 40)]) }));
+  check(LA.safety === 25 && LA.life === 40 && LA.fr === 29 && LA.en12 === 12, `declares 40, shows 25: the safety age stays 25, the life age is 40 (fr keeps its own 29, en-12 its 12): ${JSON.stringify([LA.safety, LA.life, LA.fr, LA.en12])}`);
+  M = await offered("default", "memories"); N = await offered("default", "psyche");
+  const wantM = LA.allM.filter(x => !x[1]).map(x => x[0]).sort(), lateM = LA.allM.filter(x => x[1]).map(x => x[0]);
+  check(JSON.stringify(ids(M, x => x.kind === "m")) === JSON.stringify(wantM) && wantM.includes("ev5") && lateM.includes("ev8") && !M.some(x => x.late), `default (life 40): the moments up to 40 are offered, ev5 (31) included, ev8 (63) not: ${ids(M, x => x.kind === "m").join(",")}`);
+  check(new RegExp(`^${lateM.length} souvenir\\(s\\) après 40 ans non proposé\\(s\\)$`).test(await line("default", "data-memfs")), "the count line says « après 40 ans »: " + await line("default", "data-memfs"));
+  check(ids(N).includes("bel4") && ids(N).length === 23 && !(await line("default", "data-psyfs")), "default (life 40): bel4 (since 36) is offered, all 23 nodes, no count line");
+  iss = await checks(/default|bel4/);
+  check(iss.some(l => /Preset default : déclare l'âge 40, mais ses déclinaisons montrent 25 \(cohérence\)/.test(l)), "the Checks step warns: « Preset default : déclare l'âge 40, mais ses déclinaisons montrent 25 (cohérence) »");
+  check(!iss.some(l => /souvenir plus vieux|après l'âge que montre/.test(l) && /default/.test(l)), "and says nothing of what lies between 25 and 40");
+  const lifeOut = path.join(WORK, "life-out.cof"); await build(lifeOut);
+  const lv = py(["-m", "cof_cli.cli", "validate", lifeOut], CLI);
+  check(/^OK/m.test(lv.stdout) && /presets\.default: declares age 40 but its variants show 25 \(coherence\)/.test(lv.stdout), "cof validate on the built file: OK, with the same warning in English");
+  await presets(false); await setAge("default", 12); pop = await popup();
+  check(pop && /^Ce preset a 12 ans, mais il retient/.test(pop.head), "lowering the declared age to 12 opens the pop-up with the declared age (the appearance still shows 25): " + (pop && pop.head)); await press("Garder — je corrige l'âge");
+  await open(late);
+
   /* ---- six languages ---- */
   const KEYS = ["{n} souvenir(s) après {a} ans non proposé(s)", "{n} nœud(s) non tenu(s) à {a} ans non proposé(s)", "afficher quand même", "après l'âge", "hérité, après l'âge", "non tenu à cet âge", "hérité, non tenu à cet âge", "retirer pour ce preset", "Âge du preset et sélection", "Ce preset a {a} ans, mais il retient {items} incompatibles avec cet âge :", "Ce preset a {a} ans, mais il retient {items} incompatible avec cet âge :", "{n} souvenirs", "{n} nœuds", "et {n} autres", "Désélectionner ces éléments", "Garder — je corrige l'âge", "après l'âge du preset — non proposé", "après l'âge du preset — clic pour retirer", "non tenu à l'âge du preset — non proposé", "non tenu à l'âge du preset — clic pour retirer", "depuis {a} ans", "jusqu'à {a} ans", "{a} ans"];
+  KEYS.push("déclare l'âge {a}, mais ses déclinaisons montrent {v}");
   const miss = await page.evaluate(K => ["en", "de", "es", "zh", "ja"].flatMap(l => K.filter(k => !I18N[l] || typeof I18N[l][k] !== "string" || !I18N[l][k]).map(k => l + ":" + k)), KEYS);
   check(!miss.length, "every new string in en, de, es, zh, ja " + miss.slice(0, 5).join(" | "));
   const gd = await page.evaluate(() => ["fr", "en", "de", "es", "zh", "ja"].map(l => GUIDE[l][5].h.split("<li>").length - 1));

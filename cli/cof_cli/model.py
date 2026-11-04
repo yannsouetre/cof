@@ -380,6 +380,20 @@ def lowest_age(manifest: dict) -> float | None:
     return min(ages) if ages else None
 
 
+def preset_variant_age(manifest: dict, pid: str | None, ignore: set[str] = frozenset()) -> float | None:
+    """Lowest age shown by the applied AND offered variants of a preset, its age_override left out. None = none declares an age."""
+    res = resolved_all(manifest, pid)
+    va = [x for cat in AGE_CATEGORIES - set(ignore) for v in res.get(cat, []) if v.get("kind") not in AGELESS_KINDS for x in [_age_value(v.get("age"))] if x is not None]
+    return min(va) if va else None
+
+
+def preset_life_age(manifest: dict, pid: str | None, ignore: set[str] = frozenset()) -> float | None:
+    """Age that bounds a preset's life (RFC 0004 § 3 ter, 4 Nov. 2026): its declared age_override (through extends) when there is one,
+    else the lowest age. Only the 1.2 time rules (memories and psyche nodes after that age) use it; every safety rule keeps preset_age."""
+    x = _age_value(preset_age_override(manifest, pid))
+    return x if x is not None else preset_age(manifest, pid, ignore=ignore)
+
+
 def preset_age(manifest: dict, pid: str | None, ignore: set[str] = frozenset()) -> float | None:
     """Age of a preset = min(ages of its applied AND offered morphological variants, age_override). None = no age known (e.g. text only).
     `ignore`: categories left out — the age buckets of tags.auto ignore `memories` (a memory legitimately shows another

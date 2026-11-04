@@ -401,6 +401,7 @@ function inherited(pid,key){for(const q of chain(pid))if(P()[q][key]!==undefined
 function resolved(lists){const r={};for(const [cat,ids] of Object.entries(lists))r[cat]=ids.map(i=>resolveVariant(cat,i)).filter(Boolean);return r}
 function ageYears(a){if(!a||typeof a.value!=="number")return null;if(a.unit&&!["years","months"].includes(a.unit))return 0;return a.unit==="months"?a.value/12:a.value}
 function presetAge(pid){const all=[slots(pid),offered(pid)].flatMap(l=>Object.entries(resolved(l)));const ages=[];for(const [cat,vs] of all)if(AGE_CATS.has(cat))for(const v of vs)if(!AGELESS.has(v.kind)){const x=ageYears(v.age);if(x!==null)ages.push(x)}const ao=ageYears(inherited(pid,"age_override"));if(ao!==null)ages.push(ao);return ages.length?Math.min(...ages):null}
+function lifeAge(pid){const ao=ageYears(inherited(pid,"age_override"));return ao!==null?ao:presetAge(pid)}   /* the age that bounds a preset's life (memories, psyche): its declared age_override (through extends), else the lowest age; the safety rules keep presetAge */
 const ids=()=>M.identities||{};
 function defaultIdentity(){return M.default_identity||Object.keys(ids())[0]||null}
 function presetOwner(pid){return inherited(pid,"identity")||defaultIdentity()}
@@ -496,7 +497,7 @@ function yearOf(d){const m=/^(-?\d{1,4})(?:-(\d{2})(?:-(\d{2}))?)?$/.exec(String
 function nodePoint(kind,n){const w=n.when||{};const p=kind==="period"?(w.from||w.to||{}):w;return [ageYears(p.age),yearOf(p.date)]}
 function memBirth(vids,nodes){const by=[];for(const v of vids){const [a,y]=nodePoint(resolveVariant("memories",v).kind,nodes[v]);if(a!==null&&y!==null)by.push(y-a)}return by.length?by.sort((x,y)=>x-y)[Math.floor(by.length/2)]:null}   /* the birth year the memories imply: the median of year − age over those dated both ways */
 /* the preset's declared age bounds what the preset shows (Yann, 3 Nov.: « il faut stopper à l'âge déclaré du preset, sinon incohérence »): a memory it lists that starts after that age — when.age for a moment, when.from.age for a period (one begun before stays, even if it ends after), a date converted with the implied birth year; unknown: kept — is an incoherence of the file, hidden with a notice. No declared age: nothing hidden */
-function memCut(pid,memIds,nodes){const A=presetAge(pid);if(A===null)return {cut:null,hid:[]};const cut=Math.floor(A),hid=[];let birth;
+function memCut(pid,memIds,nodes){const A=lifeAge(pid);if(A===null)return {cut:null,hid:[]};const cut=Math.floor(A),hid=[];let birth;
   for(const v of memIds){const n=nodes[v]||{},w=n.when||{},p=(resolveVariant("memories",v)||{}).kind==="period"?(w.from||{}):w;let a=ageYears(p.age);
     if(a===null){const y=yearOf(p.date);if(y!==null){if(birth===undefined)birth=memBirth(memIds,nodes);if(birth!==null)a=y-birth}}
     if(a!==null&&Math.floor(a)>cut)hid.push([v,Math.floor(a)])}
@@ -928,7 +929,7 @@ async function renderPsyche(pid,vids,memIds){const nPre=vids.length;let ax=null,
   if(psyTime&&(psyViewSet?psyView==="graph":nPre<=PSY_MAX)){vids=psyCharIds(pid);await psyLoad(vids);ax=await psyTAxis(pid,vids,memIds);
     if(ax.cut!==null){const own=new Set(psyIds(pid));cutS=vids.filter(v=>own.has(v)&&late(ax.b[v],ax.cut));vids=vids.filter(v=>!late(ax.b[v],ax.cut))}if(psyTPid!==pid||psyT===null){psyT=psyTBase=ax.dt;psyTPid=pid}if(psyTBase===null)psyTBase=psyT;psyT=Math.max(ax.lo,Math.min(ax.hi,psyT));psyTBase=Math.max(ax.lo,Math.min(ax.hi,psyTBase))}   /* the time cursor (graph only): the character's nodes, the year where it stood, else the preset's default */
   await psyLoad(vids);
-  if(!ax&&presetAge(pid)!==null){const bd=vids.map(v=>psyNodes.get(v)||{}).flatMap(n=>[n.since,n.until]).filter(p=>p&&typeof p==="object");
+  if(!ax&&lifeAge(pid)!==null){const bd=vids.map(v=>psyNodes.get(v)||{}).flatMap(n=>[n.since,n.until]).filter(p=>p&&typeof p==="object");
     if(bd.length){const a0=await psyTAxis(pid,vids,bd.some(p=>ageYears(p.age)===null&&yearOf(p.date)!==null)?memIds:[]);   /* the memories (the birth year) only when a bound is a date alone */
       if(a0.cut!==null){cutS=vids.filter(v=>late(a0.b[v],a0.cut));cutU=vids.filter(v=>!late(a0.b[v],a0.cut)&&over(a0.b[v],a0.cut));const h=new Set([...cutS,...cutU]);vids=vids.filter(v=>!h.has(v))}}}
   const nm=v=>labelIn((resolveVariant("psyche",v)||{}).label||v,LANG,40),cutN=cutNoteHtml([{k:"cutPsyS",list:cutS.map(nm)},{k:"cutPsyU",list:cutU.map(nm)}]);
@@ -961,8 +962,8 @@ async function psyTAxis(pid,vids,memIds){const ck=pid+"|"+vids.length+"|"+memIds
   const pt=p=>{if(!p||typeof p!=="object")return null;const a=ageYears(p.age),y=yearOf(p.date);if(useYear)return y!==null?Math.floor(y):conv(a);return a!==null?Math.floor(a):y!==null&&birth!==null?Math.floor(y-birth):null};
   const b={},vals=[];for(const v of vids){const n=psyNodes.get(v)||{},x={s:pt(n.since),u:pt(n.until)};b[v]=x;if(x.s!==null)vals.push(x.s);if(x.u!==null)vals.push(x.u)}
   const more=[];for(const k of Object.values(tl.key)){const x=k>=10000?(useYear&&birth===null?Math.floor(k-10000):null):conv(k);if(x!==null)more.push(x)}
-  const own=presetOwner(pid);for(const q of Object.keys(P()))if(presetOwner(q)===own){const x=conv(presetAge(q));if(x!==null)more.push(x)}   /* the latest bound among the nodes, the memories and the presets' ages */
-  const all=[...vals,...more],lo=useYear?(birth!==null?Math.floor(birth):all.length?Math.min(...all):0):Math.min(0,...vals),a0=conv(presetAge(pid)),hi=a0!==null?Math.max(lo,a0):Math.max(lo,...all);   /* the axis ends at the preset's declared age (rule 3, Yann 3 Nov.: a preset shows nothing after it), else at the latest bound */
+  const own=presetOwner(pid);for(const q of Object.keys(P()))if(presetOwner(q)===own){const x=conv(lifeAge(q));if(x!==null)more.push(x)}   /* the latest bound among the nodes, the memories and the presets' ages */
+  const all=[...vals,...more],lo=useYear?(birth!==null?Math.floor(birth):all.length?Math.min(...all):0):Math.min(0,...vals),a0=conv(lifeAge(pid)),hi=a0!==null?Math.max(lo,a0):Math.max(lo,...all);   /* the axis ends at the preset's declared age (rule 3, Yann 3 Nov.: a preset shows nothing after it), else at the latest bound */
   const ax={useYear,birth,lo,hi,b,cut:a0,dt:Math.max(lo,Math.min(hi,a0!==null?a0:hi))};_ptAx={m:M,k:ck,ax};return ax}   /* dt: the preset's declared age, else the latest year */
 function psyHeldSet(ax,vids,t){const H=new Set(),all=new Set(vids);for(const v of vids){const x=ax.b[v]||{};if((x.s===null||x.s===undefined||x.s<=t)&&(x.u===null||x.u===undefined||t<x.u))H.add(v)}
   for(const v of vids){if(!H.has(v)||psyKindOf(v)!=="contradiction")continue;for(const l of (psyNodes.get(v)||{}).links||[]){const [c,id]=String(l&&l.to||"").split(/\/(.*)/);if(l.type==="conflicts"&&c==="psyche"&&(all.has(id)||id in ax.b)&&!H.has(id)){H.delete(v);break}}}return H}   /* a side outside the set (it starts after the preset's age) is not held either */
