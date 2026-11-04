@@ -273,6 +273,9 @@ def extract_identity(src: Path, dst: Path, iid: str, notes: list[str] | None = N
     (dst / "manifest.json").write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", "utf-8")
     for vid in strip_foreign_real_media(dst, {iid}, m.get("identities") or {}):
         (notes if notes is not None else []).append(f"memories.{vid}: media showing another real person left behind (gist kept)")
+    from .psyche import strip_foreign_real_images
+    for vid in strip_foreign_real_images(dst, {iid}, m.get("identities") or {}):
+        (notes if notes is not None else []).append(f"psyche.{vid}: images showing another real person left behind (node kept)")
     for line in relabel_departed_identities(dst, json.loads((dst / "manifest.json").read_text("utf-8")), m.get("identities") or {}):
         (notes if notes is not None else []).append(line)
     return json.loads((dst / "manifest.json").read_text("utf-8"))
@@ -628,12 +631,14 @@ def strip_intimate(dst: Path) -> list[str]:
     and set allowSexualUsage to false everywhere (root, characters, presets). Returns the removed variant ids."""
     from .model import variant_asset_ids
     mem_hit = strip_explicit_memory_media(dst)                  # memories: the gist stays, the media go (RFC 0002 § 5.8)
+    from .psyche import strip_nude_images
+    psy_hit = strip_nude_images(dst)                            # psyche nodes: the words stay, the images go (RFC 0004 § 3 decies)
     m = json.loads((dst / "manifest.json").read_text("utf-8"))
     V = ((m.get("elements") or {}).get("appearance") or {}).get("variants") or {}
     gone = [vid for vid, v in V.items() if v.get("kind") == "intimate" or v.get("nudity") is True]
-    extra_freed, extra_gone = set(), [f"memories.{x} (media only)" for x in mem_hit]
+    extra_freed, extra_gone = set(), [f"memories.{x} (media only)" for x in mem_hit] + [f"psyche.{x} (images only)" for x in psy_hit]
     for cat, e in (m.get("elements") or {}).items():          # nude variants of other categories (posture photos…)
-        if cat in ("appearance", "memories"):
+        if cat in ("appearance", "memories", "psyche"):
             continue
         for vid in [k for k, v in ((e or {}).get("variants") or {}).items() if (v or {}).get("nudity") is True]:
             extra_freed |= variant_asset_ids(e["variants"].pop(vid)); extra_gone.append(f"{cat}.{vid}")

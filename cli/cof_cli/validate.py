@@ -862,7 +862,7 @@ def auto_tags(manifest: dict) -> list[str]:
         I = ids.get(preset_owner(manifest, p)) or manifest
         return ((I.get("morphology") or manifest.get("morphology") or {}).get("class") or "human") in HUMAN_FORM
     ages = [preset_age(manifest, p) for p in P if form(p)]
-    at |= {bucket(a) for a in (preset_age(manifest, p, ignore={"memories"}) for p in P if form(p))} | set(manifest.get("languages") or [])
+    at |= {bucket(a) for a in (preset_age(manifest, p, ignore={"memories", "psyche"}) for p in P if form(p))} | set(manifest.get("languages") or [])
     if any(a is not None and a < 18 for a in ages):                 # a memory showing a minor makes a minor preset (RFC 0002 § 5.2)
         at.add("has-minor-preset")
     for cat, tag in (("voice", "has-voice"), ("volume3d", "has-3d"), ("motion", "has-motion"), ("identity_weights", "has-weights")):
@@ -1027,7 +1027,7 @@ def _age_rules(manifest: dict, pid: str | None, res: dict, perms_all: dict, rep:
                 carries = (cat == "appearance" and k in AGE_REQUIRED_KINDS) or cat == "identity_weights" or (cat == "volume3d" and k not in ("environment", "other") and (k != "daz" or v.get("daz_category") == "characters"))
                 if carries and _age_value(v.get("age")) is None and not age_required(manifest, pid, v):
                     rep.errors.append(f"{label}: {cat}.{v['_id']} ({k}) must declare an age — the preset applies or offers an intimate or nude element, so the age is required whatever the morphology class")
-    ages = sorted((x, f"{cat}.{v['_id']}") for cat in AGE_CATEGORIES - {"memories"} for v in res.get(cat, []) if v.get("kind") not in AGELESS_KINDS for x in [_age_value(v.get("age"))] if x is not None)   # a memory legitimately shows another age
+    ages = sorted((x, f"{cat}.{v['_id']}") for cat in AGE_CATEGORIES - {"memories", "psyche"} for v in res.get(cat, []) if v.get("kind") not in AGELESS_KINDS for x in [_age_value(v.get("age"))] if x is not None)   # a memory (or an illustrated psyche node) legitimately shows another age
     if ages and ages[-1][0] - ages[0][0] >= 10:
         rep.warnings.append(f"{label}: mixes representations of very different ages ({ages[0][1]}: {ages[0][0]:g}, {ages[-1][1]}: {ages[-1][0]:g}) — an inherited element (e.g. a LoRA through extends) may not belong to this preset")
     if by_kind(res, "appearance", "intimate"):
@@ -1354,11 +1354,63 @@ def _point_before(a: dict, b: dict, birth: float | None = None) -> bool:
 
 
 
+MAX_NODE_IMAGES = 3            # RFC 0004 § 3 decies: beyond it, a memory fits better
+
+
+def _psyche_images(manifest: dict, rv: dict, node: dict, where: str, me, ids: dict, content: set, rep: "Report") -> None:
+    """RFC 0004 § 3 decies: the illustrations of a psyche node — `media` on the variant, images only, the first is the node's
+    picture. They are images of the file like any other, so the memory rules of RFC 0002 § 5 apply: a media showing the
+    character needs the variant `age` (which enters the preset's lowest age, in `_age_rules`), `nudity` needs adults
+    declared shown with a known age and, for a real person, their consent scope."""
+    A = asset_index(manifest)
+    media = rv.get("media") or []
+    if rv.get("media_from"):
+        rep.errors.append(f"{where}: `media_from` is for memories — a psyche node lists its own images in `media` (§ 3 decies)")
+    for aid in media:
+        a = A.get(aid)
+        if not a:
+            rep.errors.append(f"{where}: media: unknown asset {aid}")
+        elif not str(a.get("mediaType") or "").startswith("image/"):
+            rep.errors.append(f"{where}: media: {aid} is {a.get('mediaType') or 'not an image'} — a psyche node is illustrated by images only (a sound, a video or a text belongs to a memory)")
+    if len(media) > MAX_NODE_IMAGES:
+        rep.warnings.append(f"{where}: {len(media)} images — more than {MAX_NODE_IMAGES} make it a memory: link a memory instead")
+    shown = [w_ for w_ in node.get("who") or [] if w_.get("shown")]
+    self_shown = any(w_.get("identity") == "self" for w_ in shown)
+    va = _age_value(rv.get("age"))
+    if shown and not media:
+        rep.warnings.append(f"{where}: `who[].shown` on a node with no image — nobody is shown")
+    if va is not None and not media:
+        rep.warnings.append(f"{where}: variant `age` on a node with no image — the age is that of the character in an image, and it enters the preset's lowest age: remove it")
+    if self_shown and va is None:
+        rep.errors.append(f"{where}: an image shows the character — the variant must carry `age` (the character's age in the image, RFC 0002 § 5, RFC 0004 § 3 decies)")
+    if rv.get("nudity") is True:
+        if not media:
+            rep.warnings.append(f"{where}: variant marked nudity but the node has no image")
+        if not shown:
+            rep.errors.append(f"{where}: nudity with nobody declared shown — an image with nudity shows someone: declare who (`who[].shown`, `identity: \"self\"` for the character) with a known age of {ADULT} or more")
+        if self_shown and (va is None or va < ADULT):
+            rep.errors.append(f"{where}: an image with nudity shows the character at an unknown age or under {ADULT} — forbidden")
+        name = lambda w_: next(iter((w_.get("label") or {}).values()), w_.get("identity") or "?")
+        others = [w_ for w_ in shown if w_.get("identity") != "self"]
+        unknown = [name(w_) for w_ in others if _age_value(w_.get("age")) is None]
+        minors = [name(w_) for w_ in others if (_age_value(w_.get("age")) or ADULT) < ADULT]
+        if unknown or minors:
+            rep.errors.append(f"{where}: an image with nudity — every person shown must have a known age of {ADULT} or more (unknown: {', '.join(unknown[:3]) or '—'}; under {ADULT}: {', '.join(minors[:3]) or '—'})")
+        for w_ in shown:
+            iid = me if w_.get("identity") == "self" else w_.get("identity")
+            if iid and ids:
+                I = ids.get(iid) or {}
+                if I.get("fictional") is False and not ({"nudity", "intimate"} & set(((I.get("consent") or {}).get("scope")) or [])):
+                    rep.errors.append(f"{where}: an image with nudity shows the real person '{iid}' without consent scope nudity / intimate (the 1.0 rule of appearance/intimate)")
+            elif w_.get("real"):
+                rep.errors.append(f"{where}: an image with nudity shows a real person who is not an identity of the file — never allowed")
+
+
 def _psyche_rules(manifest: dict, src: Path, rep: "Report") -> None:
     """RFC 0004 § 3 bis, § 3 sexies, § 3 septies. The node file is validated against psyche-node.schema.json by the
     sub-file mechanism; this function holds the semantic rules: links and their targets, the fields reserved to one kind,
-    because-cycles, the strength mirror, the declared risk and its file-level tags. Psyche nodes carry no media and no
-    age: the minor rules never apply to them (§ 3 ter)."""
+    because-cycles, the strength mirror, the declared risk and its file-level tags. The node's TEXT never enters the minor
+    rules (§ 3 ter); its illustrations do, like every image (`_psyche_images`, § 3 decies)."""
     E = manifest.get("elements") or {}
     psy = (E.get("psyche") or {}).get("variants") or {}
     ids = manifest.get("identities") or {}
@@ -1462,6 +1514,7 @@ def _psyche_rules(manifest: dict, src: Path, rep: "Report") -> None:
                 _element_entry(manifest, ids, me, where, "what.item", o_["item"], "accessory", rep)
         if kind == "rule" and node.get("stability", "settled") != "core":
             rep.warnings.append(f"{where}: a rule that is not `core` (stability {node.get('stability', 'settled')}) — a rule is kept whatever the pressure")
+        _psyche_images(manifest, rv, node, where, me, ids, content, rep)
         if "strength" in rv and "strength" in node and rv["strength"] != node["strength"]:
             rep.errors.append(f"{where}: manifest strength {rv['strength']} differs from the node's ({node['strength']}) — the variant mirrors psyche-node.json")
         if node.get("visibility") == "personal":
@@ -1499,7 +1552,7 @@ def _psyche_rules(manifest: dict, src: Path, rep: "Report") -> None:
     # preset's life age (its declared age_override, else the age it shows): its memories legitimately show other ages (Clara at 65
     # remembers herself at 29) and do not count here; a declared age above the apparent one is its own warning (_age_rules)
     for pid in preset_ids(manifest):
-        pa = preset_life_age(manifest, pid, ignore={"memories"})
+        pa = preset_life_age(manifest, pid, ignore={"memories", "psyche"})
         if pa is None:
             continue
         for vid in resolve_preset_slots(manifest, pid).get("psyche") or []:

@@ -1,6 +1,6 @@
 # RFC 0004 — `psyche`: the character's inner life, as a graph of nodes
 
-- Status: **proposed** (30 October 2026: structure validated on four psyches — Clara, the Martian, a game character, an agent — with `tools/psyche/`; implementation of 1.2 under way on a private branch, cof-cli parts A and B done on 2 November; people, places and objects of a node by RFC 0005 on 3 November; `aware`, `valence`, `until` (§ 3 nonies) the same day; announced in RFC 0002 § 2; targeted at COF **1.2**; § 3 bis to § 3 sexies are the normative draft to review, § 7 lists what is still open)
+- Status: **proposed** (30 October 2026: structure validated on four psyches — Clara, the Martian, a game character, an agent — with `tools/psyche/`; implementation of 1.2 under way on a private branch, cof-cli parts A and B done on 2 November; people, places and objects of a node by RFC 0005 on 3 November; `aware`, `valence`, `until` (§ 3 nonies) the same day; illustrations of a node (§ 3 decies) on 4 November; announced in RFC 0002 § 2; targeted at COF **1.2**; § 3 bis to § 3 sexies are the normative draft to review, § 7 lists what is still open)
 - Author: Yann Souetre (with Claude)
 - Date: 2026-10-25 (draft)
 - Target: COF 1.2 — additive only; every 1.0 and 1.1 file stays valid and every earlier reader keeps working (§ 8)
@@ -81,6 +81,7 @@ On the manifest variant (`elements.psyche.variants.<id>`):
 | `identity` | in a cast file | the character, as every element |
 | `node` | **yes** | `elements/psyche/<id>/psyche-node.json` |
 | `strength` | no | 0–100, mirrored from the node so a reader can rank without opening files (as `age` is mirrored for memories) |
+| `media` | no | the node's illustrations: asset ids, **images only**, the first replaces the kind's icon (§ 3 decies); with `age` when an image shows the character |
 
 Variant ids: free; the builder names them by kind, `val1`, `bel2`, `want1`, `need1`, `fear1`, `wound1`, `stance1`, `taste1`, `hab1`, `contra1`, `rule1` (prefixes no other category uses).
 
@@ -123,7 +124,7 @@ Stability is normative for engines the way fidelity is: `core` — never changed
 - A preset lists the nodes it holds in `slots.psyche`, inherited through `extends` like every library; a preset younger than a node's `since` is a coherence finding (as RFC 0002 § 4.4). Clara at 12 does not hold `wound1`.
 - **The age that bounds a preset's life** (Yann, 4 November 2026): the *life age* of a preset is its declared `age_override` (through `extends`, the nearest declaration wins) when present, else its lowest age. It is the only age the time rules above use — memories and nodes after it are not offered, not shown, and reported when listed (`since` after it, `until` at or before it). The **safety rules keep the lowest age** (the minimum of the variants and the `age_override`: minors, intimacy and nudity gates, the age buckets of `tags.auto`). A declared age above the age the variants show (a 40-year-old shown at 25) is a coherence warning, nothing more.
 - `visibility: personal` nodes leave a file exactly as personal memories do (`cof extract`, `cof export`, the builder's purge, `--keep-personal`); `disclosure: secret` nodes are context, never quoted.
-- Nothing in a psyche node is a media: no age, no `nudity`, no `explicit`. The category never enters the minor rules. A node *about* an explicit memory is text and falls under `tags.content` like a card.
+- The **text** of a psyche node never enters the minor rules: no `explicit`, and a node *about* an explicit memory is text and falls under `tags.content` like a card. Its **images** (§ 3 decies) do, like every image of the file: `age`, `nudity`, the real-person rules and the purges of RFC 0002 § 5 read them.
 - A 1.0 or 1.1 reader sees the category as a library and ignores it (cof-cli 1.0.1 rule); a file that uses it declares `cof: "1.2"`.
 
 ## 3 quater. From the 1.0 lists to nodes (conversion, done by builders at load)
@@ -182,6 +183,25 @@ Three optional fields, chosen after a review of what nodes lack (the design note
 
 Revisions (`revisions[]`) may carry the previous `valence` and `aware` of a lived node, as they carry `strength` and `stability`.
 
+## 3 decies. Illustrations (4 November 2026 — Yann's choice)
+
+A node may be illustrated: the author replaces the kind's default icon with a picture of their own — the logo of an idea, a symbol, a strong mental image or a popular reference that structures a want or a fear. Nothing else changes: a node is still its gist; the picture is a handle for the eye.
+
+- **Field.** The manifest variant gains an optional **`media`**, a list of asset ids, **exactly as a memory variant** (RFC 0002 § 3), **images only**: an asset of another type (sound, video, text, a file) is an error — what needs those is a memory. No `media_from` (a node borrows nothing), no audio, no video. An illustration is an image the author **adds on the node's card** (a dedicated picker that creates new assets in the file, in the node's folder); it is not a choice among the images already in the file. Reusing an existing asset id is merely allowed: the same asset MAY be referenced by several variants of the same character (the guitar of an `accessory` may illustrate the node that is about it, as example 10 does). New asset role **`psyche-media`** for files added for a node; any role is accepted on an asset referenced from elsewhere.
+- **Reading.** The **first** image is the node's illustration: a reader draws it in the node's bubble in place of the kind's icon (the kind stays readable elsewhere: colour, frame, legend); the others are references, shown in the node's card. At most **3** are recommended: beyond that a warning (« more images make it a memory — link a memory instead »).
+- **Safety — these images are images of the file like any other** (RFC 0002 § 5 read for nodes). If one **shows the character**, the variant carries **`age`** (the character's age in the image; the node's `since` is something else) and declares `who: [{ "identity": "self", "shown": true }]`; that age **enters the preset's lowest age** exactly as a memory's media do — a preset that lists such a node is a minor preset when the age is under 18 (no `intimate`, no `nudity`, no effective `allowSexualUsage`). People of the node's `who[]` gain `shown` and `age` (an image shows them, at that age), with the meaning they have on a memory. **Nudity** (bare chest, buttocks — no visible genitals) is flagged `nudity: true` on the variant, with the file's `tags.content` `nudity`; it requires someone declared shown, every person shown with a known age of 18 or more, and, for a real person, a consent scope `nudity` or `intimate` (RFC 0002 § 5.3–5.5, 1.0 rule of `appearance/intimate`). An image of visible genitals or a sexual act does not illustrate a node: it belongs to a memory marked `explicit: intimate`. An image showing a real person follows the consent rules of memory media.
+- **Purges.** The all-audiences purge (`cof extract --all-audiences`, the builder's option) works as for memories (RFC 0002 § 5.8): it drops only the images of a node whose variant is marked `nudity` and **keeps the node** — its words stay, as a memory's gist does. Ordinary illustrations stay: the purge is about explicit content, not about images. `visibility: personal` nodes leave with their images (RFC 0002 § 5.7); extracting one character leaves behind the images that show another real person of the cast, the node staying (guard of RFC 0002 § 4.5). `cof extract --preset` / `--tag` carry the assets of the nodes they keep, including an asset another variant also uses.
+- **Checks (`cof validate`).** Errors: an asset of `media` unknown or not an image; `media_from` on a psyche variant; an image showing the character with no variant `age`; nudity with nobody declared shown, with the character under 18 or at an unknown age, with a person shown of unknown age or under 18, or with a real person lacking consent. Warnings: more than 3 images; `who[].shown` or a variant `age` on a node with no image; `nudity` with no image. The age rules of the preset (SPEC § 9.4) read the variant `age` like a memory's.
+- **Example.** In Clara (example 10) `contra1` « La lenteur, la nuit » is illustrated by the folk guitar with the peace motif (`appearance/x1`, asset `a-ac-x1`) and `hab1` « Le carnet » by the photo of `ev1`; neither shows a person, so neither carries an `age`:
+
+```jsonc
+"contra1": { "kind": "contradiction", "label": "La lenteur, la nuit / Slowness, at night",
+             "node": "elements/psyche/contra1/psyche-node.json", "media": ["a-ac-x1"], "identity": "id1", "strength": 60 }
+```
+
+  A node that showed Clara at 29 would add `"age": { "value": 29, "unit": "years" }` to the variant and `"who": [{ "identity": "self", "shown": true }]` to the node file.
+- **Compatibility.** Additive. A 1.1 reader ignores the category; a 1.2 reader without this section ignores `media` on a psyche variant and draws the kind's icon.
+
 ## 4. What it enables (the leverage)
 
 - **Explorer**: a **Constellation** view (force graph: nodes by kind, `because` edges to the memories — the past visibly pulling on the present); click → card; the same component as the memories graph; a list view too.
@@ -196,6 +216,7 @@ Revisions (`revisions[]`) may carry the previous `valence` and `aware` of a live
 - **Trait scores** (Big Five) as the backbone: keep them as the optional annex they already are.
 - A **fine emotion ontology** per node: PAD / EmotionML stay for memories and `baseline_emotion`; the psyche does not need a feeling per belief.
 - An **inference engine** in the format ("if fear > 70 then…"): COF describes, it does not execute; engines do what they want with `strength` / `stability` (the normative table is a recommendation).
+- A **gallery per node**: beyond three images (§ 3 decies) the node wants to be a memory — media of any type, a date, a place; link it with `because` instead of stacking pictures on the node.
 - Doing everything in 1.2: the **kinds** and the **links** are enough; `since`, Schwartz, `false_but_held`, revisions can come in 1.3 without breaking anything.
 
 ## 6. Decisions taken with Yann (25 October 2026)

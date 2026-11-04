@@ -169,7 +169,7 @@ def cast_rules(manifest: dict, src: Path, rep) -> None:
     # a relation that began after the age the preset shows (coherence, RFC 0003 § 6)
     from .model import preset_age, preset_owner
     for pid in (manifest.get("presets") or {}):
-        pa = preset_age(manifest, pid, ignore={"memories"})
+        pa = preset_age(manifest, pid, ignore={"memories", "psyche"})
         oid = preset_owner(manifest, pid)
         if pa is None or not oid:
             continue

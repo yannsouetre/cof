@@ -1,6 +1,6 @@
 # JSON Schemas (draft 2020-12) — COF 1.2
 
-1.2 adds to 1.1, by addition only (RFC 0004): the `psyche` category (kinds `value`, `belief`, `want`, `need`, `fear`, `wound`, `stance`, `taste`, `habit`, `contradiction`, `rule`), the variant fields `node` and `strength`, the content tags `psyche-inappropriate` and `psyche-dangerous`, and `psyche-node.schema.json`; with RFC 0005, the objects of a memory (`what`) and the people, places and objects of a psyche node (`who`, `where`, `what`). The 1.1 schemas stay published under `schemas/1.1/`.
+1.2 adds to 1.1, by addition only (RFC 0004): the `psyche` category (kinds `value`, `belief`, `want`, `need`, `fear`, `wound`, `stance`, `taste`, `habit`, `contradiction`, `rule`), the variant fields `node` and `strength`, the content tags `psyche-inappropriate` and `psyche-dangerous`, and `psyche-node.schema.json`; with RFC 0005, the objects of a memory (`what`) and the people, places and objects of a psyche node (`who`, `where`, `what`). With § 3 decies, the images of a psyche node: `media` on its variant (images only), the asset role `psyche-media`, `shown` and `age` on the people of a node. The 1.1 schemas stay published under `schemas/1.1/`.
 
 1.1 adds to 1.0, by addition only (RFC 0002): the `memories` category (kinds `moment`, `period`), the variant fields `memory`, `media`, `media_from`, the asset role `memory-media` and flag `as_remembered`, `identities.<id>.language`, and `memory.schema.json`. The 1.0 schemas stay published under `schemas/1.0/`.
 

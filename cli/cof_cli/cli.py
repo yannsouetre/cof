@@ -310,7 +310,8 @@ def cmd_psyche_add(a):
         work, identity=a.identity, kind=a.kind, gists=gists, label=a.label, strength=a.strength, stability=a.stability, since_age=a.since_age,
         since_date=a.since_date, approx=a.approx, links=a.link, about=a.about, lie=a.lie, tags=a.tag, risk=a.risk, origin=a.origin,
         personal=not a.canon, disclosure=a.disclosure, presets=a.preset, who=a.who, where=a.where, what=a.what,
-        aware=a.aware, valence=a.valence, until_age=a.until_age, until_date=a.until_date))
+        aware=a.aware, valence=a.valence, until_age=a.until_age, until_date=a.until_date,
+        images=[Path(x) for x in (a.image or [])], self_shown=a.self_shown, image_age=a.age))
 
 
 def cmd_psyche_propose(a):
@@ -538,9 +539,11 @@ def main(argv=None) -> int:
     pa.add_argument("--aware", choices=["yes", "partly", "no"], help="whether the character knows this about itself (default yes; no = acted on, never stated)")
     pa.add_argument("--valence", type=int, metavar="N", help="stance or taste only: -100 (hostile / hates) … +100 (warm / loves) — not the strength")
     pa.add_argument("--link", action="append", metavar="TYPE=REF", help="because=memories/ev3, about=psyche/bel1, supports=psyche/val1, conflicts=psyche/bel3 (memories and psyche nodes; a person goes in --who); repeat")
-    pa.add_argument("--who", action="append", metavar="LABEL[|identity=ID][|real]", help="a person the node is tied to (RFC 0005): a name and/or identity=<cast id>, 'real' for a real person who is not a character of the file; repeat")
+    pa.add_argument("--who", action="append", metavar="LABEL[|identity=ID][|real][|shown][|AGE]", help="a person the node is tied to (RFC 0005): a name and/or identity=<cast id>, 'real' for a real person who is not a character of the file, 'shown' (and their age) when an --image shows them; repeat")
     pa.add_argument("--where", action="append", metavar="LABEL[|environment=REF]", help="a place the node is tied to: a name and/or environment=<category>/<id> (an environment of the character); repeat")
     pa.add_argument("--what", action="append", metavar="LABEL[|item=REF]", help="an object the node is tied to: a name and/or item=<category>/<id> (an accessory of the character); repeat")
+    pa.add_argument("--image", action="append", metavar="FILE", help="an illustration of the node (RFC 0004 § 3 decies): an image file, repeat; the first replaces the kind's icon, more than 3 make it a memory")
+    pa.add_argument("--self-shown", action="store_true", help="an image shows the character (requires --age: the minor rules read it)"); pa.add_argument("--age", type=float, help="the character's age in the image (with --self-shown); it enters the preset's lowest age")
     pa.add_argument("--about", metavar="SUBJECT", help="stance only: user | identity=<id> | node=<category>/<id> | a free label")
     pa.add_argument("--lie", action="store_true", help="belief only: false_but_held (the character holds it, the author says it is false)")
     pa.add_argument("--tag", action="append"); pa.add_argument("--risk", choices=["none", "inappropriate", "dangerous"], default="none", help="declared risk (tags.content follows)")

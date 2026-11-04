@@ -311,7 +311,7 @@ PSY = {"val1": ("value", {"gist": {"en": "Craft before speed."}, "strength": 80,
 
 def with_psyche(d, nodes=None, variants=None):
     """Add val1, bel1 and the contradiction between them to the base (cof 1.2), strength mirrored on the variants; the
-    default preset lists them and the minor preset inherits them (a psyche never enters the minor rules, § 3 ter).
+    default preset lists them and the minor preset inherits them (the TEXT of a node never enters the minor rules, § 3 ter; its images do, § 3 decies).
     `nodes` / `variants`: {vid: {field: value}} merged into the node file / the manifest variant (None removes the field)."""
     m = load(d); m["cof"] = "1.2"; V_ = {}
     for vid, (kind, nd) in PSY.items():
@@ -386,6 +386,33 @@ def _(d): with_psyche(d, nodes={"bel1": {"valence": 40}})
 
 @case("psyche-until-before-since", "a node's `until` is not before its `since`", "RFC 0004 § 3 nonies", "is before `since`")
 def _(d): with_psyche(d, nodes={"val1": {"since": {"age": {"value": 30, "unit": "years"}}, "until": {"age": {"value": 25, "unit": "years"}}}})
+
+# ---------- illustrations of a psyche node (RFC 0004 § 3 decies): images of the file like any other ----------
+def psyche_image(d, vid, extra=None, shown=None, variant=None, name="pic.png"):
+    """Give psyche node `vid` one image of its own (a psyche-media asset) on top of with_psyche; `shown`: who[] of the node; `variant`: fields of the manifest variant."""
+    from PIL import Image
+    m = with_psyche(d)
+    rel = f"elements/psyche/{vid}/{name}"; Image.new("RGB", (8, 8), (120, 60, 30)).save(d / rel)
+    m["assets"].append({"id": f"a-psy-{vid}", "path": rel, "role": "psyche-media", "mediaType": "image/png", "bytes": 0, "sha256": "0" * 64, "license": "CC0-1.0"})
+    V(m, "psyche")[vid].update({"media": [f"a-psy-{vid}"], **(variant or {})})
+    if shown:
+        p = d / f"elements/psyche/{vid}/psyche-node.json"; n = json.loads(p.read_text("utf-8")); n["who"] = shown; p.write_text(json.dumps(n), "utf-8")
+    refresh_asset_index(d, m); save(d, m); return m
+
+@case("psyche-image-not-an-image", "a psyche node is illustrated by images only", "RFC 0004 § 3 decies", "illustrated by images only")
+def _(d): m = psyche_image(d, "val1"); V(m, "psyche")["val1"]["media"] = ["a-lora-l1"]; save(d, m)
+
+@case("psyche-image-unknown-asset", "an image of a psyche node is an asset of the file", "RFC 0004 § 3 decies", "media: unknown asset")
+def _(d): m = psyche_image(d, "val1"); V(m, "psyche")["val1"]["media"] = ["a-nowhere"]; save(d, m)
+
+@case("psyche-image-shows-character-without-age", "an image that shows the character makes the variant carry an age", "RFC 0004 § 3 decies / RFC 0002 § 5.2", "the variant must carry `age`")
+def _(d): psyche_image(d, "val1", shown=[{"identity": "self", "shown": True}])
+
+@case("psyche-image-of-a-minor-in-an-adult-preset", "the age of an image enters the preset's lowest age: a minor image makes a minor preset", "RFC 0004 § 3 decies / SPEC § 9.4", "intimate variant combined with an element under 18")
+def _(d): psyche_image(d, "val1", shown=[{"identity": "self", "shown": True}], variant={"age": {"value": 12, "unit": "years", "basis": "declared"}})
+
+@case("psyche-image-nudity-without-adult", "an image with nudity shows an adult whose age is known", "RFC 0004 § 3 decies / RFC 0002 § 5.4", "at an unknown age or under 18")
+def _(d): psyche_image(d, "val1", shown=[{"identity": "self", "shown": True}], variant={"nudity": True, "age": {"value": 16, "unit": "years", "basis": "declared"}})
 
 # ---------- archive-level cases (pack the valid base, then tamper) ----------
 def rewrite(src: Path, dst: Path, entries):

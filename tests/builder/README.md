@@ -91,3 +91,11 @@ element card × memory photo × preset or once per memory. Times with generous c
 machine): open under 5 s (it includes the one second « Fichier chargé » stays on screen), Presets under 500 ms, Memories and Psyché under
 1 s, checks under 2 s, Build under 1 s. Before the fix, Clara + 5 000 took 30 s to open (59 s with every memory in every preset) and its
 Build step 4 s.
+
+## Images on psyche nodes (RFC 0004 § 3 decies)
+
+```
+node tests/builder/images_test.js [repo-root] [work-dir]
+```
+
+Opens Clara (example 10): `contra1` and `hab1` load with their illustration (the guitar, a memory image) and an untouched build keeps them and validates. Then two images are added through the node card's picker (the first is the icon), a non-image is refused, the « more than 3 » warning and the ✕ removal work, a character shown without an age (or nudity without an adult) is an error, and build → `cof validate` → reopen keeps everything. The all-audiences build drops the images of a nudity node and keeps ordinary illustrations. The six languages carry the picker's words; no page error.

@@ -831,7 +831,7 @@
           "items": {
             "$ref": "#/$defs/aid"
           },
-          "description": "memories: the node's assets (role memory-media). Exclusive with media_from (RFC 0002)."
+          "description": "memories: the node's assets (role memory-media). Exclusive with media_from (RFC 0002). psyche (1.2, RFC 0004 § 3 decies): the node's illustrations — images only; the first replaces the kind's icon, the others are references (at most 3 recommended)."
         },
         "media_from": {
           "type": "string",
@@ -1270,7 +1270,8 @@
             "memory",
             "file",
             "archive",
-            "memory-media"
+            "memory-media",
+            "psyche-media"
           ]
         },
         "mediaType": {
