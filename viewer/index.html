@@ -528,7 +528,7 @@ const nrmName=t=>String(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").t
 let _castM=null,_castBy=null;function castByName(){if(_castM!==M||!_castBy){_castM=M;_castBy=new Map();for(const [iid,I] of Object.entries(ids()))for(const x of [I.name,I.given_name,[I.given_name,I.family_name].filter(Boolean).join(" "),...nicknamesOf(I)]){const k=nrmName(x);if(k&&!_castBy.has(k))_castBy.set(k,iid)}}return _castBy}
 const _axC=new WeakMap();   /* axisEntry per entry object (node files are read once): memCost walks every memory of the file on each render */
 function axisEntry(ax,e,lang){if(!e||typeof e!=="object")return null;let c=_axC.get(e);if(!c||c.m!==M){c={m:M};_axC.set(e,c)}const ck=ax+"|"+lang;if(!(ck in c))c[ck]=axisEntry0(ax,e,lang);return c[ck]}
-function axisEntry0(ax,e,lang){const full=String((typeof e.label==="string"?e.label:textIn(e.label,lang))||"").trim();
+function axisEntry0(ax,e,lang){const full=String((typeof e.label==="string"?e.label:textIn(e.label,lang))||"").normalize("NFC").trim();   /* NFC: the same name typed with composed or decomposed accents is one person, place or object (RFC 0005 § 2.4) */
   if(ax==="w"){if(e.identity==="self")return null;const I=e.identity?ids()[e.identity]:null;if(I)return {key:"i:"+e.identity,row:"w",label:String(I.name||e.identity),ico:"👤"};
     const lab=full.split(/[,(]/)[0].trim();if(!lab)return null;const cb=castByName(),m=cb.get(nrmName(lab))||cb.get(nrmName(full));if(m)return {key:"i:"+m,row:"w",label:String(ids()[m].name||m),ico:"👤"};return {key:"w:"+lab.toLowerCase(),row:"w",label:lab,ico:"👤"}}
   const ref=String((ax==="p"?e.environment:e.item)||""),[c,id]=ref.split(/\/(.*)/);
