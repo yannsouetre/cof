@@ -42,6 +42,19 @@ html,body{margin:0;background:#000;overflow:hidden}
 #outro .t{font:500 52px Bricolage,sans-serif;color:var(--muted);margin-top:16px}
 #outro .l{font:400 36px Plex,sans-serif;margin-top:46px}
 #outro .u{font:500 40px PlexMono,monospace;color:var(--teal);margin-top:20px}
+#psy .ppanel{border-radius:22px;border:1.5px solid rgba(169,138,232,.45);background:rgba(169,138,232,.05)}
+#psy>svg{position:absolute;left:0;top:0;overflow:visible}
+.phub,.pnode{text-align:center;text-shadow:0 0 6px var(--bg),0 0 12px var(--bg)}
+.phub{transform-origin:50% 60px}
+.phub .c{width:120px;height:120px;margin:0 auto;border-radius:50%;box-sizing:border-box;border:4px solid var(--violet);background:#141c1b center/cover no-repeat;display:flex;align-items:center;justify-content:center;font:500 22px PlexMono,monospace;color:var(--ink);box-shadow:0 0 0 8px rgba(169,138,232,.12),0 14px 34px rgba(0,0,0,.4)}
+.phub .t{margin-top:12px;font:500 24px/1.2 Plex,sans-serif;color:var(--ink)}
+.phub .m{margin-top:5px;font:500 18px PlexMono,monospace;color:var(--muted)}
+.pnode{transform-origin:50% 52px}
+.pnode .c{width:104px;height:104px;margin:0 auto;border-radius:50%;box-sizing:border-box;border:3px solid var(--pk);background:color-mix(in srgb,var(--pk) 18%,#121a19);box-shadow:0 0 0 7px color-mix(in srgb,var(--pk) 12%,transparent);display:flex;align-items:center;justify-content:center;font-size:44px;line-height:1;font-family:"Noto Color Emoji","Apple Color Emoji","Segoe UI Emoji",sans-serif;text-shadow:none}
+.pnode .t{margin-top:12px;font:500 26px/1.2 Plex,sans-serif;color:var(--ink)}
+.pnode .k{margin-top:4px;font:500 19px PlexMono,monospace;color:var(--pk)}
+#plegend{display:flex;gap:36px;align-items:center;font:500 20px PlexMono,monospace;color:var(--muted)}
+#plegend span{display:flex;align-items:center;gap:10px}
 #credit{left:80px;width:920px;bottom:70px;font:400 22px Plex,sans-serif;color:var(--muted)}
 </style>
 </head>
@@ -69,6 +82,8 @@ html,body{margin:0;background:#000;overflow:hidden}
   </div>
 
   <div id="cast"></div>
+
+  <div id="psy"></div>
 
   <div id="outro" class="abs" style="left:80px;top:720px;width:920px">
     <div class="w">COF</div><div class="t">Character Open File</div>
@@ -109,7 +124,35 @@ const pills=["English","Français","29","65","photo","manga"].map(t=>{const p=do
 // scene 6 — cast
 const castEl=$("cast");const cast=[["img/clara-29.jpg","Clara Mercier","her own rights"],["img/martien.jpg","Martien","his own rights"]].map(([src,n,b],i)=>{const w=document.createElement("div");w.className="abs";w.style.left=(90+i*480)+"px";w.style.top="560px";w.innerHTML=`<div class="portrait" style="width:420px;height:660px;background-image:url(${src})"></div><div class="name" style="margin-top:20px">${n}</div><div class="badge">${b}</div>`;castEl.appendChild(w);return w});
 
-const TEXT=[[0,5,"An AI character today:","Many formats, many files — and nothing says what you may do with it."],[5.4,9,"The complete character.<br>In one open file.",""],[9,16,"Everything that<br>makes Clara.",""],[16,23,"Every version,<br>one file.","Presets: switch the language or the age — the rest follows."],[23,28,"Its rights travel<br>with it.",""],[28,32.6,"Several characters,<br>one file.","Each keeps its own looks, voice and rights."]];
+const STAGE_W=1080,STAGE_H=1920;
+// scene 3b — psyche: Clara's real nodes (spec/examples/10, elements/psyche), hung under the memories they come from;
+// the explorer's graph language: kind colours and icons (viewer --pk-* dark values), memory hubs, typed links
+const PK={wound:"#ca7272",value:"#61dba6",belief:"#8ba2e5",want:"#ebb973",need:"#af95da",fear:"#db7871",stance:"#58c9e4",taste:"#dc93c3",habit:"#bace6e",contradiction:"#ffd13d"};
+const PICO={wound:"🩹",value:"💎",belief:"💭",want:"🎯",need:"🌱",fear:"😨",stance:"🧭",taste:"🍋",habit:"🔁",contradiction:"⚡"};
+const PHUBS=[["ep1","The agency years","period · age 24–28","","work"],["ev2","The first morning in my own studio","moment · age 28","img/mem-studio.jpg",""],["ev1","My grandmother’s house","moment · age 8","img/mem-grandmother.jpg",""]];
+const PNODES=[["wound1","wound","The agency years"],["fear1","fear","Burning out"],["bel1","belief","A web nobody pays for"],["val1","value","Lightness"],["contra1","contradiction","Slowness, at night"],["val4","value","Empathy first"],["taste1","taste","Paper and lime trees"]];
+const PLINKS=[["val1","wound1","because"],["bel1","wound1","because"],["bel1","val1","supports"],["contra1","val1","conflicts"]];
+const LSTY={because:["#4cc2a8",""],supports:["#7fd67a","12 9"],conflicts:["#f07a72","12 9"]};
+const PL={hubs:{ep1:[200,640],ev2:[540,640],ev1:[880,640]},hubW:320,nodeW:270,
+  nodes:{wound1:[200,920],bel1:[200,1200],fear1:[200,1480],val1:[540,920],contra1:[540,1200],val4:[880,920],taste1:[880,1200]},
+  panels:[[50,840,300,800],[390,840,300,520],[730,840,300,520]],legend:[84,1700],
+  bend:{"val1|wound1":[370,920],"bel1|wound1":[55,1150,55,975],"bel1|val1":[380,1000],"contra1|val1":[650,1150,650,970]}};
+const psyEl=$("psy"),SVGNS="http://www.w3.org/2000/svg";
+const ppanels=PL.panels.map(([x,y,w,h])=>{const d=document.createElement("div");d.className="abs ppanel";Object.assign(d.style,{left:x+"px",top:y+"px",width:w+"px",height:h+"px"});psyEl.appendChild(d);return d});
+const psvg=document.createElementNS(SVGNS,"svg");psvg.setAttribute("width",STAGE_W);psvg.setAttribute("height",STAGE_H);psyEl.appendChild(psvg);
+const plinks=PLINKS.map(([a,b,ty],i)=>{const [x0,y0]=PL.nodes[a],[x2,y2]=PL.nodes[b],c=PL.bend[a+"|"+b],[cx,cy]=c,[dx,dy]=c.length>2?c.slice(2):c;   // one control point (quadratic) or two (cubic)
+  const trim=(px,py,qx,qy,r)=>{const l=Math.hypot(qx-px,qy-py);return [px+(qx-px)/l*r,py+(qy-py)/l*r]};   // start and end on the bubbles' edge
+  const [sx,sy]=trim(x0,y0,cx,cy,60),[ex,ey]=trim(x2,y2,dx,dy,60),d=c.length>2?`M${sx} ${sy} C${cx} ${cy} ${dx} ${dy} ${ex} ${ey}`:`M${sx} ${sy} Q${cx} ${cy} ${ex} ${ey}`;
+  const g=document.createElementNS(SVGNS,"g");g.innerHTML=`<mask id="pm${i}" maskUnits="userSpaceOnUse" x="0" y="0" width="${STAGE_W}" height="${STAGE_H}"><path d="${d}" fill="none" stroke="#fff" stroke-width="16" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"/></mask><path d="${d}" fill="none" stroke="${LSTY[ty][0]}" stroke-width="3" stroke-linecap="round" ${LSTY[ty][1]?`stroke-dasharray="${LSTY[ty][1]}"`:""} mask="url(#pm${i})"/>`;
+  psvg.appendChild(g);return {g,m:g.querySelector("mask path")}});
+const phubs=PHUBS.map(([id,t,m,img,txt])=>{const [x,y]=PL.hubs[id],d=document.createElement("div");d.className="abs phub";Object.assign(d.style,{left:(x-PL.hubW/2)+"px",top:(y-60)+"px",width:PL.hubW+"px"});
+  d.innerHTML=`<div class="c"${img?` style="background-image:url(${img})"`:""}>${txt}</div><div class="t">${t}</div><div class="m">${m}</div>`;psyEl.appendChild(d);return d});
+const pnodes=PNODES.map(([id,kind,t])=>{const [x,y]=PL.nodes[id],d=document.createElement("div");d.className="abs pnode";Object.assign(d.style,{left:(x-PL.nodeW/2)+"px",top:(y-52)+"px",width:PL.nodeW+"px"});d.style.setProperty("--pk",PK[kind]);
+  d.innerHTML=`<div class="c">${PICO[kind]}</div><div class="t">${t}</div><div class="k">${kind}</div>`;psyEl.appendChild(d);return d});
+const plegend=document.createElement("div");plegend.id="plegend";plegend.className="abs";Object.assign(plegend.style,{left:PL.legend[0]+"px",top:PL.legend[1]+"px"});
+plegend.innerHTML=Object.entries(LSTY).map(([ty,[c,da]])=>`<span><svg width="46" height="6"><line x1="2" y1="3" x2="44" y2="3" stroke="${c}" stroke-width="3" stroke-linecap="round" ${da?'stroke-dasharray="8 6"':""}/></svg>${ty}</span>`).join("");psyEl.appendChild(plegend);
+
+const TEXT=[[0,5,"An AI character today:","Many formats, many files — and nothing says what you may do with it."],[5.4,8.6,"The complete character.<br>In one open file.",""],[8.6,14.2,"Everything that<br>makes Clara.",""],[14.2,18.8,"An inner life.","Values, fears, wounds — each tied to the memory that made it."],[18.8,24,"Every version,<br>one file.","Presets: switch the language or the age — the rest follows."],[24,28,"Its rights travel<br>with it.",""],[28,32.6,"Several characters,<br>one file.","Each keeps its own looks, voice and rights."]];
 const DUR=38;
 function render(t){
   // headline + subline
@@ -119,29 +162,36 @@ function render(t){
     const o=win(t,a,b,.7,.5);set(h1,o,0,(1-out(k(t,a,a+.9)))*30);set(s1,win(t,a+.5,b,.7,.5),0,(1-out(k(t,a+.5,a+1.4)))*20);
     s1.style.top="380px"; s1.style.left="84px"; h1.style.left="80px"}
   else{set(h1,0);set(s1,0)}
-  if(cur&&cur[0]===16){s1.style.top="1770px";s1.style.fontSize="30px"}else{s1.style.fontSize=""}
+  if(cur&&cur[0]===18.8){s1.style.top="1770px";s1.style.fontSize="30px"}else{s1.style.fontSize=""}
   if(cur&&cur[0]===28){s1.style.top="1340px"}
   h1.style.top="150px";h1.style.width="920px"
   // scene 1–2: pieces drift, then converge into the file
-  const conv=ease(k(t,5,7.2));
+  const conv=ease(k(t,5,7));
   pieces.forEach((p,i)=>{const dx=Math.sin(t*.7+i)*14,dy=Math.cos(t*.6+i*1.3)*12;const cx=540-p.w/2,cy=970-p.h/2;
-    set(p.el,Math.min(k(t,.2+i*.12,.8+i*.12),1-k(t,6.6,7.2)),lerp(dx,cx-p.x,conv),lerp(dy,cy-p.y,conv),lerp(1,.25,conv),lerp(Math.sin(i)*4,0,conv))});
+    set(p.el,Math.min(k(t,.2+i*.12,.8+i*.12),1-k(t,6.4,7)),lerp(dx,cx-p.x,conv),lerp(dy,cy-p.y,conv),lerp(1,.25,conv),lerp(Math.sin(i)*4,0,conv))});
   // the file
-  const fIn=out(k(t,6.6,7.6)),fMove=ease(k(t,9,10.2)),fOut=k(t,15.4,16);
+  const fIn=out(k(t,6.4,7.4)),fMove=ease(k(t,8.6,9.6)),fOut=k(t,13.6,14.2);
   set($("file"),Math.min(fIn,1-fOut),lerp(0,370,fMove),lerp(0,-620,fMove),lerp(.6+.4*fIn,.32,fMove));
   // scene 3: Clara + contents
-  const cIn=out(k(t,9.6,10.6));set($("clara"),Math.min(cIn,1-k(t,15.4,16)),lerp(-40,0,cIn),0,1);
+  const cIn=out(k(t,9,9.9));set($("clara"),Math.min(cIn,1-k(t,13.6,14.2)),lerp(-40,0,cIn),0,1);
   $("clara").style.left="390px";$("clara").style.top="350px";$("clara").style.width="300px";$("clara").style.height="620px";
-  rows.forEach((r,i)=>{const a=10.4+i*.42;const o=Math.min(out(k(t,a,a+.5)),1-k(t,15.4,16));set(r,o,(1-out(k(t,a,a+.6)))*60,0)});
+  rows.forEach((r,i)=>{const a=9.6+i*.32;const o=Math.min(out(k(t,a,a+.5)),1-k(t,13.6,14.2));set(r,o,(1-out(k(t,a,a+.6)))*60,0)});
+  // scene 3b: psyche — hubs, then the nodes hanging under them, then the links drawing themselves
+  const pOut=1-k(t,18.2,18.8);
+  phubs.forEach((h,i)=>{const a=14.4+i*.15,p=out(k(t,a,a+.55));set(h,Math.min(p,pOut),0,(1-p)*24,lerp(.85,1,p))});
+  ppanels.forEach((d,i)=>{const a=14.6+i*.15;set(d,Math.min(out(k(t,a,a+.6)),pOut))});
+  pnodes.forEach((n,j)=>{const a=14.8+j*.16,p=out(k(t,a,a+.5));set(n,Math.min(p,pOut),0,(1-p)*20,lerp(.7,1,p))});
+  plinks.forEach((l,i)=>{const a=15.9+i*.22;l.m.setAttribute("stroke-dashoffset",1-ease(k(t,a,a+.7)));l.g.style.opacity=pOut});
+  set(plegend,Math.min(k(t,16.3,16.9),pOut)*.9);
   // scene 4: presets + facet pills
-  pres.forEach((w,i)=>{const a=16.3+i*.35;set(w,Math.min(out(k(t,a,a+.6)),1-k(t,22.4,23)),0,(1-out(k(t,a,a+.7)))*80)});
-  const lang=t<19.6?0:1,age=t<21?0:1;
-  pills.forEach((p,i)=>{p.classList.toggle("on",(i===lang)||(i===2+age)||(i===4));set(p,Math.min(k(t,17.4+i*.1,17.9+i*.1),1-k(t,22.4,23)))});
+  pres.forEach((w,i)=>{const a=19+i*.3;set(w,Math.min(out(k(t,a,a+.6)),1-k(t,23.4,24)),0,(1-out(k(t,a,a+.7)))*80)});
+  const lang=t<21?0:1,age=t<22.2?0:1;
+  pills.forEach((p,i)=>{p.classList.toggle("on",(i===lang)||(i===2+age)||(i===4));set(p,Math.min(k(t,19.6+i*.1,20.1+i*.1),1-k(t,23.4,24)))});
   // pill-driven highlight of the matching preset card
-  pres.forEach((w,i)=>{const on=(age===0&&i===0)||(age===1&&i===2);w.firstChild.style.outline=t>17.6&&t<22.6&&on?"6px solid var(--teal)":"none";w.firstChild.style.outlineOffset="6px"});
+  pres.forEach((w,i)=>{const on=(age===0&&i===0)||(age===1&&i===2);w.firstChild.style.outline=t>19.8&&t<23.6&&on?"6px solid var(--teal)":"none";w.firstChild.style.outlineOffset="6px"});
   // scene 5: rights
-  const rIn=out(k(t,23.4,24.2));set($("rights"),Math.min(rIn,1-k(t,27.4,28)),0,(1-rIn)*40);
-  [...$("rights").children].forEach((r,i)=>{r.style.opacity=k(t,23.9+i*.35,24.4+i*.35)});
+  const rIn=out(k(t,24.3,25));set($("rights"),Math.min(rIn,1-k(t,27.4,28)),0,(1-rIn)*40);
+  [...$("rights").children].forEach((r,i)=>{r.style.opacity=k(t,24.6+i*.3,25.1+i*.3)});
   $("rights").style.top="760px";
   // scene 6: cast
   cast.forEach((w,i)=>{const a=28.4+i*.45;set(w,Math.min(out(k(t,a,a+.6)),1-k(t,32,32.6)),(1-out(k(t,a,a+.7)))*80,0)});

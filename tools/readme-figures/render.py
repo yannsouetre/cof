@@ -31,7 +31,7 @@ async def main():
             await el.screenshot(path=str(OUT / f"{await el.get_attribute('id')}.png"), omit_background=True)
         clip = await br.new_page(viewport={"width": 1920, "height": 1080})
         await clip.goto(f"{BASE}/clip/index.html?render"); await clip.evaluate("document.fonts.ready"); await clip.wait_for_timeout(500)
-        for name, t in (("presets", 20.5), ("rights", 26.5), ("cast", 31.0)):
+        for name, t in (("presets", 21.6), ("rights", 27.0), ("cast", 31.0)):   # clip times: Français + 29 on, every rights row in, both characters in
             await clip.evaluate(f"render({t})"); save_jpeg(await clip.screenshot(), OUT / f"cof-{name}.jpg")
         shots = await br.new_page(viewport={"width": 1440, "height": 900}, color_scheme="light")
         await shots.goto(f"{BASE}/viewer/#clara"); await shots.wait_for_selector(".pcard", timeout=20000); await shots.wait_for_timeout(1500)
