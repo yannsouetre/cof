@@ -163,13 +163,34 @@ figure.node .facts{display:grid;grid-template-columns:110px 1fr;gap:4px 14px;mar
 figure.node .facts dt{color:var(--muted)}figure.node .facts dd{margin:0}
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted);margin:10px auto 0;max-width:calc(var(--col) - 40px)}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
-.pgraph .replay{position:absolute;right:14px;top:12px;font:500 13px PlexMono,monospace;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
-.pgraph{position:relative}.pgraph .agec{position:absolute;left:18px;top:12px;font:500 13px PlexMono,monospace;color:var(--muted)}
-.pgraph svg .n{cursor:pointer}.pgraph svg .n circle{transition:opacity .5s,transform .5s}.pgraph svg .off{opacity:0}
-.pgraph svg .ln{transition:opacity .6s}.pgraph svg.hl .ln{opacity:.12}.pgraph svg.hl .ln.on{opacity:1}.pgraph svg.hl .n{opacity:.35}.pgraph svg.hl .n.on{opacity:1}
-.pfocus{max-width:calc(var(--col) - 40px);margin:16px auto 0;min-height:118px;padding:16px 18px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
-.pfocus .t{font:700 18px/1.3 Bricolage,Plex,sans-serif;margin:0 0 4px}.pfocus .m{font:500 12px PlexMono,monospace;color:var(--muted);margin:0 0 8px}
-.pfocus .g{font:500 19px/1.45 Cormorant,Georgia,serif;color:#e4dfd6;margin:0}
+.pgraph .replay{position:absolute;right:14px;top:12px;font:500 13px PlexMono,monospace;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;z-index:1}
+.pgraph{position:relative}.pgraph .agec{position:absolute;left:18px;top:14px;font:500 11px PlexMono,monospace;color:#5f6f6b;letter-spacing:.06em;text-transform:uppercase;z-index:1}
+/* the psyche graph, in the visual language of the memories graph (memories/index.html): rings, halo and scale on focus, arrival by fade and drawing */
+.pgraph svg .lane{font:500 11px PlexMono,monospace;fill:#5f6f6b;letter-spacing:.06em}
+.pgraph svg .n{cursor:pointer;transition:opacity .6s ease}
+.pgraph svg .n .node{transform-box:fill-box;transform-origin:center;transition:transform .45s cubic-bezier(.2,.8,.2,1),filter .3s}
+.pgraph svg .n.off{opacity:0!important}.pgraph svg .n.off .node{transform:scale(.55)}
+.pgraph svg .piv .ring{fill:#0b100f;stroke:var(--teal);stroke-width:2;transition:stroke-width .3s}
+.pgraph svg .piv image{transition:filter .4s}
+.pgraph svg .piv .pill{fill:rgba(169,138,232,.10);stroke:rgba(169,138,232,.55);stroke-width:1}
+.pgraph svg .piv .pt{font:500 13px Plex,sans-serif;fill:#cbbcf0;text-anchor:middle}.pgraph svg .piv .ps{font:500 11px PlexMono,monospace;fill:#9f8cd0;text-anchor:middle}
+.pgraph svg .lab{font:500 14px Plex,sans-serif;fill:var(--ink);text-anchor:middle}
+.pgraph svg .sub{font:400 11.5px Plex,sans-serif;fill:var(--muted);text-anchor:middle}
+.pgraph svg .nl{font:500 11.5px Plex,sans-serif;fill:#dfe8e5;text-anchor:middle}
+.pgraph svg .ln{transition:opacity .6s ease,stroke-dashoffset 1.4s ease}.pgraph svg .ln.off{opacity:0}
+.pgraph svg.hl .ln{opacity:.12}.pgraph svg.hl .ln.on{opacity:1}
+.pgraph svg.hl .n:not(.on){opacity:.35}.pgraph svg.hl .piv:not(.on) image{filter:saturate(.5) brightness(.75)}
+.pgraph svg .n.on .node{transform:scale(1.2);filter:drop-shadow(0 0 10px var(--hc,rgba(76,194,168,.55)))}
+.pgraph svg .piv.on .ring{stroke-width:3}
+.pfocus{display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:center;max-width:calc(var(--col) - 40px);margin:18px auto 0;min-height:120px;transition:opacity .35s}
+.pfocus.fade{opacity:0}
+.pfocus .vis{width:120px;height:120px;border-radius:14px;border:1px solid var(--line);background:#0e1514;display:grid;place-items:center;overflow:hidden}
+.pfocus .vis:empty{visibility:hidden}.pfocus .vis img{width:100%;height:100%;object-fit:cover}.pfocus .vis i{display:block;border-radius:50%}
+.pfocus .vis b{font:500 12px PlexMono,monospace;color:#cbbcf0;letter-spacing:.04em}
+.pfocus .gist{font:500 20px/1.4 Cormorant,Georgia,serif;color:#e8e3da;margin:0 0 8px}
+.pfocus .meta{font:500 12px/1.7 PlexMono,monospace;color:var(--muted);margin:0;letter-spacing:.03em}.pfocus .meta b{color:var(--teal);font-weight:500}
+@media (max-width:640px){.pfocus{grid-template-columns:84px 1fr}.pfocus .vis{width:84px;height:84px}.pfocus .gist{font-size:17px}}
+@media (prefers-reduced-motion:reduce){.pgraph svg .n,.pgraph svg .n .node,.pgraph svg .ln,.pfocus{transition:none}}
 table.cmp{width:100%;border-collapse:collapse;margin:22px 0 8px;font-size:15px}
 table.cmp th,table.cmp td{text-align:left;vertical-align:top;padding:9px 10px;border-bottom:1px solid var(--line)}
 table.cmp thead th{font:700 15px Bricolage,Plex,sans-serif;color:var(--ink)}table.cmp tbody th{color:var(--muted);font-weight:500;width:28%}

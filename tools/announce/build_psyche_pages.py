@@ -73,13 +73,34 @@ figure.node .facts{display:grid;grid-template-columns:110px 1fr;gap:4px 14px;mar
 figure.node .facts dt{color:var(--muted)}figure.node .facts dd{margin:0}
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted);margin:10px auto 0;max-width:calc(var(--col) - 40px)}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
-.pgraph .replay{position:absolute;right:14px;top:12px;font:500 13px PlexMono,monospace;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
-.pgraph{position:relative}.pgraph .agec{position:absolute;left:18px;top:12px;font:500 13px PlexMono,monospace;color:var(--muted)}
-.pgraph svg .n{cursor:pointer}.pgraph svg .n circle{transition:opacity .5s,transform .5s}.pgraph svg .off{opacity:0}
-.pgraph svg .ln{transition:opacity .6s}.pgraph svg.hl .ln{opacity:.12}.pgraph svg.hl .ln.on{opacity:1}.pgraph svg.hl .n{opacity:.35}.pgraph svg.hl .n.on{opacity:1}
-.pfocus{max-width:calc(var(--col) - 40px);margin:16px auto 0;min-height:118px;padding:16px 18px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
-.pfocus .t{font:700 18px/1.3 Bricolage,Plex,sans-serif;margin:0 0 4px}.pfocus .m{font:500 12px PlexMono,monospace;color:var(--muted);margin:0 0 8px}
-.pfocus .g{font:500 19px/1.45 Cormorant,Georgia,serif;color:#e4dfd6;margin:0}
+.pgraph .replay{position:absolute;right:14px;top:12px;font:500 13px PlexMono,monospace;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;z-index:1}
+.pgraph{position:relative}.pgraph .agec{position:absolute;left:18px;top:14px;font:500 11px PlexMono,monospace;color:#5f6f6b;letter-spacing:.06em;text-transform:uppercase;z-index:1}
+/* the psyche graph, in the visual language of the memories graph (memories/index.html): rings, halo and scale on focus, arrival by fade and drawing */
+.pgraph svg .lane{font:500 11px PlexMono,monospace;fill:#5f6f6b;letter-spacing:.06em}
+.pgraph svg .n{cursor:pointer;transition:opacity .6s ease}
+.pgraph svg .n .node{transform-box:fill-box;transform-origin:center;transition:transform .45s cubic-bezier(.2,.8,.2,1),filter .3s}
+.pgraph svg .n.off{opacity:0!important}.pgraph svg .n.off .node{transform:scale(.55)}
+.pgraph svg .piv .ring{fill:#0b100f;stroke:var(--teal);stroke-width:2;transition:stroke-width .3s}
+.pgraph svg .piv image{transition:filter .4s}
+.pgraph svg .piv .pill{fill:rgba(169,138,232,.10);stroke:rgba(169,138,232,.55);stroke-width:1}
+.pgraph svg .piv .pt{font:500 13px Plex,sans-serif;fill:#cbbcf0;text-anchor:middle}.pgraph svg .piv .ps{font:500 11px PlexMono,monospace;fill:#9f8cd0;text-anchor:middle}
+.pgraph svg .lab{font:500 14px Plex,sans-serif;fill:var(--ink);text-anchor:middle}
+.pgraph svg .sub{font:400 11.5px Plex,sans-serif;fill:var(--muted);text-anchor:middle}
+.pgraph svg .nl{font:500 11.5px Plex,sans-serif;fill:#dfe8e5;text-anchor:middle}
+.pgraph svg .ln{transition:opacity .6s ease,stroke-dashoffset 1.4s ease}.pgraph svg .ln.off{opacity:0}
+.pgraph svg.hl .ln{opacity:.12}.pgraph svg.hl .ln.on{opacity:1}
+.pgraph svg.hl .n:not(.on){opacity:.35}.pgraph svg.hl .piv:not(.on) image{filter:saturate(.5) brightness(.75)}
+.pgraph svg .n.on .node{transform:scale(1.2);filter:drop-shadow(0 0 10px var(--hc,rgba(76,194,168,.55)))}
+.pgraph svg .piv.on .ring{stroke-width:3}
+.pfocus{display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:center;max-width:calc(var(--col) - 40px);margin:18px auto 0;min-height:120px;transition:opacity .35s}
+.pfocus.fade{opacity:0}
+.pfocus .vis{width:120px;height:120px;border-radius:14px;border:1px solid var(--line);background:#0e1514;display:grid;place-items:center;overflow:hidden}
+.pfocus .vis:empty{visibility:hidden}.pfocus .vis img{width:100%;height:100%;object-fit:cover}.pfocus .vis i{display:block;border-radius:50%}
+.pfocus .vis b{font:500 12px PlexMono,monospace;color:#cbbcf0;letter-spacing:.04em}
+.pfocus .gist{font:500 20px/1.4 Cormorant,Georgia,serif;color:#e8e3da;margin:0 0 8px}
+.pfocus .meta{font:500 12px/1.7 PlexMono,monospace;color:var(--muted);margin:0;letter-spacing:.03em}.pfocus .meta b{color:var(--teal);font-weight:500}
+@media (max-width:640px){.pfocus{grid-template-columns:84px 1fr}.pfocus .vis{width:84px;height:84px}.pfocus .gist{font-size:17px}}
+@media (prefers-reduced-motion:reduce){.pgraph svg .n,.pgraph svg .n .node,.pgraph svg .ln,.pfocus{transition:none}}
 table.cmp{width:100%;border-collapse:collapse;margin:22px 0 8px;font-size:15px}
 table.cmp th,table.cmp td{text-align:left;vertical-align:top;padding:9px 10px;border-bottom:1px solid var(--line)}
 table.cmp thead th{font:700 15px Bricolage,Plex,sans-serif;color:var(--ink)}table.cmp tbody th{color:var(--muted);font-weight:500;width:28%}
@@ -155,44 +176,58 @@ GRAPH_JS = """
 (function(){
 const N=__N__,MEM=__M__,K=__K__;
 const svg=document.getElementById("psvg"),fc=document.getElementById("pfocus"),ac=document.getElementById("pagec"),NS="http://www.w3.org/2000/svg";
+const vis=fc.querySelector(".vis"),gist=fc.querySelector(".gist"),meta=fc.querySelector(".meta");
 /* layout: the memories Clara's nodes hang on, left to right by age, each with its nodes below; the nodes tied to no memory in a band at the bottom */
-const PIV=["ev1","ep1","ev2","ev3","ev4"],PX={ev1:120,ep1:355,ev2:590,ev3:825,ev4:1060},PY=128;
+const PIV=["ev1","ep1","ev2","ev3","ev4"],PX={ev1:120,ep1:355,ev2:590,ev3:825,ev4:1060},PY=128,R=30;
 const hang={};N.forEach(n=>{const m=n.links.find(l=>l[1].startsWith("memories/")&&PIV.includes(l[1].slice(9)));n.p=m?m[1].slice(9):null;if(n.p)(hang[n.p]=hang[n.p]||[]).push(n)});
 const pos={};PIV.forEach(p=>{pos["m:"+p]={x:PX[p],y:PY};(hang[p]||[]).forEach((n,i)=>{pos[n.id]={x:PX[p]+(i%2?44:-44)*(hang[p].length>1?1:0),y:PY+92+i*62}})});
 const free=N.filter(n=>!n.p),per=Math.ceil(free.length/2);free.forEach((n,i)=>{const r=Math.floor(i/per),c=i%per;pos[n.id]={x:95+c*155+(r?78:0),y:505+r*82}});
 const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e};
-const gl=el("g",{}),gn=el("g",{});
-el("text",{x:20,y:468,fill:"#93a39e","font-size":12,"font-family":"PlexMono,monospace"},svg).textContent="not tied to one memory — held for as long as she can remember, or learned along the way";
+const rgba=(h,a)=>{const v=parseInt(h.slice(1),16);return `rgba(${v>>16&255},${v>>8&255},${v&255},${a})`};
+const defs=el("defs",{}),gl=el("g",{}),gn=el("g",{});
+el("text",{class:"lane",x:20,y:468},svg).textContent="NOT TIED TO ONE MEMORY — HELD FOR AS LONG AS SHE CAN REMEMBER, OR LEARNED ALONG THE WAY";
 const lines=[];
 N.forEach(n=>{n.links.forEach(([t,to])=>{const [c,id]=to.split("/");const b=c==="memories"?pos["m:"+id]:pos[id];if(!b)return;const a=pos[n.id],mx=(a.x+b.x)/2,my=(a.y+b.y)/2-30;
-  const l=el("path",{d:`M${a.x},${a.y} Q${mx},${my} ${b.x},${b.y}`,fill:"none",stroke:t==="conflicts"?"#d9708f":t==="because"?"#4cc2a8":"#93a39e","stroke-width":t==="because"?1.6:1.1,"stroke-dasharray":t==="about"?"4 4":t==="conflicts"?"2 4":"","class":"ln off"},gl);l.dataset.a=n.id;l.dataset.b=c==="memories"?"m:"+id:id;l.dataset.t=t;lines.push(l)})});
-const pg={};PIV.forEach(p=>{const m=MEM[p],P=pos["m:"+p],g=el("g",{class:"n piv"},gn);g.dataset.id="m:"+p;
-  el("circle",{cx:P.x,cy:P.y,r:30,fill:"#2b2440",stroke:"#a98ae8","stroke-width":2},g);
-  if(!m.per){el("clipPath",{id:"pc-"+p},g).appendChild(Object.assign(document.createElementNS(NS,"circle"),{}));g.lastChild.firstChild.setAttribute("cx",P.x);g.lastChild.firstChild.setAttribute("cy",P.y);g.lastChild.firstChild.setAttribute("r",28);
-    el("image",{href:"../memories/img/"+p+"-t.jpg",x:P.x-28,y:P.y-28,width:56,height:56,preserveAspectRatio:"xMidYMid slice","clip-path":`url(#pc-${p})`},g)}
-  else el("text",{x:P.x,y:P.y+4,"text-anchor":"middle",fill:"#eef3f1","font-size":11},g).textContent="period";
-  const t=el("text",{x:P.x,y:P.y-40,"text-anchor":"middle",fill:"#eef3f1","font-size":13,"font-family":"Plex,sans-serif"},g);t.textContent=m.l;
-  const s=el("text",{x:P.x,y:P.y+46,"text-anchor":"middle",fill:"#93a39e","font-size":11,"font-family":"PlexMono,monospace"},g);s.textContent=m.b?`age ${m.a}–${m.b}`:`age ${m.a}`;pg["m:"+p]=g});
-const ng={};N.forEach(n=>{const P=pos[n.id],r=7+n.s/10,g=el("g",{class:"n off",tabindex:0},gn);g.dataset.id=n.id;
-  el("circle",{cx:P.x,cy:P.y,r:r,fill:K[n.k]||"#ccc","fill-opacity":n.k==="contradiction"?0:.9,stroke:n.k==="contradiction"?"#eef3f1":n.aw==="no"?"#eef3f1":"none","stroke-width":n.aw==="no"?2:1.5,"stroke-dasharray":n.aw==="no"||n.k==="contradiction"?"3 3":""},g);
-  if(n.st==="core")el("circle",{cx:P.x,cy:P.y,r:r+4,fill:"none",stroke:K[n.k],"stroke-opacity":.6,"stroke-width":1.2},g);
-  const t=el("text",{x:P.x,y:P.y+r+14,"text-anchor":"middle",fill:"#dfe8e5","font-size":11.5,"font-family":"Plex,sans-serif"},g);t.textContent=n.l.length>24?n.l.slice(0,23)+"…":n.l;ng[n.id]=g});
+  const dash=t==="about"?"4 4":t==="conflicts"?"2 4":"";
+  const l=el("path",{d:`M${a.x},${a.y} Q${mx},${my} ${b.x},${b.y}`,fill:"none",stroke:t==="conflicts"?"#d9708f":t==="because"?"#4cc2a8":"#93a39e","stroke-width":t==="because"?1.6:1.1,"stroke-dasharray":dash,"stroke-linecap":"round","class":"ln off"},gl);
+  l.dataset.a=n.id;l.dataset.b=c==="memories"?"m:"+id:id;l.dataset.t=t;
+  if(!dash){const L=Math.ceil(l.getTotalLength());l.style.strokeDasharray=L;l.style.strokeDashoffset=L;l.dataset.len=L}   /* solid lines draw themselves, dashed ones fade in */
+  lines.push(l)})});
+const pg={};PIV.forEach(p=>{const m=MEM[p],P=pos["m:"+p],g=el("g",{class:"n piv",tabindex:0},gn);g.dataset.id="m:"+p;g.style.setProperty("--hc",m.per?"rgba(169,138,232,.55)":"rgba(76,194,168,.55)");const nd=el("g",{class:"node"},g);
+  if(m.per){el("rect",{class:"pill",x:P.x-80,y:P.y-25,width:160,height:50,rx:25},nd);el("text",{class:"pt",x:P.x,y:P.y-3},nd).textContent=m.l;el("text",{class:"ps",x:P.x,y:P.y+14},nd).textContent=`a period · ${m.a}–${m.b}`}
+  else{const c=el("clipPath",{id:"pc-"+p},defs);el("circle",{cx:P.x,cy:P.y,r:R-3},c);el("circle",{class:"ring",cx:P.x,cy:P.y,r:R},nd);
+    el("image",{href:"../memories/img/"+p+"-t.jpg",x:P.x-R+3,y:P.y-R+3,width:2*R-6,height:2*R-6,preserveAspectRatio:"xMidYMid slice","clip-path":`url(#pc-${p})`},nd);
+    el("text",{class:"lab",x:P.x,y:P.y-R-12},g).textContent=m.l;el("text",{class:"sub",x:P.x,y:P.y+R+18},g).textContent=`age ${m.a}`}
+  pg["m:"+p]=g});
+const ng={};N.forEach(n=>{const P=pos[n.id],r=7+n.s/10,c=K[n.k]||"#ccc",g=el("g",{class:"n off",tabindex:0},gn);g.dataset.id=n.id;g.style.setProperty("--hc",rgba(c,.6));const nd=el("g",{class:"node"},g);
+  el("circle",{cx:P.x,cy:P.y,r:r,fill:c,"fill-opacity":n.k==="contradiction"?0:.9,stroke:n.k==="contradiction"?"#eef3f1":n.aw==="no"?"#eef3f1":"none","stroke-width":n.aw==="no"?2:1.5,"stroke-dasharray":n.aw==="no"||n.k==="contradiction"?"3 3":""},nd);
+  if(n.st==="core")el("circle",{cx:P.x,cy:P.y,r:r+4,fill:"none",stroke:c,"stroke-opacity":.6,"stroke-width":1.2},nd);
+  el("text",{class:"nl",x:P.x,y:P.y+r+14},g).textContent=n.l.length>24?n.l.slice(0,23)+"…":n.l;ng[n.id]=g});
+function card(v,g,m){fc.classList.add("fade");setTimeout(()=>{vis.innerHTML=v;gist.textContent=g;meta.innerHTML=m;fc.classList.remove("fade")},180)}
 function show(id){const on=new Set([id]);lines.forEach(l=>{const h=l.dataset.a===id||l.dataset.b===id;l.classList.toggle("on",h);if(h){on.add(l.dataset.a);on.add(l.dataset.b)}});
   Object.entries({...ng,...pg}).forEach(([k,g])=>g.classList.toggle("on",on.has(k)));svg.classList.add("hl");
-  if(id.startsWith("m:")){const m=MEM[id.slice(2)];fc.innerHTML=`<p class="t">${m.l}</p><p class="m">memory · ${m.b?`age ${m.a}–${m.b}`:`age ${m.a}`}</p><p class="g">${m.g}</p>`;return}
+  if(id.startsWith("m:")){const p=id.slice(2),m=MEM[p];card(m.per?`<b>a period</b>`:`<img alt="" src="../memories/img/${p}-t.jpg">`,m.g,`<b>${m.l}</b> · memory · ${m.b?`age ${m.a}–${m.b}`:`age ${m.a}`}`);return}
   const n=N.find(x=>x.id===id),x=[];if(n.aw==="no")x.push("she acts on it without knowing it — never says it");if(n.aw==="partly")x.push("she is only half aware of it");if(n.fb)x.push("false, but held");if(n.va!=null)x.push(`valence ${n.va>0?"+":""}${n.va}`);
-  fc.innerHTML=`<p class="t">${n.l}</p><p class="m">${n.k} · strength ${n.s} · ${n.st}${n.since!=null?` · since age ${n.since}`:""}${n.until!=null?` · until about ${n.until}`:""}${x.length?" · "+x.join(" · "):""}</p><p class="g">${n.g}</p>`}
+  const c=K[n.k]||"#ccc",d=Math.round(26+n.s*.5);
+  card(`<i style="width:${d}px;height:${d}px;background:${n.k==="contradiction"?"transparent":c};${n.k==="contradiction"||n.aw==="no"?"border:2px dashed #eef3f1;":""}box-shadow:0 0 22px ${rgba(c,.55)}"></i>`,n.g,
+    `<b>${n.l}</b> · ${n.k} · strength ${n.s} · ${n.st}${n.since!=null?` · since age ${n.since}`:""}${n.until!=null?` · until about ${n.until}`:""}${x.length?" · "+x.join(" · "):""}`)}
 function clear(){svg.classList.remove("hl");lines.forEach(l=>l.classList.remove("on"));Object.values({...ng,...pg}).forEach(g=>g.classList.remove("on"))}
-Object.entries({...ng,...pg}).forEach(([k,g])=>{g.addEventListener("mouseenter",()=>show(k));g.addEventListener("focus",()=>show(k));g.addEventListener("click",()=>show(k))});
-svg.addEventListener("mouseleave",clear);
-/* arrival: the nodes come in the order of her life — those without a date first, then age by age up to 45 (the 65-year-old Clara) */
-let tm=[];function play(){tm.forEach(clearTimeout);tm=[];clear();Object.values(ng).forEach(g=>g.classList.add("off"));lines.forEach(l=>l.classList.add("off"));
-  const ages=[...new Set(N.map(n=>n.since).filter(a=>a!=null))].sort((a,b)=>a-b),step=(a,i)=>tm.push(setTimeout(()=>{ac.textContent=a===null?"as long as she can remember":`age ${a}`;
-    N.filter(n=>n.since===a||(a===null&&n.since==null)).forEach(n=>ng[n.id].classList.remove("off"));
-    lines.forEach(l=>{const A=ng[l.dataset.a],B=ng[l.dataset.b]||pg[l.dataset.b];if(A&&!A.classList.contains("off")&&B&&!B.classList.contains("off"))l.classList.remove("off")})},i*900));
-  step(null,0);ages.forEach((a,i)=>step(a,i+1));tm.push(setTimeout(()=>{ac.textContent="Clara at 65 — hover a node";show("val1")},(ages.length+1)*900+300))}
+let hold=0,timer=null,cyc=0;const CYCLE=["m:ev1","val1","m:ep1","wound1","m:ev2","contra1","m:ev3","m:ev4"].filter(k=>ng[k]||pg[k]);
+const user=k=>{hold=Date.now()+9000;show(k)};
+Object.entries({...ng,...pg}).forEach(([k,g])=>{g.addEventListener("mouseenter",()=>user(k));g.addEventListener("focus",()=>user(k));g.addEventListener("click",()=>user(k))});
+svg.addEventListener("mouseleave",()=>{hold=Date.now()+2500;clear()});
+const reveal=l=>{l.classList.remove("off");if(l.dataset.len)l.style.strokeDashoffset=0};
+const hide=l=>{l.classList.add("off");if(l.dataset.len)l.style.strokeDashoffset=l.dataset.len};
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+/* arrival: the nodes come in the order of her life — those without a date first, then age by age up to 45 (the 65-year-old Clara); then one at a time in focus, as on the memories page */
+let tm=[];function play(){tm.forEach(clearTimeout);tm=[];clearInterval(timer);clear();Object.values(ng).forEach(g=>g.classList.add("off"));lines.forEach(hide);
+  const ages=[...new Set(N.map(n=>n.since).filter(a=>a!=null))].sort((a,b)=>a-b),gap=reduce?0:900,step=(a,i)=>tm.push(setTimeout(()=>{ac.textContent=a===null?"as long as she can remember":`age ${a}`;
+    N.filter(n=>n.since===a||(a===null&&n.since==null)).forEach((n,j)=>{const g=ng[n.id];if(reduce)g.classList.remove("off");else tm.push(setTimeout(()=>g.classList.remove("off"),j*70))});
+    tm.push(setTimeout(()=>lines.forEach(l=>{const A=ng[l.dataset.a],B=ng[l.dataset.b]||pg[l.dataset.b];if(A&&!A.classList.contains("off")&&B&&!B.classList.contains("off")&&l.classList.contains("off"))reveal(l)}),reduce?0:350))},i*gap));
+  step(null,0);ages.forEach((a,i)=>step(a,i+1));
+  tm.push(setTimeout(()=>{ac.textContent="Clara at 65 — hover a node";show(CYCLE[0]);cyc=0;if(reduce)return;timer=setInterval(()=>{if(Date.now()<hold)return;cyc=(cyc+1)%CYCLE.length;show(CYCLE[cyc])},3600)},(ages.length+1)*gap+600))}
 document.getElementById("preplay").onclick=play;
-const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){io.disconnect();play()}},{threshold:.35});io.observe(svg);
+if("IntersectionObserver" in window){const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){io.disconnect();play()}},{threshold:.35});io.observe(svg)}else play();
 })();
 """
 
@@ -235,11 +270,11 @@ INDEX = head("AI characters now have an inner life — COF 1.2",
 <p>“Eco-conscious” in a prompt is an adjective; the model has to guess what it means and when it matters. This is a conviction with a weight, a date and a reason. An agent can bring it up when the conversation turns to work and leave it aside otherwise; it knows a core value does not bend in one conversation; and when you ask <i>why</i>, it has an answer that is not invented on the spot.</p>
 
 <h2>A psyche, as a map</h2>
-<figure class="wide pgraph" aria-label="Clara's psyche at 65, as a graph">
+<figure class="wide graph pgraph" aria-label="Clara's psyche at 65, as a graph">
   <div class="gwrap"><svg id="psvg" viewBox="0 0 1200 660" role="img" aria-label="Clara's psyche: twenty-three nodes hanging under the memories they come from"></svg></div>
   <span class="agec" id="pagec"></span><button class="replay" id="preplay" type="button">▶ replay her life</button>
   <div class="legend">{legend}<span><i style="background:transparent;border:1.5px dashed #eef3f1"></i>held without knowing it</span></div>
-  <div class="pfocus" id="pfocus"><p class="g">Hover a node, or let her life play.</p></div>
+  <div class="pfocus" id="pfocus"><div class="vis"></div><div><p class="gist">Hover a node, or let her life play.</p><p class="meta"></p></div></div>
   <figcaption>Clara's psyche, the nodes coming in the order of her life. Above, the memories they hang on; at the bottom, the convictions held for as long as she can remember. Teal lines say <i>because</i>, rose dotted lines <i>conflicts</i>, grey ones <i>supports</i> or <i>about</i>.</figcaption>
 </figure>
 <p>Eleven kinds of nodes — wound, value, belief, want, need, fear, stance, taste, habit, contradiction, rule — linked to each other and to the memories: <i>because</i>, <i>about</i>, <i>supports</i>, <i>conflicts</i>. And to the people, places and objects of a life: a value learned from a grandmother, a habit that comes with a notebook, a guitar picked up at night. Readers put the rest together: what she thinks of someone, what a place still means, what changed at forty-five.</p>
