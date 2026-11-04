@@ -1,4 +1,4 @@
-<p align="center"><a href="https://yannsouetre.github.io/cof/#clip"><img src="docs/img/cof-hero.webp" alt="Animation: the many files of an AI character — cards, photos, LoRA, voice, avatar, 3D, memories — come together into one .cof file" width="100%"></a></p>
+<p align="center"><a href="https://yannsouetre.github.io/cof/#clip"><img src="docs/img/cof-hero.webp" alt="Animation: the many files of an AI character — cards, photos, LoRA, voice, avatar, 3D, memories, a psyche — come together into one .cof file" width="100%"></a></p>
 
 <h1 align="center">COF — Character Open File</h1>
 
