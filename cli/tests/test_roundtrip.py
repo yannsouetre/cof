@@ -2169,3 +2169,16 @@ def test_life_age_is_the_declared_age_safety_keeps_the_lowest(tmp_path):
     m["presets"]["default"]["age_override"] = {"value": 29, "unit": "years", "basis": "declared"}; _write(d, m)
     assert not any("declares age" in w for w in _val(d).warnings)
 
+
+def test_builder_zodiac_table_is_zodiac_py():
+    """The builder embeds the horoscope table (tools/psyche/zodiac_to_builder.py): it must be exactly cof_cli.zodiac's, names of the six languages included."""
+    import re
+    from cof_cli import zodiac
+    html = (ROOT / "builder/index.html").read_text("utf-8")
+    m = re.search(r"/\*zodiac:begin\*/(.*?)/\*zodiac:end\*/", html, re.S)
+    assert m, "no embedded table in builder/index.html"
+    emb = json.loads(m.group(1))
+    assert emb["signs"] == list(zodiac.SIGNS)
+    assert emb["names"] == zodiac.NAMES and all(set(n) == {"en", "fr", "de", "es", "zh", "ja"} for n in emb["names"].values())
+    assert emb["table"] == {s: [[k, g] for k, g in zodiac.TABLE[s]] for s in zodiac.SIGNS}, "run tools/psyche/zodiac_to_builder.py"
+    assert all(3 <= len(v) <= 4 for v in emb["table"].values())

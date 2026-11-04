@@ -9,10 +9,18 @@ import unicodedata
 
 SIGNS = ("aries", "taurus", "gemini", "cancer", "leo", "virgo", "libra", "scorpio", "sagittarius", "capricorn", "aquarius", "pisces")
 
-NAMES = {"aries": {"en": "Aries", "fr": "Bélier"}, "taurus": {"en": "Taurus", "fr": "Taureau"}, "gemini": {"en": "Gemini", "fr": "Gémeaux"},
-         "cancer": {"en": "Cancer", "fr": "Cancer"}, "leo": {"en": "Leo", "fr": "Lion"}, "virgo": {"en": "Virgo", "fr": "Vierge"},
-         "libra": {"en": "Libra", "fr": "Balance"}, "scorpio": {"en": "Scorpio", "fr": "Scorpion"}, "sagittarius": {"en": "Sagittarius", "fr": "Sagittaire"},
-         "capricorn": {"en": "Capricorn", "fr": "Capricorne"}, "aquarius": {"en": "Aquarius", "fr": "Verseau"}, "pisces": {"en": "Pisces", "fr": "Poissons"}}
+NAMES = {"aries": {"en": "Aries", "fr": "Bélier", "de": "Widder", "es": "Aries", "zh": "白羊座", "ja": "牡羊座"},
+         "taurus": {"en": "Taurus", "fr": "Taureau", "de": "Stier", "es": "Tauro", "zh": "金牛座", "ja": "牡牛座"},
+         "gemini": {"en": "Gemini", "fr": "Gémeaux", "de": "Zwillinge", "es": "Géminis", "zh": "双子座", "ja": "双子座"},
+         "cancer": {"en": "Cancer", "fr": "Cancer", "de": "Krebs", "es": "Cáncer", "zh": "巨蟹座", "ja": "蟹座"},
+         "leo": {"en": "Leo", "fr": "Lion", "de": "Löwe", "es": "Leo", "zh": "狮子座", "ja": "獅子座"},
+         "virgo": {"en": "Virgo", "fr": "Vierge", "de": "Jungfrau", "es": "Virgo", "zh": "处女座", "ja": "乙女座"},
+         "libra": {"en": "Libra", "fr": "Balance", "de": "Waage", "es": "Libra", "zh": "天秤座", "ja": "天秤座"},
+         "scorpio": {"en": "Scorpio", "fr": "Scorpion", "de": "Skorpion", "es": "Escorpio", "zh": "天蝎座", "ja": "蠍座"},
+         "sagittarius": {"en": "Sagittarius", "fr": "Sagittaire", "de": "Schütze", "es": "Sagitario", "zh": "射手座", "ja": "射手座"},
+         "capricorn": {"en": "Capricorn", "fr": "Capricorne", "de": "Steinbock", "es": "Capricornio", "zh": "摩羯座", "ja": "山羊座"},
+         "aquarius": {"en": "Aquarius", "fr": "Verseau", "de": "Wassermann", "es": "Acuario", "zh": "水瓶座", "ja": "水瓶座"},
+         "pisces": {"en": "Pisces", "fr": "Poissons", "de": "Fische", "es": "Piscis", "zh": "双鱼座", "ja": "魚座"}}   # the six languages of the builder; the gists exist in English and French only
 
 # sign → [(kind, {"en": gist, "fr": gist}), …]: three or four candidates per sign, in the reading order of RFC 0004
 TABLE: dict[str, list[tuple[str, dict[str, str]]]] = {
