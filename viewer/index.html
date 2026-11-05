@@ -354,6 +354,13 @@ Object.assign(T.de,{markV:{guarded:"zurückhaltend",secret:"geheim",lived:"erleb
 Object.assign(T.es,{markV:{guarded:"reservado",secret:"secreto",lived:"vivido",personal:"personal",learned:"aprendido",witnessed:"relatado",imagined:"imaginado",vivid:"vívido",faded:"desvaído",fragment:"fragmento"},permV:{avatarPermission:{onlyAuthor:"solo el autor",onlySeparatelyLicensedPerson:"una persona con licencia aparte",everyone:"todo el mundo"},modification:{prohibited:"prohibida",allowModification:"permitida",allowModificationRedistribution:"permitida, con redistribución"},creditNotation:{required:"obligatorio",unnecessary:"innecesario"},allowTraining:{none:"ninguno","finetune-private":"ajuste fino privado","finetune-public":"ajuste fino público",any:"cualquier uso"}}});
 Object.assign(T.zh,{markV:{guarded:"保留",secret:"秘密",lived:"亲历",personal:"个人",learned:"习得",witnessed:"转述",imagined:"想象",vivid:"鲜明",faded:"模糊",fragment:"片段"},permV:{avatarPermission:{onlyAuthor:"仅作者本人",onlySeparatelyLicensedPerson:"经单独授权的人",everyone:"任何人"},modification:{prohibited:"禁止",allowModification:"允许修改",allowModificationRedistribution:"允许修改并再分发"},creditNotation:{required:"必须署名",unnecessary:"无需署名"},allowTraining:{none:"无","finetune-private":"私有微调","finetune-public":"公开微调",any:"任意用途"}}});
 Object.assign(T.ja,{markV:{guarded:"控えめ",secret:"秘密",lived:"実体験",personal:"個人",learned:"学習",witnessed:"伝聞",imagined:"想像",vivid:"鮮明",faded:"薄れた",fragment:"断片"},permV:{avatarPermission:{onlyAuthor:"作者のみ",onlySeparatelyLicensedPerson:"別途許諾を受けた人",everyone:"誰でも"},modification:{prohibited:"禁止",allowModification:"改変可",allowModificationRedistribution:"改変・再配布可"},creditNotation:{required:"必須",unnecessary:"不要"},allowTraining:{none:"なし","finetune-private":"非公開ファインチューニング","finetune-public":"公開ファインチューニング",any:"制限なし"}}});
+/* hunt H2-01 / H2-02: nude images only on a preset of a known age of 18 or more; intimate images never */
+Object.assign(T.fr,{nudeHidden:"nudité — non affichée : ce preset a moins de 18 ans ou pas d'âge connu",intimHidden:"contenu intime — jamais affiché par l'explorateur"});
+Object.assign(T.en,{nudeHidden:"nudity — not shown: this preset is under 18 or has no known age",intimHidden:"intimate content — never shown by the explorer"});
+Object.assign(T.de,{nudeHidden:"Nacktheit — nicht angezeigt: dieses Preset ist unter 18 oder hat kein bekanntes Alter",intimHidden:"intimer Inhalt — wird vom Explorer nie angezeigt"});
+Object.assign(T.es,{nudeHidden:"desnudez — no se muestra: este preset tiene menos de 18 años o ninguna edad conocida",intimHidden:"contenido íntimo — el explorador nunca lo muestra"});
+Object.assign(T.zh,{nudeHidden:"裸露 — 不显示：此预设未满 18 岁或年龄未知",intimHidden:"私密内容 — 浏览器从不显示"});
+Object.assign(T.ja,{nudeHidden:"ヌード — 表示しません：このプリセットは18歳未満か、年齢が不明です",intimHidden:"私的な内容 — エクスプローラーでは表示しません"});
 function applyLang(){document.documentElement.lang=LANG;document.querySelectorAll("[data-i]").forEach(el=>{const v=LANG==="en"?null:(T[LANG]||{})[el.dataset.i];if(!el.dataset.en)el.dataset.en=el.innerHTML;el.innerHTML=v??el.dataset.en});const sl=document.getElementById("selLang");if(sl){sl.innerHTML=Object.keys(T).filter(k=>Object.keys(T[k]).length).map(k=>`<option value="${k}"${k===LANG?" selected":""}>${LANG_NAMES[k]||k}</option>`).join("")}window.paintTheme&&window.paintTheme();if(M)render()}
 (function(){const root=document.documentElement;let saved=null;try{saved=localStorage.getItem("cof-theme")}catch(e){}if(EMBED)saved=QS.get("theme");if(saved==="dark"||saved==="light")root.dataset.theme=saved;
   const isDark=()=>root.dataset.theme==="dark"||(!root.dataset.theme&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches);
@@ -363,7 +370,11 @@ document.getElementById("selLang").onchange=e=>{LANG=langOf(e.target.value);try{
 
 /* ---------- ZIP (stored + deflate, via DecompressionStream) ---------- */
 const dec=new TextDecoder();
-async function inflateRaw(u8){const ds=new DecompressionStream("deflate-raw");const w=ds.writable.getWriter();w.write(u8);w.close();return new Uint8Array(await new Response(ds.readable).arrayBuffer())}
+/* inflate with a ceiling: a zip bomb stops at the cap instead of crashing the tab (hunt H2-03); the CLI's ratio limit (100:1) too */
+const INFLATE_CAP=1024*1024*1024,JSON_CAP=64*1024*1024;
+async function inflateRaw(u8,cap=INFLATE_CAP){const ds=new DecompressionStream("deflate-raw");const w=ds.writable.getWriter();w.write(u8).catch(()=>{});w.close().catch(()=>{});const r=ds.readable.getReader();const parts=[];let n=0;
+  for(;;){const {done,value}=await r.read();if(done)break;n+=value.length;if(n>cap||n>Math.max(u8.length,1)*100+65536){try{await r.cancel()}catch(e){}throw new Error("entry inflates beyond the safe limit (zip bomb?)")}parts.push(value)}
+  const out=new Uint8Array(n);let o=0;for(const x of parts){out.set(x,o);o+=x.length}return out}
 async function zipRead(buf){
   const u8=new Uint8Array(buf),dv=new DataView(buf);let eocd=-1;
   for(let i=u8.length-22;i>=Math.max(0,u8.length-70000);i--){if(dv.getUint32(i,true)===0x06054b50){eocd=i;break}}
@@ -373,14 +384,14 @@ async function zipRead(buf){
     const method=dv.getUint16(p+10,true),csize=dv.getUint32(p+20,true),nlen=dv.getUint16(p+28,true),elen=dv.getUint16(p+30,true),clen=dv.getUint16(p+32,true),lho=dv.getUint32(p+42,true);
     const name=dec.decode(u8.subarray(p+46,p+46+nlen));
     const start=lho+30+dv.getUint16(lho+26,true)+dv.getUint16(lho+28,true);
-    files.set(name,{method,comp:u8.subarray(start,start+csize)});
+    files.set(name,{method,comp:u8.subarray(start,start+csize),usize:dv.getUint32(p+24,true)});
     p+=46+nlen+elen+clen;
   }
   return files;
 }
 let Z=null,M=null,urls=new Map();
-async function bytes(path){const f=Z.get(path);if(!f)return null;if(!f.u)f.u=f.method===0?f.comp:await inflateRaw(f.comp);return f.u}
-async function jsonAt(path){const b=await bytes(path);if(!b)return null;try{return JSON.parse(dec.decode(b))}catch(e){return null}}
+async function bytes(path,cap){const f=Z.get(path);if(!f)return null;if(!f.u&&f.method!==0&&f.usize>Math.min(cap||INFLATE_CAP,Math.max(f.comp.length,1)*100+65536))throw new Error(path+": declared size beyond the safe limit (zip bomb?)");if(!f.u)f.u=f.method===0?f.comp:await inflateRaw(f.comp,cap);return f.u}
+async function jsonAt(path){const b=await bytes(path,JSON_CAP);if(!b)return null;try{return JSON.parse(dec.decode(b))}catch(e){return null}}
 const tiny=new Map();   // graph bubbles: a 128 px copy of the image, not the full photo (300 bubbles × a 3 MB photo would decode gigabytes; a thumb is a few KB)
 async function tinyOf(aid){const a=A()[aid];if(!a||!a.path)return null;if(tiny.has(a.path))return tiny.get(a.path);let u=null;try{const b=await bytes(a.path);if(!b)return null;const bm=await createImageBitmap(new Blob([b],{type:a.mediaType||"image/*"}),{resizeWidth:128,resizeQuality:"medium"});const c=document.createElement("canvas");c.width=bm.width;c.height=bm.height;c.getContext("2d").drawImage(bm,0,0);bm.close&&bm.close();const blob=await new Promise(r=>c.toBlob(r,"image/webp",.82));u=blob?URL.createObjectURL(blob):await urlOf(aid)}catch(e){u=await urlOf(aid)}tiny.set(a.path,u);return u}
 async function urlOf(aid){const a=A()[aid];if(!a||!a.path)return null;if(urls.has(a.path))return urls.get(a.path);const b=await bytes(a.path);if(!b)return null;const u=URL.createObjectURL(new Blob([b],{type:a.mediaType||"application/octet-stream"}));urls.set(a.path,u);return u}
@@ -401,6 +412,9 @@ function inherited(pid,key){for(const q of chain(pid))if(P()[q][key]!==undefined
 function resolved(lists){const r={};for(const [cat,ids] of Object.entries(lists))r[cat]=ids.map(i=>resolveVariant(cat,i)).filter(Boolean);return r}
 function ageYears(a){if(!a||typeof a.value!=="number")return null;if(a.unit&&!["years","months"].includes(a.unit))return 0;return a.unit==="months"?a.value/12:a.value}
 function presetAge(pid){const all=[slots(pid),offered(pid)].flatMap(l=>Object.entries(resolved(l)));const ages=[];for(const [cat,vs] of all)if(AGE_CATS.has(cat))for(const v of vs)if(!AGELESS.has(v.kind)){const x=ageYears(v.age);if(x!==null)ages.push(x)}const ao=ageYears(inherited(pid,"age_override"));if(ao!==null)ages.push(ao);return ages.length?Math.min(...ages):null}
+function safetyAge(pid){const base=presetAge(pid);const ages=base===null?[]:[base];for(const l of [slots(pid),offered(pid)]){const r=resolved(l);for(const cat of ["memories","psyche"])for(const v of r[cat]||[]){const has=cat==="memories"?((v.media||[]).length||v.media_from):(v.media||[]).length;const x=has?ageYears(v.age):null;if(x!==null)ages.push(x)}}return ages.length?Math.min(...ages):null}   /* the lowest age a preset shows, the ages of its memory media and node images included (cof validate's preset age; hunt H5-01) */
+function nudeShown(pid){const a=safetyAge(pid);return a!==null&&a>=ADULT}
+let _isM=null,_is=null;function intimateSet(){if(_isM===M&&_is)return _is;const n=new Set();for(const [cat,e] of Object.entries(M.elements||{}))for(const vid of Object.keys(e.variants||{})){const v=resolveVariant(cat,vid);if(v&&v.kind==="intimate")for(const k of ["images","derived","media","files"])for(const a of v[k]||[])n.add(a)}_isM=M;_is=n;return n}
 function lifeAge(pid){const ao=ageYears(inherited(pid,"age_override"));return ao!==null?ao:presetAge(pid)}   /* the age that bounds a preset's life (memories, psyche): its declared age_override (through extends), else the lowest age; the safety rules keep presetAge */
 const ids=()=>M.identities||{};
 function defaultIdentity(){return M.default_identity||Object.keys(ids())[0]||null}
@@ -447,11 +461,13 @@ async function openBuffer(buf){
     const Z0=Z;Z=await zipRead(buf);await openZ(Z0);
   }catch(e){err.textContent=tr("badFile")+e.message;err.hidden=false;if(document.getElementById("drop").hidden)alert(err.textContent)}
 }
-async function openZ(Z0,opt){let mf=null;try{mf=await jsonAt("manifest.json")}finally{if(!mf)Z=Z0}if(!mf)throw new Error("manifest.json missing or not valid JSON");
+async function openZ(Z0,opt){let mf=null;try{mf=await jsonAt("manifest.json")}finally{if(!mf)Z=Z0}if(!mf)throw new Error("manifest.json missing or not valid JSON");if(typeof mf!=="object"||Array.isArray(mf)||!mf.presets||typeof mf.presets!=="object"||Array.isArray(mf.presets)||!Object.keys(mf.presets).length){Z=Z0;throw new Error("manifest.json has no presets object")}const M0=M;   /* hunt H2-04: a file that cannot be shown leaves the previous one in place */
   for(const u of urls.values())URL.revokeObjectURL(u);urls.clear();for(const u of tiny.values())if(u)URL.revokeObjectURL(u);tiny.clear();
   psyPlayStop();memPlayStop();memPlayAt=null;_memPrep=null;M=mf;_A=null;memNodes.clear();_inIdx=null;memExpanded.clear();filter={};tab="look";memViewSet=false;memWin=undefined;memWinPid=null;memGMode=null;memZoom=1;memKeep=null;window.__mgForcedLast=false;psyNodes.clear();_psyIdx=null;_PG=null;psyExpanded.clear();psyView="graph";psyViewSet=false;psyQ="";psyFocus=null;psyZoom=1;psyFs=false;psyKeep=null;psyTime=false;psyT=null;psyTBase=null;psyTPid=null;psyGMode=null;psyChipQ.m=psyChipQ.w=psyChipQ.p=psyChipQ.o="";curChar=charIds()[0];curPreset=charDefault(curChar);   /* the psyche view (network / tags, tag filters) belongs to the file, as the memories one does */
   if(opt&&opt.tab)tab=opt.tab;if(opt&&opt.memView){memView=opt.memView;memViewSet=true}if(opt&&opt.psyView){psyView=opt.psyView;psyViewSet=true}if(opt&&opt.preset&&P()[opt.preset]){curPreset=opt.preset;curChar=presetOwner(opt.preset)||curChar}
-  document.getElementById("drop").hidden=true;document.getElementById("app").hidden=false;await render()}
+  document.getElementById("drop").hidden=true;document.getElementById("app").hidden=false;
+  try{await render()}catch(e){Z=Z0;M=M0;_A=null;memNodes.clear();psyNodes.clear();_psyIdx=null;_inIdx=null;_PG=null;
+    if(M){curChar=charIds()[0];curPreset=charDefault(curChar);try{await render()}catch(_){}}else{document.getElementById("app").hidden=true;document.getElementById("drop").hidden=false}throw e}}
 /* embed mode (?embed=graph): the builder opens this page in a frame and posts the file's entries; only the memories graph is shown, full screen, and the cross hands control back */
 if(EMBED){window.addEventListener("message",async e=>{const d=e.data;if(!d||d.type!=="cof-embed-open"||!d.files)return;try{const Zm=new Map();for(const [n,u] of Object.entries(d.files))Zm.set(n,{method:0,comp:u instanceof Uint8Array?u:new Uint8Array(u)});const Z0=Z;Z=Zm;memQ="";await openZ(Z0,{tab:EMBED_MODE==="psyche"?"psyche":"memories",memView:"graph",psyView:"graph",preset:d.preset});parent.postMessage({type:"cof-embed-shown"},"*")}catch(err){parent.postMessage({type:"cof-embed-error",message:String(err&&err.message||err)},"*")}});
   window.addEventListener("load",()=>parent.postMessage({type:"cof-embed-ready"},"*"))}
@@ -489,7 +505,7 @@ async function render(){
 
 let _nsM=null,_ns=null;function nudeSet(){if(_nsM===M&&_ns)return _ns;const n=new Set();for(const [cat,e] of Object.entries(M.elements||{}))for(const vid of Object.keys(e.variants||{})){const v=resolveVariant(cat,vid);if(v&&(v.nudity===true||v.kind==="intimate"))for(const k of cat==="psyche"?["images","derived","media"]:["images","derived"])for(const a of v[k]||[])n.add(a)}_nsM=M;   /* RFC 0004 § 3 decies: the images of a psyche node with nudity are gated like any nude image */
 _ns=n;return n}
-async function gallery(aids,cap){const NS=nudeSet();const out=[];for(const aid of aids){const a=A()[aid];if(!a||!String(a.mediaType||"").startsWith("image/"))continue;const u=await urlOf(aid);if(u)out.push(`<figure>${NS.has(aid)?`<span class="nudewrap"><img src="${u}" alt="${esc(cap||"")}" class="nude" data-reveal><span>${tr("nudeClick")}</span></span>`:`<img src="${u}" alt="${esc(cap||"")}" data-zoom>`}<figcaption>${esc([a.subject,a.angle].filter(Boolean).join(" · "))}</figcaption></figure>`)}return out.join("")}
+async function gallery(aids,cap){const NS=nudeSet(),IS=intimateSet(),okN=nudeShown(curPreset);const out=[];for(const aid of aids){const a=A()[aid];if(!a||!String(a.mediaType||"").startsWith("image/"))continue;if(IS.has(aid)||(NS.has(aid)&&!okN)){out.push(`<figure><span class="nudewrap"><span>${tr(IS.has(aid)?"intimHidden":"nudeHidden")}</span></span></figure>`);continue}const u=await urlOf(aid);if(u)out.push(`<figure>${NS.has(aid)?`<span class="nudewrap"><img src="${u}" alt="${esc(cap||"")}" class="nude" data-reveal><span>${tr("nudeClick")}</span></span>`:`<img src="${u}" alt="${esc(cap||"")}" data-zoom>`}<figcaption>${esc([a.subject,a.angle].filter(Boolean).join(" · "))}</figcaption></figure>`)}return out.join("")}
 
 /* ---------- memories (RFC 0002: node files, timeline order, gist language) ---------- */
 const memNodes=new Map();
@@ -1238,7 +1254,7 @@ async function renderPreset(){playGuard();
   const p=P()[pid],I=identityView(pid),age=presetAge(pid),perms=permsOf(pid);
   const app=resolved(slots(pid)),off=resolved(offered(pid));
   const hasIntimate=[...(app.appearance||[]),...(off.appearance||[])].some(v=>v.kind==="intimate");
-  const pim=primaryImage(pid);const pimU=pim?await urlOf(pim):null;
+  const pim=primaryImage(pid);const pimHide=pim&&(intimateSet().has(pim)||(nudeSet().has(pim)&&!nudeShown(pid)));const pimU=pim&&!pimHide?await urlOf(pim):null;
   const psyN=psyIds(pid);await psyLoad(psyN);if(tab==="psyche"&&!psyN.length)tab="look";const psyCore=psyN.filter(v=>(psyNodes.get(v)||{}).stability==="core").length,cflags=((M.tags||{}).content||[]);   /* 1.2: the preset's psyche nodes (read once per file, in batches) and the file-level risk flags */
   // facet switches
   const sw=[];const myTags=tagsOf(pid);const byFacet={};for(const t of tags())if(t.facet)(byFacet[t.facet]=byFacet[t.facet]||[]).push(t);
@@ -1287,7 +1303,7 @@ async function renderPreset(){playGuard();
       ${sp.recommended_weight!==undefined?`<tr><td>${tr("weight")}</td><td>${esc(sp.recommended_weight)}${sp.weight_range?` <span class="muted">(${esc(sp.weight_range.join(" – "))})</span>`:""}</td></tr>`:""}
       ${(v.covers||sp.covers||[]).length?`<tr><td>${tr("covers")}</td><td>${(v.covers||sp.covers).map(esc).join(", ")}</td></tr>`:""}
       ${sp.file?`<tr><td>${tr("fileW")}</td><td class="mono">${esc((a.path||a.uri||sp.file).split("/").pop())}${a.bytes?` · ${(a.bytes/1e6).toFixed(a.bytes>1e8?0:1)} Mo`:""}${a.uri&&!a.path?` <span class="muted">(${tr("linkOnly")})</span>`:""}${sp.format?` · ${esc(sp.format)}`:""}${sp.rank?` · rank ${esc(sp.rank)}`:""}</td></tr>`:""}
-      ${(sp.pages||[]).length?`<tr><td>${tr("pages")}</td><td>${sp.pages.map(pg=>`<a href="${esc(pg.url)}" target="_blank" rel="noopener">${esc(pg.label||pg.url)}</a>`).join(" · ")}</td></tr>`:""}
+      ${(sp.pages||[]).length?`<tr><td>${tr("pages")}</td><td>${sp.pages.map(pg=>`<a href="${/^https?:\/\//i.test(String(pg.url||""))?esc(pg.url):"#"}" target="_blank" rel="noopener">${esc(pg.label||pg.url)}</a>`).join(" · ")}</td></tr>`:""}
       </table>${v.text?`<div class="text">${md(v.text)}</div>`:""}</div>`}
     if(!t)t=`<p class="muted">${tr("none")}</p>`;
   }else if(tab==="v3d"){

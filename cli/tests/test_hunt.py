@@ -216,3 +216,16 @@ def test_propose_answers_never_crash():
     merged = P.merge(P.normalize({"nodes": [None]}))
     errs, _ = P.validate(P.normalize(merged), {"languages": ["en"]})
     assert errs
+
+
+def test_derived_node_keeps_its_own_strength(tmp_path):
+    """H5-19: RFC 0004's recipe — a node that changes is a second node with derives_from, its own node file, its own
+    strength — no longer fails on the parent's mirrored strength."""
+    d = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/10-clara-mercier", d)
+    m = load(d); P = V(m, "psyche")
+    pid, pv = next((k, x) for k, x in P.items() if "strength" in x)
+    node(d, f"elements/psyche/{pid}-2/psyche-node.json", {"gist": {"en": "It changed.", "fr": "Cela a changé."}, "strength": max(0, int(pv["strength"]) - 40)})
+    P[f"{pid}-2"] = {"derives_from": pid, "node": f"elements/psyche/{pid}-2/psyche-node.json"}
+    save(d, m)
+    rep = Report(); validate_dir(d, rep, recompute=False)
+    assert not any("differs from the node's" in e for e in rep.errors), rep.errors

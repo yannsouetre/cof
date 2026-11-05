@@ -1645,8 +1645,9 @@ def _psyche_rules(manifest: dict, src: Path, rep: "Report") -> None:
         if kind == "rule" and node.get("stability", "settled") != "core":
             rep.warnings.append(f"{where}: a rule that is not `core` (stability {node.get('stability', 'settled')}) — a rule is kept whatever the pressure")
         _psyche_images(manifest, rv, node, where, me, ids, content, rep)
-        if "strength" in rv and "strength" in node and rv["strength"] != node["strength"]:
-            rep.errors.append(f"{where}: manifest strength {rv['strength']} differs from the node's ({node['strength']}) — the variant mirrors psyche-node.json")
+        own_v = ((((manifest.get("elements") or {}).get("psyche") or {}).get("variants") or {}).get(vid)) or {}
+        if "strength" in own_v and "strength" in node and own_v["strength"] != node["strength"]:      # the variant's OWN mirror: a node derived from another (RFC 0004 § 3 nonies: "a second node with derives_from") has its own strength (hunt H5-19)
+            rep.errors.append(f"{where}: manifest strength {own_v['strength']} differs from the node's ({node['strength']}) — the variant mirrors psyche-node.json")
         if node.get("visibility") == "personal":
             rep.warnings.append(f"{where}: personal node (a user's data) — do not share this file as is")
         if node.get("origin", "authored") == "authored" and node.get("revisions"):

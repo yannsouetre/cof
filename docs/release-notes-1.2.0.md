@@ -48,11 +48,12 @@ The three profiles and the sign are an author's shorthand: they produce ordinary
 
 - **A user's conversation could leave with an imported card (cof-cli 1.1.1, builder 0.13.1).** A card exported from Character.AI by PersonaText carries the whole conversation (`data.extensions.chat_history`) and a base64 avatar; `cof import` and the builder copied them into the `.cof`, and the card exports carried them on. Both are now left out at import, with a warning; `cof validate` and the builder's checks warn about a card that still holds a chat. If you imported such a card with 1.1.x, re-import it.
 - `cof memory add` / `cof psyche add` write `digitalSourceType` as the IPTC URI, and a `.md` / `.txt` media is always `text/markdown` / `text/plain` whatever the machine.
+- **Before release, five test agents competed to break 1.2** (safety, explorer, builder, command line and ComfyUI reader, design; 95 findings, each re-run before a fix — `docs/hunt-1.2.md`). Fixed: image ages and nudity now bind to the picture itself, not to its id, backstage variants included; `NaN` ages are refused; a user's personal data no longer leaves through a borrowing memory, a derived node, a stance's subject, the propose bundle or a stale card chat; extraction leaves another real person's media behind on every path; the builder no longer runs script from a crafted file, no longer carries one file's rights into the next, keeps a child preset's « nothing » and reads ages in months; the explorer shows nude images only on an adult preset and intimate images never.
 
 ## For implementers
 
 - The format changes in one place each: the `psyche` element category and its `psyche-node.json` file (RFC 0004), the `what` list on memories and the `who` / `where` / `what` lists on psyche nodes (RFC 0005), the optional `media` list of a psyche variant. The converter's contract is model-agnostic and documented in `docs/psyche-propose.md` (JSON in, JSON out, validation rules every tool shares).
-- Reference implementation: `cof-cli` tests 79 → 108, a negative corpus extended with the psyche, objects and illustration rules, one example (`10-clara-mercier`) with 23 psyche nodes, three objects and a grandmother's pendant.
+- Reference implementation: `cof-cli` tests 79 → 119, a negative corpus extended with the psyche, objects and illustration rules, one example (`10-clara-mercier`) with 23 psyche nodes, three objects and a grandmother's pendant.
 - `docs/builder-guide.md` describes the Psyche step in full.
 
 ## Next
