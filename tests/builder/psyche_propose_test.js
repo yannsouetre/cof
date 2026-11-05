@@ -91,7 +91,7 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
   const rows = await page.evaluate(() => [...document.querySelectorAll("#dlg .psyprow")].map(r => ({ id: r.dataset.prowC, on: r.querySelector("input").checked, dup: r.classList.contains("dup"), text: r.innerText })));
   check(rows.length === 6 && rows.every(r => !r.on), "review panel: six rows, every checkbox off");
   check(rows[0].dup && /val1/.test(rows[0].text) && !rows[1].dup, "the duplicate of val1 is flagged on c1 only");
-  check(/card\.description/.test(rows[2].text) && /fausse mais tenue/.test(rows[2].text) && /inappropri/i.test(rows[4].text) && /brusque|bluntness|rudeness/.test(rows[4].text) && /60/.test(rows[2].text) && /shifting/.test(rows[2].text), "rows carry kind, gist, strength, stability, source, lie, risk and its reason");
+  check(/card\.description/.test(rows[2].text) && /fausse mais tenue/.test(rows[2].text) && /inappropri/i.test(rows[4].text) && /brusque|bluntness|rudeness/.test(rows[4].text) && /60/.test(rows[2].text) && /mouvant/.test(rows[2].text) && !/shifting/.test(rows[2].text), "rows carry kind, gist, strength, stability, source, lie, risk and its reason");
   check(await nodes() === 23, "nothing added while the panel is open");
   await press("Ajouter les nœuds cochés"); d = await dlg(); check(/Aucun nœud coché/.test(d.body), "« add » with nothing ticked: says nothing was added"); await press("OK");
   await page.waitForFunction(() => document.querySelectorAll("#dlg [data-ppick]").length === 6); check(await nodes() === 23, "still 23 nodes, the panel is back");
