@@ -164,6 +164,8 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
   check(await page.evaluate(() => [...document.querySelectorAll("#dlg [data-ppzodiac] option")].length) === 13, "a select of the 12 signs (and its empty choice)");
   await page.selectOption("#dlg [data-ppzodiac]", "virgo");
   check(!(await page.evaluate(() => [...document.querySelectorAll("#dlg .dbtns button")].find(b => b.textContent.startsWith("♈")).disabled)), "a sign chosen: the button is enabled");
+  check(await page.evaluate(() => { const b = document.querySelector('#dlg .dbody [data-dv="zodiac"]'); return !!b && !b.disabled; }), "and its own « Proposer » next to the select, like the three other offline entries");
+  check(await page.evaluate(() => { const d = document.querySelector("#dlg .dbox"); return getComputedStyle(d).overflowY === "auto" && d.getBoundingClientRect().bottom <= innerHeight + 1; }), "the window fits the screen and scrolls (it is taller than 900 px)");
   await press("♈ Proposer depuis le signe");
   await page.waitForFunction(() => document.querySelectorAll("#dlg [data-ppick]").length > 0, null, { timeout: 10000 });
   let zrows = await page.evaluate(() => [...document.querySelectorAll("#dlg .psyprow")].map(r => ({ id: r.dataset.prowC, on: r.querySelector("input").checked, text: r.innerText })));
