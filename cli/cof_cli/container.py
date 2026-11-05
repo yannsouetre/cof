@@ -11,7 +11,7 @@ from pathlib import Path
 
 from . import MIMETYPE
 
-SAFE_PATH = re.compile(r"^(?!/)(?!.*\.\.)[A-Za-z0-9._/-]+$")
+SAFE_PATH = re.compile(r"^(?!/)(?!.*\.\.)[A-Za-z0-9._/-]+\Z")          # \Z, not $: "$" also matches before a final newline (hunt H4-04)
 
 # High-entropy media that gains nothing from deflate → stored (ZIP_STORED)
 STORED_EXT = {
@@ -155,7 +155,15 @@ def read_manifest(cof: str | os.PathLike) -> dict:
             raise ContainerError("unexpected 'mimetype' content")
         if "manifest.json" not in names:
             raise ContainerError("manifest.json missing")
-        return json.loads(z.read("manifest.json").decode("utf-8"))
+        def _nc(name):
+            raise ContainerError(f"manifest.json: {name} is not valid JSON (RFC 8259) — write a number")
+        try:
+            m = json.loads(z.read("manifest.json").decode("utf-8"), parse_constant=_nc)
+        except ValueError as e:
+            raise ContainerError(f"manifest.json unreadable: {e}") from e
+        if not isinstance(m, dict):
+            raise ContainerError(f"manifest.json must hold a JSON object (found {type(m).__name__})")
+        return m
 
 
 def safe_rel(rel) -> str:
@@ -184,6 +192,12 @@ def inspect(cof: str | os.PathLike) -> dict:
             errors.append("first entry ≠ 'mimetype'")
         elif infos[0].compress_type != zipfile.ZIP_STORED:
             errors.append("'mimetype' compressed")
+        else:
+            raw = z.read("mimetype")
+            if raw.decode("ascii", "replace").strip() != MIMETYPE:
+                errors.append("unexpected 'mimetype' content")
+            elif raw != MIMETYPE.encode("ascii") or infos[0].extra or infos[0].header_offset != 0:
+                warnings.append("'mimetype' entry not byte-exact (extra field, offset or whitespace) — the media type is no longer at byte 38 for file-type sniffers (SPEC § 1)")
         if len(names) > 1 and names[1] != "manifest.json":
             warnings.append("manifest.json is not the second entry (slower partial reads)")
         total_u = total_c = 0
@@ -197,6 +211,8 @@ def inspect(cof: str | os.PathLike) -> dict:
                 errors.append(f"non-conformant path: {n}")
             if n.endswith("/"):
                 warnings.append(f"unnecessary directory entry: {n}")
+            if ((i.external_attr >> 16) & 0o170000) == 0o120000:      # S_IFLNK: unzip would create a link (SPEC § 1: no symbolic links)
+                errors.append(f"symbolic link entry forbidden: {n}")
             if i.flag_bits & 0x1:
                 errors.append(f"encrypted entry forbidden: {n}")
             if i.compress_size and i.file_size / max(i.compress_size, 1) > MAX_RATIO:

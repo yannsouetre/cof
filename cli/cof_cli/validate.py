@@ -250,6 +250,17 @@ def _dup_ratio(a: str, b: str) -> float:
 
 
 _SRC_ROOT: list = []          # directory being validated (read by rules that open a sub-file)
+_CONTENT: dict = {}           # per-run cache of _content_index (reset by validate_dir)
+
+
+def _no_constant(name: str):
+    raise ValueError(f"{name} is not valid JSON (RFC 8259 has no NaN / Infinity) — write a number")
+
+
+def strict_json(text: str):
+    """JSON as RFC 8259 defines it: Python's parser accepts NaN / Infinity, which compare false with every number and
+    would slip an age past every minor rule (hunt H1-01 / H4-01)."""
+    return json.loads(text, parse_constant=_no_constant)
 
 
 def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
@@ -258,10 +269,14 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
     if not mpath.is_file():
         rep.errors.append("manifest.json not found")
         return {}
+    _CONTENT.clear()
     try:
-        manifest = json.loads(mpath.read_text("utf-8"))
+        manifest = strict_json(mpath.read_text("utf-8"))
     except Exception as e:
         rep.errors.append(f"manifest.json unreadable: {e}")
+        return {}
+    if not isinstance(manifest, dict):
+        rep.errors.append(f"manifest.json must hold a JSON object (found {type(manifest).__name__})")
         return {}
     ver = str(manifest.get("cof", ""))
     if ver in ("0.2", "0.3", "0.4", "0.5"):
@@ -415,7 +430,7 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                     schema = SUBFILE_SCHEMAS.get((etype, rv.get("kind"), fld)) or SUBFILE_SCHEMAS.get((etype, None, fld))
                     if schema:
                         try:
-                            validate_subfile(json.loads((src / rel).read_text("utf-8")), schema, rep, f"{where}.{fld} ({rel})")
+                            validate_subfile(strict_json((src / rel).read_text("utf-8")), schema, rep, f"{where}.{fld} ({rel})")
                         except Exception as ex:
                             rep.errors.append(f"{where}.{fld}: unreadable JSON ({ex})")
             if isinstance(rv.get("mesh"), dict) and not (src / rv["mesh"]["path"]).is_file():
@@ -957,52 +972,160 @@ def _primary_image_rules(manifest: dict, pid: str, res: dict, A: dict, rep: "Rep
         rep.warnings.append(f"presets.{pid}: the primary image ({aid}) shows only the head and the preset applies no clothing — the default outfit is undefined (set primary_image to a body image or apply clothing)")
 
 
-def _asset_age_rules(manifest: dict, A: dict, rep: "Report") -> None:
-    """Bind ages to files: an intimate variant's files are its own (own folder, used by no other variant), and one
-    file cannot represent both a person under 18 and an adult."""
-    users: dict[str, list[tuple[str, str, dict]]] = {}
-    nude_ids: set[str] = set()
+def _self_record(manifest: dict) -> dict:
+    """A single-character file (no `identities` table): the character's record is the root — `fictional` and
+    `rights.consent` (hunt H1-07: an explicit memory of a real person was checked only when a cast table existed)."""
+    return {"fictional": manifest.get("fictional"), "consent": (manifest.get("rights") or {}).get("consent")}
+
+
+def _effective_assets(manifest: dict, cat: str, vid: str, rv: dict) -> set[str]:
+    """The files a variant shows: its own, plus — for a memory without `media` — the media it borrows through `media_from`
+    (followed to the end of the chain). A borrowed picture is shown by the borrowing node (hunt H1-03)."""
+    ids = set(variant_asset_ids(rv))
+    if cat == "memories" and not rv.get("media") and rv.get("media_from"):
+        cur, seen = str(rv.get("media_from") or "").partition("/")[2], {vid}
+        while cur and cur not in seen:
+            seen.add(cur)
+            src_rv = resolve_variant(manifest, "memories", cur) or {}
+            if src_rv.get("media"):
+                ids |= set(src_rv.get("media") or [])
+                break
+            cur = str(src_rv.get("media_from") or "").partition("/")[2]
+    return ids
+
+
+def _node_explicit(cat: str, rv: dict) -> str | None:
+    """`explicit` of a memory node (it lives in memory.json, not on the manifest variant)."""
+    if cat != "memories" or not _SRC_ROOT or not isinstance(rv.get("memory"), str):
+        return None
+    try:
+        node = json.loads((_SRC_ROOT[0] / rv["memory"]).read_text("utf-8"))
+    except Exception:
+        return None
+    ex = node.get("explicit") if isinstance(node, dict) else None
+    return ex if ex in ("nudity", "intimate") else None
+
+
+def _content_index(manifest: dict) -> dict:
+    """Bind ages and nudity to PICTURES, not to asset ids (hunt H1-02 to H1-06). Every image / video asset gets a content
+    key (the sha256 of its bytes; the id when the file cannot be read); then, per key: the uses (category, variant, level),
+    the lowest age declared for it anywhere (a backstage variant included) and the highest content level it is shown at
+    (0 none, 1 nudity, 2 intimate). Derived maps (lineart, depth…) of a nude picture keep its level. Cached per run."""
+    hit = _CONTENT.get(id(manifest))
+    if hit is not None:
+        return hit
+    from .container import sha256_file
+    A = asset_index(manifest)
+    src = _SRC_ROOT[0] if _SRC_ROOT else None
+    key: dict[str, str] = {}
+    by_hash: dict[str, str] = {}
+    for aid, a in A.items():
+        k = None
+        if src and isinstance(a.get("path"), str) and str(a.get("mediaType") or "").startswith(("image/", "video/")):
+            f = src / a["path"]
+            try:
+                if f.is_file() and f.resolve().is_relative_to(src.resolve()):
+                    k = by_hash.setdefault(str(f.resolve()), sha256_file(f))
+            except OSError:
+                k = None
+        key[aid] = f"sha256:{k}" if k else (f"sha256:{a['sha256']}" if a.get("sha256") else f"id:{aid}")
+    uses: dict[str, list[tuple[str, str, dict, int]]] = {}
+    level: dict[str, int] = {}
     for cat, e in (manifest.get("elements") or {}).items():
         for vid in ((e or {}).get("variants") or {}):
             rv = resolve_variant(manifest, cat, vid) or {}
-            if rv.get("nudity") is True or rv.get("kind") == "intimate":
-                nude_ids |= variant_asset_ids(rv)
+            ex = _node_explicit(cat, rv)
+            lv = 2 if (cat == "appearance" and rv.get("kind") == "intimate") or ex == "intimate" else 1 if (rv.get("nudity") is True or ex) else 0
+            for aid in _effective_assets(manifest, cat, vid, rv):
+                k = key.get(aid, f"id:{aid}")
+                uses.setdefault(k, []).append((cat, vid, rv, lv))
+                level[k] = max(level.get(k, 0), lv)
     grew = True
-    while grew:                                     # derived maps of a nude image are nude too
+    while grew:                                     # derived maps of a nude image are nude too; crops are judged on their own
         grew = False
         for a in manifest.get("assets") or []:
-            if a.get("id") not in nude_ids and a.get("role") == "derived" and a.get("source") in nude_ids:   # maps (lineart, depth…) keep the nudity; crops are judged on their own
-                nude_ids.add(a["id"]); grew = True
+            if a.get("role") == "derived" and a.get("source") in key and a.get("id") in key:
+                ks, kd = key[a["source"]], key[a["id"]]
+                if level.get(ks, 0) > level.get(kd, 0):
+                    level[kd] = level[ks]; grew = True
+    young: dict[str, tuple[float, str]] = {}
+    for k, us in uses.items():
+        for cat, vid, rv, _ in us:
+            x = _age_value(rv.get("age")) if rv.get("kind") not in AGELESS_KINDS else None
+            if x is not None and (k not in young or x < young[k][0]):
+                young[k] = (x, f"{cat}.{vid}")
+    out = {"key": key, "uses": uses, "level": level, "young": young}
+    _CONTENT[id(manifest)] = out
+    return out
+
+
+def _asset_age_rules(manifest: dict, A: dict, rep: "Report") -> None:
+    """Bind ages and nudity to files (by content: the same bytes under two ids are one picture): an intimate variant's files
+    are its own (own folder, used by no other variant), a picture shown with nudity anywhere is marked nudity wherever it is
+    used, a picture shown as intimate is never reused by a lower level, one picture cannot represent both a person under 18
+    and an adult, and a picture declared as a person under 18 is never shown with nudity — preset or backstage."""
+    C = _content_index(manifest)
+    key, uses, level, young = C["key"], C["uses"], C["level"], C["young"]
+    keys_of = lambda ids_: {key.get(a, f"id:{a}") for a in ids_}
+    name_of = lambda k: next((a for a, kk in key.items() if kk == k), k)
     for cat, e in (manifest.get("elements") or {}).items():
         for vid in ((e or {}).get("variants") or {}):
             rv = resolve_variant(manifest, cat, vid) or {}
-            if rv.get("nudity") is not True and rv.get("kind") != "intimate":
-                bad = sorted(variant_asset_ids(rv) & nude_ids)
+            mine = _effective_assets(manifest, cat, vid, rv)
+            ex = _node_explicit(cat, rv)
+            lv = 2 if (cat == "appearance" and rv.get("kind") == "intimate") or ex == "intimate" else 1 if (rv.get("nudity") is True or ex) else 0
+            if lv == 0:
+                bad = sorted(a for a in mine if level.get(key.get(a, ""), 0) >= 1)
                 if bad:
                     rep.errors.append(f"{cat}.{vid} uses {', '.join(bad[:3])}, which show(s) nudity or intimate content (or are maps derived from such an image) — mark the variant nudity, or use another file")
+            elif lv == 1:
+                bad = sorted(a for a in mine if level.get(key.get(a, ""), 0) >= 2)
+                if bad:
+                    rep.errors.append(f"{cat}.{vid} (nudity) uses {', '.join(bad[:3])}, shown as intimate content elsewhere — a reader would reveal an intimate picture behind a nudity setting: mark it intimate (explicit: intimate) or use another file")
     ts = manifest.get("thumbnail_source")
     dp = default_preset_id(manifest)
     pim = ((manifest.get("presets") or {}).get(dp or "") or {}).get("primary_image")
     for where, aid in (("thumbnail_source", ts), (f"presets.{dp}.primary_image", pim)):
-        if aid and aid in nude_ids:
+        if aid and level.get(key.get(aid, f"id:{aid}"), 0) >= 1:
             rep.errors.append(f"{where}: {aid} shows nudity or intimate content — the file thumbnail is shown by file managers without any content setting; choose another image")
-    for cat, e in (manifest.get("elements") or {}).items():
-        for vid in ((e or {}).get("variants") or {}):
-            rv = resolve_variant(manifest, cat, vid) or {}
-            for aid in variant_asset_ids(rv):
-                users.setdefault(aid, []).append((cat, vid, rv))
-    for aid, us in users.items():
-        intim = [u for u in us if u[0] == "appearance" and u[2].get("kind") == "intimate"]
-        for cat, vid, rv in intim:
-            others = [f"{c}.{v}" for c, v, _ in us if (c, v) != (cat, vid)]
+    for vid in ((manifest.get("elements") or {}).get("appearance") or {}).get("variants") or {}:
+        rv = resolve_variant(manifest, "appearance", vid) or {}
+        if rv.get("kind") != "intimate":
+            continue
+        for aid in sorted(variant_asset_ids(rv)):
+            others = sorted({f"{c}.{v}" for c, v, _, _ in uses.get(key.get(aid, f"id:{aid}"), []) if (c, v) != ("appearance", vid)})
             if others:
-                rep.errors.append(f"appearance.{vid} (intimate): asset {aid} is also used by {', '.join(others)} — an intimate variant's files are its own")
+                same = "" if all(aid in variant_asset_ids(resolve_variant(manifest, *o.split(".", 1)) or {}) for o in others) else " (the same picture under another asset id)"
+                rep.errors.append(f"appearance.{vid} (intimate): asset {aid} is also used by {', '.join(others[:3])}{same} — an intimate variant's files are its own")
             pth = (A.get(aid) or {}).get("path") or ""
             if pth and not pth.startswith(f"elements/appearance/{vid}/"):
                 rep.errors.append(f"appearance.{vid} (intimate): asset {aid} must live in elements/appearance/{vid}/ (found {pth})")
-        ages = [(x, f"{c}.{v}") for c, v, rv in us if rv.get("kind") not in AGELESS_KINDS for x in [_age_value(rv.get("age"))] if x is not None]
-        if ages and min(ages)[0] < ADULT <= max(ages)[0]:
-            rep.errors.append(f"asset {aid} represents both a person under {ADULT} ({min(ages)[1]}: {min(ages)[0]:g}) and an adult ({max(ages)[1]}: {max(ages)[0]:g}) — use separate files")
+    for k, us in uses.items():
+        ages = sorted((x, f"{c}.{v}") for c, v, rv, _ in us if rv.get("kind") not in AGELESS_KINDS for x in [_age_value(rv.get("age"))] if x is not None)
+        if ages and ages[0][0] < ADULT <= ages[-1][0]:
+            rep.errors.append(f"asset {name_of(k)} represents both a person under {ADULT} ({ages[0][1]}: {ages[0][0]:g}) and an adult ({ages[-1][1]}: {ages[-1][0]:g}) — use separate files")
+        if k in young and young[k][0] < ADULT and level.get(k, 0) >= 1:
+            nude_use = next((f"{c}.{v}" for c, v, _, lv in us if lv >= 1), None) or "a derived map"
+            rep.errors.append(f"asset {name_of(k)} is declared as a person under {ADULT} ({young[k][1]}: {young[k][0]:g}) and shown with nudity or intimate content ({nude_use}) — no nudity of any kind under {ADULT}, in a preset or backstage")
+
+
+def _content_age_rules(manifest: dict, label: str, res: dict, adult_only: bool, rep: "Report") -> None:
+    """The age declared for a picture travels with it (hunt H1-06): a preset with intimate, nude or sexual content may not
+    reach, through an element that carries no age (an accessory, a psyche node, a memory without `age`), a picture declared
+    elsewhere as a person under 18."""
+    if not adult_only:
+        return
+    C = _content_index(manifest)
+    for cat in res:
+        for v in res.get(cat, []):
+            own = _age_value(v.get("age")) if v.get("kind") not in AGELESS_KINDS else None
+            if own is not None and own < ADULT:
+                continue                            # already counted in the preset's lowest age
+            for aid in sorted(_effective_assets(manifest, cat, v.get("_id", ""), v)):
+                y = C["young"].get(C["key"].get(aid, f"id:{aid}"))
+                if y and y[0] < ADULT:
+                    rep.errors.append(f"{label}: {cat}.{v.get('_id')} uses {aid}, declared as a person under {ADULT} by {y[1]} ({y[0]:g}) — the preset has intimate, nude or sexual content: use another file")
+                    break
 
 
 def _age_rules(manifest: dict, pid: str | None, res: dict, perms_all: dict, rep: "Report") -> None:
@@ -1046,6 +1169,7 @@ def _age_rules(manifest: dict, pid: str | None, res: dict, perms_all: dict, rep:
             if re.fullmatch(r"\d+(\.\d+)?", ap) and float(ap) < ADULT:
                 rep.warnings.append(f"{label}: voice.{v['_id']} is perceived as {ap} years old in a preset with intimate content — check the voice belongs to this preset")
     eff_perms = effective_permissions(manifest, pid) if pid else {**perms_all}
+    _content_age_rules(manifest, label, res, bool(by_kind(res, "appearance", "intimate") or nude_vs or eff_perms.get("allowSexualUsage")), rep)
     if pa is not None and pa < ADULT:
         if by_kind(res, "appearance", "intimate"):
             rep.errors.append(f"{label}: intimate variant combined with an element under {ADULT} (preset age {pa}) — forbidden")
@@ -1272,12 +1396,12 @@ def _memory_rules(manifest: dict, src: Path, rep: "Report") -> None:
                 if not w_.get("shown"):
                     continue
                 iid = me if w_.get("identity") == "self" else w_.get("identity")
-                if iid and ids:
-                    I = ids.get(iid) or {}
+                I = _self_record(manifest) if (w_.get("identity") == "self" and not ids) else (ids.get(iid) or {}) if (iid and ids) else None
+                if I is not None:
                     sc_ = set(((I.get("consent") or {}).get("scope")) or [])
                     ok_ = ("intimate" in sc_) if ex == "intimate" else bool({"nudity", "intimate"} & sc_)
                     if I.get("fictional") is False and not ok_:
-                        rep.errors.append(f"{where}: explicit node ({ex}) shows the real person '{iid}' without consent scope {'intimate' if ex == 'intimate' else 'nudity / intimate'} (the 1.0 rule of appearance/intimate)")
+                        rep.errors.append(f"{where}: explicit node ({ex}) shows the real person '{iid or 'self'}' without consent scope {'intimate' if ex == 'intimate' else 'nudity / intimate'} (the 1.0 rule of appearance/intimate)")
                 elif w_.get("real"):
                     rep.errors.append(f"{where}: explicit node shows a real person who is not an identity of the file — never allowed")
         elif rv.get("nudity") is True:
@@ -1404,10 +1528,10 @@ def _psyche_images(manifest: dict, rv: dict, node: dict, where: str, me, ids: di
             rep.errors.append(f"{where}: an image with nudity — every person shown must have a known age of {ADULT} or more (unknown: {', '.join(unknown[:3]) or '—'}; under {ADULT}: {', '.join(minors[:3]) or '—'})")
         for w_ in shown:
             iid = me if w_.get("identity") == "self" else w_.get("identity")
-            if iid and ids:
-                I = ids.get(iid) or {}
+            I = _self_record(manifest) if (w_.get("identity") == "self" and not ids) else (ids.get(iid) or {}) if (iid and ids) else None
+            if I is not None:
                 if I.get("fictional") is False and not ({"nudity", "intimate"} & set(((I.get("consent") or {}).get("scope")) or [])):
-                    rep.errors.append(f"{where}: an image with nudity shows the real person '{iid}' without consent scope nudity / intimate (the 1.0 rule of appearance/intimate)")
+                    rep.errors.append(f"{where}: an image with nudity shows the real person '{iid or 'self'}' without consent scope nudity / intimate (the 1.0 rule of appearance/intimate)")
             elif w_.get("real"):
                 rep.errors.append(f"{where}: an image with nudity shows a real person who is not an identity of the file — never allowed")
 

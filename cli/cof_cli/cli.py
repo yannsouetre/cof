@@ -189,8 +189,13 @@ def cmd_export(a):
         if fmt in ("png", "card") and not card_path:
             print("this preset has no personality variant (card.json)", file=sys.stderr)
             return 1
-        if fmt == "png":
+        if fmt in ("png", "card"):
+            from .convert import strip_card_payloads
             card = json.loads((d / card_path).read_text("utf-8"))
+            gone = strip_card_payloads(card)               # an old card may still carry a user's chat: it never leaves with an export (hunt H1-12)
+            if gone:
+                print("WARN   not exported: a user's personal data in the card (data.extensions." + ", data.extensions.".join(gone) + ")")
+        if fmt == "png":
             head = next((A[i]["path"] for i in (first(r, "appearance", "face") or {}).get("images", []) if i in A and A[i].get("subject") == "head" and A[i].get("angle") == "front"), None)
             if head and head.lower().endswith(".png"):
                 png = (d / head).read_bytes()
@@ -214,7 +219,6 @@ def cmd_export(a):
             if done.get("dangerous_dropped"):
                 print(f"dangerous psyche nodes not exported: {done['dangerous_dropped']} (an agent acts — --keep-dangerous exports them)")
         elif fmt == "card":
-            card = json.loads((d / card_path).read_text("utf-8"))
             out = out or Path(f"{_fname(manifest)}.card.json")
             out.write_text(json.dumps(card, ensure_ascii=False, indent=2), "utf-8")
         else:
@@ -330,7 +334,10 @@ def cmd_psyche_propose(a):
     with tempfile.TemporaryDirectory(prefix="cof-propose-") as td:
         d = src if src.is_dir() else unpack(src, td)
         manifest = json.loads((d / "manifest.json").read_text("utf-8"))
-        bundle = P.build_bundle(d, manifest, a.preset, a.identity, langs)
+        bundle = P.build_bundle(d, manifest, a.preset, a.identity, langs, keep_personal=getattr(a, "keep_personal", False))
+        n_personal = bundle.pop("personal_left_out", 0)
+        if n_personal:
+            print(f"personal memories / psyche nodes left out of the bundle: {n_personal} (--keep-personal sends them)")
         iid = bundle["character"]["id"]
         if a.bundle_out:
             Path(a.bundle_out).write_text(json.dumps({"system": P.SYSTEM_PROMPT, "prompt": P.PROMPT, "bundle": bundle}, ensure_ascii=False, indent=2) + "\n", "utf-8")
@@ -404,7 +411,8 @@ def cmd_psyche_text(a):
         d = src if src.is_dir() else unpack(src, td)
         manifest = json.loads((d / "manifest.json").read_text("utf-8"))
         pid = a.preset or default_preset_id(manifest)
-        text, stats = soul_section(manifest, load_nodes(d, manifest), pid, keep_personal=a.keep_personal, keep_dangerous=a.keep_dangerous)
+        from .memories import load_nodes as load_memories
+        text, stats = soul_section(manifest, load_nodes(d, manifest), pid, keep_personal=a.keep_personal, keep_dangerous=a.keep_dangerous, memory_nodes=load_memories(d, manifest))
     if not text:
         print("no psyche node to render for this preset", file=sys.stderr); return 1
     if a.out:
@@ -455,6 +463,9 @@ def cmd_extract(a):
         else:
             extract_preset(d, Path(a.out), a.preset)
         for n in notes:
+            print(f"WARN   {n}")
+        from .ops import strip_card_payloads_dir
+        for n in strip_card_payloads_dir(Path(a.out)):
             print(f"WARN   {n}")
         if not getattr(a, "keep_personal", False):           # RFC 0002 § 5.7: personal memories never travel unasked; RFC 0004 § 3 ter: personal psyche nodes likewise
             from .ops import drop_personal_memories
@@ -568,6 +579,7 @@ def main(argv=None) -> int:
     pa.add_argument("--disclosure", choices=["open", "guarded", "secret"], default="open"); pa.add_argument("--preset", action="append", help="preset(s) that hold it (default: the character's presets)")
     pa.add_argument("-o", "--out", help="output .cof (default: in place)"); pa.set_defaults(fn=cmd_psyche_add)
     pp = ps_.add_parser("propose", help="personality → psyche: candidate nodes from a model, the 1.0 lists, a zodiac sign, a Myers-Briggs type, an Enneagram type or Big Five scores, reviewed in a table, written only for the ids you accept (docs/psyche-propose.md)")
+    pp.add_argument("--keep-personal", action="store_true", help="also put `visibility: personal` memories and psyche nodes (a user's data) in the bundle sent to a model (left out by default)")
     pp.add_argument("src", help=".cof file or character folder"); pp.add_argument("--preset", help="the preset whose personality and language are read (default: the character's)"); pp.add_argument("--identity", help="character id in a cast (default: the file's default character)")
     pp.add_argument("--lang", help="languages a gist must come in, comma-separated (default: the preset's, then the file's)")
     pp.add_argument("--provider", choices=["openai-compatible"], help="ask a model through an OpenAI-compatible gateway (key from the environment: COF_AI_KEY, never an argument)")

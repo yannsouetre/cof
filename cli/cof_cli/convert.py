@@ -316,7 +316,8 @@ def export_soul(src: Path, preset: str | None = None, keep_personal: bool = Fals
     psyche = json.loads((src / p["psyche"]).read_text("utf-8")) if p.get("psyche") and (src / p["psyche"]).is_file() else {}
     A = asset_index(manifest)
     from .psyche import load_nodes as load_psyche, soul_section as psyche_section
-    who, _ = psyche_section(manifest, load_psyche(src, manifest), pid, keep_personal, keep_dangerous)
+    from .memories import load_nodes as load_memories
+    who, _ = psyche_section(manifest, load_psyche(src, manifest), pid, keep_personal, keep_dangerous, memory_nodes=load_memories(src, manifest))
 
     lines = [f"# SOUL.md — {name}", ""]
     if p.get("kind") == "description" and (p.get("text") or "").strip():
@@ -522,8 +523,17 @@ def export_agent(src: Path, out: Path, preset: str | None = None, keep_personal:
         from .memories import shows_other_real_person
         from .model import preset_owner
         owner_ = preset_owner(manifest, pid)
+        from .memories import load_nodes as load_memories, media_source
+        from .model import resolve_variant
+        all_nodes = load_memories(src, manifest)
         for vid, rv, node in kept:
-            if node.get("explicit"):
+            if node.get("explicit") or rv.get("nudity") is True:      # a 1.0 nudity flag without `explicit` is nude media too (hunt H1-15)
+                continue
+            msrc = media_source(manifest, vid)
+            if msrc and msrc != vid and not keep_personal and (all_nodes.get(msrc) or {}).get("visibility") == "personal":
+                done.setdefault("media_withheld", []).append(vid)        # borrowed from a personal memory: the user's file stays home (hunt H1-09)
+                continue
+            if msrc and msrc != vid and ((all_nodes.get(msrc) or {}).get("explicit") or (resolve_variant(manifest, "memories", msrc) or {}).get("nudity") is True):
                 continue
             if shows_other_real_person(manifest, vid, node, {owner_} if owner_ else set()):      # § 4.5 guard: another real person's likeness never leaves with one character
                 done.setdefault("media_withheld", []).append(vid)

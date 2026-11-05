@@ -370,11 +370,21 @@ def drop_dangling_memory_links(dst: Path, m: dict) -> list[str]:
                 keep.append(ln)
             else:
                 dropped.append(f"{vid} → {ln.get('to')}")
-        if len(keep) != len(node.get("links") or []):
+        changed = len(keep) != len(node.get("links") or [])
+        if changed:
             if keep:
                 node["links"] = keep
             else:
                 node.pop("links", None)
+        ab = node.get("about") if isinstance(node.get("about"), dict) else {}
+        if ab.get("node") or ab.get("identity"):          # a stance about a node (or a character) that left: the subject goes too, never its label (hunt H4-02 / H4-05)
+            cat, _, tgt = str(ab.get("node") or "").partition("/")
+            gone_node = bool(ab.get("node")) and tgt not in ((E.get(cat) or {}).get("variants") or {})
+            gone_id = bool(ab.get("identity")) and ab["identity"] not in ids and bool(ids)
+            if gone_node or gone_id:
+                dropped.append(f"{vid} → about {ab.get('node') or ab.get('identity')}")
+                node.pop("about"); changed = True
+        if changed:
             (dst / rel).write_text(json.dumps(node, ensure_ascii=False, indent=2) + "\n", "utf-8")
     return dropped
 
@@ -434,6 +444,19 @@ def strip_foreign_real_media(dst: Path, kept_identities: set[str], identities: d
     return hit
 
 
+def _with_heirs(m: dict, cat: str, fld: str, hit: list[str]) -> list[str]:
+    """`hit` plus the variants that inherit (derives_from) the node FILE of one of them: such a variant has no words of its
+    own — it is the personal node under another id, and leaves with it."""
+    from .model import resolve_variant
+    V = ((m.get("elements") or {}).get(cat) or {}).get("variants") or {}
+    out = list(hit)
+    files = {str((resolve_variant(m, cat, h) or {}).get(fld) or "") for h in hit} - {""}
+    for vid in V:
+        if vid not in out and V[vid].get("derives_from") and not V[vid].get(fld) and str((resolve_variant(m, cat, vid) or {}).get(fld) or "") in files:
+            out.append(vid)
+    return out
+
+
 def drop_personal_memories(dst: Path) -> list[str]:
     """RFC 0002 § 5.7: `visibility: personal` nodes are a user's data — removed with their files, unlisted from presets."""
     from .memories import load_nodes
@@ -444,6 +467,15 @@ def drop_personal_memories(dst: Path) -> list[str]:
     hit = [vid for vid, node in nodes.items() if node.get("visibility") == "personal"]
     if not hit:
         return []
+    from .model import resolve_variant
+    hit = _with_heirs(m, "memories", "memory", hit)
+    for vid in list(V):                     # a kept memory derived from a personal one keeps its words, not the user's files (hunt H1-18)
+        if vid not in hit and V[vid].get("derives_from") in hit:
+            own = V[vid]
+            V[vid] = {k: x for k, x in (resolve_variant(m, "memories", vid) or {}).items() if k not in ("_id", "derives_from")}
+            for k in ("media", "media_from", "nudity", "age"):
+                if k not in own:
+                    V[vid].pop(k, None)
     freed = set()
     for vid in hit:
         for ovid, ov in V.items():          # a node that borrowed the media of a personal node loses them: the files leave with the personal node (RFC 0002 § 5.7)
@@ -628,7 +660,11 @@ def extract_presets(src: Path, dst: Path, pids: list[str], tags: list[str] | Non
         from .cast import drop_foreign_relations
         drop_foreign_relations(out)
         (dst / "manifest.json").write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", "utf-8")
-        relabel_departed_identities(dst, out, m["identities"])
+        kept_ids = set(out.get("identities") or {})              # RFC 0002 § 4.5 on every extraction (hunt H1-08): media of a real person whose consent record stays behind stay behind too
+        strip_foreign_real_media(dst, kept_ids, m["identities"])
+        from .psyche import strip_foreign_real_images
+        strip_foreign_real_images(dst, kept_ids, m["identities"])
+        relabel_departed_identities(dst, json.loads((dst / "manifest.json").read_text("utf-8")), m["identities"])
         out = json.loads((dst / "manifest.json").read_text("utf-8"))
     return out
 
@@ -662,6 +698,21 @@ def strip_intimate(dst: Path) -> list[str]:
             if a.get("path") and (dst / a["path"]).is_file():
                 (dst / a["path"]).unlink()
             m["assets"].remove(a)
+    # the folder of a removed variant goes with it: a LoRA (weights.json `file`) or a 3D avatar (`path`) names its file
+    # outside any asset list, and the file stayed behind (hunt H1-16)
+    removed = [("appearance", v) for v in gone] + [tuple(x.split(".", 1)) for x in extra_gone if " (" not in x]
+    def _uses_path(pref: str) -> bool:
+        return any(isinstance(x, str) and x.startswith(pref) for e in (m.get("elements") or {}).values() for v in (e.get("variants") or {}).values() for x in v.values()) or \
+            any(isinstance(v.get("mesh"), dict) and str(v["mesh"].get("path") or "").startswith(pref) for e in (m.get("elements") or {}).values() for v in (e.get("variants") or {}).values())
+    for cat, vid in removed:
+        pref = f"elements/{cat}/{vid}/"
+        for a in list(m.get("assets") or []):
+            if str(a.get("path") or "").startswith(pref) and a["id"] not in still:
+                if (dst / a["path"]).is_file():
+                    (dst / a["path"]).unlink()
+                m["assets"].remove(a)
+        if (dst / pref).is_dir() and not _uses_path(pref) and not any(str(a.get("path") or "").startswith(pref) for a in m.get("assets") or []):
+            shutil.rmtree(dst / pref)
     for p in (m.get("presets") or {}).values():
         for key in ("slots", "alternatives"):
             if (p.get(key) or {}).get("appearance"):
@@ -681,3 +732,24 @@ def strip_intimate(dst: Path) -> list[str]:
     (dst / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
     # RFC 0004 § 3 septies: the risk purge is a separate switch (`--no-risk`); the all-audiences slice touches explicit memories and media only
     return gone + extra_gone
+
+
+def strip_card_payloads_dir(dst: Path) -> list[str]:
+    """The cards of an extracted folder lose the CARD_PAYLOADS a ≤ 1.1.1 tool kept (a user's chat, an avatar data URL):
+    a user's data never travels with an extraction (hunt H1-12). Returns one note per card touched."""
+    from .convert import strip_card_payloads
+    m = json.loads((dst / "manifest.json").read_text("utf-8"))
+    notes = []
+    for vid, v in (((m.get("elements") or {}).get("personality") or {}).get("variants") or {}).items():
+        rel = v.get("card")
+        if not isinstance(rel, str) or not (dst / rel).is_file():
+            continue
+        try:
+            card = json.loads((dst / rel).read_text("utf-8"))
+        except Exception:
+            continue
+        gone = strip_card_payloads(card)
+        if gone:
+            (dst / rel).write_text(json.dumps(card, ensure_ascii=False, indent=2) + "\n", "utf-8")
+            notes.append(f"personality.{vid}: a user's personal data removed from the card (data.extensions." + ", data.extensions.".join(gone) + ")")
+    return notes

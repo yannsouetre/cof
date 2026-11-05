@@ -112,7 +112,7 @@ _WORDS = {
                     "`guarded` — not opened with, only when it matters; `lived` — came from use, not from the author.",
            "kinds": {"wound": "Wound", "value": "Values", "belief": "Beliefs", "want": "Wants", "need": "Needs", "fear": "Fears", "stance": "Stances",
                      "taste": "Tastes", "habit": "Habits", "contradiction": "Contradictions", "rule": "Rules"},
-           "secret": "There are things {pron} does not tell.", "user": "the user", "lie": "lie", "guarded": "guarded", "lived": "lived", "about": "about",
+           "secret": "There are things {pron} does not tell.", "user": "the user", "private": "a private matter", "lie": "lie", "guarded": "guarded", "lived": "lived", "about": "about",
            "partly": "half aware", "unaware": "acts on it without knowing it — never says it", "warmth": "warmth", "likes": "Likes:", "dislikes": "Dislikes:"},
     "fr": {"title": "Qui {pron} est", "pron": {"female": "elle", "male": "il"}, "pron_default": "iel",
            "intro": "Rendu depuis les nœuds de la psyché (RFC 0004) dans un ordre fixe : blessure, valeurs, croyances, désirs et besoins, peurs, positions, goûts, habitudes, contradictions, règles. "
@@ -120,12 +120,12 @@ _WORDS = {
                     "`réservé` — jamais d'emblée, seulement quand cela compte ; `vécu` — venu de l'usage, pas de l'auteur.",
            "kinds": {"wound": "Blessure", "value": "Valeurs", "belief": "Croyances", "want": "Désirs", "need": "Besoins", "fear": "Peurs", "stance": "Positions",
                      "taste": "Goûts", "habit": "Habitudes", "contradiction": "Contradictions", "rule": "Règles"},
-           "secret": "Il y a des choses qu'{pron} ne dit pas.", "user": "l'utilisateur", "lie": "mensonge", "guarded": "réservé", "lived": "vécu", "about": "envers",
+           "secret": "Il y a des choses qu'{pron} ne dit pas.", "user": "l'utilisateur", "private": "une affaire privée", "lie": "mensonge", "guarded": "réservé", "lived": "vécu", "about": "envers",
            "partly": "en partie à son insu", "unaware": "agit ainsi à son insu — ne le dit jamais", "warmth": "chaleur", "likes": "Aime :", "dislikes": "N'aime pas :"},
 }
 
 
-def _subject(manifest: dict, about: dict | None, lang: str, W: dict) -> str:
+def _subject(manifest: dict, about: dict | None, lang: str, W: dict, hidden: set | None = None) -> str:
     """What a stance bears on, as a short text: the user, a character's name, a node's label, or the free label."""
     from .cast import text_in
     if not isinstance(about, dict):
@@ -136,6 +136,8 @@ def _subject(manifest: dict, about: dict | None, lang: str, W: dict) -> str:
         return ((manifest.get("identities") or {}).get(about["identity"]) or {}).get("name") or about["identity"]
     if about.get("node"):
         cat, _, vid = str(about["node"]).partition("/")
+        if hidden and about["node"] in hidden:
+            return W.get("private", "")                 # a node left out (personal, not exported): its label is the user's data too (hunt H4-02)
         return (resolve_variant(manifest, cat, vid) or {}).get("label") or vid
     return text_in(about.get("label"), lang)
 
@@ -150,7 +152,7 @@ def has_valence(node: dict) -> bool:
     return isinstance(v, int) and not isinstance(v, bool)
 
 
-def soul_section(manifest: dict, nodes: dict[str, dict], pid: str | None, keep_personal: bool = False, keep_dangerous: bool = False) -> tuple[str, dict]:
+def soul_section(manifest: dict, nodes: dict[str, dict], pid: str | None, keep_personal: bool = False, keep_dangerous: bool = False, memory_nodes: dict | None = None) -> tuple[str, dict]:
     """The "Who she is" section of SOUL.md (RFC 0004 § 3 quinquies): one line per node in the fixed kind order, the whole
     gist at strength ≥ 70 and a short clause below, lies and guarded nodes marked, secret nodes left out with one line
     saying so; a stance's warmth after its subject, half-aware and unaware nodes marked, tastes split into likes and
@@ -161,6 +163,10 @@ def soul_section(manifest: dict, nodes: dict[str, dict], pid: str | None, keep_p
     from .model import preset_owner
     vids, stats = select_nodes(manifest, nodes, pid, keep_personal, keep_dangerous)
     stats["rendered"] = 0; stats["secret"] = 0
+    hidden: set[str] = set()                            # nodes a stance may name but this section must not: personal ones (memories and psyche) when not kept
+    if not keep_personal:
+        hidden = {f"psyche/{v}" for v, n in nodes.items() if n.get("visibility") == "personal"}
+        hidden |= {f"memories/{v}" for v, n in (memory_nodes or {}).items() if n.get("visibility") == "personal"}
     if not vids:
         return "", stats
     me = preset_owner(manifest, pid)                       # the section's language: the preset's personality, else the character's, else the file's first
@@ -168,6 +174,8 @@ def soul_section(manifest: dict, nodes: dict[str, dict], pid: str | None, keep_p
     L = "fr" if lang.startswith("fr") else "en"
     W = _WORDS[L]
     pron = W["pron"].get(preset_gender(manifest, pid) or "", W["pron_default"])
+    if L == "en" and pron == "they":                     # singular they takes the plural verb (hunt H4-15)
+        W = {**W, "title": "Who they are", "secret": "There are things they do not tell.", "intro": W["intro"].replace("{pron} holds", "{pron} hold")}
     lines = [f"## {W['title'].format(pron=pron)}", "", W["intro"].format(full=FULL_LINE_STRENGTH, pron=pron), ""]
     by_kind: dict[str, list[str]] = {}
     for v in vids:
@@ -187,7 +195,7 @@ def soul_section(manifest: dict, nodes: dict[str, dict], pid: str | None, keep_p
             if kind == "belief" and n.get("false_but_held"):
                 marks.append(W["lie"])
             if kind == "stance":
-                subj = _subject(manifest, n.get("about"), lang, W)
+                subj = _subject(manifest, n.get("about"), lang, W, hidden)
                 if subj:
                     marks.append(f"{W['about']}: {subj}")
                 if has_valence(n):                                 # § 3 nonies: which way the stance leans, after its subject
@@ -244,9 +252,13 @@ def drop_nodes(dst: Path, m: dict, vids: list[str]) -> list[str]:
     gone = [v for v in V if v not in keep]
     if not gone:
         return []
-    for vid in keep:                                    # a kept node derived from a removed one (§ 3 nonies: bel4 from bel3) keeps what it inherited
+    for vid in keep:                                    # a kept node derived from a removed one (§ 3 nonies: bel4 from bel3) keeps what it inherited — its words, not the removed node's images (they leave with it, § 3 decies; hunt H1-10)
         if V[vid].get("derives_from") in gone:
-            V[vid] = {k: x for k, x in (resolve_variant(m, "psyche", vid) or {}).items() if k != "_id"}
+            own = V[vid]
+            V[vid] = {k: x for k, x in (resolve_variant(m, "psyche", vid) or {}).items() if k not in ("_id", "derives_from")}
+            for k in ("media", "nudity", "age"):
+                if k not in own:
+                    V[vid].pop(k, None)
     still = {str(V[k].get("node") or "") for k in keep if k in V}            # a node file a kept (derived) variant still reads stays
     from .model import variant_asset_ids
     from .ops import _prune_assets
@@ -284,7 +296,8 @@ def drop_personal_nodes(dst: Path) -> list[str]:
     hit = [vid for vid, n in nodes.items() if n.get("visibility") == "personal"]
     if not hit:
         return []
-    gone = drop_nodes(dst, m, hit)
+    from .ops import _with_heirs
+    gone = drop_nodes(dst, m, _with_heirs(m, "psyche", "node", hit))
     (dst / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=2) + "\n", "utf-8")
     return gone
 

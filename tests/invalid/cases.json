@@ -242,6 +242,24 @@
       "expect": "illegal"
     },
     {
+      "file": "age-not-a-number.cof",
+      "rule": "an age is a JSON number (NaN / Infinity are not JSON and never count as adult)",
+      "spec": "§ 2.2 / § 9.4",
+      "expect": "not valid JSON"
+    },
+    {
+      "file": "same-picture-minor-and-intimate.cof",
+      "rule": "ages and nudity bind to the picture, not to its asset id: the same bytes under two ids are one picture",
+      "spec": "§ 4.5 / § 9.4",
+      "expect": "under 18"
+    },
+    {
+      "file": "backstage-nude-minor.cof",
+      "rule": "no nudity of any kind under 18, in a preset or backstage (a variant no preset lists)",
+      "spec": "§ 9.4",
+      "expect": "no nudity of any kind under"
+    },
+    {
       "file": "memory-in-a-1.0-file.cof",
       "rule": "a file declares the lowest minor that defines what it uses: memories need cof 1.1",
       "spec": "RFC 0002 § 7",
@@ -522,6 +540,18 @@
       "rule": "every declared asset is present",
       "spec": "§ 2.6",
       "expect": "missing"
+    },
+    {
+      "file": "entry-name-with-newline.cof",
+      "rule": "entry names follow the container grammar exactly (a trailing newline is not a character of it)",
+      "spec": "§ 1.1 / § 9.3",
+      "expect": "non-conformant path"
+    },
+    {
+      "file": "symlink-entry.cof",
+      "rule": "no symbolic links in the container",
+      "spec": "§ 1.1",
+      "expect": "symbolic link"
     }
   ]
 }

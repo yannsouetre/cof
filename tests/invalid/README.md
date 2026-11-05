@@ -96,5 +96,10 @@ validator's error (`expect`) — other implementations only need to reject the f
 | `psyche-image-shows-character-without-age.cof` | an image that shows the character makes the variant carry an `age` |
 | `psyche-image-of-a-minor-in-an-adult-preset.cof` | the age of an image enters the preset's lowest age: a minor image makes a minor preset |
 | `psyche-image-nudity-without-adult.cof` | an image with nudity shows an adult whose age is known |
+| `age-not-a-number.cof` | an age is a JSON number: `NaN` / `Infinity` are not JSON and never count as adult |
+| `same-picture-minor-and-intimate.cof` | ages and nudity bind to the picture, not to its asset id: the same bytes under two ids are one picture |
+| `backstage-nude-minor.cof` | no nudity of any kind under 18, in a preset or backstage — a variant no preset lists |
+| `entry-name-with-newline.cof` | entry names follow the container grammar exactly (a trailing newline is not part of it) |
+| `symlink-entry.cof` | no symbolic links in the container |
 
 Regenerate with `python tests/invalid/build.py` (it also checks every case against the reference validator).

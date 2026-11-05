@@ -1,6 +1,8 @@
 """Manifest model helpers (v0.5): categories → variants (with `kind`), presets with multi-slots, identities, regions."""
 from __future__ import annotations
 
+import math
+
 import json
 from importlib import resources
 
@@ -328,6 +330,8 @@ def _age_value(a) -> float | None:
     """Age in YEARS (every comparison is made in years: `unit: months` is divided by 12)."""
     if not (isinstance(a, dict) and isinstance(a.get("value"), (int, float)) and not isinstance(a.get("value"), bool)):
         return None
+    if not math.isfinite(a["value"]):
+        return 0.0                      # NaN / Infinity (Python's JSON parser accepts them): an unreadable age never counts as adult
     u = a.get("unit")
     if u not in (None, "years", "months"):
         return 0.0                      # unknown unit (e.g. from a later 1.x): an unknown age never counts as adult

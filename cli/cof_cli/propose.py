@@ -65,7 +65,7 @@ def character_of(manifest: dict, pid: str | None = None, identity: str | None = 
     return iid, pid
 
 
-def build_bundle(src: Path, manifest: dict, pid: str | None = None, identity: str | None = None, langs: list[str] | None = None) -> dict:
+def build_bundle(src: Path, manifest: dict, pid: str | None = None, identity: str | None = None, langs: list[str] | None = None, keep_personal: bool = False) -> dict:
     """What a model reads (docs/psyche-propose.md § 1): the character, the languages a gist must come in, the cast (for
     stances), the personality (the preset's variant first, then one variant per other language), the 1.0 lists, the
     memories as id + gist + when in the preset's language, the existing nodes (so that nothing is proposed twice)."""
@@ -125,6 +125,9 @@ def build_bundle(src: Path, manifest: dict, pid: str | None = None, identity: st
         mv = resolve_variant(manifest, "memories", mid) or {}
         if mv.get("derives_from") or node.get("derives_from") or (ids and variant_owner(manifest, "memories", mid) not in (iid, None)):
             continue
+        if node.get("visibility") == "personal" and not keep_personal:     # a user's data never goes to a model unasked (RFC 0002 § 5.7; hunt H1-13 / H4-03)
+            out["personal_left_out"] = out.get("personal_left_out", 0) + 1
+            continue
         _, g = gist_text(manifest, mid, node, pid)
         if _norm(g) in seen_gist:
             continue
@@ -134,6 +137,9 @@ def build_bundle(src: Path, manifest: dict, pid: str | None = None, identity: st
     for vid, node in load_nodes(src, manifest).items():
         pv = resolve_variant(manifest, "psyche", vid) or {}
         if ids and variant_owner(manifest, "psyche", vid) not in (iid, None):
+            continue
+        if node.get("visibility") == "personal" and not keep_personal:
+            out["personal_left_out"] = out.get("personal_left_out", 0) + 1
             continue
         _, g = gist_text(manifest, vid, node, pid, cat="psyche")
         e = {"id": vid, "kind": pv.get("kind"), "gist": g}
@@ -186,7 +192,7 @@ def normalize(proposal) -> dict:
         if isinstance(c.get("strength"), (float, str)):
             try:
                 c["strength"] = int(round(float(c["strength"])))
-            except ValueError:
+            except (ValueError, OverflowError):        # "abc", Infinity, NaN: left as is, refused by validate()
                 pass
         out["nodes"].append(c)
     return out
@@ -439,10 +445,15 @@ def big_five_proposal(scores: dict[str, float], langs: list[str] | None, start: 
 
 
 def merge(*proposals: dict) -> dict:
-    out = {"contract": CONTRACT, "nodes": [], "notes": " · ".join(str(p.get("notes") or "") for p in proposals if p.get("notes"))}
+    out = {"contract": CONTRACT, "nodes": [], "notes": " · ".join(str(p.get("notes") or "") for p in proposals if isinstance(p, dict) and p.get("notes"))}
     used: set[str] = set()
     for p in proposals:
-        for n in p.get("nodes") or []:
+        nodes_ = p.get("nodes") if isinstance(p, dict) else None
+        if not isinstance(nodes_, list):
+            continue
+        for n in nodes_:
+            if not isinstance(n, dict):                 # kept as is: validate() refuses it with its position (hunt H4-11)
+                out["nodes"].append(n); continue
             n = dict(n)
             if n.get("id") in used:
                 base = n["id"]; k = 2
@@ -469,17 +480,30 @@ def call_gateway(base_url: str, model: str, bundle: dict, key: str | None = None
 
 def parse_answer(raw) -> dict:
     """The proposal inside a chat completion (or a bare proposal): the message's content, its first {...} block."""
+    if isinstance(raw, list):                           # a bare list of nodes is a tolerated shape (normalize)
+        return {"nodes": raw}
     txt = raw
     if isinstance(raw, dict) and "choices" in raw:
         txt = (((raw.get("choices") or [{}])[0].get("message") or {}).get("content")) or ""
     if isinstance(txt, dict):
         return txt
-    txt = str(txt)
-    m = re.search(r"\{[\s\S]*\}", txt)
+    txt = str(txt).strip()
+    def _nc(name):
+        raise ValueError(f"{name} is not valid JSON")
     try:
-        return json.loads(m.group(0) if m else txt)
+        obj = json.loads(txt, parse_constant=_nc)       # the whole answer first: a bare list or object (hunt H4-12)
     except ValueError as e:
-        raise ValueError(f"the answer is not JSON: {e}") from e
+        obj, first_err = None, e
+        dec = json.JSONDecoder(parse_constant=_nc)
+        for i, ch in enumerate(txt):                    # then the first JSON value inside prose (not the greedy first-{ to last-})
+            if ch in "{[":
+                try:
+                    obj = dec.raw_decode(txt, i)[0]; break
+                except ValueError:
+                    continue
+        if obj is None:
+            raise ValueError(f"the answer is not JSON: {first_err}") from first_err
+    return {"nodes": obj} if isinstance(obj, list) else obj
 
 
 # ---- the review table ----------------------------------------------------------------------------------------------

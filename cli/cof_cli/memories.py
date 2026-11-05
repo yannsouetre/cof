@@ -159,6 +159,18 @@ def effective_media(manifest: dict, vid: str) -> list[str]:
     return []
 
 
+def media_source(manifest: dict, vid: str) -> str | None:
+    """The memory whose `media` a node shows (itself, or the end of its `media_from` chain); None without media."""
+    seen, cur = set(), vid
+    while cur and cur not in seen:
+        seen.add(cur)
+        rv = resolve_variant(manifest, "memories", cur) or {}
+        if rv.get("media"):
+            return cur
+        cur = str(rv.get("media_from") or "").partition("/")[2]
+    return None
+
+
 def when_label(kind: str | None, node: dict, lang: str) -> str:
     """A short, human marker for the timeline: '8 ans', 'age 24–28', '2026-03', or the author's label."""
     w = node.get("when") or {}

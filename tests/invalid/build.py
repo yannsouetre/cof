@@ -219,6 +219,20 @@ def _(d): m = load(d); m["preset_tags"] = [{"id": "x", "label": "X", "presets": 
 def _(d): m = load(d); m["presets"]["young"]["coherence"] = {"score": 0, "method": "human", "computed_by": "negative-corpus", "issues": [{"severity": "illegal", "message": "suggestive pose in a preset under 18 (test case, no image involved)"}]}; save(d, m)
 
 
+@case("age-not-a-number", "an age is a JSON number (NaN / Infinity are not JSON and never count as adult)", "§ 2.2 / § 9.4", "not valid JSON")
+def _(d): m = load(d); V(m, "appearance")["i1"]["age"] = {"value": float("nan"), "unit": "years", "basis": "declared"}; save(d, m)
+
+@case("same-picture-minor-and-intimate", "ages and nudity bind to the picture, not to its asset id: the same bytes under two ids are one picture", "§ 4.5 / § 9.4", "under 18")
+def _(d):
+    (d / "elements/appearance/i1/placeholder.jpg").write_bytes((d / "elements/appearance/f-young/head.front.jpg").read_bytes())
+    m = load(d); refresh_asset_index(d, m); save(d, m)
+
+@case("backstage-nude-minor", "no nudity of any kind under 18, in a preset or backstage (a variant no preset lists)", "§ 9.4", "no nudity of any kind under")
+def _(d):
+    m = load(d); bx = dict(V(m, "appearance")["b1"]); bx.update(age={"value": 10, "unit": "years", "basis": "declared"}, nudity=True, label="backstage")
+    V(m, "appearance")["bx"] = bx; m["tags"]["content"] = sorted(set(m["tags"].get("content") or []) - {"none"} | {"nudity"}); save(d, m)
+
+
 # ---------- memories (RFC 0002, 1.1): the base gains one memory node, then one rule is violated per file ----------
 def with_memory(d, node=None, variant=None):
     """Add a memory node `m1` to the base (cof 1.1); the default adult preset lists it."""
@@ -417,8 +431,11 @@ def _(d): psyche_image(d, "val1", shown=[{"identity": "self", "shown": True}], v
 # ---------- archive-level cases (pack the valid base, then tamper) ----------
 def rewrite(src: Path, dst: Path, entries):
     with zipfile.ZipFile(dst, "w") as z:
-        for name, data, ct in entries:
-            zi = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0)); zi.compress_type = ct; z.writestr(zi, data)
+        for name, data, ct, *attr in entries:
+            zi = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0)); zi.compress_type = ct
+            if attr:
+                zi.create_system = 3; zi.external_attr = attr[0]
+            z.writestr(zi, data)
 
 def entries_of(cof: Path):
     with zipfile.ZipFile(cof) as z:
@@ -451,6 +468,12 @@ def _(e):
 def _(e):
     i = next(k for k, x in enumerate(e) if x[0].endswith(".jpg"))
     return e[:i] + e[i + 1:]
+
+@acase("entry-name-with-newline", "entry names follow the container grammar exactly (a trailing newline is not a character of it)", "§ 1.1 / § 9.3", "non-conformant path")
+def _(e): return e + [("elements/files/f9/run.py\n", b"print('hi')\n", zipfile.ZIP_DEFLATED)]
+
+@acase("symlink-entry", "no symbolic links in the container", "§ 1.1", "symbolic link")
+def _(e): return e + [("elements/files/f9/link", b"/etc/passwd", zipfile.ZIP_STORED, (0o120777 << 16))]
 
 def main():
     sys.path.insert(0, str(ROOT / "cli"))
