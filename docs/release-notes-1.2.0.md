@@ -53,7 +53,7 @@ The three profiles and the sign are an author's shorthand: they produce ordinary
 ## For implementers
 
 - The format changes in one place each: the `psyche` element category and its `psyche-node.json` file (RFC 0004), the `what` list on memories and the `who` / `where` / `what` lists on psyche nodes (RFC 0005), the optional `media` list of a psyche variant. The converter's contract is model-agnostic and documented in `docs/psyche-propose.md` (JSON in, JSON out, validation rules every tool shares).
-- Reference implementation: `cof-cli` tests 79 → 119, a negative corpus extended with the psyche, objects and illustration rules, one example (`10-clara-mercier`) with 23 psyche nodes, three objects and a grandmother's pendant.
+- Reference implementation: `cof-cli` tests 79 → 120, a negative corpus extended with the psyche, objects and illustration rules, one example (`10-clara-mercier`) with 23 psyche nodes, three objects and a grandmother's pendant.
 - `docs/builder-guide.md` describes the Psyche step in full.
 
 ## Next

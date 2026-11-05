@@ -200,7 +200,12 @@ def cmd_export(a):
             if head and head.lower().endswith(".png"):
                 png = (d / head).read_bytes()
             else:
-                png = _placeholder_png(d / head if head else None)
+                try:
+                    png = _placeholder_png(d / head if head else None)
+                except ValueError as e:
+                    print(f"ERROR  {e}", file=sys.stderr); return 1
+                if not head:
+                    print("WARN   this preset has no front head image: the PNG card carries a grey placeholder")
             out = out or Path(f"{_fname(manifest)}.png")
             out.write_bytes(write_card_to_png(png, card))
         elif fmt == "soul":
@@ -507,25 +512,32 @@ def cmd_migrate(a):
 
 
 def _placeholder_png(image_path: Path | None) -> bytes:
-    """1024² PNG: converted from the given image if Pillow is available, else a flat grey PNG."""
+    """1024² PNG of the preset's front head image (Pillow converts JPEG / WebP); without an image, a flat grey placeholder.
+    An image that cannot be converted is an error, never a silent grey square: Pillow is the `png` extra
+    (`pip install "cof-cli[png]"`)."""
+    import io
     try:
         from PIL import Image
-        import io
-        if image_path and image_path.is_file():
-            im = Image.open(image_path).convert("RGB")
-        else:
-            im = Image.new("RGB", (1024, 1024), (64, 64, 72))
-        im = im.resize((1024, 1024))
-        buf = io.BytesIO()
-        im.save(buf, "PNG")
+    except ImportError:
+        Image = None
+    if image_path and image_path.is_file():
+        if Image is None:
+            raise ValueError(f"converting {image_path.name} to PNG needs Pillow — pip install \"cof-cli[png]\" (or give the preset a PNG front head image)")
+        try:
+            im = Image.open(image_path).convert("RGB").resize((1024, 1024))
+        except Exception as e:
+            raise ValueError(f"{image_path.name} cannot be read as an image ({e})") from e
+        buf = io.BytesIO(); im.save(buf, "PNG")
         return buf.getvalue()
-    except Exception:
-        import zlib, struct
-        from .convert import png_build
-        w = h = 64
-        raw = b"".join(b"\x00" + bytes([64, 64, 72]) * w for _ in range(h))
-        ihdr = struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0)
-        return png_build([(b"IHDR", ihdr), (b"IDAT", zlib.compress(raw)), (b"IEND", b"")])
+    if Image is not None:
+        buf = io.BytesIO(); Image.new("RGB", (1024, 1024), (64, 64, 72)).save(buf, "PNG")
+        return buf.getvalue()
+    import zlib, struct
+    from .convert import png_build
+    w = h = 64
+    raw = b"".join(b"\x00" + bytes([64, 64, 72]) * w for _ in range(h))
+    ihdr = struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0)
+    return png_build([(b"IHDR", ihdr), (b"IDAT", zlib.compress(raw)), (b"IEND", b"")])
 
 
 def main(argv=None) -> int:

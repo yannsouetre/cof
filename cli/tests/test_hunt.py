@@ -229,3 +229,21 @@ def test_derived_node_keeps_its_own_strength(tmp_path):
     save(d, m)
     rep = Report(); validate_dir(d, rep, recompute=False)
     assert not any("differs from the node's" in e for e in rep.errors), rep.errors
+
+
+def test_png_export_without_pillow_is_an_error(tmp_path, monkeypatch):
+    """CAI hunt: without Pillow, a JPEG / WebP avatar became a grey square without a word; now an error naming the extra."""
+    import builtins
+    from cof_cli.cli import _placeholder_png
+    img = tmp_path / "a.jpg"
+    from PIL import Image
+    Image.new("RGB", (8, 8), (200, 10, 10)).save(img)
+    real = builtins.__import__
+    def no_pil(name, *a, **k):
+        if name == "PIL" or name.startswith("PIL."):
+            raise ImportError("no PIL")
+        return real(name, *a, **k)
+    monkeypatch.setattr(builtins, "__import__", no_pil)
+    with pytest.raises(ValueError, match="cof-cli\\[png\\]"):
+        _placeholder_png(img)
+    assert _placeholder_png(None).startswith(b"\x89PNG")
