@@ -104,7 +104,7 @@ figure.node .facts dt{color:var(--muted)}figure.node .facts dd{margin:0}
 table.cmp{width:100%;border-collapse:collapse;margin:22px 0 8px;font-size:15px}
 table.cmp th,table.cmp td{text-align:left;vertical-align:top;padding:9px 10px;border-bottom:1px solid var(--line)}
 table.cmp thead th{font:700 15px Bricolage,Plex,sans-serif;color:var(--ink)}table.cmp tbody th{color:var(--muted);font-weight:500;width:28%}
-table.cmp td.y{color:var(--mint)}table.cmp td.n{color:#d9a0a0}
+table.cmp td.y{color:var(--mint)}table.cmp td.n{color:#d9a0a0}table.cmp thead .hint{display:block;font:400 13px Plex,sans-serif;color:var(--muted);margin-top:2px}
 .chain{margin:26px 0 10px}
 .chat{border:1px solid var(--line);border-radius:18px;padding:18px 20px;background:var(--panel)}
 .chat p{margin:0 0 12px}.chat .who{font:500 12px PlexMono,monospace;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px}
@@ -233,6 +233,22 @@ if("IntersectionObserver" in window){const io=new IntersectionObserver(es=>{if(e
 
 v1 = ND["val1"]
 legend = "".join(f'<span><i style="background:{c}"></i>{k}</span>' for k, c in KINDS.items() if k != "rule")
+def cell(x): return f'<td class="{x[0]}">{x[1]}</td>' if isinstance(x, tuple) else f"<td>{x}</td>"
+# page 1: a text personality vs a psyche (Yann, 6 Nov.). The last row changes in 1.3, when card / PNG export carries the
+# psyche (hunt finding H5-09) — docs/roadmap.md.
+TXT_ROWS = [
+    ("what it is", "a few paragraphs", "nodes: convictions with a strength, dates, reasons, links to memories"),
+    ("to write", ("y", "minutes — anyone can"), ("n", "longer — a tool proposes nodes from your text, you tick")),
+    ("what the model receives", ("n", "the whole text, every time"), ("y", "only the nodes the preset holds, with their strength")),
+    ("time", ("n", "one snapshot: rewrite it for every age"), ("y", "since, until: the same character at 20 and at 45")),
+    ("several uses — work, intimate, all audiences", ("n", "one copy per use, drifting apart"), ("y", "presets that select from one set")),
+    ("<i>why</i>", ("n", "implicit — the model improvises"), ("y", "a fear points to the memory that explains it")),
+    ("privacy", ("n", "all or nothing"), ("y", "secret, guarded, personal: what a user lived stays theirs")),
+    ("works with", ("y", "every app and every model"), ("n", "COF tools; others get it as text (<code>SOUL.md</code>) — card and PNG export do not carry it yet")),
+]
+TXT_CMP = "".join(f"<tr><th>{r[0]}</th>{cell(r[1])}{cell(r[2])}</tr>" for r in TXT_ROWS)
+
+
 INDEX = head("AI characters now have an inner life — COF 1.2",
              "COF 1.2 gives AI characters a psyche you can read, edit and take with you: values, beliefs, wants, needs, fears, wounds, each tied to the memory that made it — in the same open file as their face, voice and rights.",
              "AI characters now have an inner life",
@@ -311,6 +327,11 @@ INDEX = head("AI characters now have an inner life — COF 1.2",
 </div>
 <p class="cap" style="margin-top:14px">Agents get it as text: <code>cof export --format agent</code> writes a <code>SOUL.md</code> whose « Who she is » is rendered from the nodes. Every 1.0 and 1.1 file stays valid.</p>
 
+<h2>A text personality, or a psyche?</h2>
+<p>Most characters today live in a few paragraphs: a JSON card, a system prompt. That works, and it is not going away. Here is what changes when the same character gets a psyche.</p>
+<table class="cmp"><thead><tr><th></th><th>a text personality<br><span class="hint">a card, a system prompt</span></th><th>a COF psyche</th></tr></thead><tbody>{TXT_CMP}</tbody></table>
+<p class="cap">Complementary, not rivals: the psyche ends up as text too — but chosen, dated text, with its reasons.</p>
+
 <h2>How many convictions make a person?</h2>
 <p>Natural questions follow. How many nodes does a character need — and a person? What are the popular profiles worth, the Big Five, a Myers-Briggs type, an Enneagram number, a sign? And isn't the real future of a character in a model's weights rather than in a file? A companion page starts from one refusal of Clara's and asks <i>why</i> five times, down to the four years that began at twenty-four. Then it gives what psychology has actually counted, with its sources, a simulator to test your own numbers, and the three ways of keeping a mind side by side — a description, a graph, weights — with what each can and cannot do.</p>
 <p class="btns" style="margin:18px 0 0"><a class="btn main" href="{COMPANION}">How many convictions make a person? →</a></p>
@@ -355,7 +376,6 @@ CMP_ROWS = [
     ("what it takes to make", "a pen", "a pen, or a tool that proposes and you tick", "data, GPUs, hours of training"),
     ("works with", "any model", "any model, today", "one model family"),
 ]
-def cell(x): return f'<td class="{x[0]}">{x[1]}</td>' if isinstance(x, tuple) else f"<td>{x}</td>"
 CMP = "".join(f"<tr><th>{r[0]}</th>{cell(r[1])}{cell(r[2])}{cell(r[3])}</tr>" for r in CMP_ROWS)
 
 WHY_JS = """

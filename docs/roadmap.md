@@ -6,6 +6,7 @@
   - **la skill de création mise à jour et rendue portable** : un contrat « brouillon » en JSON pur que le builder et `cof-cli` transforment en `.cof`, plus un kit (schémas, exemples, un packer-validateur Python d'un seul fichier) utilisable par n'importe quel LLM ;
   - **le builder en modes automatique et assisté** : un kit de départ fictif sous licence libre, des API LLM et image, des exports JSON et CHARX ;
   - **un player COF** : une page autonome qui fait vivre le personnage avec la clé de l'utilisateur et lui rend un `.cof` augmenté de ce qui a été vécu.
+- **1.3 — suites de la chasse aux bugs du 5 novembre** (`docs/hunt-1.2.md`, 33 constats reportés) : en tête, **H5-09** — l'export carte / PNG (SillyTavern) transporte la psyché (rendue en texte dans la description). **Quand H5-09 est réglé, mettre à jour la dernière ligne (« works with ») du tableau « A text personality, or a psyche? » de la page d'annonce `psyche/index.html`** (source : `TXT_ROWS` dans `tools/announce/build_psyche_pages.py`). Puis : nœud « règle » protégé contre l'injection (H5-10), secret traité pareil pour souvenirs et psyché (H5-11), conservation générique au builder si elle n'est pas faite en 1.2.1 (H3-08 à H3-14), entrées non listées refusées (H4-06), performances à 10 000 souvenirs (H4-13).
 - **Builder de bureau** (Tauri / Rust) quand le navigateur ne suffit plus.
 
 # Révision du 25 octobre 2026 — COF 1.1 (souvenirs, cast), puis 1.2 (psyché)
