@@ -392,10 +392,12 @@ def preset_variant_age(manifest: dict, pid: str | None, ignore: set[str] = froze
 
 
 def preset_life_age(manifest: dict, pid: str | None, ignore: set[str] = frozenset()) -> float | None:
-    """Age that bounds a preset's life (RFC 0004 § 3 ter, 4 Nov. 2026): its declared age_override (through extends) when there is one,
-    else the lowest age. Only the 1.2 time rules (memories and psyche nodes after that age) use it; every safety rule keeps preset_age."""
+    """Age that bounds a preset's life (RFC 0004 § 3 ter, 4 Nov. 2026; text corrected 6 Nov., D-H3): its declared age_override
+    (through extends) when there is one, else the lowest age of the variants it shows — appearance, 3D, weights — never the ages its
+    memory media and node images carry (a childhood photo does not end a life at 8). Only the 1.2 time rules (memories and psyche
+    nodes after that age) use it; every safety rule keeps preset_age, which counts every image."""
     x = _age_value(preset_age_override(manifest, pid))
-    return x if x is not None else preset_age(manifest, pid, ignore=ignore)
+    return x if x is not None else preset_age(manifest, pid, ignore=set(ignore) | {"memories", "psyche"})
 
 
 def preset_age(manifest: dict, pid: str | None, ignore: set[str] = frozenset()) -> float | None:

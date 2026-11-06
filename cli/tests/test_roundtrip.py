@@ -1435,12 +1435,14 @@ def test_psyche_aware_valence_until_rules(tmp_path):
     _pnode(d, "bel1", disclosure="open", until={"age": {"value": 25, "unit": "years"}})
     m["presets"]["default"]["age_override"] = {"value": 40, "unit": "years", "basis": "declared"}; _write(d, m)
     rep = _val(d); assert rep.ok, rep.errors
-    assert any("presets.default: psyche.bel1 was held until 25, before the age this preset shows (40) (coherence)" in w for w in rep.warnings), rep.warnings
+    assert any("presets.default: psyche.bel1 was held until 25, at or before the age this preset shows (40) (coherence)" in w for w in rep.warnings), rep.warnings
     from cof_cli.model import preset_age
     mm = rep.manifest
     assert preset_age(mm, "default", ignore={"memories"}) == 40
     m["presets"]["default"]["age_override"] = {"value": 25, "unit": "years", "basis": "declared"}; _write(d, m)
-    assert not any("was held until" in w for w in _val(d).warnings)                                  # 25 is not older than 25
+    assert any("was held until 25, at or before the age this preset shows (25)" in w for w in _val(d).warnings)   # ending at 25: not held at 25 (D-H2)
+    m["presets"]["default"]["age_override"] = {"value": 24, "unit": "years", "basis": "declared"}; _write(d, m)
+    assert not any("was held until" in w for w in _val(d).warnings)                                  # still held at 24
 
 
 def test_psyche_coherence_uses_the_age_the_preset_shows(tmp_path):
@@ -1452,7 +1454,7 @@ def test_psyche_coherence_uses_the_age_the_preset_shows(tmp_path):
     rep = Report(); validate_dir(d, rep, recompute=False); assert rep.ok and not rep.warnings, rep.warnings
     m["presets"]["en-65"]["slots"]["psyche"] += ["bel3"]; _write(d, m)
     rep = Report(); validate_dir(d, rep, recompute=False)
-    assert rep.warnings == ["presets.en-65: psyche.bel3 was held until 45, before the age this preset shows (65) (coherence)"], rep.warnings
+    assert rep.warnings == ["presets.en-65: psyche.bel3 was held until 45, at or before the age this preset shows (65) (coherence)"], rep.warnings
     m["presets"]["en-12"]["slots"]["psyche"] += ["bel4"]; _write(d, m)
     rep = Report(); validate_dir(d, rep, recompute=False)
     assert "presets.en-12: psyche.bel4 appeared at 45, after the age this preset shows (12) (coherence)" in rep.warnings, rep.warnings
@@ -2165,7 +2167,7 @@ def test_life_age_is_the_declared_age_safety_keeps_the_lowest(tmp_path):
     assert not any("was held until" in w for w in rep.warnings)                                            # 40 is not past 45
     m["presets"]["default"]["age_override"] = {"value": 50, "unit": "years", "basis": "declared"}; _write(d, m)
     rep = _val(d); assert rep.ok
-    assert any("psyche.bel3 was held until 45, before the age this preset shows (50)" in w for w in rep.warnings), rep.warnings
+    assert any("psyche.bel3 was held until 45, at or before the age this preset shows (50)" in w for w in rep.warnings), rep.warnings
     m["presets"]["default"]["age_override"] = {"value": 29, "unit": "years", "basis": "declared"}; _write(d, m)
     assert not any("declares age" in w for w in _val(d).warnings)
 

@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<!-- Content-Security-Policy (D-H5): the explorer runs from this one page; it can read nothing but this site, so a crafted file has nowhere to send what it finds. Images and media are the file's own (blob:, data:); the only outside address is the visit counter's pixel. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://yannsouetre.github.io https://syanngpt.goatcounter.com; media-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; worker-src 'self' blob:; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>COF Explorer</title>
 <meta name="description" content="Open a .cof character file in your browser and browse its presets, looks, voices and rights. Nothing leaves your machine.">
@@ -1356,7 +1358,7 @@ async function renderPreset(){playGuard();
 applyLang();
 {const h0=location.hash.slice(1),i=h0.indexOf("/"),h=i<0?h0:h0.slice(0,i),t=i<0?undefined:h0.slice(i+1);if(h==="clara")sample("clara-mercier.cof",t);else if(h==="duo")sample("clara-martien.cof",t)}   /* #clara/memories:graph, #clara/psyche, #clara/psyche:graph (or :tags, :network), #clara/psyche/<node id> */
 </script>
-<!-- Visit counter: GoatCounter (no cookies, no personal data). Loaded only on the public site, never from a local copy or another host; it counts page views and referrers, never the files you open. -->
-<script>(function(){if(location.hostname!=="yannsouetre.github.io")return;var s=document.createElement("script");s.async=true;s.src="https://gc.zgo.at/count.js";s.setAttribute("data-goatcounter","https://syanngpt.goatcounter.com/count");document.body.appendChild(s)})();</script>
+<!-- Visit counter: GoatCounter, as an image pixel (D-H5, 6 Nov. 2026) — no third-party script runs next to your files. No cookies, no personal data; only on the public site, never from a local copy or another host; it counts the page view and the referrer, never the files you open. -->
+<script>(function(){if(location.hostname!=="yannsouetre.github.io")return;try{var i=new Image();i.referrerPolicy="no-referrer-when-downgrade";i.src="https://syanngpt.goatcounter.com/count?p="+encodeURIComponent(location.pathname)+"&t="+encodeURIComponent(document.title)+"&r="+encodeURIComponent(document.referrer)+"&rnd="+Math.random().toString(36).slice(2)}catch(e){}})();</script>
 </body>
 </html>

@@ -136,8 +136,7 @@
           "label": {
             "$ref": "#/$defs/text"
           }
-        },
-        "additionalProperties": false
+        }
       }
     },
     "tags": {
@@ -192,12 +191,10 @@
               "no"
             ]
           }
-        },
-        "additionalProperties": false
+        }
       }
     }
   },
-  "additionalProperties": false,
   "$defs": {
     "text": {
       "type": "object",
@@ -272,8 +269,7 @@
           "const": true,
           "description": "The person interacting with the character (player, user): no identity of the file; hosts read these stances first."
         }
-      },
-      "additionalProperties": false
+      }
     },
     "person": {
       "type": "object",
@@ -310,8 +306,7 @@
             "label"
           ]
         }
-      ],
-      "additionalProperties": false
+      ]
     },
     "place": {
       "type": "object",
@@ -340,8 +335,7 @@
               "minimum": -180,
               "maximum": 180
             }
-          },
-          "additionalProperties": false
+          }
         }
       },
       "anyOf": [
@@ -355,8 +349,7 @@
             "label"
           ]
         }
-      ],
-      "additionalProperties": false
+      ]
     },
     "object": {
       "type": "object",
@@ -380,8 +373,7 @@
             "label"
           ]
         }
-      ],
-      "additionalProperties": false
+      ]
     }
   }
 }

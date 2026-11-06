@@ -247,3 +247,20 @@ def test_png_export_without_pillow_is_an_error(tmp_path, monkeypatch):
     with pytest.raises(ValueError, match="cof-cli\\[png\\]"):
         _placeholder_png(img)
     assert _placeholder_png(None).startswith(b"\x89PNG")
+
+
+def test_later_minor_psyche_fields_and_kinds_are_kept(tmp_path):
+    """D-H1 (H5-03 / H5-16): psyche-node.json is open; in a file declaring a later minor, an unknown psyche or memory kind is a
+    warning, never an error. In a 1.2 file, an unknown kind stays an error."""
+    d = tmp_path / "c"; shutil.copytree(ROOT / "spec/examples/10-clara-mercier", d)
+    m = load(d); P = V(m, "psyche"); vid = next(iter(P))
+    p = d / P[vid]["node"]; n = json.loads(p.read_text("utf-8")); n["certainty"] = 80; n["extensions"] = {"acme": {"x": 1}}; p.write_text(json.dumps(n), "utf-8")
+    rep = Report(); validate_dir(d, rep, recompute=False)
+    assert rep.ok, rep.errors
+    P[vid]["kind"] = "mood"; m["cof"] = "1.3"; save(d, m)
+    rep = Report(); validate_dir(d, rep, recompute=False)
+    assert rep.ok, rep.errors
+    assert any("kind 'mood' comes from a later 1.x version" in w for w in rep.warnings)
+    m["cof"] = "1.2"; save(d, m)
+    rep = Report(); validate_dir(d, rep, recompute=False)
+    assert any("unknown kind 'mood'" in e for e in rep.errors)

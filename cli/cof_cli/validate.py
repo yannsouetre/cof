@@ -164,11 +164,15 @@ def sub_validator(name: str) -> Draft202012Validator:
     return _sub_validators[name]
 
 
-def validate_subfile(obj: dict, schema: str, rep: "Report", where: str) -> None:
-    """Validate a sub-file (or inline object) against spec/schemas/<schema>.schema.json. Errors are errors: these files are ours."""
+def validate_subfile(obj: dict, schema: str, rep: "Report", where: str, newer: bool = False) -> None:
+    """Validate a sub-file (or inline object) against spec/schemas/<schema>.schema.json. Errors are errors: these files are
+    ours — except, in a file that declares a later 1.x minor, a value that a later version may have added to an enum (SPEC § 12)."""
     for e in sorted(sub_validator(schema).iter_errors(obj), key=lambda e: list(e.path)):
         loc = "/".join(str(p) for p in e.path) or "(root)"
-        rep.errors.append(f"{where} [{schema}.schema {loc}]: {_schema_msg(e)}")
+        if newer and e.validator in ("enum", "additionalProperties"):
+            rep.warnings.append(f"{where} [{schema}.schema {loc}]: {_schema_msg(e)} (value from a later 1.x version — kept, not checked)")
+        else:
+            rep.errors.append(f"{where} [{schema}.schema {loc}]: {_schema_msg(e)}")
 
 
 def _schema_msg(e) -> str:
@@ -251,6 +255,7 @@ def _dup_ratio(a: str, b: str) -> float:
 
 _SRC_ROOT: list = []          # directory being validated (read by rules that open a sub-file)
 _CONTENT: dict = {}           # per-run cache of _content_index (reset by validate_dir)
+_NEWER: list = [False]        # the file declares a later 1.x minor than this validator (set by validate_dir)
 
 
 def _no_constant(name: str):
@@ -283,6 +288,7 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
         rep.errors.append(f"manifest v{ver}: run `cof migrate` (format 1.x expected)")
         return manifest
     newer = bool(re.fullmatch(r"1\.\d+", ver) and int(ver.split(".")[1]) > int(SPEC_VERSION.split(".")[1]))
+    _NEWER[0] = newer
     if newer:
         rep.warnings.append(f"manifest v{ver} is newer than this validator ({SPEC_VERSION}): unknown optional fields are preserved, not checked")
     validate_manifest(manifest, rep, newer)
@@ -403,7 +409,10 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                 seen_df.add(cur); cur = (e["variants"][cur] or {}).get("derives_from")
             rv = resolve_variant(manifest, etype, vid) or {}
             if etype in KINDS and rv.get("kind") not in KINDS[etype]:
-                rep.errors.append(f"{where}: unknown kind '{rv.get('kind')}' for {etype} (expected: {', '.join(KINDS[etype])})")
+                if _NEWER[0] and etype in ("psyche", "memories"):          # RFC 0004 § 8 (D-H1): a later minor may add a kind of node or memory — no safety rule hangs on it
+                    rep.warnings.append(f"{where}: kind '{rv.get('kind')}' comes from a later 1.x version — kept, not interpreted")
+                else:
+                    rep.errors.append(f"{where}: unknown kind '{rv.get('kind')}' for {etype} (expected: {', '.join(KINDS[etype])})")
             if etype == "appearance" and rv.get("kind") == "clothing" and not rv.get("garment"):
                 rep.warnings.append(f"{where}: clothing without a 'garment' type (layering rules cannot apply)")
             if rv.get("accessory_use") and rv.get("kind") != "accessory":
@@ -430,7 +439,7 @@ def validate_dir(src: Path, rep: Report, *, recompute: bool = True) -> dict:
                     schema = SUBFILE_SCHEMAS.get((etype, rv.get("kind"), fld)) or SUBFILE_SCHEMAS.get((etype, None, fld))
                     if schema:
                         try:
-                            validate_subfile(strict_json((src / rel).read_text("utf-8")), schema, rep, f"{where}.{fld} ({rel})")
+                            validate_subfile(strict_json((src / rel).read_text("utf-8")), schema, rep, f"{where}.{fld} ({rel})", newer=_NEWER[0])
                         except Exception as ex:
                             rep.errors.append(f"{where}.{fld}: unreadable JSON ({ex})")
             if isinstance(rv.get("mesh"), dict) and not (src / rv["mesh"]["path"]).is_file():
@@ -1679,7 +1688,7 @@ def _psyche_rules(manifest: dict, src: Path, rep: "Report") -> None:
     unset = [vid for vid, n in nodes.items() if "strength" not in n]
     if nodes and len(unset) * 2 > len(nodes):
         rep.note(f"psyche: strength unset on {len(unset)} of {len(nodes)} nodes (default 50) — set it node by node for a finished psyche")
-    # a preset younger than a node's `since` (coherence, § 3 ter), older than its `until` (§ 3 nonies). The age compared is the
+    # a preset younger than a node's `since` (coherence, § 3 ter), at or past its `until` (§ 3 ter, § 3 nonies). The age compared is the
     # preset's life age (its declared age_override, else the age it shows): its memories legitimately show other ages (Clara at 65
     # remembers herself at 29) and do not count here; a declared age above the apparent one is its own warning (_age_rules)
     for pid in preset_ids(manifest):
@@ -1691,8 +1700,8 @@ def _psyche_rules(manifest: dict, src: Path, rep: "Report") -> None:
             ua = _age_value(((nodes.get(vid) or {}).get("until") or {}).get("age"))
             if sa is not None and sa > pa:
                 rep.warnings.append(f"presets.{pid}: psyche.{vid} appeared at {sa:g}, after the age this preset shows ({pa:g}) (coherence)")
-            if ua is not None and pa > ua:
-                rep.warnings.append(f"presets.{pid}: psyche.{vid} was held until {ua:g}, before the age this preset shows ({pa:g}) (coherence)")
+            if ua is not None and pa >= ua:                      # « until at or before it » (§ 3 ter; D-H2): ending at 45, the node is no longer held at 45
+                rep.warnings.append(f"presets.{pid}: psyche.{vid} was held until {ua:g}, at or before the age this preset shows ({pa:g}) (coherence)")
     # declared risk ↔ file-level tags.content (§ 3 septies): both ways
     risks = {(n.get("risk") or "none") for n in nodes.values()}
     for r, tag in PSYCHE_TAGS.items():

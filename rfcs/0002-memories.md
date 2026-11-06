@@ -146,7 +146,7 @@ A reader orders nodes by age, else by date, else by links (`after` and `part-of`
 
 Each node belongs to one character (`variant.identity`, as every element). A preset lists its memories in `slots.memories`; through `extends`, a file with many presets lists them once (Clara's `default`) and redeclares the subset where it differs (`fr-12`: childhood only). A preset younger than a memory it lists (Clara at 12 listing her memory at 30) is a **coherence finding**, never an error: incoherent characters are the author's right. A variant listed by no preset is backstage, as in 1.0.
 
-The age this finding compares is the preset's **life age** (RFC 0004 § 3 ter): its declared `age_override` when present, else its lowest age; the safety rules keep the lowest age.
+The age this finding compares is the preset's **life age** (RFC 0004 § 3 ter): its declared `age_override` when present, else the lowest age of the variants it shows (never the ages of memory media or node images); the safety rules keep the lowest age, every image counted.
 
 ### 4.5 Shared media, not shared memories
 
