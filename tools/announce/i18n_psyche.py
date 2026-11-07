@@ -223,13 +223,18 @@ def js_units(s):
         for a, b, v in _js_literals(js):
             if not v.strip():
                 continue
-            if re.search(r'"[lg]":\s*$', js[max(0, a - 8):a - 1]) and re.search(r"[A-Za-z\u00C0-\u024F]{2,}", v):
+            if re.search(r'(?:"[lg]"|\b(?:lab|sub|gist|n|l|g)):\s*$', js[max(0, a - 8):a - 1]) and re.search(r"[A-Za-z\u00C0-\u024F]{2,}", v):
                 out.append((base + a, base + b, v)); continue
+            if js[max(0, a - 3):a - 1] == "}," and js[b + 1:b + 2] == ")" and 'el("text"' in js[max(0, a - 120):a] and re.search(r"[A-Za-z]{2,}", v) and not re.search(r"[{}();=<>]", v):
+                out.append((base + a, base + b, v)); continue            # SVG text labels built as el("text", {...}, "after")
+            if js[max(0, a - 3):a - 1] in ("[[", ",[") and re.match(r",\s*\d", js[b + 1:b + 4]):     # rows of a label table ([["A CD",700],…)
+                if re.search(r"[A-Za-z]{2,}", v) and not re.search(r"[{}();=]", v):
+                    out.append((base + a, base + b, v)); continue
             if not re.search(r"[A-Za-z]{3,}", v):
                 continue
             if re.match(r"^[.#:\[(]|^https?:|^mailto:|^url\(|^rgba?\(", v) or re.fullmatch(r"[\w\-./:#%]+", v) or v.startswith("xMid"):
                 continue
-            if "[rel=" in v or v in ("ln off", "n off", "n piv", "n on", "ln on", "on") or re.fullmatch(r"\w+ (?:in|on|off|draw)", v):
+            if "[rel=" in v or v in ("ln off", "n off", "n piv", "n on", "ln on", "on") or re.fullmatch(r"\w+(?: \w+)? (?:in|on|off|draw)", v):
                 continue      # class-name strings of the graph scripts
             plain = re.sub(r"\$\{[^}]*\}", " ", v)
             plain = re.sub(r"<[^>]+>", " ", plain)
@@ -302,6 +307,7 @@ def _exprs(v):
             keep = "".join(inner[x:y] for x, y in _tpl_spans(inner))
             return "`" + keep + "`"
         e = re.sub(r"`((?:[^`\\]|\\.)*)`", blank, e)
+        e = re.sub(r'"(?:[^"\\]|\\.)*"|\'(?:[^\'\\]|\\.)*\'', '""', e)     # a quoted literal inside the expression may be translated
         out.append(e)
     return out
 

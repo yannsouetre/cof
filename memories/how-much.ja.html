@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ひとつの人生は、どれほどの重さになるのか？ — COF の記憶</title>
+<meta name="description" content="人はいくつの自伝的記憶をもっていて、それをファイルにすると何バイトになるのか。研究がわかっていること、仮説を試せる計算機、そしてほぼ網羅的な .cof にとっての意味。">
+<meta property="og:title" content="ひとつの人生は、どれほどの重さになるのか？">
+<meta property="og:description" content="数千の記憶、数ギガバイト。過去をもつAIキャラクターのための作業仮説。">
+<meta property="og:image" content="https://yannsouetre.github.io/cof/memories/img/og-how-much.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://yannsouetre.github.io/cof/memories/img/og-how-much.jpg">
+<link rel="icon" type="image/svg+xml" href="../builder/icon/cof-icon-dark.svg">
+<style>
+@font-face{font-family:"Michroma";src:url(../clip/fonts/michroma-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Cormorant";src:url(../clip/fonts/cormorant-garamond-latin-500-italic.woff2) format("woff2");font-weight:500;font-style:italic;font-display:swap}
+@font-face{font-family:"Bricolage";src:url(../clip/fonts/bricolage-grotesque-latin-700-normal.woff2) format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Plex";src:url(../clip/fonts/ibm-plex-sans-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Plex";src:url(../clip/fonts/ibm-plex-sans-latin-500-normal.woff2) format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"PlexMono";src:url(../clip/fonts/ibm-plex-mono-latin-500-normal.woff2) format("woff2");font-weight:500;font-display:swap}
+:root{--bg:#0d1312;--night:#070b12;--panel:#18201f;--line:#2a3533;--ink:#eef3f1;--muted:#93a39e;--teal:#4cc2a8;--mint:#bfeee2;--violet:#a98ae8;--col:760px;
+ --c1:#2fa88e;--c2:#8a6ad6;--c3:#c4842a;--c4:#3d8bd0}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.65 Plex,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--teal)}
+img{display:block;max-width:100%}
+.top{display:flex;align-items:center;gap:12px;padding:22px clamp(20px,5vw,64px);font:500 14px/1 PlexMono,monospace;color:var(--mint);letter-spacing:.06em}
+.top img{width:28px;height:28px;border-radius:7px}
+.top a{color:inherit;text-decoration:none}.share{margin-left:auto;position:relative;letter-spacing:0}.share summary{list-style:none;cursor:pointer;font:500 12px/1 PlexMono,monospace;letter-spacing:.06em;color:var(--mint);opacity:.75;padding:6px 8px;border:1px solid transparent;border-radius:8px}.share summary::-webkit-details-marker{display:none}.share summary:hover,.share[open] summary{opacity:1;border-color:rgba(255,255,255,.18)}.share menu{position:absolute;right:0;top:calc(100% + 6px);margin:0;padding:6px;list-style:none;background:#0d1312;border:1px solid rgba(255,255,255,.14);border-radius:10px;min-width:11em;z-index:5;box-shadow:0 8px 24px rgba(0,0,0,.4)}.share menu a,.share menu button{display:block;width:100%;text-align:left;font:500 12px/1 PlexMono,monospace;letter-spacing:.04em;color:#dfe7e4;background:none;border:0;padding:8px 10px;border-radius:6px;text-decoration:none;cursor:pointer}.share menu a:hover,.share menu button:hover{background:rgba(255,255,255,.08);color:#fff}
+.top span{opacity:.7}
+.hero{position:relative;min-height:92vh;display:flex;flex-direction:column;justify-content:flex-start;background:var(--bg) url(img/beach-mirror.jpg) center 100%/cover no-repeat;isolation:isolate;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0 0 -2px 0;background:linear-gradient(90deg,rgba(7,11,18,.46) 0%,rgba(7,11,18,.22) 30%,rgba(7,11,18,0) 50%),linear-gradient(180deg,rgba(13,19,18,0) 58%,rgba(13,19,18,.45) 78%,rgba(13,19,18,.85) 92%,rgba(13,19,18,1) 100%),linear-gradient(176deg,rgba(7,11,18,.82) 0%,rgba(7,11,18,.52) 28%,rgba(7,11,18,.22) 50%,rgba(7,11,18,.07) 72%,rgba(7,11,18,.05) 100%);z-index:-1}
+.hero .text{padding:clamp(84px,13vh,130px) clamp(20px,5vw,64px) 0;max-width:1200px}
+.hero .kicker{position:absolute;right:clamp(20px,5vw,64px);top:24px;font:400 11px/1 Michroma,sans-serif;letter-spacing:.3em;color:var(--mint);opacity:.85}
+h1{font:400 clamp(20px,3.2vw,40px)/1.3 Michroma,sans-serif;letter-spacing:.2em;text-transform:uppercase;margin:0 0 18px;color:#ece8e0;text-shadow:0 2px 24px rgba(0,0,0,.7)}
+.rule{width:88px;height:1px;background:var(--mint);opacity:.8;margin:0 0 18px}
+.voice{font:500 clamp(21px,2.4vw,30px)/1.3 Cormorant,Georgia,serif;color:#e4dfd6;margin:0;max-width:720px;text-shadow:0 1px 14px rgba(0,0,0,.7)}
+.voice small{display:block;font:500 13px/1 PlexMono,monospace;color:var(--mint);letter-spacing:.06em;margin-top:14px;font-style:normal}
+main{max-width:var(--col);margin:0 auto;padding:48px 20px 40px}
+.lede{font-size:clamp(20px,2.2vw,24px);line-height:1.5;color:var(--ink);margin:0 0 28px}
+p{margin:0 0 22px;color:#d9e0dd}
+h2{font:400 clamp(16px,2vw,20px)/1.4 Michroma,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--mint);margin:84px 0 22px;padding-top:28px;border-top:1px solid var(--line)}
+h3{font:500 21px/1.3 Plex,sans-serif;margin:34px 0 10px;color:var(--ink)}
+code{font:500 .88em PlexMono,monospace;color:var(--teal)}
+.cap{font-size:14px;color:var(--muted);margin:10px 0 30px}
+.quote{font:500 clamp(22px,2.6vw,29px)/1.3 Cormorant,Georgia,serif;color:#e4dfd6;margin:40px 0;padding-left:22px;border-left:2px solid var(--violet)}
+.quote cite{display:block;font:500 13px/1 PlexMono,monospace;color:var(--muted);font-style:normal;margin-top:12px;letter-spacing:.04em}
+/* stat tiles */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:26px 0 8px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 16px 14px}
+.tile b{display:block;font:700 30px/1 Bricolage,sans-serif;color:var(--ink);letter-spacing:-.02em;margin-bottom:8px}
+.tile span{font-size:13.5px;color:var(--muted);line-height:1.4;display:block}
+.tile.hi{border-color:var(--teal)}
+.tile.hi b{color:var(--teal)}
+/* figures */
+figure{margin:30px 0 10px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px 18px 12px}
+figure svg{display:block;width:100%;height:auto;font-family:Plex,system-ui,sans-serif}
+figcaption{font-size:14px;color:var(--muted);margin:10px 2px 0}
+.ax{stroke:#2f3b39;stroke-width:1}
+.tk{font:500 12px PlexMono,monospace;fill:#7d8d89}
+.lab{font:400 14.5px Plex,sans-serif;fill:#d9e0dd}
+.sub{font:500 12px PlexMono,monospace;fill:#97a7a3}
+.val{font:500 13px PlexMono,monospace;fill:#bfeee2}
+/* comparison list */
+.cmp{margin:26px 0 8px;padding:0;list-style:none;border-top:1px solid var(--line)}
+.cmp li{padding:14px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:170px 1fr;gap:18px;font-size:16px}
+.cmp li span{font:500 13px/1.6 PlexMono,monospace;color:var(--mint);letter-spacing:.04em}
+.cmp li em{font-style:normal;color:var(--muted)}
+/* table */
+table{width:100%;border-collapse:collapse;font-size:15px;margin:22px 0 8px}
+th{text-align:left;font:500 12px PlexMono,monospace;color:var(--mint);letter-spacing:.06em;text-transform:uppercase;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:10px 10px;border-bottom:1px solid var(--line);vertical-align:top;color:#d9e0dd}
+td:first-child{color:var(--ink)}
+td.n{font:500 14px PlexMono,monospace;color:var(--teal);white-space:nowrap}
+@media(max-width:520px){td.n{white-space:normal}}
+/* calculator */
+.calc{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;margin:28px 0 10px}
+.calc .row{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.calc fieldset{border:1px solid var(--line);border-radius:12px;padding:12px 14px 14px;margin:0 0 14px;min-width:0}
+.calc legend{font:500 12px PlexMono,monospace;color:var(--mint);letter-spacing:.06em;text-transform:uppercase;padding:0 6px}
+/* wide view of the simulator (Yann, 7 Nov.): the panel moves into a full-width overlay, controls left, results right; the cross or Escape puts it back */
+.wbtn{position:absolute;top:10px;right:10px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font:500 16px/1 PlexMono,monospace;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:0;cursor:pointer}.scen{padding-right:44px}.wbtn:hover,.wbtn:focus-visible{color:var(--teal);border-color:var(--teal);outline:none}
+.wover{position:fixed;inset:0;z-index:60;background:rgba(5,8,12,.78);backdrop-filter:blur(6px);overflow:auto;padding:3vh 3vw;display:flex;align-items:flex-start;justify-content:center}
+.wover .wpanel{width:min(1560px,94vw);margin:auto;display:grid;grid-template-columns:minmax(360px,5fr) minmax(0,7fr);gap:26px;align-items:start;padding:26px 28px 24px;position:relative}
+.wover .wpanel .row{grid-template-columns:1fr}.wover .wpanel .wl,.wover .wpanel .wr{min-width:0}.wover .wpanel .wbtn{display:none}
+.wclose{position:absolute;top:10px;right:12px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:500 20px/1 Plex,sans-serif;cursor:pointer}.wclose:hover,.wclose:focus-visible{border-color:var(--teal);color:var(--teal);outline:none}
+@media (max-width:1000px){.wover .wpanel{grid-template-columns:1fr}}
+
+.calc label{display:block;font-size:13.5px;color:var(--muted);margin:8px 0 3px}
+.calc label b{color:var(--ink);font-weight:500}
+.calc input[type=number]{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:500 14px PlexMono,monospace}
+.calc input[type=range]{width:100%;accent-color:var(--teal)}
+.calc .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.calc .g3>div{display:flex;flex-direction:column;justify-content:flex-end}
+.calc .mix{display:grid;grid-template-columns:1fr 70px 80px;gap:8px;align-items:center;font-size:13.5px;color:var(--muted)}
+.calc .mix .h{font:500 11px PlexMono,monospace;color:#6d7d79;letter-spacing:.04em;text-transform:uppercase;align-self:end;padding-bottom:2px}
+.calc .mix i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:7px;vertical-align:-1px}
+.calc .mix small{display:block;font-size:12px;color:#6d7d79}
+.calc .hint{font-size:12.5px;color:#6d7d79;margin:6px 0 0}
+.calc .err{font-size:12.5px;color:#f07a72;min-height:16px;margin-top:4px}
+.res{background:linear-gradient(135deg,#102a25,#0f1d2b);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:12px}
+.res .t{font:700 44px/1 Bricolage,sans-serif;color:var(--ink);letter-spacing:-.02em}
+.res .s{font-size:13.5px;color:var(--muted);margin-top:8px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.kpi{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.kpi b{display:block;font:700 20px/1.1 Bricolage,sans-serif;color:var(--ink)}
+.kpi span{font-size:12px;color:var(--muted)}
+.stack{display:flex;height:22px;border-radius:7px;overflow:hidden;gap:2px;background:var(--bg)}
+.stack i{display:block;height:100%;transition:width .3s}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--muted);margin:8px 0 0}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.bars .b{display:grid;grid-template-columns:150px 1fr 76px;gap:10px;align-items:center;font-size:13px;color:var(--muted);margin:6px 0}
+.bars .b .t{height:12px;background:var(--bg);border-radius:4px;overflow:hidden}
+.bars .b .f{display:block;height:100%;background:#3a4a47;border-radius:0 4px 4px 0}
+.bars .b.me{color:var(--teal)}
+.bars .b.me .f{background:var(--teal)}
+.bars .b .x{text-align:right;font:500 12px PlexMono,monospace}
+.scen{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+.scen button{font:500 13px Plex,sans-serif;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer}
+.scen button:hover,.scen button.on{border-color:var(--teal);color:var(--teal)}
+/* targets */
+.targets{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:26px 0 8px}
+.targets div{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.targets b{display:block;font:700 28px/1 Bricolage,sans-serif;color:var(--teal);margin-bottom:6px}
+.targets span{font-size:14px;color:var(--muted)}
+/* tools / buttons */
+.btns{display:flex;flex-wrap:wrap;gap:12px;margin:34px 0 0}
+.btn{display:inline-block;padding:13px 20px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);text-decoration:none;font-weight:500}
+.btn:hover,.btn:focus-visible{border-color:var(--teal);outline:none}
+.btn.main{background:var(--teal);border-color:var(--teal);color:#05201b}
+.refs{font-size:14px;color:var(--muted);columns:1}
+.refs p{margin:0 0 8px;color:var(--muted)}
+footer{max-width:var(--col);margin:72px auto 0;padding:18px 20px 48px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+footer a{color:var(--muted)}
+footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:-.02em;margin-bottom:6px}
+@media (max-width:720px){.hero{min-height:78vh}.top span:last-child{display:none}.tiles{grid-template-columns:1fr 1fr}.calc .row{grid-template-columns:1fr}.targets{grid-template-columns:1fr}.cmp li{grid-template-columns:1fr;gap:4px}.bars .b{grid-template-columns:110px 1fr 70px}h1{letter-spacing:.12em}}
+.top .langs{margin-left:auto;display:flex;gap:2px;letter-spacing:.04em}.top .langs a{font:500 11px/1 PlexMono,monospace;color:var(--mint);opacity:.6;padding:6px 6px;border-radius:6px;border:1px solid transparent}.top .langs a:hover{opacity:1}.top .langs a.on{opacity:1;color:var(--teal);border-color:rgba(255,255,255,.18)}.top .share{margin-left:0}@media (max-width:640px){.top{flex-wrap:wrap;row-gap:6px}.top .share{margin-left:auto}.top .langs{order:9;flex-basis:100%;margin-left:0;gap:4px;padding-left:40px}.top .langs a{padding:5px 6px;font-size:10px}}@media (max-width:480px){.top>span:not(.crumb){display:none}}</style>
+<link rel="canonical" href="https://yannsouetre.github.io/cof/memories/how-much.ja.html">
+<link rel="alternate" hreflang="en" href="https://yannsouetre.github.io/cof/memories/how-much.html">
+<link rel="alternate" hreflang="fr" href="https://yannsouetre.github.io/cof/memories/how-much.fr.html">
+<link rel="alternate" hreflang="de" href="https://yannsouetre.github.io/cof/memories/how-much.de.html">
+<link rel="alternate" hreflang="es" href="https://yannsouetre.github.io/cof/memories/how-much.es.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://yannsouetre.github.io/cof/memories/how-much.zh.html">
+<link rel="alternate" hreflang="ja" href="https://yannsouetre.github.io/cof/memories/how-much.ja.html">
+<link rel="alternate" hreflang="x-default" href="https://yannsouetre.github.io/cof/memories/how-much.html">
+</head>
+<body>
+<section class="hero">
+  <div class="top" style="position:absolute;top:0;left:0;right:0"><img src="../builder/icon/cof-icon-dark.svg" alt=""><a href="../">COF</a><span>·</span><a href="index.ja.html">記憶</a><span>·</span><span>ひとつの人生の重さは？</span><nav class="langs" aria-label="Language"><a href="how-much.html" hreflang="en" lang="en">EN</a><a href="how-much.fr.html" hreflang="fr" lang="fr">FR</a><a href="how-much.de.html" hreflang="de" lang="de">DE</a><a href="how-much.es.html" hreflang="es" lang="es">ES</a><a href="how-much.zh.html" hreflang="zh" lang="zh">ZH</a><a href="how-much.ja.html" hreflang="ja" lang="ja" class="on" aria-current="page">JA</a></nav><details class="share" data-share><summary aria-label="このページを共有">共有 ↗</summary><menu><li><button type="button" data-copy>リンクをコピー</button></li><li><a data-net="x" target="_blank" rel="noopener">X / Twitter</a></li><li><a data-net="linkedin" target="_blank" rel="noopener">LinkedIn</a></li><li><a data-net="bluesky" target="_blank" rel="noopener">Bluesky</a></li><li><a data-net="reddit" target="_blank" rel="noopener">Reddit</a></li><li><a data-net="mail">メール</a></li></menu></details></div>
+  <div class="text">
+  <h1>ひとつの人生は、<br>どれほどの重さになるのか？</h1>
+  <div class="rule"></div>
+  <p class="voice">「あの年のことなら、たぶん百くらいは話せます。残りは、起きたことを知っているだけ。」<small>CLARA MERCIER · もし彼女に尋ねたら</small></p>
+  </div>
+</section>
+
+<main>
+<p class="lede">COF は AIキャラクターに過去を与えます。当然、次に浮かぶ問いは過去の大きさです。人はいくつの<b>自伝的記憶</b>をもっているのか——積み重ねてきた知識ではなく、自分の人生の瞬間を——そして、そのひとつひとつを感覚の痕跡とともに書き留めたら何バイトになるのか。どちらも測った人はいません。このページでは、研究がわかっていることを示し、作業仮説を提案し、あなた自身の仮説を試せるようにし、ひとつの人生をまるごと収めるファイルにとっての帰結を導きます。</p>
+
+<div class="tiles">
+  <div class="tile hi"><b>数百</b><span>手がかりなしに挙げられる人生の瞬間の数。Galton 自身の見積もりで、写真などの手がかりがあればその10倍</span></div>
+  <div class="tile hi"><b>≈ 5,000</b><span>キャラクターのための作業仮説：1年におよそ100の記憶を50年間</span></div>
+  <div class="tile hi"><b>≈ 1 MB</b><span>思い出される記憶ひとつの平均の重さ：数行のテキストと、数枚の画像や音</span></div>
+  <div class="tile hi"><b>≈ 5 GB</b><span>5,000の記憶をひとつ約1メガバイトで——過去をまるごとファイルにしたときの重さ</span></div>
+</div>
+<p class="cap">測定値ではなく、桁の目安です。以下の数字にはすべて出どころを示しています。</p>
+
+<h2>研究によれば、自伝的記憶はいくつあるのか</h2>
+<p>最初にこの問いを立てたのは Francis Galton で、1879年、自分自身の連想を使った実験の最中のことでした。自分の人生のエピソードを、実際にいくつ呼び戻せるのか。（知っていること——ラテン語、植物の名前、ロンドンの通り——ではなく、自分に起きたことです。）彼の答え——忘却を免れたエピソードは<em>数百か数千で数えられる</em>もので、数百万ではありえない——は、150年を経た今も揺らいでいません。これを直接測ろうとした唯一の試み（Crovitz &amp; Schiffman, 1974；Crovitz, Schiffman &amp; Apter, 1991 による積分）は、単語を手がかりに人々に記憶を呼び起こさせ、それぞれに日付をつけ、記憶が古くなるにつれて減っていく様子にべき乗則を当てはめ、それを積分しました。結果は<b>テスト前の20年間で、アクセス可能なエピソードが224</b>。Galton の範囲の下端にあたる下限値です。これをレビューした Dudai は、当てはめた関数はおそらく総数を過小評価していると指摘しています。日記は物語のもう一面を語ります。Willem Wagenaar は6年間で約2,400の出来事を書き留めました——意図的に、ほぼ1日にひとつ。自分をテストしたところ、およそ5分の1は失われたように見えました。けれども適切な手がかりを与えられると、完全に忘れてしまったと言える出来事はひとつもありませんでした。再認はさらに先まで届きます。人は一度見ただけの何千枚もの写真を見分けられるのです（Standing, 1973）。Yadin Dudai のレビュー（1997）は、この段階をひとことでまとめています。中核となるエピソードの想起は<b>数千</b>単位、再認はさらにひと桁上、そしてもし1日にひとつエピソードをとっておいたなら、70歳までに25,000になる、と。</p>
+
+<figure id="ladder"><svg viewBox="0 0 760 300" role="img" aria-label="自伝的記憶の数の見積もり（対数目盛）"></svg>
+<figcaption>ひとりの人がもつ自伝的記憶の数の見積もり（対数目盛）。棒は範囲を示します。このページの作業仮説は、手がかりなしに挙げられる数と、手がかりで呼び戻せる数のあいだに位置します。</figcaption></figure>
+
+<p>つまり、1年に100の記憶というのは測定値ではありませんが、根拠をもって立てる足場ではあります。Galton が数えた範囲の上端であり、Wagenaar が書き留める価値ありと見なした数の4分の1であり、Dudai が中核エピソードについて示す桁でもあります。50年間でおよそ<b>5,000</b>——このページが使い続ける数字です。手がかりがあれば5倍から10倍に、並外れた記憶力があれば（LePort らが研究した HSAM の事例では、ほぼ毎日を思い出せます）はるかに多くなります。</p>
+
+<h3>記憶は人生に均等に散らばってはいない</h3>
+<p>記憶がどこに位置するかは、ふたつのことで決まります。3、4歳より前のことはほとんど何も残りません（幼児期健忘）。そして不釣り合いなほど多くが10歳から30歳のあいだの年月から来ます——レミニセンス・バンプと呼ばれ、この分野でもっとも再現されている知見です（Rubin &amp; Schulkind, 1997）。その後、決まりきった日々の年月はあまり明確な記憶を残さず、まだ新しい最後の数年だけが例外です。Clara Mercier——COF に同梱された架空のサンプルキャラクターで、そのファイル（記憶は全部で16）がこのページのすべての数字の物差しです——が65歳でもっている9つの記憶は、たまたまこの分布に沿っています。キャラクターのプリセットが従うべきなのもこの分布であり、だからこそ Clara の子ども時代のプリセットには記憶がひとつしかなく、65歳の彼女には9つあるのです。</p>
+
+<figure id="life"><svg viewBox="0 0 720 240" role="img" aria-label="生涯にわたる記憶の分布。65歳の Clara の9つの記憶を表示"></svg>
+<figcaption>典型的な分布（定性的、Rubin &amp; Schulkind による）と、サンプルファイルで65歳の Clara がもつ9つの記憶の年齢を点で示したもの：8歳の祖母の家、24〜28歳のエージェンシー時代、28歳のスタジオ、29歳の火星人と夢、31歳の結婚式、そして56歳、60歳、63歳。</figcaption></figure>
+
+<h2>ふたつの思い出し方——そして重さをもつもの</h2>
+<p>自伝的記憶がすべて同じ種類のものとは限りません。Endel Tulving は、<em>想起すること</em>——画像や音や場所の手触りとともに過去へさかのぼること——と、<em>知っていること</em>——何かが起きたと言え、それを語れるが、もう一度見ることはないこと——を区別しました。前者は何よりも視覚的イメージに依存します（Rubin, Schrauf &amp; Greenberg, 2003）。心的イメージをもたない人は、自分の過去を思い出すときの細部が少なく、確信も弱く（Monzel et al., 2024）、SDAM と呼ばれるまれな状態では、自分の人生の事実を知っていながら、そのどれも追体験できません（Palombo et al., 2015）。聴覚は2番目です。嗅覚は特別で、匂いを手がかりにした記憶はより古く、よりまれで、より強烈で、あまり振り返られません（Willander &amp; Larsson, 2006）。触覚については数字がまったくありません。</p>
+<p>これは重さに関わります。<b>感覚の痕跡を運ぶのは想起される記憶だけ</b>であり、重さをもつのは感覚の痕跡だけだからです。知っている記憶は数行のテキスト、キロバイト単位です。想起される記憶は画像が1枚から3枚、ときに音、ときに数秒の映像で、数百キロバイトから数メガバイトになります。それぞれの割合を測った研究はありません。人生の大部分は追体験されるのではなく知られている、という推論は妥当ですが、証明されてはいません。下の計算機では、この割合をスライダーにしています。</p>
+
+<h3>では、知っている千曲の歌は？</h3>
+<p>音楽は例外のように見えます。たいていの人は何百もの曲を頭の中で再生でき、なかにはほぼ一音一音まで再現できるものもあります。プロの音楽家がもつレパートリーは、上の数をはるかにしのぐでしょう。研究によれば、ふたつの点でつじつまが合います。第一に、知っている歌は自伝的記憶ではありません。それは知識であり、語彙や見覚えのある顔と一緒に蓄えられ、エピソード記憶が失われても生き残ります——長く親しんだ音楽を保持する脳の領域は、進行したアルツハイマー病でも最後まで残る部位のひとつです（Jacobsen et al., 2015）。その曲で踊った夜が記憶であり、曲は記憶が指し示す対象です。第二に、歌は音としてではなく構造として蓄えられます。メロディ、リズム、歌詞が、驚くほど正確な調とテンポに固定され（たいていの人は聴き慣れた録音を原曲の音高かその近く、2半音以内で歌い、その多くは原曲のテンポの8 %以内に収まります——Levitin, 1994；Levitin &amp; Cook, 1996）、残りは調性と拍節について学習した文法から再生成されます（Huron, 2006；Pearce, 2018）。だから音楽家は、同じ音符をでたらめに並べたものより構造をもった曲のほうをはるかによく覚えていますし（Halpern &amp; Bower, 1982）、だから歌はひとつの夕べよりもずっとよく圧縮できるのです。歌詞つきのメロディは数キロバイトの記号であり、メガバイトになるのは録音としてだけです。したがってファイルの中では、一曲の音楽は参照——曲名、数小節、夜の川のような10秒の痕跡——として、それが属する記憶に添えられるのであって、千の録音ではありません。下の見積もりの範囲は変わりません。</p>
+<figure id="know"><svg viewBox="0 0 720 230" role="img" aria-label="キャラクターが知っていることと覚えていること：重なり合うふたつの集合"></svg>
+<figcaption>キャラクターが<i>知っている</i>ことと<i>覚えている</i>ことは別々の貯蔵庫で、作者が意図して使える小さな重なりがあります。</figcaption></figure>
+<p class="cap">知識全般についても同じです。COF の記憶は設計上、自伝的なもの——キャラクターの人生の瞬間と期間——であり、キャラクターが自分の世界について知っていることは、性格と文書の中にあります。物語がそれを望むなら、作者がある知識を記憶として書くことを妨げるものは何もありません（その世界について、キャラクターだけが知る秘密。ある夜に知り、ずっと胸にしまってきたもの）。ただし、このページが数えているのはそれではありません。</p>
+
+<h3>ファイルと同じかたち</h3>
+<p>Martin Conway の自伝的記憶のモデル（Conway &amp; Pleydell-Pearce, 2000）は、それを3つの階層として描きます。<em>人生の時期</em>、<em>一般的出来事</em>、そして<em>出来事固有の知識</em>——ある瞬間を鮮明にする感覚・知覚的な細部です。COF のファイルも同じ3つをもっています。期間、瞬間、そして瞬間に添えられたメディア。この対応は設計したものではなく、ツールに何が必要かを問ううちに自然と出てきたものです。それでも、心強いことに変わりはありません。</p>
+<ul class="cmp">
+  <li><span>人生の時期</span><div>エージェンシー時代、AI戦争の時代——<em>COF の <code>period</code>、その幅とともに</em></div></li>
+  <li><span>一般的出来事</span><div>スタジオで迎えた最初の朝、河岸での夕べ——<em>COF の <code>moment</code>、要旨、いつ、どこで、誰とともに</em></div></li>
+  <li><span>出来事固有の知識</span><div>机に差す光、川の音——<em>瞬間の <code>media</code>：画像、音、短い動画、覚えているいくつかの言葉</em></div></li>
+</ul>
+
+<h2>記憶の重さを、実測で</h2>
+<p>このフォーマットに存在する記憶のセットは、Clara のものだけです。16のノード、31のメディアで、1.1 のサンプルのために書かれました。推測するより、ファイル内での実際の重さを見てみましょう。彼女の画像は大半が 1248 × 832 の JPEG——約1メガピクセルで、現在の生成モデルが出力するサイズです。唯一の動画は 480p で10秒、唯一の音声は10秒です。</p>
+<table>
+  <tr><th>ファイルに収められた記憶</th><th>中身</th><th>重さ</th></tr>
+  <tr><td>エージェンシー時代（期間）</td><td>2言語の要旨、日付、当時／現在の感情——メディアなし</td><td class="n">1.3 KB</td></tr>
+  <tr><td>私たちの結婚式</td><td>画像1枚</td><td class="n">290 KB</td></tr>
+  <tr><td>祖母の家</td><td>画像3枚、夜の川（10秒）、覚えているいくつかの言葉</td><td class="n">870 KB</td></tr>
+  <tr><td>電気羊の夢</td><td>画像3枚、ポスター画像つきの10秒の動画</td><td class="n">1.1 MB</td></tr>
+  <tr><td><b>16件すべて</b></td><td>メディアつきの瞬間14件、メディアなしの期間2件</td><td class="n">5.2 MB · 平均 330 KB</td></tr>
+</table>
+<p class="cap"><code>spec/examples/10-clara-mercier</code>、COF 1.1 で計測。顔、声、モーションクリップを含むキャラクター全体は、展開時 21 MB、<code>.cof</code> にすると 15.5 MB です。</p>
+<figure id="spread"><svg viewBox="0 0 760 250" role="img" aria-label="記憶の重さ：対数目盛上の偏った分布。1キロバイトから数十メガバイトまで、平均は約1メガバイト。Clara の16の記憶を表示"></svg>
+<figcaption>記憶の重さがどう分布すると考えられるか——<b>測定ではなく外挿です</b>：言葉で語られた記憶なら数キロバイト、画像つきなら数百キロバイト、長い動画なら数十メガバイト。動画の長い裾が平均を約1メガバイトに引き上げますが、大半の記憶ははるかに軽いのです。点は Clara の16の記憶です。</figcaption></figure>
+<p>つまり実際には、画像1枚の記憶は4分の1メガバイト、画像3枚と動画をもつ豊かな記憶は1メガバイトです。解像度を3倍に——生成画像ではなくスマートフォンの写真、480p ではなく 1080p に——すれば、同じ記憶は3倍の重さになります。したがって<b>想起される記憶ひとつにつき1メガバイト</b>は、現在のサイズでは妥当な平均であり、どれだけ残すかによって上下に3倍の幅があります。</p>
+
+<h2>あなたの数字で試す</h2>
+<p>上で置いた仮定は、ここではすべて操作できます。既定値は作業仮説です。3歳から1年に100の記憶、そのすべてが単に知っているのではなく想起されるもので、メディアは軽い・標準・豊かの組み合わせ。サイズは Clara のファイルをもとに、スマートフォン品質のメディアに合わせて調整しています。どれでも変えてみてください。</p>
+
+<div class="calc" id="calc">
+  <div class="scen" id="scen">
+    <button data-s="galton">Galton の下限</button>
+    <button data-s="base" class="on">作業仮説</button>
+    <button data-s="iceberg">大半は知っているだけ</button>
+    <button data-s="cue">網羅的、手がかりあり</button>
+    <button data-s="hsam">並外れた記憶力</button>
+  </div>
+  <div class="row">
+    <div>
+      <fieldset><legend>いくつ</legend>
+        <div class="g3">
+          <div><label>年齢</label><input id="age" type="number" min="1" max="120" value="53"></div>
+          <div><label>最初の記憶の年齢</label><input id="amn" type="number" min="0" max="10" step="0.5" value="3"></div>
+          <div><label>1年あたりの記憶</label><input id="py" type="number" min="1" max="100000" value="100"></div>
+        </div>
+        <label>手がかりなしの分に加える、手がかりと再認の分：<b id="cueV">×1</b></label>
+        <input id="cue" type="range" min="1" max="10" step="0.5" value="1">
+        <p class="hint">×1 = 手がかりなしに挙げられる数。×5〜×10 = 写真、場所、匂いが呼び戻すもの、そして見れば思い出せるもの。</p>
+      </fieldset>
+      <fieldset><legend>想起か、知っているだけか</legend>
+        <label><b>想起される</b>記憶の割合——感覚の痕跡つき：<b id="remV">100 %</b></label>
+        <input id="rem" type="range" min="0" max="100" step="5" value="100">
+        <label><b>知っているだけ</b>の記憶、言葉のみ（KB）</label><input id="skn" type="number" min="0" step="0.5" value="3">
+        <p class="hint">この割合を測った研究はありません。人生の大部分はおそらく追体験されるのではなく知られているだけです。既定値はすべてを追体験されるものとしており、これはもっとも重いケースです。</p>
+      </fieldset>
+    </div>
+    <div>
+      <fieldset><legend>想起される記憶が運ぶもの</legend>
+        <div class="mix">
+          <div class="h">記憶</div><div class="h">割合 %</div><div class="h">1件の MB</div>
+          <div><i style="background:var(--c1)"></i>軽い<small>画像1枚</small></div><input id="p1" type="number" min="0" max="100" value="30"><input id="s1" type="number" min="0" step="0.05" value="0.25">
+          <div><i style="background:var(--c2)"></i>標準<small>画像3枚、音、数行</small></div><input id="p2" type="number" min="0" max="100" value="55"><input id="s2" type="number" min="0" step="0.05" value="0.9">
+          <div><i style="background:var(--c3)"></i>豊か<small>画像と動画、スマートフォン品質</small></div><input id="p3" type="number" min="0" max="100" value="15"><input id="s3" type="number" min="0" step="0.05" value="3">
+        </div>
+        <div class="err" id="err" aria-live="polite"></div>
+        <label>解像度の倍率：<b id="resV">×1</b></label>
+        <input id="res" type="range" min="0.5" max="4" step="0.5" value="1">
+        <p class="hint">×1 = Clara のサイズ（1 MP の画像、480p の動画）。×3 ≈ スマートフォンの写真と 1080p。</p>
+      </fieldset>
+    </div>
+  </div>
+  <div class="res" aria-live="polite"><div class="s">ひとつの人生の記憶を、ファイルに</div><div class="t" id="total">–</div><div class="s" id="totalSub">–</div></div>
+  <div class="kpis"><div class="kpi"><b id="kN">–</b><span>件の記憶</span></div><div class="kpi"><b id="kAvg">–</b><span>1件あたりの平均</span></div><div class="kpi"><b id="kY">–</b><span>生きた1年あたり</span></div></div>
+  <div class="stack" id="stack"></div>
+  <div class="legend"><span><i style="background:var(--c1)"></i>軽い</span><span><i style="background:var(--c2)"></i>標準</span><span><i style="background:var(--c3)"></i>豊か</span><span><i style="background:var(--c4)"></i>知っているだけ、言葉のみ</span></div>
+  <div class="bars" id="bars" style="margin-top:18px"></div>
+  <p class="hint" style="margin-top:10px">対数目盛。1 GB = 1,000 MB。Clara のファイルは公開されている 1.1 のサンプルです。</p>
+</div>
+
+<h2>ファイルにとっての意味</h2>
+<p>作業仮説を真剣に受け取るなら、<em>ほぼ網羅的な</em>キャラクター——ひとつの人生ぶんの自伝的記憶を、現在のメディアサイズで——の重さの目安は数ギガバイトです。これは問題になりません。DVD 1枚、スマートフォンの数パーセントです。フォーマットはすでにこれに対応しています。<code>.cof</code> は ZIP コンテナ（zip64 も可）で、先頭のふたつのエントリがファイルを識別し、マニフェストを収めているので、読み手は何も展開しないうちに中身を把握できます。メディアは必要に応じて展開されます。ビルダーは画像が3枚を超える記憶に警告を出し、20 MB を超える動画はその記憶の上で確認が必要です。キャラクターのほかの部分——参照画像、音声サンプル、3D モデル、モーションクリップ——は、その過去よりはるかに軽いのです。</p>
+<div class="targets">
+  <div><b>≈ 5 GB</b><span><b>記憶。</b>感覚の痕跡をもつ記憶が約5,000、ひとつ1メガバイトで——大半が追体験されるのではなく知られているだけなら、数はもっと多くなります。ほぼ網羅的なキャラクターについて、私たちが提案する桁です。</span></div>
+  <div><b>≤ 1 GB</b><span><b>それ以外のすべて。</b>顔と参照画像、声、3D、モーション、文書。Clara の場合は現在、展開時 16 MB。映画品質の参照画像と複数の声をもつキャラクターでも、1ギガバイトに収まります。</span></div>
+</div>
+<p class="cap">これは作業上の目安であって、フォーマットのルールではありません。COF はファイルにいかなる上限も設けていません。プラットフォームが想定しておけるのはこういうことです。完全なキャラクターが、余裕をもってスマートフォンに収まる。</p>
+
+<h2>開かれた問い：潜在空間としての記憶</h2>
+<p>この問いには、もっと深い問い方があります。人の心は、自分の過去を5,000の文書として整理してはいません。記憶は散らばった痕跡から再構成され、思い出すたびに次の想起に色がつき、全体は結合の重み——今日の言葉でいえば潜在空間——として保持されます。そこでは、何が何に似ているかということそのものが構造です。もしひとつの人生ぶんの記憶を集め、再構成し、あるいは書き上げられるとしたら、それをもっとも忠実に収めるかたちは、そもそもアーカイブではないかもしれません。モデル、つまり記憶で学習させた重みの集合であり、そこでは記憶どうしのあらゆるつながりが、宣言されることなく存在するのかもしれません。それだけでひとつの研究プログラムであり、しかも魅力的なものです。</p>
+<p>その代償をはっきりさせておく価値はあります。重みは不透明です。開いて記憶を読むことはできません。記憶ひとつ単位で編集することもできません。そして確実に忘れることもできません——学習例をひとつモデルから取り除くことは未解決の問題であり（Bourtoule et al., 2021）、つまり同意を撤回した実在の人物や、個人の記憶のパージを求めたユーザーの意思を尊重できないということです。COF が保証するために作られたすべて——読むこと、編集すること、パージすること、自分のデータを持ち運ぶこと——は、アーカイブの中にあります。</p>
+<p>実のところ、脳はどちらかを選んではいません。標準的な説明（McClelland, McNaughton &amp; O'Reilly, 1995）は、ふたつの相補的なシステムです。その日の出来事を個別に保持する速いエピソード貯蔵庫と、それを時間をかけて一般的な構造へと統合する遅い皮質の貯蔵庫。固定化（consolidation）が学習にあたります。アーカイブと潜在空間が並び、一方が他方を養う。COF はすでに顔について両方の種類のものを運んでいます——参照画像と、それで学習した LoRA を並べて。同じパターンは記憶にも当てはまります。グラフを信頼できる唯一の情報源とし、その傍らに<em>固定化</em>——記憶で学習したアダプター——を置く。それは派生物で、再生成でき、アーカイブが変われば破棄して作り直される。だからパージは、願うことによってではなく、再学習によって尊重されるのです。</p>
+<p>そこで、誰かに行ってほしい研究があります。数千の記憶——架空のキャラクターのために書かれたもの、あるいは同意を得て実在の人生から再構成されたもの——を用意し、それでアダプターを学習させ、3つのことを測るのです。グラフが宣言しているリンク（<em>の後</em>、<em>のため</em>、<em>について</em>）を、教えられなくてもモデルが復元するか。作者が宣言しなかったが読み手なら納得するリンクを見つけるか。そしてパージ後の再学習で、取り除いたものの痕跡が残らないか。より安価な第一歩なら今日すでにあります。記憶ごとの埋め込みと、派生ファイルとして運ばれるベクトルインデックス——出どころまで読み戻せる潜在空間です。答えが良いものなら、キャラクターの記憶の究極のかたちは、モデルになるかもしれません。それでもアーカイブは必要です。私たちが自分のアーカイブを必要とするのと同じ理由で——何が起きたのかを語れるように。</p>
+
+<div class="btns">
+  <a class="btn main" href="index.ja.html">発表ページに戻る</a>
+  <a class="btn" href="../viewer/#clara/memories">Clara の記憶を開く</a>
+  <a class="btn" href="https://github.com/yannsouetre/cof/blob/main/rfcs/0002-memories.md">RFC 0002 を読む</a>
+</div>
+
+<h2>出典</h2>
+<div class="refs">
+  <p>Galton, F. (1879). Psychometric experiments. <i>Brain</i>, 2, 149–162; (1883) <i>Inquiries into Human Faculty and its Development</i>.</p>
+  <p>Crovitz, H. F. &amp; Schiffman, H. (1974). Frequency of episodic memories as a function of their age. <i>Bulletin of the Psychonomic Society</i>, 4, 517–518.</p>
+  <p>Crovitz, H. F., Schiffman, H. &amp; Apter, A. (1991). Galton's number. <i>Bulletin of the Psychonomic Society</i>, 29(4), 331–332.</p>
+  <p>Dudai, Y. (1997). How big is human memory, or on being just useful enough. <i>Learning &amp; Memory</i>, 3, 341–365——Crovitz の224と、1日ひとつの計算を紹介しているレビュー。</p>
+  <p>Wagenaar, W. A. (1986). My memory: a study of autobiographical memory over six years. <i>Cognitive Psychology</i>, 18, 225–252.</p>
+  <p>Linton, M. (1978). Real world memory after six years. In Gruneberg, Morris &amp; Sykes (eds), <i>Practical Aspects of Memory</i>.</p>
+  <p>Standing, L. (1973). Learning 10 000 pictures. <i>Quarterly Journal of Experimental Psychology</i>, 25, 207–222.</p>
+  <p>Rubin, D. C. &amp; Schulkind, M. D. (1997). The distribution of autobiographical memories across the lifespan. <i>Memory &amp; Cognition</i>, 25, 859–866.</p>
+  <p>Tulving, E. (1985). Memory and consciousness. <i>Canadian Psychology</i>, 26, 1–12.</p>
+  <p>Conway, M. A. &amp; Pleydell-Pearce, C. W. (2000). The construction of autobiographical memories in the self-memory system. <i>Psychological Review</i>, 107, 261–288.</p>
+  <p>Rubin, D. C., Schrauf, R. W. &amp; Greenberg, D. L. (2003). Belief and recollection of autobiographical memories. <i>Memory &amp; Cognition</i>, 31, 887–901.</p>
+  <p>Willander, J. &amp; Larsson, M. (2006). Smell your way back to childhood: autobiographical odor memory. <i>Psychonomic Bulletin &amp; Review</i>, 13, 240–244.</p>
+  <p>Palombo, D. J. et al. (2015). Severely deficient autobiographical memory (SDAM) in healthy adults. <i>Neuropsychologia</i>, 72, 105–118.</p>
+  <p>LePort, A. K. R. et al. (2016). Highly superior autobiographical memory: quality and quantity of retention over time. <i>Frontiers in Psychology</i>, 6, 2017.</p>
+  <p>Monzel, M. et al. (2024). Hippocampal-occipital connectivity reflects autobiographical memory deficits in aphantasia. <i>eLife</i>, 13.</p>
+  <p>Levitin, D. J. (1994). Absolute memory for musical pitch: evidence from the production of learned melodies. <i>Perception &amp; Psychophysics</i>, 56, 414–423.</p>
+  <p>Levitin, D. J. &amp; Cook, P. R. (1996). Memory for musical tempo: additional evidence that auditory memory is absolute. <i>Perception &amp; Psychophysics</i>, 58, 927–935.</p>
+  <p>Halpern, A. R. &amp; Bower, G. H. (1982). Musical expertise and melodic structure in memory for musical notation. <i>American Journal of Psychology</i>, 95, 31–50.</p>
+  <p>Jacobsen, J.-H. et al. (2015). Why musical memory can be preserved in advanced Alzheimer's disease. <i>Brain</i>, 138, 2438–2450.</p>
+  <p>Huron, D. (2006). <i>Sweet Anticipation: Music and the Psychology of Expectation</i>. MIT Press.</p>
+  <p>Pearce, M. T. (2018). Statistical learning and probabilistic prediction in music cognition: mechanisms of stylistic enculturation. <i>Annals of the New York Academy of Sciences</i>, 1423, 378–395.</p>
+  <p>McClelland, J. L., McNaughton, B. L. &amp; O'Reilly, R. C. (1995). Why there are complementary learning systems in the hippocampus and neocortex. <i>Psychological Review</i>, 102, 419–457.</p>
+  <p>Bourtoule, L. et al. (2021). Machine unlearning. <i>IEEE Symposium on Security and Privacy</i>.</p>
+</div>
+</main>
+
+<footer>
+  <div class="mark">COF</div>
+  Character Open File——AIキャラクターのための、権利も含めたオープンフォーマット。2026年10月の作業仮説です。数字は桁の目安で、出どころを示しています。Clara Mercier は架空のサンプルキャラクターです。<a href="https://github.com/yannsouetre/cof">GitHub のソース</a> · <a href="index.ja.html">記憶の発表ページ</a>
+</footer>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const fmtN=n=>Math.round(n).toLocaleString("en-US").replace(/,/g,"\u202f");
+function fmtMB(mb){if(!isFinite(mb)||mb<=0)return "0 MB";if(mb<1)return (mb*1000).toLocaleString("en-US",{maximumFractionDigits:0})+" KB";if(mb<1000)return mb.toLocaleString("en-US",{maximumFractionDigits:mb<10?1:0})+" MB";if(mb<1e6)return (mb/1000).toLocaleString("en-US",{maximumFractionDigits:mb<1e4?2:1})+" GB";return (mb/1e6).toLocaleString("en-US",{maximumFractionDigits:2})+" TB"}
+
+/* ---- figure 1: the ladder (log scale) ---- */
+(function(){
+const svg=$("#ladder svg");const W=760,L=300,R=720,y0=34,dy=36;
+const rows=[
+ {lab:"Galton の数、実測",sub:"Crovitz ら 1991 · 20年、手がかりあり",lo:224,hi:224},
+ {lab:"Galton 自身の見積もり",sub:"1879 · 「数百か数千」",lo:300,hi:3000},
+ {lab:"日記に記された出来事",sub:"Wagenaar 1986 · 6年、1日ひとつ",lo:2402,hi:2402},
+ {lab:"作業仮説",sub:"年100件 · 50年",lo:5000,hi:5000,me:true},
+ {lab:"手がかりあり、さらに再認",sub:"Dudai 1997 · 10倍",lo:10000,hi:50000},
+ {lab:"1日にひとつ",sub:"Dudai 1997 · 70年以上",lo:25000,hi:25000},
+ {lab:"1時間にひとつ",sub:"体験できるエピソードの上限",lo:400000,hi:400000}];
+const lg=v=>Math.log10(v),x=v=>L+(lg(v)-2)*(R-L)/4;
+let s="";
+for(const t of [100,1000,10000,100000,1000000]){s+=`<line class="ax" x1="${x(t)}" y1="${y0-14}" x2="${x(t)}" y2="${y0+rows.length*dy-8}"/><text class="tk" x="${x(t)}" y="${y0-20}" text-anchor="middle">${t>=1e6?"1 M":t>=1000?(t/1000)+" k":t}</text>`}
+rows.forEach((r,i)=>{const y=y0+i*dy;const col=r.me?"#a98ae8":"#2fa88e";const x1=x(r.lo),x2=x(r.hi);
+ s+=`<text class="lab" x="${L-14}" y="${y+4}" text-anchor="end"${r.me?' style="fill:#cbbcf0"':""}>${r.lab}</text><text class="sub" x="${L-14}" y="${y+18}" text-anchor="end">${r.sub}</text>`;
+ if(r.lo===r.hi)s+=`<circle cx="${x1}" cy="${y}" r="6" fill="${col}"/>`;else s+=`<rect x="${x1}" y="${y-5}" width="${x2-x1}" height="10" rx="4" fill="${col}" opacity=".85"/>`;
+ s+=`<text class="val" x="${x2+10}" y="${y+4}">${r.lo===r.hi?fmtN(r.lo):fmtN(r.lo)+"–"+fmtN(r.hi)}</text>`});
+s+=`<text class="sub" x="${(L+R)/2}" y="${y0+rows.length*dy+10}" text-anchor="middle">記憶 · 対数目盛</text>`;
+svg.innerHTML=s})();
+
+/* ---- figure 2: over a life, with Clara at 65 ---- */
+(function(){
+const svg=$("#life svg");const W=720,L=40,R=700,yb=190,yt=44;
+const x=a=>L+a*(R-L)/70;
+// qualitative profile: amnesia, bump 10–30, routine, recency
+const pts=[[0,0],[3,.02],[6,.25],[10,.6],[14,.9],[18,1],[22,.95],[26,.82],[30,.62],[36,.42],[42,.33],[48,.3],[54,.31],[58,.37],[62,.55],[66,.78],[70,.92]];
+const y=v=>yb-v*(yb-yt);
+const P=pts.map(p=>[x(p[0]),y(p[1])]);let d="M"+P[0][0].toFixed(1)+" "+P[0][1].toFixed(1);
+for(let i=0;i<P.length-1;i++){const p0=P[Math.max(0,i-1)],p1=P[i],p2=P[i+1],p3=P[Math.min(P.length-1,i+2)];
+ const c1=[p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6],c2=[p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6];
+ d+=` C${c1[0].toFixed(1)} ${c1[1].toFixed(1)} ${c2[0].toFixed(1)} ${c2[1].toFixed(1)} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`}
+let s=`<line class="ax" x1="${L}" y1="${yb}" x2="${R}" y2="${yb}"/><path d="${d} L${x(70)} ${yb} L${x(0)} ${yb} Z" fill="rgba(47,168,142,.12)"/><path d="${d}" fill="none" stroke="#2fa88e" stroke-width="2"/>`;
+for(const a of [0,10,20,30,40,50,60,70])s+=`<text class="tk" x="${x(a)}" y="${yb+16}" text-anchor="middle">${a}</text>`;
+s+=`<text class="sub" x="${x(1)}" y="${y(.9)}">幼児期</text><text class="sub" x="${x(1)}" y="${y(.82)}">健忘</text><text class="sub" x="${x(18)}" y="${yt-8}" text-anchor="middle">レミニセンス・バンプ</text><text class="sub" x="${x(47)}" y="${y(.1)}" text-anchor="middle">決まりきった年月</text><text class="sub" x="${x(62)}" y="${y(.78)}" text-anchor="end">新近性</text>`;
+// Clara at 65: ages of her nine memories (period 24–28 as a bar)
+const clara=[8,28,29,29,31,56,60,63];
+s+=`<rect x="${x(24)}" y="${yb+28}" width="${x(28)-x(24)}" height="6" rx="3" fill="#8a6ad6" opacity=".9"/>`;
+const seen={};clara.forEach(a=>{seen[a]=(seen[a]||0)+1;s+=`<circle cx="${x(a)}" cy="${yb+31-(seen[a]-1)*9}" r="4.5" fill="#8a6ad6"/>`});
+s+=`<text class="sub" x="${R}" y="${yb+50}" text-anchor="end" style="fill:#cbbcf0">65歳の Clara · 9つの記憶、年齢順</text><text class="sub" x="${L}" y="${yb+34}">年齢</text>`;
+svg.innerHTML=s})();
+
+/* ---- figure 2 bis: the spread of a memory's weight (log-normal, log scale) — an extrapolation anchored on Clara ---- */
+(function(){
+const svg=$("#spread svg");const W=760,L=56,R=724,T=44,B=196;
+const CLARA=[1199,1296,185503,201880,210097,210130,254314,279786,281601,289470,289773,298056,313412,404367,867036,1135131];   // bytes per node: memory.json + its media (example 10)
+const med=300e3,mean=1e6;const mu=Math.log(med),sg=Math.sqrt(2*Math.log(mean/med));   // log-normal: median 300 KB, mean 1 MB (the page's hypothesis)
+const lo=1e3,hi=1e8;const x=v=>L+(Math.log10(v)-3)*(R-L)/5;
+const pdf=v=>Math.exp(-((Math.log(v)-mu)**2)/(2*sg*sg))/(v*sg*Math.sqrt(2*Math.PI))*v;   // density per log-unit (what a log axis shows)
+let top=0;const pts=[];for(let i=0;i<=200;i++){const v=lo*Math.pow(hi/lo,i/200);const d=pdf(v);top=Math.max(top,d);pts.push([v,d])}
+const y=d=>B-(d/top)*(B-T);
+let path="";pts.forEach(([v,d],i)=>{path+=(i?"L":"M")+x(v).toFixed(1)+" "+y(d).toFixed(1)+" "});
+let s=`<path d="${path}L${R} ${B} L${L} ${B}Z" fill="rgba(47,168,142,.14)"/><path d="${path}" fill="none" stroke="#2fa88e" stroke-width="2"/>`;
+for(const [v,l] of [[1e3,"1 KB"],[1e4,"10 KB"],[1e5,"100 KB"],[1e6,"1 MB"],[1e7,"10 MB"],[1e8,"100 MB"]])s+=`<line class="ax" x1="${x(v)}" y1="${B}" x2="${x(v)}" y2="${B+6}"/><text class="tk" x="${x(v)}" y="${B+22}" text-anchor="middle">${l}</text>`;
+s+=`<line class="ax" x1="${L}" y1="${B}" x2="${R}" y2="${B}"/>`;
+const mark=(v,lab,col,dyl,anchor)=>{s+=`<line x1="${x(v)}" y1="${T-26}" x2="${x(v)}" y2="${B}" stroke="${col}" stroke-width="1.2" stroke-dasharray="4 4"/><text x="${x(v)+(anchor==="end"?-6:6)}" y="${dyl}" text-anchor="${anchor||"start"}" style="font:500 13px Plex,system-ui,sans-serif;fill:${col}">${lab}</text>`};
+mark(med,"median · 300 KB","#9fe0cd",16,"end");mark(mean,"mean · 1 MB","#a98ae8",16,"start");
+s+=`<text class="sub" x="${x(2e3)}" y="${B-10}" style="fill:#7d8d89">言葉だけの記憶</text><text class="sub" x="${x(2.2e7)}" y="${B-10}" style="fill:#7d8d89">長い動画</text>`;
+CLARA.forEach(v=>{s+=`<circle cx="${x(v)}" cy="${B-7}" r="4.5" fill="#c4842a" opacity=".9"><title>${(v/1e3).toFixed(0)} KB</title></circle>`});
+s+=`<text class="sub" x="${(L+R)/2}" y="${B+42}" text-anchor="middle">記憶1件の重さ · 対数目盛 · 点：Clara の16件</text>`;
+svg.innerHTML=s})();
+
+/* ---- figure 3: knowledge vs autobiographical memory ---- */
+(function(){
+const svg=$("#know svg");const T='font:400 13px Plex,system-ui,sans-serif';
+const s=`
+<ellipse cx="238" cy="112" rx="226" ry="92" fill="rgba(61,139,208,.10)" stroke="#3d8bd0" stroke-width="1.5"/>
+<ellipse cx="482" cy="112" rx="226" ry="92" fill="rgba(47,168,142,.12)" stroke="#2fa88e" stroke-width="1.5"/>
+<text x="140" y="74" text-anchor="middle" style="font:500 14px Plex,system-ui,sans-serif;fill:#9cc8ee">知っていること</text>
+<text x="140" y="98" text-anchor="middle" style="${T};fill:#d9e0dd">言語、世界、</text>
+<text x="140" y="116" text-anchor="middle" style="${T};fill:#d9e0dd">技能、千曲の歌</text>
+<text x="140" y="150" text-anchor="middle" style="${T};fill:#7d8d89">→ 性格、文書</text>
+<text x="578" y="74" text-anchor="middle" style="font:500 14px Plex,system-ui,sans-serif;fill:#9fe0cd">覚えていること</text>
+<text x="578" y="98" text-anchor="middle" style="${T};fill:#d9e0dd">人生の瞬間と期間、</text>
+<text x="578" y="116" text-anchor="middle" style="${T};fill:#d9e0dd">感覚の痕跡とともに</text>
+<text x="578" y="150" text-anchor="middle" style="${T};fill:#7d8d89">→ 記憶、このページが数えるもの</text>
+<text x="360" y="96" text-anchor="middle" style="${T};fill:#eef3f1">その世界についての秘密、</text>
+<text x="360" y="114" text-anchor="middle" style="${T};fill:#eef3f1">ある夜に知り、しまってきたもの</text>
+<text x="360" y="140" text-anchor="middle" style="${T};fill:#7d8d89">→ 意図して記憶に</text>`;
+svg.innerHTML=s})();
+
+/* ---- calculator ---- */
+const num=(id,lo,hi,def)=>{let v=parseFloat($("#"+id).value);if(!isFinite(v))v=def;return Math.min(hi,Math.max(lo,v))};
+const REFS=[["現在の Clara のファイル",15.5],["CD 1枚",700],["DVD 1枚",4700],["128 GB のスマートフォン",128000],["2 TB のドライブ",2e6]];
+function calc(){
+ const age=num("age",1,120,53),amn=num("amn",0,10,3),py=num("py",1,1e5,100),cue=num("cue",1,10,1),rem=num("rem",0,100,100)/100,skn=num("skn",0,1e5,3)/1000,res=num("res",.5,4,1);
+ $("#cueV").textContent="×"+cue;$("#remV").textContent=Math.round(rem*100)+" %";$("#resV").textContent="×"+res;
+ const years=Math.max(0,age-amn),N=years*py*cue,Nr=N*rem,Nk=N-Nr;
+ let p=[num("p1",0,100,30),num("p2",0,100,55),num("p3",0,100,15)],sz=[num("s1",0,1e4,.25),num("s2",0,1e4,.9),num("s3",0,1e4,3)];
+ let sum=p[0]+p[1]+p[2],err="";if(sum<=0){p=[30,55,15];sum=100;err="割合をすべて0にはできません。"}else if(Math.abs(sum-100)>.01)err="割合の合計は "+sum+" %です。計算では100 %に換算します。";
+ $("#err").textContent=err;
+ const parts=p.map((pp,i)=>Nr*(pp/sum)*sz[i]*res),known=Nk*skn,total=parts[0]+parts[1]+parts[2]+known;
+ $("#total").textContent=fmtMB(total);
+ $("#totalSub").textContent=`${years%1?years.toFixed(1):fmtN(years)}年 × 年${fmtN(py)}件${cue>1?" × "+cue+"（手がかりあり）":""} = 記憶${fmtN(N)}件、うち感覚の痕跡つき${Math.round(rem*100)} %${res!==1?"、メディア ×"+res:""}`;
+ $("#kN").textContent=fmtN(N);$("#kAvg").textContent=N?fmtMB(total/N):"–";$("#kY").textContent=years?fmtMB(total/years):"–";
+ const cols=["var(--c1)","var(--c2)","var(--c3)","var(--c4)"],vals=[...parts,known];const st=$("#stack");st.innerHTML="";vals.forEach((v,i)=>{const w=total>0?v/total*100:0;if(w>0){const e=document.createElement("i");e.style.width=w+"%";e.style.background=cols[i];e.title=["light","standard","rich","known"][i]+" · "+w.toFixed(1)+" % · "+fmtMB(v);st.appendChild(e)}});
+ const list=REFS.concat([["→ この人生",total]]).sort((a,b)=>a[1]-b[1]);const lo=0,hi=Math.log10(Math.max(2e6,total*2));const bars=$("#bars");bars.innerHTML="";
+ list.forEach(r=>{const me=r[0].startsWith("→");const w=Math.max(1.5,Math.min(100,(Math.log10(Math.max(r[1],1))-lo)/(hi-lo)*100));const b=document.createElement("div");b.className="b"+(me?" me":"");b.innerHTML=`<span></span><span class="t"><i class="f" style="width:${w}%"></i></span><span class="x"></span>`;b.firstChild.textContent=r[0];b.lastChild.textContent=fmtMB(r[1]);bars.appendChild(b)})}
+const SCEN={galton:{age:53,amn:3,py:11,cue:1,rem:100,skn:3,p1:30,s1:.25,p2:55,s2:.9,p3:15,s3:3,res:1},
+ base:{age:53,amn:3,py:100,cue:1,rem:100,skn:3,p1:30,s1:.25,p2:55,s2:.9,p3:15,s3:3,res:1},
+ iceberg:{age:53,amn:3,py:100,cue:1,rem:30,skn:3,p1:30,s1:.25,p2:55,s2:.9,p3:15,s3:3,res:1},
+ cue:{age:53,amn:3,py:100,cue:5,rem:30,skn:3,p1:40,s1:.25,p2:50,s2:.9,p3:10,s3:3,res:1},
+ hsam:{age:53,amn:3,py:365,cue:1,rem:60,skn:3,p1:30,s1:.25,p2:50,s2:.9,p3:20,s3:3,res:1}};
+document.querySelectorAll("#scen button").forEach(b=>b.onclick=()=>{const s=SCEN[b.dataset.s];for(const k in s)$("#"+k).value=s[k];document.querySelectorAll("#scen button").forEach(x=>x.classList.toggle("on",x===b));calc()});
+document.querySelectorAll("#calc input").forEach(i=>i.addEventListener("input",()=>{document.querySelectorAll("#scen button").forEach(x=>x.classList.remove("on"));calc()}));
+calc();
+})();
+</script>
+<script>(function(){const P=document.getElementById("calc");if(!P)return;P.style.position="relative";const LEFT=[".scen",".row"];const b=document.createElement("button");b.type="button";b.className="wbtn";b.textContent="⤢";b.setAttribute("aria-label","シミュレーターをワイド表示で開く");P.appendChild(b);let over=null,order=null,ph=null;function redraw(){window.dispatchEvent(new Event("resize"));const i=P.querySelector("input");if(i)i.dispatchEvent(new Event("input",{bubbles:true}))}function open(){if(over)return;order=[...P.children];ph=document.createComment("sim");P.parentNode.insertBefore(ph,P);over=document.createElement("div");over.className="wover";over.setAttribute("role","dialog");over.setAttribute("aria-modal","true");over.setAttribute("aria-label","シミュレーター、ワイド表示");const wl=document.createElement("div");wl.className="wl";const wr=document.createElement("div");wr.className="wr";for(const c of order){if(c===b)continue;(LEFT.some(s=>c.matches(s))?wl:wr).appendChild(c)}P.classList.add("wpanel");P.appendChild(wl);P.appendChild(wr);const x=document.createElement("button");x.type="button";x.className="wclose";x.innerHTML="&times;";x.setAttribute("aria-label","ワイド表示を閉じる");x.onclick=close;P.appendChild(x);over.appendChild(P);document.body.appendChild(over);document.body.style.overflow="hidden";over.addEventListener("click",e=>{if(e.target===over)close()});setTimeout(()=>{redraw();x.focus()},30)}function close(){if(!over)return;const x=P.querySelector(".wclose");if(x)x.remove();for(const c of order)P.appendChild(c);P.querySelectorAll(":scope>.wl,:scope>.wr").forEach(e=>e.remove());P.classList.remove("wpanel");ph.parentNode.insertBefore(P,ph);ph.remove();over.remove();over=null;document.body.style.overflow="";setTimeout(()=>{redraw();b.focus()},30)}b.addEventListener("click",open);document.addEventListener("keydown",e=>{if(e.key==="Escape"&&over)close()})})();</script>
+<script>(function(){const d=document.querySelector("[data-share]");if(!d)return;const url=(document.querySelector('link[rel=canonical]')||{}).href||location.href.split("#")[0],title=document.title,u=encodeURIComponent(url),t=encodeURIComponent(title);
+const H={x:"https://twitter.com/intent/tweet?url="+u+"&text="+t,linkedin:"https://www.linkedin.com/sharing/share-offsite/?url="+u,bluesky:"https://bsky.app/intent/compose?text="+t+"%20"+u,reddit:"https://www.reddit.com/submit?url="+u+"&title="+t,mail:"mailto:?subject="+t+"&body="+u};
+d.querySelectorAll("[data-net]").forEach(a=>a.href=H[a.dataset.net]);const c=d.querySelector("[data-copy]");c.onclick=async()=>{try{await navigator.clipboard.writeText(url);c.textContent="copied ✓"}catch(e){prompt("このリンクをコピーしてください：",url)}setTimeout(()=>{c.textContent="リンクをコピー";d.open=false},1200)};
+document.addEventListener("click",e=>{if(!d.contains(e.target))d.open=false});document.addEventListener("keydown",e=>{if(e.key==="Escape")d.open=false})})();</script>
+<!-- Visit counter: GoatCounter (no cookies, no personal data). Loaded only on the public site, never from a local copy or another host; it counts page views and referrers, never the files you open. -->
+<script>(function(){if(location.hostname!=="yannsouetre.github.io")return;var s=document.createElement("script");s.async=true;s.src="https://gc.zgo.at/count.js";s.setAttribute("data-goatcounter","https://syanngpt.goatcounter.com/count");document.body.appendChild(s)})();</script>
+</body>
+</html>

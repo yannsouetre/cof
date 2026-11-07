@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>¿Cuánto podría pesar una vida? — recuerdos COF</title>
+<meta name="description" content="¿Cuántos recuerdos autobiográficos tiene una persona y cuántos bytes ocuparían en un archivo? Lo que dice la investigación, una calculadora para probar las hipótesis y lo que implica para un .cof casi exhaustivo.">
+<meta property="og:title" content="¿Cuánto podría pesar una vida?">
+<meta property="og:description" content="Unos pocos miles de recuerdos, unos pocos gigabytes: una hipótesis de trabajo para personajes de IA con pasado.">
+<meta property="og:image" content="https://yannsouetre.github.io/cof/memories/img/og-how-much.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://yannsouetre.github.io/cof/memories/img/og-how-much.jpg">
+<link rel="icon" type="image/svg+xml" href="../builder/icon/cof-icon-dark.svg">
+<style>
+@font-face{font-family:"Michroma";src:url(../clip/fonts/michroma-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Cormorant";src:url(../clip/fonts/cormorant-garamond-latin-500-italic.woff2) format("woff2");font-weight:500;font-style:italic;font-display:swap}
+@font-face{font-family:"Bricolage";src:url(../clip/fonts/bricolage-grotesque-latin-700-normal.woff2) format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Plex";src:url(../clip/fonts/ibm-plex-sans-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Plex";src:url(../clip/fonts/ibm-plex-sans-latin-500-normal.woff2) format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"PlexMono";src:url(../clip/fonts/ibm-plex-mono-latin-500-normal.woff2) format("woff2");font-weight:500;font-display:swap}
+:root{--bg:#0d1312;--night:#070b12;--panel:#18201f;--line:#2a3533;--ink:#eef3f1;--muted:#93a39e;--teal:#4cc2a8;--mint:#bfeee2;--violet:#a98ae8;--col:760px;
+ --c1:#2fa88e;--c2:#8a6ad6;--c3:#c4842a;--c4:#3d8bd0}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.65 Plex,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--teal)}
+img{display:block;max-width:100%}
+.top{display:flex;align-items:center;gap:12px;padding:22px clamp(20px,5vw,64px);font:500 14px/1 PlexMono,monospace;color:var(--mint);letter-spacing:.06em}
+.top img{width:28px;height:28px;border-radius:7px}
+.top a{color:inherit;text-decoration:none}.share{margin-left:auto;position:relative;letter-spacing:0}.share summary{list-style:none;cursor:pointer;font:500 12px/1 PlexMono,monospace;letter-spacing:.06em;color:var(--mint);opacity:.75;padding:6px 8px;border:1px solid transparent;border-radius:8px}.share summary::-webkit-details-marker{display:none}.share summary:hover,.share[open] summary{opacity:1;border-color:rgba(255,255,255,.18)}.share menu{position:absolute;right:0;top:calc(100% + 6px);margin:0;padding:6px;list-style:none;background:#0d1312;border:1px solid rgba(255,255,255,.14);border-radius:10px;min-width:11em;z-index:5;box-shadow:0 8px 24px rgba(0,0,0,.4)}.share menu a,.share menu button{display:block;width:100%;text-align:left;font:500 12px/1 PlexMono,monospace;letter-spacing:.04em;color:#dfe7e4;background:none;border:0;padding:8px 10px;border-radius:6px;text-decoration:none;cursor:pointer}.share menu a:hover,.share menu button:hover{background:rgba(255,255,255,.08);color:#fff}
+.top span{opacity:.7}
+.hero{position:relative;min-height:92vh;display:flex;flex-direction:column;justify-content:flex-start;background:var(--bg) url(img/beach-mirror.jpg) center 100%/cover no-repeat;isolation:isolate;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0 0 -2px 0;background:linear-gradient(90deg,rgba(7,11,18,.46) 0%,rgba(7,11,18,.22) 30%,rgba(7,11,18,0) 50%),linear-gradient(180deg,rgba(13,19,18,0) 58%,rgba(13,19,18,.45) 78%,rgba(13,19,18,.85) 92%,rgba(13,19,18,1) 100%),linear-gradient(176deg,rgba(7,11,18,.82) 0%,rgba(7,11,18,.52) 28%,rgba(7,11,18,.22) 50%,rgba(7,11,18,.07) 72%,rgba(7,11,18,.05) 100%);z-index:-1}
+.hero .text{padding:clamp(84px,13vh,130px) clamp(20px,5vw,64px) 0;max-width:1200px}
+.hero .kicker{position:absolute;right:clamp(20px,5vw,64px);top:24px;font:400 11px/1 Michroma,sans-serif;letter-spacing:.3em;color:var(--mint);opacity:.85}
+h1{font:400 clamp(20px,3.2vw,40px)/1.3 Michroma,sans-serif;letter-spacing:.2em;text-transform:uppercase;margin:0 0 18px;color:#ece8e0;text-shadow:0 2px 24px rgba(0,0,0,.7)}
+.rule{width:88px;height:1px;background:var(--mint);opacity:.8;margin:0 0 18px}
+.voice{font:500 clamp(21px,2.4vw,30px)/1.3 Cormorant,Georgia,serif;color:#e4dfd6;margin:0;max-width:720px;text-shadow:0 1px 14px rgba(0,0,0,.7)}
+.voice small{display:block;font:500 13px/1 PlexMono,monospace;color:var(--mint);letter-spacing:.06em;margin-top:14px;font-style:normal}
+main{max-width:var(--col);margin:0 auto;padding:48px 20px 40px}
+.lede{font-size:clamp(20px,2.2vw,24px);line-height:1.5;color:var(--ink);margin:0 0 28px}
+p{margin:0 0 22px;color:#d9e0dd}
+h2{font:400 clamp(16px,2vw,20px)/1.4 Michroma,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--mint);margin:84px 0 22px;padding-top:28px;border-top:1px solid var(--line)}
+h3{font:500 21px/1.3 Plex,sans-serif;margin:34px 0 10px;color:var(--ink)}
+code{font:500 .88em PlexMono,monospace;color:var(--teal)}
+.cap{font-size:14px;color:var(--muted);margin:10px 0 30px}
+.quote{font:500 clamp(22px,2.6vw,29px)/1.3 Cormorant,Georgia,serif;color:#e4dfd6;margin:40px 0;padding-left:22px;border-left:2px solid var(--violet)}
+.quote cite{display:block;font:500 13px/1 PlexMono,monospace;color:var(--muted);font-style:normal;margin-top:12px;letter-spacing:.04em}
+/* stat tiles */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:26px 0 8px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 16px 14px}
+.tile b{display:block;font:700 30px/1 Bricolage,sans-serif;color:var(--ink);letter-spacing:-.02em;margin-bottom:8px}
+.tile span{font-size:13.5px;color:var(--muted);line-height:1.4;display:block}
+.tile.hi{border-color:var(--teal)}
+.tile.hi b{color:var(--teal)}
+/* figures */
+figure{margin:30px 0 10px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px 18px 12px}
+figure svg{display:block;width:100%;height:auto;font-family:Plex,system-ui,sans-serif}
+figcaption{font-size:14px;color:var(--muted);margin:10px 2px 0}
+.ax{stroke:#2f3b39;stroke-width:1}
+.tk{font:500 12px PlexMono,monospace;fill:#7d8d89}
+.lab{font:400 14.5px Plex,sans-serif;fill:#d9e0dd}
+.sub{font:500 12px PlexMono,monospace;fill:#97a7a3}
+.val{font:500 13px PlexMono,monospace;fill:#bfeee2}
+/* comparison list */
+.cmp{margin:26px 0 8px;padding:0;list-style:none;border-top:1px solid var(--line)}
+.cmp li{padding:14px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:170px 1fr;gap:18px;font-size:16px}
+.cmp li span{font:500 13px/1.6 PlexMono,monospace;color:var(--mint);letter-spacing:.04em}
+.cmp li em{font-style:normal;color:var(--muted)}
+/* table */
+table{width:100%;border-collapse:collapse;font-size:15px;margin:22px 0 8px}
+th{text-align:left;font:500 12px PlexMono,monospace;color:var(--mint);letter-spacing:.06em;text-transform:uppercase;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:10px 10px;border-bottom:1px solid var(--line);vertical-align:top;color:#d9e0dd}
+td:first-child{color:var(--ink)}
+td.n{font:500 14px PlexMono,monospace;color:var(--teal);white-space:nowrap}
+@media(max-width:520px){td.n{white-space:normal}}
+/* calculator */
+.calc{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;margin:28px 0 10px}
+.calc .row{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.calc fieldset{border:1px solid var(--line);border-radius:12px;padding:12px 14px 14px;margin:0 0 14px;min-width:0}
+.calc legend{font:500 12px PlexMono,monospace;color:var(--mint);letter-spacing:.06em;text-transform:uppercase;padding:0 6px}
+/* wide view of the simulator (Yann, 7 Nov.): the panel moves into a full-width overlay, controls left, results right; the cross or Escape puts it back */
+.wbtn{position:absolute;top:10px;right:10px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font:500 16px/1 PlexMono,monospace;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:0;cursor:pointer}.scen{padding-right:44px}.wbtn:hover,.wbtn:focus-visible{color:var(--teal);border-color:var(--teal);outline:none}
+.wover{position:fixed;inset:0;z-index:60;background:rgba(5,8,12,.78);backdrop-filter:blur(6px);overflow:auto;padding:3vh 3vw;display:flex;align-items:flex-start;justify-content:center}
+.wover .wpanel{width:min(1560px,94vw);margin:auto;display:grid;grid-template-columns:minmax(360px,5fr) minmax(0,7fr);gap:26px;align-items:start;padding:26px 28px 24px;position:relative}
+.wover .wpanel .row{grid-template-columns:1fr}.wover .wpanel .wl,.wover .wpanel .wr{min-width:0}.wover .wpanel .wbtn{display:none}
+.wclose{position:absolute;top:10px;right:12px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:500 20px/1 Plex,sans-serif;cursor:pointer}.wclose:hover,.wclose:focus-visible{border-color:var(--teal);color:var(--teal);outline:none}
+@media (max-width:1000px){.wover .wpanel{grid-template-columns:1fr}}
+
+.calc label{display:block;font-size:13.5px;color:var(--muted);margin:8px 0 3px}
+.calc label b{color:var(--ink);font-weight:500}
+.calc input[type=number]{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:500 14px PlexMono,monospace}
+.calc input[type=range]{width:100%;accent-color:var(--teal)}
+.calc .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.calc .g3>div{display:flex;flex-direction:column;justify-content:flex-end}
+.calc .mix{display:grid;grid-template-columns:1fr 70px 80px;gap:8px;align-items:center;font-size:13.5px;color:var(--muted)}
+.calc .mix .h{font:500 11px PlexMono,monospace;color:#6d7d79;letter-spacing:.04em;text-transform:uppercase;align-self:end;padding-bottom:2px}
+.calc .mix i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:7px;vertical-align:-1px}
+.calc .mix small{display:block;font-size:12px;color:#6d7d79}
+.calc .hint{font-size:12.5px;color:#6d7d79;margin:6px 0 0}
+.calc .err{font-size:12.5px;color:#f07a72;min-height:16px;margin-top:4px}
+.res{background:linear-gradient(135deg,#102a25,#0f1d2b);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:12px}
+.res .t{font:700 44px/1 Bricolage,sans-serif;color:var(--ink);letter-spacing:-.02em}
+.res .s{font-size:13.5px;color:var(--muted);margin-top:8px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.kpi{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.kpi b{display:block;font:700 20px/1.1 Bricolage,sans-serif;color:var(--ink)}
+.kpi span{font-size:12px;color:var(--muted)}
+.stack{display:flex;height:22px;border-radius:7px;overflow:hidden;gap:2px;background:var(--bg)}
+.stack i{display:block;height:100%;transition:width .3s}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--muted);margin:8px 0 0}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.bars .b{display:grid;grid-template-columns:150px 1fr 76px;gap:10px;align-items:center;font-size:13px;color:var(--muted);margin:6px 0}
+.bars .b .t{height:12px;background:var(--bg);border-radius:4px;overflow:hidden}
+.bars .b .f{display:block;height:100%;background:#3a4a47;border-radius:0 4px 4px 0}
+.bars .b.me{color:var(--teal)}
+.bars .b.me .f{background:var(--teal)}
+.bars .b .x{text-align:right;font:500 12px PlexMono,monospace}
+.scen{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+.scen button{font:500 13px Plex,sans-serif;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer}
+.scen button:hover,.scen button.on{border-color:var(--teal);color:var(--teal)}
+/* targets */
+.targets{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:26px 0 8px}
+.targets div{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.targets b{display:block;font:700 28px/1 Bricolage,sans-serif;color:var(--teal);margin-bottom:6px}
+.targets span{font-size:14px;color:var(--muted)}
+/* tools / buttons */
+.btns{display:flex;flex-wrap:wrap;gap:12px;margin:34px 0 0}
+.btn{display:inline-block;padding:13px 20px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);text-decoration:none;font-weight:500}
+.btn:hover,.btn:focus-visible{border-color:var(--teal);outline:none}
+.btn.main{background:var(--teal);border-color:var(--teal);color:#05201b}
+.refs{font-size:14px;color:var(--muted);columns:1}
+.refs p{margin:0 0 8px;color:var(--muted)}
+footer{max-width:var(--col);margin:72px auto 0;padding:18px 20px 48px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+footer a{color:var(--muted)}
+footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:-.02em;margin-bottom:6px}
+@media (max-width:720px){.hero{min-height:78vh}.top span:last-child{display:none}.tiles{grid-template-columns:1fr 1fr}.calc .row{grid-template-columns:1fr}.targets{grid-template-columns:1fr}.cmp li{grid-template-columns:1fr;gap:4px}.bars .b{grid-template-columns:110px 1fr 70px}h1{letter-spacing:.12em}}
+.top .langs{margin-left:auto;display:flex;gap:2px;letter-spacing:.04em}.top .langs a{font:500 11px/1 PlexMono,monospace;color:var(--mint);opacity:.6;padding:6px 6px;border-radius:6px;border:1px solid transparent}.top .langs a:hover{opacity:1}.top .langs a.on{opacity:1;color:var(--teal);border-color:rgba(255,255,255,.18)}.top .share{margin-left:0}@media (max-width:640px){.top{flex-wrap:wrap;row-gap:6px}.top .share{margin-left:auto}.top .langs{order:9;flex-basis:100%;margin-left:0;gap:4px;padding-left:40px}.top .langs a{padding:5px 6px;font-size:10px}}@media (max-width:480px){.top>span:not(.crumb){display:none}}</style>
+<link rel="canonical" href="https://yannsouetre.github.io/cof/memories/how-much.es.html">
+<link rel="alternate" hreflang="en" href="https://yannsouetre.github.io/cof/memories/how-much.html">
+<link rel="alternate" hreflang="fr" href="https://yannsouetre.github.io/cof/memories/how-much.fr.html">
+<link rel="alternate" hreflang="de" href="https://yannsouetre.github.io/cof/memories/how-much.de.html">
+<link rel="alternate" hreflang="es" href="https://yannsouetre.github.io/cof/memories/how-much.es.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://yannsouetre.github.io/cof/memories/how-much.zh.html">
+<link rel="alternate" hreflang="ja" href="https://yannsouetre.github.io/cof/memories/how-much.ja.html">
+<link rel="alternate" hreflang="x-default" href="https://yannsouetre.github.io/cof/memories/how-much.html">
+</head>
+<body>
+<section class="hero">
+  <div class="top" style="position:absolute;top:0;left:0;right:0"><img src="../builder/icon/cof-icon-dark.svg" alt=""><a href="../">COF</a><span>·</span><a href="index.es.html">recuerdos</a><span>·</span><span>¿cuánto podría pesar una vida?</span><nav class="langs" aria-label="Language"><a href="how-much.html" hreflang="en" lang="en">EN</a><a href="how-much.fr.html" hreflang="fr" lang="fr">FR</a><a href="how-much.de.html" hreflang="de" lang="de">DE</a><a href="how-much.es.html" hreflang="es" lang="es" class="on" aria-current="page">ES</a><a href="how-much.zh.html" hreflang="zh" lang="zh">ZH</a><a href="how-much.ja.html" hreflang="ja" lang="ja">JA</a></nav><details class="share" data-share><summary aria-label="Compartir esta página">compartir ↗</summary><menu><li><button type="button" data-copy>copiar enlace</button></li><li><a data-net="x" target="_blank" rel="noopener">X / Twitter</a></li><li><a data-net="linkedin" target="_blank" rel="noopener">LinkedIn</a></li><li><a data-net="bluesky" target="_blank" rel="noopener">Bluesky</a></li><li><a data-net="reddit" target="_blank" rel="noopener">Reddit</a></li><li><a data-net="mail">Correo</a></li></menu></details></div>
+  <div class="text">
+  <h1>¿Cuánto podría<br>pesar una vida?</h1>
+  <div class="rule"></div>
+  <p class="voice">“De ese año podría contarte quizá cien cosas. El resto, sé que pasó.”<small>CLARA MERCIER · SI SE LO PREGUNTARAS</small></p>
+  </div>
+</section>
+
+<main>
+<p class="lede">COF da un pasado a los personajes de IA. La siguiente pregunta evidente es el tamaño de un pasado: ¿cuántos <b>recuerdos autobiográficos</b> tiene una persona — los momentos de su propia vida, no los conocimientos acumulados — y cuántos bytes ocuparían si cada uno se escribiera con sus huellas sensoriales? Nadie ha medido ninguna de las dos cosas. Esta página expone lo que la investigación sí sabe, propone una hipótesis de trabajo, te deja probar la tuya y saca la consecuencia para un archivo que contuviera una vida entera.</p>
+
+<div class="tiles">
+  <div class="tile hi"><b>cientos</b><span>momentos de tu vida que puedes enumerar sin ayuda, según la propia estimación de Galton — y diez veces más con pistas como fotos</span></div>
+  <div class="tile hi"><b>≈ 5000</b><span>la hipótesis de trabajo para un personaje: unos cien recuerdos al año, durante cincuenta años</span></div>
+  <div class="tile hi"><b>≈ 1 MB</b><span>el peso medio de un recuerdo revivido: unas líneas de texto, unas pocas imágenes o sonidos</span></div>
+  <div class="tile hi"><b>≈ 5 GB</b><span>cinco mil recuerdos a un megabyte aproximadamente cada uno — lo que pesaría todo un pasado en un archivo</span></div>
+</div>
+<p class="cap">Órdenes de magnitud, no mediciones. Cada cifra de esta página dice de dónde procede.</p>
+
+<h2>Cuántos recuerdos autobiográficos, según la investigación</h2>
+<p>Francis Galton fue el primero en plantear la pregunta, en 1879, mientras experimentaba con sus propias asociaciones: ¿cuántos episodios de mi propia vida soy capaz de evocar? (No lo que sabía — latín, los nombres de las plantas, las calles de Londres —, sino lo que le había ocurrido). Su respuesta — los episodios que habían escapado al olvido se contaban <em>por cientos o por miles</em>, desde luego no por millones — se ha sostenido durante siglo y medio. El único intento de medirlo directamente (Crovitz &amp; Schiffman, 1974; integrado por Crovitz, Schiffman &amp; Apter, 1991) presentó palabras como pistas, fechó cada recuerdo, ajustó una ley de potencia a la manera en que los recuerdos escasean con la antigüedad y la integró: <b>224 episodios accesibles para los veinte años anteriores a la prueba</b>, un límite inferior en la parte baja del rango de Galton; Dudai, al revisarlo, señala que la función ajustada muy probablemente subestima el total. Los diarios cuentan la otra cara de la historia: Willem Wagenaar anotó unos 2400 acontecimientos en seis años — aproximadamente uno al día, a propósito — y, cuando se puso a prueba, alrededor de una quinta parte parecía haberse perdido; pero con las pistas adecuadas, no pudo afirmar que hubiera olvidado por completo ningún acontecimiento. El reconocimiento llega aún más lejos: las personas reconocen miles de imágenes vistas una sola vez (Standing, 1973). La revisión de Yadin Dudai (1997) resume la escala en una línea: la evocación de los episodios esenciales se cuenta por <b>miles</b>, el reconocimiento alcanza un orden de magnitud más, y si hubieras guardado un episodio al día tendrías 25 000 a los setenta años.</p>
+
+<figure id="ladder"><svg viewBox="0 0 760 300" role="img" aria-label="Estimaciones del número de recuerdos autobiográficos, en escala logarítmica"></svg>
+<figcaption>Estimaciones de cuántos recuerdos autobiográficos tiene una persona, en escala logarítmica. Las barras son rangos; la hipótesis de trabajo de esta página se sitúa entre lo que se enumera sin ayuda y lo que las pistas devuelven.</figcaption></figure>
+
+<p>Así que cien recuerdos al año no es una medición, pero es una posición defendible: es el extremo superior de lo que contó Galton, una cuarta parte de lo que Wagenaar consideró digno de anotar y el orden de magnitud que da Dudai para los episodios esenciales. En cincuenta años son unos <b>cinco mil</b> — la cifra que mantendrá esta página. Con pistas, multiplica por cinco o por diez; con una memoria excepcional (los casos de HSAM estudiados por LePort y sus colegas recuerdan casi cada día), por mucho más.</p>
+
+<h3>No se reparten por igual a lo largo de una vida</h3>
+<p>Dos cosas determinan dónde se sitúan los recuerdos. Casi nada sobrevive de antes de los tres o cuatro años (amnesia infantil). Y una parte desproporcionada procede de los años entre los diez y los treinta — el pico de reminiscencia, el hallazgo más replicado del campo (Rubin &amp; Schulkind, 1997). Después, los años de rutina dejan pocos recuerdos distintos, hasta los últimos años, que siguen frescos. Los nueve recuerdos que Clara Mercier — el personaje de ejemplo ficticio que acompaña a COF, cuyo archivo (dieciséis recuerdos en total) sirve de referencia para todas las cifras de esta página — conserva a los 65 años siguen precisamente ese perfil; es también lo que deberían seguir los presets de un personaje, y por eso el preset de infancia de Clara guarda un recuerdo donde su yo de 65 años guarda nueve.</p>
+
+<figure id="life"><svg viewBox="0 0 720 240" role="img" aria-label="Distribución de los recuerdos a lo largo de la vida, con los nueve recuerdos de Clara a los 65 años marcados"></svg>
+<figcaption>El perfil típico (cualitativo, según Rubin &amp; Schulkind) y, como puntos, las edades de los nueve recuerdos que Clara conserva a los 65 años en el archivo de ejemplo: la casa de su abuela a los 8, los años en la agencia de los 24 a los 28, el estudio a los 28, el marciano y el sueño a los 29, la boda a los 31, y luego 56, 60 y 63.</figcaption></figure>
+
+<h2>Dos maneras de recordar — y lo que pesa</h2>
+<p>No todos los recuerdos autobiográficos son del mismo tipo. Endel Tulving distinguió <em>recordar</em> — viajar atrás, con imágenes, un sonido, la sensación de un lugar — de <em>saber</em>: ser capaz de decir que algo ocurrió, y contarlo, sin volver a verlo. Lo primero depende sobre todo de la imaginería visual (Rubin, Schrauf &amp; Greenberg, 2003); las personas sin imágenes mentales evocan su propio pasado con menos detalles y menos seguridad (Monzel et al., 2024), y en el raro trastorno llamado SDAM una persona conoce los hechos de su vida pero no puede revivir ninguno (Palombo et al., 2015). El oído viene en segundo lugar. El olfato es especial: los recuerdos evocados por olores son más antiguos, más raros, más intensos y se revisitan menos (Willander &amp; Larsson, 2006). Del tacto no hay ninguna cifra.</p>
+<p>Esto importa para el peso, porque <b>solo los recuerdos revividos llevan huellas sensoriales</b>, y solo las huellas sensoriales pesan algo. Un recuerdo sabido son unas líneas de texto: kilobytes. Uno revivido es una imagen o tres, quizá un sonido, quizá unos segundos de película: de cientos de kilobytes a unos pocos megabytes. Ningún estudio mide la proporción de cada uno; deducir que la mayor parte de una vida se sabe más que se revive es razonable, no está demostrado. La calculadora de abajo convierte esa proporción en un control deslizante.</p>
+
+<h3>¿Y las mil canciones que te sabes?</h3>
+<p>La música parece la excepción. La mayoría de las personas pueden reproducir mentalmente cientos de piezas, algunas casi nota por nota, y un músico profesional tiene un repertorio que empequeñecería la cifra anterior. Dos cosas que dice la investigación hacen que encaje. Primero, una canción conocida no es un recuerdo autobiográfico: es un conocimiento, almacenado junto con el vocabulario y los rostros que uno reconoce, y sobrevive cuando la memoria episódica se va — las regiones cerebrales que guardan la música conocida desde hace tiempo están entre las últimas que se conservan en la enfermedad de Alzheimer avanzada (Jacobsen et al., 2015). La tarde en que bailaste con ella es el recuerdo; la canción es aquello a lo que apunta el recuerdo. Segundo, una canción se almacena como estructura, no como sonido: melodía, ritmo y letra, fijados a una tonalidad y un tempo sorprendentemente exactos (la mayoría de las personas canta grabaciones conocidas en la altura original o cerca de ella, a menos de dos semitonos, y la mayoría a menos de un 8 % del tempo original — Levitin, 1994; Levitin &amp; Cook, 1996), y el resto se regenera a partir de una gramática aprendida de tonalidad y métrica (Huron, 2006; Pearce, 2018). Por eso un músico recuerda una pieza estructurada mucho mejor que las mismas notas desordenadas (Halpern &amp; Bower, 1982), y por eso una canción se comprime mucho mejor que una tarde: una melodía con su letra son unos pocos kilobytes de símbolos, un megabyte solo como grabación. En un archivo, pues, una pieza musical es una referencia — un título, unos compases, una huella de diez segundos como el río por la noche — ligada a los recuerdos a los que pertenece, no mil grabaciones. La envolvente de abajo no se mueve.</p>
+<figure id="know"><svg viewBox="0 0 720 230" role="img" aria-label="Lo que un personaje sabe y lo que recuerda: dos conjuntos que se solapan"></svg>
+<figcaption>Lo que un personaje <i>sabe</i> y lo que <i>recuerda</i> son dos almacenes distintos, con un pequeño solapamiento que un autor puede usar a propósito.</figcaption></figure>
+<p class="cap">Lo mismo vale para el conocimiento en general: los recuerdos de COF son autobiográficos por diseño — momentos y periodos de la vida de un personaje — y el conocimiento que un personaje tiene de su mundo vive en su personalidad y sus documentos. Nada impide a un autor escribir un conocimiento como un recuerdo cuando la historia lo pide (un secreto sobre su mundo que solo tiene el personaje, aprendido una noche y guardado), pero no es lo que cuenta esta página.</p>
+
+<h3>La misma forma que el archivo</h3>
+<p>El modelo de memoria autobiográfica de Martin Conway (Conway &amp; Pleydell-Pearce, 2000) la describe en tres niveles: <em>periodos vitales</em>, <em>acontecimientos generales</em> y <em>conocimiento específico del acontecimiento</em> — los detalles sensoriales y perceptivos que hacen vívido un momento. Un archivo COF contiene los mismos tres: periodos, momentos y los medios ligados a un momento. La correspondencia no se diseñó; surgió de preguntarse qué necesita una herramienta. Aun así, tranquiliza.</p>
+<ul class="cmp">
+  <li><span>periodos vitales</span><div>los años en la agencia, los años de la guerra de las IA — <em>un <code>period</code> COF, con su intervalo</em></div></li>
+  <li><span>acontecimientos generales</span><div>la primera mañana en el estudio, la tarde en el muelle — <em>un <code>moment</code> COF, con su resumen, cuándo, dónde, con quién</em></div></li>
+  <li><span>conocimiento específico del acontecimiento</span><div>la luz sobre la mesa, el sonido del río — <em>los <code>media</code> del momento: una imagen, un sonido, un clip, unas frases recordadas</em></div></li>
+</ul>
+
+<h2>Lo que pesa un recuerdo, medido</h2>
+<p>El único conjunto de recuerdos que existe en el formato es el de Clara: dieciséis nodos, treinta y un medios, escritos para el ejemplo 1.1. En lugar de adivinar, esto es lo que pesan en el archivo. Sus imágenes son en su mayoría JPEG de 1248 × 832 — alrededor de un megapíxel, el tamaño que producen hoy los generadores; su único clip dura diez segundos a 480p; su único sonido, diez segundos.</p>
+<table>
+  <tr><th>Recuerdo, tal como lo guarda el archivo</th><th>Qué lleva</th><th>Peso</th></tr>
+  <tr><td>Los años en la agencia (un periodo)</td><td>resúmenes en dos idiomas, fechas, sentido entonces / hoy — sin medios</td><td class="n">1,3 KB</td></tr>
+  <tr><td>Nuestra boda</td><td>una imagen</td><td class="n">290 KB</td></tr>
+  <tr><td>La casa de mi abuela</td><td>tres imágenes, el río por la noche (10 s), unas frases recordadas</td><td class="n">870 KB</td></tr>
+  <tr><td>El sueño de las ovejas eléctricas</td><td>tres imágenes, un clip de diez segundos con su póster</td><td class="n">1,1 MB</td></tr>
+  <tr><td><b>Los dieciséis</b></td><td>14 momentos con medios, 2 periodos sin ellos</td><td class="n">5,2 MB · media 330 KB</td></tr>
+</table>
+<p class="cap">Medido en <code>spec/examples/10-clara-mercier</code>, COF 1.1. El personaje completo, con sus rostros, su voz y sus clips de movimiento, pesa 21 MB descomprimido — 15,5 MB como <code>.cof</code>.</p>
+<figure id="spread"><svg viewBox="0 0 760 250" role="img" aria-label="Lo que pesa un recuerdo: una distribución asimétrica en escala logarítmica, de un kilobyte a decenas de megabytes, con una media de alrededor de un megabyte y los dieciséis recuerdos de Clara marcados"></svg>
+<figcaption>Lo que pesa un recuerdo, tal como esperamos que se distribuya — <b>una extrapolación, no una medición</b>: unos pocos kilobytes para un recuerdo contado en palabras, unos cientos para uno con imagen, decenas de megabytes para un clip largo. La cola de los vídeos lleva la media a alrededor de un megabyte, aunque la mayoría de los recuerdos pesan mucho menos. Los dieciséis de Clara son los puntos.</figcaption></figure>
+<p>En la práctica, pues, un recuerdo con una imagen es un cuarto de megabyte; uno rico, con tres imágenes y un clip, es un megabyte. Triplica la resolución — una foto de teléfono en lugar de una generada, 1080p en lugar de 480p — y los mismos recuerdos pesan el triple. <b>Un megabyte por recuerdo revivido</b> es, por tanto, una media razonable con los tamaños actuales, con un factor de tres arriba o abajo según cuánto conserves.</p>
+
+<h2>Prueba tus propias cifras</h2>
+<p>Cada supuesto anterior es aquí un control. Los valores por defecto son la hipótesis de trabajo: cien recuerdos al año desde los tres años, todos revividos en lugar de simplemente sabidos, con una mezcla de medios ligeros, estándar y ricos dimensionados según el archivo de Clara y escalados a calidad de teléfono. Cambia lo que quieras.</p>
+
+<div class="calc" id="calc">
+  <div class="scen" id="scen">
+    <button data-s="galton">El mínimo de Galton</button>
+    <button data-s="base" class="on">Hipótesis de trabajo</button>
+    <button data-s="iceberg">Casi todo solo sabido</button>
+    <button data-s="cue">Exhaustivo, con pistas</button>
+    <button data-s="hsam">Memoria excepcional</button>
+  </div>
+  <div class="row">
+    <div>
+      <fieldset><legend>Cuántos</legend>
+        <div class="g3">
+          <div><label>Edad</label><input id="age" type="number" min="1" max="120" value="53"></div>
+          <div><label>Primer recuerdo, a los</label><input id="amn" type="number" min="0" max="10" step="0.5" value="3"></div>
+          <div><label>Recuerdos al año</label><input id="py" type="number" min="1" max="100000" value="100"></div>
+        </div>
+        <label>Con pistas y reconocidos, además de los espontáneos: <b id="cueV">×1</b></label>
+        <input id="cue" type="range" min="1" max="10" step="0.5" value="1">
+        <p class="hint">×1 = lo que uno enumera sin ayuda. ×5–×10 = lo que devuelven las fotos, los lugares y los olores, y lo que uno reconocería.</p>
+      </fieldset>
+      <fieldset><legend>Revivido o sabido</legend>
+        <label>Proporción <b>revivida</b> — con huellas sensoriales: <b id="remV">100 %</b></label>
+        <input id="rem" type="range" min="0" max="100" step="5" value="100">
+        <label>Un recuerdo <b>sabido</b>, solo palabras (KB)</label><input id="skn" type="number" min="0" step="0.5" value="3">
+        <p class="hint">Ningún estudio mide esta proporción. La mayor parte de una vida probablemente se sabe más que se revive; el valor por defecto lo considera todo revivido, que es el caso más pesado.</p>
+      </fieldset>
+    </div>
+    <div>
+      <fieldset><legend>Lo que lleva un recuerdo revivido</legend>
+        <div class="mix">
+          <div class="h">recuerdo</div><div class="h">% del total</div><div class="h">MB cada uno</div>
+          <div><i style="background:var(--c1)"></i>Ligero<small>una imagen</small></div><input id="p1" type="number" min="0" max="100" value="30"><input id="s1" type="number" min="0" step="0.05" value="0.25">
+          <div><i style="background:var(--c2)"></i>Estándar<small>tres imágenes, un sonido, unas frases</small></div><input id="p2" type="number" min="0" max="100" value="55"><input id="s2" type="number" min="0" step="0.05" value="0.9">
+          <div><i style="background:var(--c3)"></i>Rico<small>imágenes y un clip, calidad de teléfono</small></div><input id="p3" type="number" min="0" max="100" value="15"><input id="s3" type="number" min="0" step="0.05" value="3">
+        </div>
+        <div class="err" id="err" aria-live="polite"></div>
+        <label>Factor de resolución: <b id="resV">×1</b></label>
+        <input id="res" type="range" min="0.5" max="4" step="0.5" value="1">
+        <p class="hint">×1 = los tamaños de Clara (imágenes de 1 MP, clips a 480p). ×3 ≈ las fotos de un teléfono y 1080p.</p>
+      </fieldset>
+    </div>
+  </div>
+  <div class="res" aria-live="polite"><div class="s">Los recuerdos de una vida, en un archivo</div><div class="t" id="total">–</div><div class="s" id="totalSub">–</div></div>
+  <div class="kpis"><div class="kpi"><b id="kN">–</b><span>recuerdos</span></div><div class="kpi"><b id="kAvg">–</b><span>de media, cada uno</span></div><div class="kpi"><b id="kY">–</b><span>por año vivido</span></div></div>
+  <div class="stack" id="stack"></div>
+  <div class="legend"><span><i style="background:var(--c1)"></i>ligero</span><span><i style="background:var(--c2)"></i>estándar</span><span><i style="background:var(--c3)"></i>rico</span><span><i style="background:var(--c4)"></i>sabido, solo palabras</span></div>
+  <div class="bars" id="bars" style="margin-top:18px"></div>
+  <p class="hint" style="margin-top:10px">Escala logarítmica. 1 GB = 1000 MB. El archivo de Clara es el ejemplo 1.1 tal como se publicó.</p>
+</div>
+
+<h2>Lo que implica para un archivo</h2>
+<p>Si se toma en serio la hipótesis de trabajo, la envolvente de un personaje <em>casi exhaustivo</em> — los recuerdos autobiográficos de toda una vida, con los tamaños de medios actuales — es de unos pocos gigabytes. No es un problema. Es un DVD, un pequeño porcentaje de un teléfono. El formato ya lo gestiona: un <code>.cof</code> es un contenedor ZIP (se acepta zip64) cuyas dos primeras entradas lo identifican y contienen el manifiesto, de modo que un lector sabe qué hay dentro antes de extraer nada; los medios se extraen bajo demanda; el builder señala un recuerdo con más de tres imágenes, y un vídeo de más de 20 MB tiene que confirmarse en su recuerdo. El resto de un personaje — referencias, muestras de voz, un modelo 3D, clips de movimiento — pesa mucho menos que su pasado.</p>
+<div class="targets">
+  <div><b>≈ 5 GB</b><span><b>recuerdos.</b> Unos cinco mil con huellas sensoriales a un megabyte cada uno — o muchos más si la mayoría se saben en lugar de revivirse. El orden de magnitud que proponemos para un personaje casi exhaustivo.</span></div>
+  <div><b>≤ 1 GB</b><span><b>todo lo demás.</b> Rostros y referencias, voz, 3D, movimiento, documentos. Los de Clara pesan hoy 16 MB descomprimidos; un personaje con referencias de calidad cinematográfica y varias voces se queda por debajo de un gigabyte.</span></div>
+</div>
+<p class="cap">Una envolvente de trabajo, no una regla del formato: COF no pone ningún límite a un archivo. Es aquello para lo que una plataforma podría planificar: un personaje completo cabe en un teléfono, con espacio de sobra.</p>
+
+<h2>Una pregunta abierta: un recuerdo como espacio latente</h2>
+<p>Hay una manera más profunda de plantear la pregunta. Una mente humana no archiva su pasado como cinco mil documentos. Los recuerdos se reconstruyen a partir de huellas dispersas, cada evocación tiñe la siguiente, y el conjunto se sostiene en pesos de conexión — un espacio latente, en el vocabulario actual — donde lo que se parece a qué es la estructura misma. Si se pudieran reunir, reconstruir o escribir los recuerdos de toda una vida, la forma más fiel para ellos quizá no sería un archivo en absoluto: podría ser un modelo, un conjunto de pesos entrenado con ellos, en el que cada vínculo entre recuerdos existe sin estar declarado. Es un programa de investigación en sí mismo, y uno fascinante.</p>
+<p>Conviene tener claro lo que costaría. Los pesos son opacos: no se pueden abrir para leer un recuerdo. No se pueden editar recuerdo a recuerdo. Y no pueden olvidar de forma fiable — eliminar un ejemplo de entrenamiento de un modelo es un problema sin resolver (Bourtoule et al., 2021), lo que significa que no se podría respetar a una persona real que retirara su consentimiento, ni a un usuario que pidiera purgar un recuerdo personal. Todo lo que COF se construyó para garantizar — leer, editar, purgar, llevarse los propios datos — vive en el archivo.</p>
+<p>El cerebro, por cierto, no elige. La explicación estándar (McClelland, McNaughton &amp; O'Reilly, 1995) habla de dos sistemas complementarios: un almacén episódico rápido que guarda por separado los acontecimientos del día, y uno cortical lento que los integra con el tiempo en una estructura general; la consolidación es el entrenamiento. Un archivo y un espacio latente, uno al lado del otro, uno alimentando al otro. COF ya contiene ambos tipos de cosas para los rostros — imágenes de referencia junto a la LoRA entrenada con ellas — y el mismo patrón sirve para los recuerdos: el grafo como fuente de verdad y, a su lado, una <em>consolidación</em> — un adaptador entrenado con los recuerdos — derivada, regenerable, descartada y reconstruida cuando el archivo cambia, de modo que una purga se respeta reentrenando y no confiando en la suerte.</p>
+<p>Así que este es el estudio que nos gustaría que alguien hiciera. Tomar unos pocos miles de recuerdos — escritos para un personaje ficticio, o reconstruidos con consentimiento a partir de una vida real —, entrenar un adaptador con ellos y medir tres cosas: si el modelo recupera los enlaces que declara el grafo (<em>después</em>, <em>porque</em>, <em>sobre</em>) sin que se le digan; si encuentra enlaces que el autor no declaró y que un lector aceptaría; y si reentrenar tras una purga no deja rastro de lo eliminado. Hoy existe un primer paso más barato: un embedding por recuerdo, un índice vectorial llevado como archivo derivado — un espacio latente que aún se puede leer de vuelta hasta su fuente. Si las respuestas son buenas, la forma definitiva de la memoria de un personaje bien podría ser un modelo. Seguirá necesitando su archivo, por la misma razón por la que nosotros necesitamos el nuestro: para poder decir qué pasó.</p>
+
+<div class="btns">
+  <a class="btn main" href="index.es.html">Volver al anuncio</a>
+  <a class="btn" href="../viewer/#clara/memories">Abrir los recuerdos de Clara</a>
+  <a class="btn" href="https://github.com/yannsouetre/cof/blob/main/rfcs/0002-memories.md">Leer la RFC 0002</a>
+</div>
+
+<h2>Fuentes</h2>
+<div class="refs">
+  <p>Galton, F. (1879). Psychometric experiments. <i>Brain</i>, 2, 149–162; (1883) <i>Inquiries into Human Faculty and its Development</i>.</p>
+  <p>Crovitz, H. F. &amp; Schiffman, H. (1974). Frequency of episodic memories as a function of their age. <i>Bulletin of the Psychonomic Society</i>, 4, 517–518.</p>
+  <p>Crovitz, H. F., Schiffman, H. &amp; Apter, A. (1991). Galton's number. <i>Bulletin of the Psychonomic Society</i>, 29(4), 331–332.</p>
+  <p>Dudai, Y. (1997). How big is human memory, or on being just useful enough. <i>Learning &amp; Memory</i>, 3, 341–365 — la revisión que recoge los 224 de Crovitz y el cálculo de uno al día.</p>
+  <p>Wagenaar, W. A. (1986). My memory: a study of autobiographical memory over six years. <i>Cognitive Psychology</i>, 18, 225–252.</p>
+  <p>Linton, M. (1978). Real world memory after six years. En Gruneberg, Morris &amp; Sykes (eds.), <i>Practical Aspects of Memory</i>.</p>
+  <p>Standing, L. (1973). Learning 10 000 pictures. <i>Quarterly Journal of Experimental Psychology</i>, 25, 207–222.</p>
+  <p>Rubin, D. C. &amp; Schulkind, M. D. (1997). The distribution of autobiographical memories across the lifespan. <i>Memory &amp; Cognition</i>, 25, 859–866.</p>
+  <p>Tulving, E. (1985). Memory and consciousness. <i>Canadian Psychology</i>, 26, 1–12.</p>
+  <p>Conway, M. A. &amp; Pleydell-Pearce, C. W. (2000). The construction of autobiographical memories in the self-memory system. <i>Psychological Review</i>, 107, 261–288.</p>
+  <p>Rubin, D. C., Schrauf, R. W. &amp; Greenberg, D. L. (2003). Belief and recollection of autobiographical memories. <i>Memory &amp; Cognition</i>, 31, 887–901.</p>
+  <p>Willander, J. &amp; Larsson, M. (2006). Smell your way back to childhood: autobiographical odor memory. <i>Psychonomic Bulletin &amp; Review</i>, 13, 240–244.</p>
+  <p>Palombo, D. J. et al. (2015). Severely deficient autobiographical memory (SDAM) in healthy adults. <i>Neuropsychologia</i>, 72, 105–118.</p>
+  <p>LePort, A. K. R. et al. (2016). Highly superior autobiographical memory: quality and quantity of retention over time. <i>Frontiers in Psychology</i>, 6, 2017.</p>
+  <p>Monzel, M. et al. (2024). Hippocampal-occipital connectivity reflects autobiographical memory deficits in aphantasia. <i>eLife</i>, 13.</p>
+  <p>Levitin, D. J. (1994). Absolute memory for musical pitch: evidence from the production of learned melodies. <i>Perception &amp; Psychophysics</i>, 56, 414–423.</p>
+  <p>Levitin, D. J. &amp; Cook, P. R. (1996). Memory for musical tempo: additional evidence that auditory memory is absolute. <i>Perception &amp; Psychophysics</i>, 58, 927–935.</p>
+  <p>Halpern, A. R. &amp; Bower, G. H. (1982). Musical expertise and melodic structure in memory for musical notation. <i>American Journal of Psychology</i>, 95, 31–50.</p>
+  <p>Jacobsen, J.-H. et al. (2015). Why musical memory can be preserved in advanced Alzheimer's disease. <i>Brain</i>, 138, 2438–2450.</p>
+  <p>Huron, D. (2006). <i>Sweet Anticipation: Music and the Psychology of Expectation</i>. MIT Press.</p>
+  <p>Pearce, M. T. (2018). Statistical learning and probabilistic prediction in music cognition: mechanisms of stylistic enculturation. <i>Annals of the New York Academy of Sciences</i>, 1423, 378–395.</p>
+  <p>McClelland, J. L., McNaughton, B. L. &amp; O'Reilly, R. C. (1995). Why there are complementary learning systems in the hippocampus and neocortex. <i>Psychological Review</i>, 102, 419–457.</p>
+  <p>Bourtoule, L. et al. (2021). Machine unlearning. <i>IEEE Symposium on Security and Privacy</i>.</p>
+</div>
+</main>
+
+<footer>
+  <div class="mark">COF</div>
+  Character Open File — un formato abierto para personajes de IA, con sus derechos. Una hipótesis de trabajo, octubre de 2026; las cifras son órdenes de magnitud y dicen de dónde proceden. Clara Mercier es un personaje de ejemplo ficticio. <a href="https://github.com/yannsouetre/cof">Código fuente en GitHub</a> · <a href="index.es.html">El anuncio de los recuerdos</a>
+</footer>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const fmtN=n=>Math.round(n).toLocaleString("en-US").replace(/,/g,"\u202f");
+function fmtMB(mb){if(!isFinite(mb)||mb<=0)return "0 MB";if(mb<1)return (mb*1000).toLocaleString("en-US",{maximumFractionDigits:0})+" KB";if(mb<1000)return mb.toLocaleString("en-US",{maximumFractionDigits:mb<10?1:0})+" MB";if(mb<1e6)return (mb/1000).toLocaleString("en-US",{maximumFractionDigits:mb<1e4?2:1})+" GB";return (mb/1e6).toLocaleString("en-US",{maximumFractionDigits:2})+" TB"}
+
+/* ---- figure 1: the ladder (log scale) ---- */
+(function(){
+const svg=$("#ladder svg");const W=760,L=300,R=720,y0=34,dy=36;
+const rows=[
+ {lab:"El número de Galton, medido",sub:"Crovitz et al. 1991 · 20 años, con pistas",lo:224,hi:224},
+ {lab:"Estimación del propio Galton",sub:"1879 · «cientos o miles»",lo:300,hi:3000},
+ {lab:"Los acontecimientos de un diario",sub:"Wagenaar 1986 · 6 años, uno al día",lo:2402,hi:2402},
+ {lab:"Hipótesis de trabajo",sub:"100 al año · 50 años",lo:5000,hi:5000,me:true},
+ {lab:"Con pistas, y reconocidos",sub:"Dudai 1997 · diez veces más",lo:10000,hi:50000},
+ {lab:"Un episodio al día",sub:"Dudai 1997 · más de 70 años",lo:25000,hi:25000},
+ {lab:"Uno por hora",sub:"el techo de los episodios vividos",lo:400000,hi:400000}];
+const lg=v=>Math.log10(v),x=v=>L+(lg(v)-2)*(R-L)/4;
+let s="";
+for(const t of [100,1000,10000,100000,1000000]){s+=`<line class="ax" x1="${x(t)}" y1="${y0-14}" x2="${x(t)}" y2="${y0+rows.length*dy-8}"/><text class="tk" x="${x(t)}" y="${y0-20}" text-anchor="middle">${t>=1e6?"1 M":t>=1000?(t/1000)+" k":t}</text>`}
+rows.forEach((r,i)=>{const y=y0+i*dy;const col=r.me?"#a98ae8":"#2fa88e";const x1=x(r.lo),x2=x(r.hi);
+ s+=`<text class="lab" x="${L-14}" y="${y+4}" text-anchor="end"${r.me?' style="fill:#cbbcf0"':""}>${r.lab}</text><text class="sub" x="${L-14}" y="${y+18}" text-anchor="end">${r.sub}</text>`;
+ if(r.lo===r.hi)s+=`<circle cx="${x1}" cy="${y}" r="6" fill="${col}"/>`;else s+=`<rect x="${x1}" y="${y-5}" width="${x2-x1}" height="10" rx="4" fill="${col}" opacity=".85"/>`;
+ s+=`<text class="val" x="${x2+10}" y="${y+4}">${r.lo===r.hi?fmtN(r.lo):fmtN(r.lo)+"–"+fmtN(r.hi)}</text>`});
+s+=`<text class="sub" x="${(L+R)/2}" y="${y0+rows.length*dy+10}" text-anchor="middle">recuerdos · escala logarítmica</text>`;
+svg.innerHTML=s})();
+
+/* ---- figure 2: over a life, with Clara at 65 ---- */
+(function(){
+const svg=$("#life svg");const W=720,L=40,R=700,yb=190,yt=44;
+const x=a=>L+a*(R-L)/70;
+// qualitative profile: amnesia, bump 10–30, routine, recency
+const pts=[[0,0],[3,.02],[6,.25],[10,.6],[14,.9],[18,1],[22,.95],[26,.82],[30,.62],[36,.42],[42,.33],[48,.3],[54,.31],[58,.37],[62,.55],[66,.78],[70,.92]];
+const y=v=>yb-v*(yb-yt);
+const P=pts.map(p=>[x(p[0]),y(p[1])]);let d="M"+P[0][0].toFixed(1)+" "+P[0][1].toFixed(1);
+for(let i=0;i<P.length-1;i++){const p0=P[Math.max(0,i-1)],p1=P[i],p2=P[i+1],p3=P[Math.min(P.length-1,i+2)];
+ const c1=[p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6],c2=[p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6];
+ d+=` C${c1[0].toFixed(1)} ${c1[1].toFixed(1)} ${c2[0].toFixed(1)} ${c2[1].toFixed(1)} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`}
+let s=`<line class="ax" x1="${L}" y1="${yb}" x2="${R}" y2="${yb}"/><path d="${d} L${x(70)} ${yb} L${x(0)} ${yb} Z" fill="rgba(47,168,142,.12)"/><path d="${d}" fill="none" stroke="#2fa88e" stroke-width="2"/>`;
+for(const a of [0,10,20,30,40,50,60,70])s+=`<text class="tk" x="${x(a)}" y="${yb+16}" text-anchor="middle">${a}</text>`;
+s+=`<text class="sub" x="${x(1)}" y="${y(.9)}">amnesia</text><text class="sub" x="${x(1)}" y="${y(.82)}">infantil</text><text class="sub" x="${x(18)}" y="${yt-8}" text-anchor="middle">pico de reminiscencia</text><text class="sub" x="${x(47)}" y="${y(.1)}" text-anchor="middle">años de rutina</text><text class="sub" x="${x(62)}" y="${y(.78)}" text-anchor="end">recencia</text>`;
+// Clara at 65: ages of her nine memories (period 24–28 as a bar)
+const clara=[8,28,29,29,31,56,60,63];
+s+=`<rect x="${x(24)}" y="${yb+28}" width="${x(28)-x(24)}" height="6" rx="3" fill="#8a6ad6" opacity=".9"/>`;
+const seen={};clara.forEach(a=>{seen[a]=(seen[a]||0)+1;s+=`<circle cx="${x(a)}" cy="${yb+31-(seen[a]-1)*9}" r="4.5" fill="#8a6ad6"/>`});
+s+=`<text class="sub" x="${R}" y="${yb+50}" text-anchor="end" style="fill:#cbbcf0">Clara a los 65 · sus nueve recuerdos, por edad</text><text class="sub" x="${L}" y="${yb+34}">edad</text>`;
+svg.innerHTML=s})();
+
+/* ---- figure 2 bis: the spread of a memory's weight (log-normal, log scale) — an extrapolation anchored on Clara ---- */
+(function(){
+const svg=$("#spread svg");const W=760,L=56,R=724,T=44,B=196;
+const CLARA=[1199,1296,185503,201880,210097,210130,254314,279786,281601,289470,289773,298056,313412,404367,867036,1135131];   // bytes per node: memory.json + its media (example 10)
+const med=300e3,mean=1e6;const mu=Math.log(med),sg=Math.sqrt(2*Math.log(mean/med));   // log-normal: median 300 KB, mean 1 MB (the page's hypothesis)
+const lo=1e3,hi=1e8;const x=v=>L+(Math.log10(v)-3)*(R-L)/5;
+const pdf=v=>Math.exp(-((Math.log(v)-mu)**2)/(2*sg*sg))/(v*sg*Math.sqrt(2*Math.PI))*v;   // density per log-unit (what a log axis shows)
+let top=0;const pts=[];for(let i=0;i<=200;i++){const v=lo*Math.pow(hi/lo,i/200);const d=pdf(v);top=Math.max(top,d);pts.push([v,d])}
+const y=d=>B-(d/top)*(B-T);
+let path="";pts.forEach(([v,d],i)=>{path+=(i?"L":"M")+x(v).toFixed(1)+" "+y(d).toFixed(1)+" "});
+let s=`<path d="${path}L${R} ${B} L${L} ${B}Z" fill="rgba(47,168,142,.14)"/><path d="${path}" fill="none" stroke="#2fa88e" stroke-width="2"/>`;
+for(const [v,l] of [[1e3,"1 KB"],[1e4,"10 KB"],[1e5,"100 KB"],[1e6,"1 MB"],[1e7,"10 MB"],[1e8,"100 MB"]])s+=`<line class="ax" x1="${x(v)}" y1="${B}" x2="${x(v)}" y2="${B+6}"/><text class="tk" x="${x(v)}" y="${B+22}" text-anchor="middle">${l}</text>`;
+s+=`<line class="ax" x1="${L}" y1="${B}" x2="${R}" y2="${B}"/>`;
+const mark=(v,lab,col,dyl,anchor)=>{s+=`<line x1="${x(v)}" y1="${T-26}" x2="${x(v)}" y2="${B}" stroke="${col}" stroke-width="1.2" stroke-dasharray="4 4"/><text x="${x(v)+(anchor==="end"?-6:6)}" y="${dyl}" text-anchor="${anchor||"start"}" style="font:500 13px Plex,system-ui,sans-serif;fill:${col}">${lab}</text>`};
+mark(med,"median · 300 KB","#9fe0cd",16,"end");mark(mean,"mean · 1 MB","#a98ae8",16,"start");
+s+=`<text class="sub" x="${x(2e3)}" y="${B-10}" style="fill:#7d8d89">un recuerdo en palabras</text><text class="sub" x="${x(2.2e7)}" y="${B-10}" style="fill:#7d8d89">un clip largo</text>`;
+CLARA.forEach(v=>{s+=`<circle cx="${x(v)}" cy="${B-7}" r="4.5" fill="#c4842a" opacity=".9"><title>${(v/1e3).toFixed(0)} KB</title></circle>`});
+s+=`<text class="sub" x="${(L+R)/2}" y="${B+42}" text-anchor="middle">peso de un recuerdo · escala logarítmica · puntos: los dieciséis de Clara</text>`;
+svg.innerHTML=s})();
+
+/* ---- figure 3: knowledge vs autobiographical memory ---- */
+(function(){
+const svg=$("#know svg");const T='font:400 13px Plex,system-ui,sans-serif';
+const s=`
+<ellipse cx="238" cy="112" rx="226" ry="92" fill="rgba(61,139,208,.10)" stroke="#3d8bd0" stroke-width="1.5"/>
+<ellipse cx="482" cy="112" rx="226" ry="92" fill="rgba(47,168,142,.12)" stroke="#2fa88e" stroke-width="1.5"/>
+<text x="140" y="74" text-anchor="middle" style="font:500 14px Plex,system-ui,sans-serif;fill:#9cc8ee">lo que sabe</text>
+<text x="140" y="98" text-anchor="middle" style="${T};fill:#d9e0dd">su idioma, su mundo,</text>
+<text x="140" y="116" text-anchor="middle" style="${T};fill:#d9e0dd">sus destrezas, las mil canciones</text>
+<text x="140" y="150" text-anchor="middle" style="${T};fill:#7d8d89">→ personalidad, documentos</text>
+<text x="578" y="74" text-anchor="middle" style="font:500 14px Plex,system-ui,sans-serif;fill:#9fe0cd">lo que recuerda</text>
+<text x="578" y="98" text-anchor="middle" style="${T};fill:#d9e0dd">momentos y periodos de su vida,</text>
+<text x="578" y="116" text-anchor="middle" style="${T};fill:#d9e0dd">con sus huellas sensoriales</text>
+<text x="578" y="150" text-anchor="middle" style="${T};fill:#7d8d89">→ recuerdos, lo que cuenta esta página</text>
+<text x="360" y="96" text-anchor="middle" style="${T};fill:#eef3f1">un secreto sobre su mundo,</text>
+<text x="360" y="114" text-anchor="middle" style="${T};fill:#eef3f1">aprendido una noche y guardado</text>
+<text x="360" y="140" text-anchor="middle" style="${T};fill:#7d8d89">→ un recuerdo, por elección</text>`;
+svg.innerHTML=s})();
+
+/* ---- calculator ---- */
+const num=(id,lo,hi,def)=>{let v=parseFloat($("#"+id).value);if(!isFinite(v))v=def;return Math.min(hi,Math.max(lo,v))};
+const REFS=[["El archivo de Clara hoy",15.5],["Un CD",700],["Un DVD",4700],["Un teléfono de 128 GB",128000],["Un disco de 2 TB",2e6]];
+function calc(){
+ const age=num("age",1,120,53),amn=num("amn",0,10,3),py=num("py",1,1e5,100),cue=num("cue",1,10,1),rem=num("rem",0,100,100)/100,skn=num("skn",0,1e5,3)/1000,res=num("res",.5,4,1);
+ $("#cueV").textContent="×"+cue;$("#remV").textContent=Math.round(rem*100)+" %";$("#resV").textContent="×"+res;
+ const years=Math.max(0,age-amn),N=years*py*cue,Nr=N*rem,Nk=N-Nr;
+ let p=[num("p1",0,100,30),num("p2",0,100,55),num("p3",0,100,15)],sz=[num("s1",0,1e4,.25),num("s2",0,1e4,.9),num("s3",0,1e4,3)];
+ let sum=p[0]+p[1]+p[2],err="";if(sum<=0){p=[30,55,15];sum=100;err="Las proporciones no pueden ser todas cero."}else if(Math.abs(sum-100)>.01)err="Las proporciones suman "+sum+" %; se escalan al 100 % para el cálculo.";
+ $("#err").textContent=err;
+ const parts=p.map((pp,i)=>Nr*(pp/sum)*sz[i]*res),known=Nk*skn,total=parts[0]+parts[1]+parts[2]+known;
+ $("#total").textContent=fmtMB(total);
+ $("#totalSub").textContent=`${years%1?years.toFixed(1):fmtN(years)} años × ${fmtN(py)} al año${cue>1?" × "+cue+" (con pistas)":""} = ${fmtN(N)} recuerdos, ${Math.round(rem*100)} % de ellos con huellas sensoriales${res!==1?", medios ×"+res:""}`;
+ $("#kN").textContent=fmtN(N);$("#kAvg").textContent=N?fmtMB(total/N):"–";$("#kY").textContent=years?fmtMB(total/years):"–";
+ const cols=["var(--c1)","var(--c2)","var(--c3)","var(--c4)"],vals=[...parts,known];const st=$("#stack");st.innerHTML="";vals.forEach((v,i)=>{const w=total>0?v/total*100:0;if(w>0){const e=document.createElement("i");e.style.width=w+"%";e.style.background=cols[i];e.title=["light","standard","rich","known"][i]+" · "+w.toFixed(1)+" % · "+fmtMB(v);st.appendChild(e)}});
+ const list=REFS.concat([["→ esta vida",total]]).sort((a,b)=>a[1]-b[1]);const lo=0,hi=Math.log10(Math.max(2e6,total*2));const bars=$("#bars");bars.innerHTML="";
+ list.forEach(r=>{const me=r[0].startsWith("→");const w=Math.max(1.5,Math.min(100,(Math.log10(Math.max(r[1],1))-lo)/(hi-lo)*100));const b=document.createElement("div");b.className="b"+(me?" me":"");b.innerHTML=`<span></span><span class="t"><i class="f" style="width:${w}%"></i></span><span class="x"></span>`;b.firstChild.textContent=r[0];b.lastChild.textContent=fmtMB(r[1]);bars.appendChild(b)})}
+const SCEN={galton:{age:53,amn:3,py:11,cue:1,rem:100,skn:3,p1:30,s1:.25,p2:55,s2:.9,p3:15,s3:3,res:1},
+ base:{age:53,amn:3,py:100,cue:1,rem:100,skn:3,p1:30,s1:.25,p2:55,s2:.9,p3:15,s3:3,res:1},
+ iceberg:{age:53,amn:3,py:100,cue:1,rem:30,skn:3,p1:30,s1:.25,p2:55,s2:.9,p3:15,s3:3,res:1},
+ cue:{age:53,amn:3,py:100,cue:5,rem:30,skn:3,p1:40,s1:.25,p2:50,s2:.9,p3:10,s3:3,res:1},
+ hsam:{age:53,amn:3,py:365,cue:1,rem:60,skn:3,p1:30,s1:.25,p2:50,s2:.9,p3:20,s3:3,res:1}};
+document.querySelectorAll("#scen button").forEach(b=>b.onclick=()=>{const s=SCEN[b.dataset.s];for(const k in s)$("#"+k).value=s[k];document.querySelectorAll("#scen button").forEach(x=>x.classList.toggle("on",x===b));calc()});
+document.querySelectorAll("#calc input").forEach(i=>i.addEventListener("input",()=>{document.querySelectorAll("#scen button").forEach(x=>x.classList.remove("on"));calc()}));
+calc();
+})();
+</script>
+<script>(function(){const P=document.getElementById("calc");if(!P)return;P.style.position="relative";const LEFT=[".scen",".row"];const b=document.createElement("button");b.type="button";b.className="wbtn";b.textContent="⤢";b.setAttribute("aria-label","Abrir el simulador en vista amplia");P.appendChild(b);let over=null,order=null,ph=null;function redraw(){window.dispatchEvent(new Event("resize"));const i=P.querySelector("input");if(i)i.dispatchEvent(new Event("input",{bubbles:true}))}function open(){if(over)return;order=[...P.children];ph=document.createComment("sim");P.parentNode.insertBefore(ph,P);over=document.createElement("div");over.className="wover";over.setAttribute("role","dialog");over.setAttribute("aria-modal","true");over.setAttribute("aria-label","Simulador, vista amplia");const wl=document.createElement("div");wl.className="wl";const wr=document.createElement("div");wr.className="wr";for(const c of order){if(c===b)continue;(LEFT.some(s=>c.matches(s))?wl:wr).appendChild(c)}P.classList.add("wpanel");P.appendChild(wl);P.appendChild(wr);const x=document.createElement("button");x.type="button";x.className="wclose";x.innerHTML="&times;";x.setAttribute("aria-label","Cerrar la vista amplia");x.onclick=close;P.appendChild(x);over.appendChild(P);document.body.appendChild(over);document.body.style.overflow="hidden";over.addEventListener("click",e=>{if(e.target===over)close()});setTimeout(()=>{redraw();x.focus()},30)}function close(){if(!over)return;const x=P.querySelector(".wclose");if(x)x.remove();for(const c of order)P.appendChild(c);P.querySelectorAll(":scope>.wl,:scope>.wr").forEach(e=>e.remove());P.classList.remove("wpanel");ph.parentNode.insertBefore(P,ph);ph.remove();over.remove();over=null;document.body.style.overflow="";setTimeout(()=>{redraw();b.focus()},30)}b.addEventListener("click",open);document.addEventListener("keydown",e=>{if(e.key==="Escape"&&over)close()})})();</script>
+<script>(function(){const d=document.querySelector("[data-share]");if(!d)return;const url=(document.querySelector('link[rel=canonical]')||{}).href||location.href.split("#")[0],title=document.title,u=encodeURIComponent(url),t=encodeURIComponent(title);
+const H={x:"https://twitter.com/intent/tweet?url="+u+"&text="+t,linkedin:"https://www.linkedin.com/sharing/share-offsite/?url="+u,bluesky:"https://bsky.app/intent/compose?text="+t+"%20"+u,reddit:"https://www.reddit.com/submit?url="+u+"&title="+t,mail:"mailto:?subject="+t+"&body="+u};
+d.querySelectorAll("[data-net]").forEach(a=>a.href=H[a.dataset.net]);const c=d.querySelector("[data-copy]");c.onclick=async()=>{try{await navigator.clipboard.writeText(url);c.textContent="copied ✓"}catch(e){prompt("Copia este enlace:",url)}setTimeout(()=>{c.textContent="copiar enlace";d.open=false},1200)};
+document.addEventListener("click",e=>{if(!d.contains(e.target))d.open=false});document.addEventListener("keydown",e=>{if(e.key==="Escape")d.open=false})})();</script>
+<!-- Visit counter: GoatCounter (no cookies, no personal data). Loaded only on the public site, never from a local copy or another host; it counts page views and referrers, never the files you open. -->
+<script>(function(){if(location.hostname!=="yannsouetre.github.io")return;var s=document.createElement("script");s.async=true;s.src="https://gc.zgo.at/count.js";s.setAttribute("data-goatcounter","https://syanngpt.goatcounter.com/count");document.body.appendChild(s)})();</script>
+</body>
+</html>

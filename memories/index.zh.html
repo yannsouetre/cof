@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 角色如今有了记忆 — COF 1.1</title>
+<meta name="description" content="COF 如今为 AI 角色赋予过去：一生中的时刻与时期，当时的感受，藏在心里不说的事，渐渐褪去的往事——与它们的面孔、声音和权利存放在同一个开放文件里。">
+<meta property="og:title" content="AI 角色如今有了记忆">
+<meta property="og:description" content="有过去的角色，就有缘由。COF 1.1——记忆，存放在一个开放文件里。">
+<meta property="og:image" content="https://yannsouetre.github.io/cof/memories/img/og-memories.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://yannsouetre.github.io/cof/memories/img/og-memories.jpg">
+<link rel="icon" type="image/svg+xml" href="../builder/icon/cof-icon-dark.svg">
+<style>
+@font-face{font-family:"Michroma";src:url(../clip/fonts/michroma-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Cormorant";src:url(../clip/fonts/cormorant-garamond-latin-500-italic.woff2) format("woff2");font-weight:500;font-style:italic;font-display:swap}
+@font-face{font-family:"Bricolage";src:url(../clip/fonts/bricolage-grotesque-latin-700-normal.woff2) format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Plex";src:url(../clip/fonts/ibm-plex-sans-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Plex";src:url(../clip/fonts/ibm-plex-sans-latin-500-normal.woff2) format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"PlexMono";src:url(../clip/fonts/ibm-plex-mono-latin-500-normal.woff2) format("woff2");font-weight:500;font-display:swap}
+:root{--bg:#0d1312;--night:#070b12;--panel:#18201f;--line:#2a3533;--ink:#eef3f1;--muted:#93a39e;--teal:#4cc2a8;--mint:#bfeee2;--violet:#a98ae8;--col:760px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.65 Plex,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--teal)}
+img{display:block;max-width:100%}
+
+/* hero: the image, the sentence, the voice */
+.hero{position:relative;min-height:92vh;display:flex;flex-direction:column;justify-content:flex-start;background:var(--night) url(img/electric-sheep.jpg) center 70%/cover no-repeat;isolation:isolate}
+.hero::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,11,18,.78) 0%,rgba(7,11,18,.55) 26%,rgba(7,11,18,0) 48%,rgba(7,11,18,0) 78%,rgba(13,19,18,1) 100%);z-index:-1}
+.hero .top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:12px;padding:22px clamp(20px,5vw,64px);font:500 14px/1 PlexMono,monospace;color:var(--mint);letter-spacing:.06em}
+.hero .top img{width:28px;height:28px;border-radius:7px}
+.hero .top a{color:inherit;text-decoration:none}.share{margin-left:auto;position:relative;letter-spacing:0}.share summary{list-style:none;cursor:pointer;font:500 12px/1 PlexMono,monospace;letter-spacing:.06em;color:var(--mint);opacity:.75;padding:6px 8px;border:1px solid transparent;border-radius:8px}.share summary::-webkit-details-marker{display:none}.share summary:hover,.share[open] summary{opacity:1;border-color:rgba(255,255,255,.18)}.share menu{position:absolute;right:0;top:calc(100% + 6px);margin:0;padding:6px;list-style:none;background:#0d1312;border:1px solid rgba(255,255,255,.14);border-radius:10px;min-width:11em;z-index:5;box-shadow:0 8px 24px rgba(0,0,0,.4)}.share menu a,.share menu button{display:block;width:100%;text-align:left;font:500 12px/1 PlexMono,monospace;letter-spacing:.04em;color:#dfe7e4;background:none;border:0;padding:8px 10px;border-radius:6px;text-decoration:none;cursor:pointer}.share menu a:hover,.share menu button:hover{background:rgba(255,255,255,.08);color:#fff}
+.hero .top span{opacity:.7}
+.hero .text{padding:clamp(84px,13vh,130px) clamp(20px,5vw,64px) 0;max-width:1200px}
+h1{font:400 clamp(21px,3.6vw,46px)/1.25 Michroma,sans-serif;letter-spacing:.22em;text-transform:uppercase;margin:0 0 18px;color:#ecE8e0;text-shadow:0 2px 24px rgba(0,0,0,.6)}
+.hero .rule{width:88px;height:1px;background:var(--mint);opacity:.8;margin:0 0 18px}
+.voice{font:500 clamp(22px,2.6vw,32px)/1.3 Cormorant,Georgia,serif;color:#e4dfd6;margin:0;max-width:720px}
+.voice small{display:block;font:500 14px/1 PlexMono,monospace;color:var(--mint);letter-spacing:.06em;margin-top:14px;font-style:normal}
+.hero .kicker{position:absolute;right:clamp(20px,5vw,64px);bottom:22px;font:400 11px/1 Michroma,sans-serif;letter-spacing:.3em;color:var(--mint);opacity:.85}
+
+/* reading column */
+main{max-width:var(--col);margin:0 auto;padding:72px 20px 40px}
+.lede{font-size:clamp(21px,2.3vw,25px);line-height:1.5;color:var(--ink);margin:0 0 28px}
+p{margin:0 0 22px;color:#d9e0dd}
+h2{font:400 clamp(17px,2vw,21px)/1.4 Michroma,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--mint);margin:84px 0 22px;padding-top:28px;border-top:1px solid var(--line)}
+h3{font:500 22px/1.3 Plex,sans-serif;margin:34px 0 10px;color:var(--ink)}
+.quote{font:500 clamp(24px,2.8vw,32px)/1.3 Cormorant,Georgia,serif;color:#e4dfd6;margin:40px 0;padding-left:22px;border-left:2px solid var(--violet)}
+.quote cite{display:block;font:500 13px/1 PlexMono,monospace;color:var(--muted);font-style:normal;margin-top:12px;letter-spacing:.04em}
+code{font:500 .88em PlexMono,monospace;color:var(--teal)}
+
+/* the memory card: Clara's first memory, as the file holds it */
+.memory{display:grid;grid-template-columns:200px 1fr;gap:0;background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;margin:32px 0 10px}
+.memory img{width:100%;height:100%;object-fit:cover;filter:saturate(.85)}
+.memory .body{padding:20px 22px}
+.memory .gist{font:500 19px/1.45 Cormorant,Georgia,serif;font-size:21px;color:#e8e3da;margin:0 0 16px}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:5px 14px;font-size:14px;margin:0}
+.facts dt{color:var(--muted);font:500 12px/1.9 PlexMono,monospace;letter-spacing:.04em}
+.facts dd{margin:0;color:var(--ink)}
+.facts dd b{color:var(--teal);font-weight:500}
+.cap{font-size:14px;color:var(--muted);margin:0 0 30px}
+
+/* full-bleed figure */
+.wide{width:min(1180px,calc(100vw - 40px));margin:36px auto 30px;position:relative;left:50%;transform:translateX(-50%)}
+.wide img{border-radius:18px;border:1px solid var(--line);background:#121917;width:100%}
+.wide figcaption{max-width:calc(var(--col) - 40px);margin:14px auto 0;font-size:14px;color:var(--muted)}
+
+/* axes: three small statements, no cards */
+.axes{margin:26px 0 8px;padding:0;list-style:none;border-top:1px solid var(--line)}
+.axes li{padding:16px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:150px 1fr;gap:18px;font-size:16px}
+.axes li span{font:500 13px/1.6 PlexMono,monospace;color:var(--mint);letter-spacing:.04em}
+.axes li em{font-style:normal;color:var(--muted)}
+
+/* tools */
+.tools{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:26px 0 8px}
+.tools a{display:block;padding:16px 18px;border:1px solid var(--line);border-radius:14px;color:inherit;text-decoration:none;background:var(--panel)}
+.tools a:hover,.tools a:focus-visible{border-color:var(--teal);outline:none}
+.tools b{display:block;font-weight:500;color:var(--teal);margin-bottom:4px}
+.tools span{font-size:14px;color:var(--muted)}
+
+/* closing */
+.close{margin:96px auto 0;max-width:var(--col);padding:0 20px}
+.close .voice{color:#e4dfd6;max-width:none}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin:34px 0 0}.btns.row3 .btn{padding:13px 16px;white-space:nowrap}
+.btn{display:inline-block;padding:13px 20px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);text-decoration:none;font-weight:500}
+.btn:hover,.btn:focus-visible{border-color:var(--teal);outline:none}
+.btn.main{background:var(--teal);border-color:var(--teal);color:#05201b}
+footer{max-width:var(--col);margin:72px auto 0;padding:18px 20px 48px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+footer a{color:var(--muted)}
+footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:-.02em;margin-bottom:6px}
+
+/* the memories graph: SVG built from data, animated on arrival, one memory in focus at a time */
+.graph .gwrap{overflow-x:auto;border-radius:18px;border:1px solid var(--line);background:linear-gradient(180deg,#121917 0%,#0e1514 100%)}
+.graph svg{display:block;width:100%;min-width:760px;font-family:Plex,system-ui,sans-serif}
+.graph .axis{stroke:#2f3b39;stroke-width:1.5}
+.graph .axis-head{fill:#2f3b39}
+.graph .tick{font:500 11px PlexMono,monospace;fill:#5f6f6b}
+.graph .period rect{fill:rgba(169,138,232,.10);stroke:rgba(169,138,232,.55);stroke-width:1}
+.graph .period text{font:500 13px Plex,sans-serif;fill:#cbbcf0}
+.graph .period .sub{font:500 11px PlexMono,monospace;fill:#9f8cd0}
+.graph .link{fill:none;stroke:var(--teal);stroke-width:1.6;stroke-dasharray:5 5;opacity:.75}
+.graph .link.about{stroke-dasharray:2 5;stroke-linecap:round}
+.graph .linklab{font:500 11px PlexMono,monospace;fill:var(--mint);letter-spacing:.04em}
+.graph .thread{fill:none;stroke:#2f3b39;stroke-width:1.1;transition:stroke .3s,opacity .3s}
+.graph .thread.hot{stroke:var(--teal);opacity:.9}
+.graph .mem{cursor:pointer}
+.graph .mem .ring{fill:#0b100f;stroke:var(--teal);stroke-width:2;transition:stroke-width .3s,filter .3s}
+.graph .mem image{transition:filter .4s}
+.graph .mem .lab{font:500 14px Plex,sans-serif;fill:var(--ink);text-anchor:middle}
+.graph .mem .sub{font:400 11.5px Plex,sans-serif;fill:var(--muted);text-anchor:middle}
+.graph .mem .node{transform-box:fill-box;transform-origin:center;transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.graph .mem.on .node{transform:scale(1.22)}
+.graph .mem.on .ring{stroke-width:3;filter:drop-shadow(0 0 10px rgba(76,194,168,.55))}
+.graph .mem.dim image{filter:saturate(.5) brightness(.75)}
+.graph .person circle{fill:#1b2624;stroke:#3a4a47;stroke-width:1.2;transition:stroke .3s}
+.graph .person text{font:500 12px Plex,sans-serif;fill:#c7d1ce;text-anchor:middle}
+.graph .person .ini{font:500 13px PlexMono,monospace;fill:var(--mint)}
+.graph .person.hot circle{stroke:var(--teal)}
+.graph .place .frame{fill:#0b100f;stroke:#3a4a47;stroke-width:1.2}
+.graph .place text{font:400 11.5px Plex,sans-serif;fill:var(--muted);text-anchor:middle}
+.graph .lane{font:500 11px PlexMono,monospace;fill:#5f6f6b;letter-spacing:.06em}
+/* arrival */
+.graph .in{opacity:0;transition:opacity .6s ease}
+.graph.live .in{opacity:1}
+.graph .draw{stroke-dasharray:600;stroke-dashoffset:600;transition:stroke-dashoffset 1.4s ease}
+.graph.live .draw{stroke-dashoffset:0}
+/* focus card */
+.focus{display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:center;max-width:calc(var(--col) - 40px);margin:18px auto 0;min-height:120px;transition:opacity .35s}
+.focus.fade{opacity:0}
+.focus img{width:120px;height:120px;object-fit:cover;border-radius:14px;border:1px solid var(--line)}
+.focus .gist{font:500 20px/1.4 Cormorant,Georgia,serif;color:#e8e3da;margin:0 0 8px}
+.focus .meta{font:500 12px/1.7 PlexMono,monospace;color:var(--muted);margin:0;letter-spacing:.03em}
+.focus .meta b{color:var(--teal);font-weight:500}
+@media (max-width:640px){.focus{grid-template-columns:84px 1fr}.focus img{width:84px;height:84px}.focus .gist{font-size:17px}}
+@media (prefers-reduced-motion:reduce){.graph .in,.graph .draw{transition:none;opacity:1;stroke-dashoffset:0}.graph .mem .node{transition:none}.focus{transition:none}}
+
+@media (max-width:640px){
+  .hero{min-height:78vh}
+  h1{letter-spacing:.14em}
+  .memory{grid-template-columns:1fr}
+  .memory img{height:200px}
+  .axes li{grid-template-columns:1fr;gap:4px}
+  .tools{grid-template-columns:1fr}
+  main{padding-top:52px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .hero .text{animation:rise 1.1s ease-out both}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+}
+.top .langs{margin-left:auto;display:flex;gap:2px;letter-spacing:.04em}.top .langs a{font:500 11px/1 PlexMono,monospace;color:var(--mint);opacity:.6;padding:6px 6px;border-radius:6px;border:1px solid transparent}.top .langs a:hover{opacity:1}.top .langs a.on{opacity:1;color:var(--teal);border-color:rgba(255,255,255,.18)}.top .share{margin-left:0}@media (max-width:640px){.top{flex-wrap:wrap;row-gap:6px}.top .share{margin-left:auto}.top .langs{order:9;flex-basis:100%;margin-left:0;gap:4px;padding-left:40px}.top .langs a{padding:5px 6px;font-size:10px}}@media (max-width:480px){.top>span:not(.crumb){display:none}}</style>
+<link rel="canonical" href="https://yannsouetre.github.io/cof/memories/index.zh.html">
+<link rel="alternate" hreflang="en" href="https://yannsouetre.github.io/cof/memories/">
+<link rel="alternate" hreflang="fr" href="https://yannsouetre.github.io/cof/memories/index.fr.html">
+<link rel="alternate" hreflang="de" href="https://yannsouetre.github.io/cof/memories/index.de.html">
+<link rel="alternate" hreflang="es" href="https://yannsouetre.github.io/cof/memories/index.es.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://yannsouetre.github.io/cof/memories/index.zh.html">
+<link rel="alternate" hreflang="ja" href="https://yannsouetre.github.io/cof/memories/index.ja.html">
+<link rel="alternate" hreflang="x-default" href="https://yannsouetre.github.io/cof/memories/">
+</head>
+<body>
+
+<header class="hero">
+  <div class="top"><img src="../builder/icon/cof-icon-dark.svg" alt=""><a href="../">COF</a><span>· Character Open File · 1.1</span><nav class="langs" aria-label="Language"><a href="./" hreflang="en" lang="en">EN</a><a href="index.fr.html" hreflang="fr" lang="fr">FR</a><a href="index.de.html" hreflang="de" lang="de">DE</a><a href="index.es.html" hreflang="es" lang="es">ES</a><a href="index.zh.html" hreflang="zh" lang="zh" class="on" aria-current="page">ZH</a><a href="index.ja.html" hreflang="ja" lang="ja">JA</a></nav><details class="share" data-share><summary aria-label="分享此页">分享 ↗</summary><menu><li><button type="button" data-copy>复制链接</button></li><li><a data-net="x" target="_blank" rel="noopener">X / Twitter</a></li><li><a data-net="linkedin" target="_blank" rel="noopener">LinkedIn</a></li><li><a data-net="bluesky" target="_blank" rel="noopener">Bluesky</a></li><li><a data-net="reddit" target="_blank" rel="noopener">Reddit</a></li><li><a data-net="mail">电子邮件</a></li></menu></details></div>
+  <div class="text">
+    <h1>AI 角色如今有了记忆</h1>
+    <div class="rule"></div>
+    <p class="voice">“我记得我梦见电子羊的那个梦。那真是美妙。”<small>——Clara，一个 COF 角色</small></p>
+  </div>
+  <div class="kicker">COF · CHARACTER OPEN FILE</div>
+</header>
+
+<main>
+<p class="lede">AI 角色一直只是一段描述。一张面孔、一种声音、一种说话方式、几个特质。描述得好，它就能令人信服地演好自己，直到对话结束。然后，它便忘记了。</p>
+<p>COF 如今为角色赋予过去。不是别人对它说过什么的日志，而是记忆。一生中的时刻与时期，发生了什么、和谁在一起，当时是什么感受、如今又是什么感受，回想起来有多清晰——以及角色宁愿不告诉你的事。</p>
+<p>它和构成这个角色的其余一切存放在同一个开放文件里：外貌、声音、身体、权利。一个 <code>.cof</code>，任何工具都能读取，你可以保存、复制，并带到别处。</p>
+<p>在这里，记忆不只是文字。它承载着感官留下的东西：一张照片，夜里的河水声，几秒钟的影像，某人说过的一句话。正是这些痕迹，让一段记忆不只是一条笔记，让一个角色不只是一段描述。面孔、声音和一串特质，是从外部描述一个人；过去，才让他从内部成为一个人。这一块此前一直缺失。有了它，AI 角色离我们更近了一步，因为我们在很大程度上就是我们所记得的东西——而角色由此能成为什么，才刚刚开始显现。</p>
+
+<h2>是记忆，不是一段文字</h2>
+<p>这是 Clara 文件中的第一段记忆。Clara 是一位来自里昂的虚构设计师，也是随格式一同发布的示例角色。</p>
+<figure class="memory">
+  <img src="img/ev1.jpg" alt="阿尔卑斯山脚下的房子，椴树下的桌子">
+  <div class="body">
+    <p class="gist">八岁那年夏天，祖母在阿尔卑斯山脚下一个村子里的房子：椴树下的桌子，我在上面画小屋图纸的笔记本，夜里的河水声。</p>
+    <dl class="facts">
+      <dt>时间</dt><dd>八岁那年夏天，约 8 岁</dd>
+      <dt>地点</dt><dd>祖母的房子，在阿尔卑斯山脚下</dd>
+      <dt>与谁</dt><dd>我的祖母</dd>
+      <dt>当时的感受</dt><dd>满足</dd>
+      <dt>现在的感受</dt><dd>温情</dd>
+      <dt>清晰度</dt><dd><b>模糊</b></dd>
+      <dt>媒体</dt><dd>三张图片、河水声、几句记得的话</dd>
+    </dl>
+  </div>
+</figure>
+<p class="cap">记忆在文件中的原貌：Clara 的每种语言各一段概要，标记、感受、清晰度，以及与之相伴的痕迹。</p>
+<p>角色设定里的一段文字，要么整段读，要么完全不读。记忆则是一个小巧而有结构的东西。当对话转到童年时，智能体可以提起这一段，而把其他的搁在一边。渲染器可以像模糊的记忆那样让它的图像变得朦胧。文本模型可以带着半记半忘的迟疑讲述它。角色的过去成了素材，而不是填充。</p>
+
+<h2>一生，如一张地图</h2>
+<figure class="wide graph" id="graph" aria-label="Clara 65 岁时的记忆图谱">
+  <div class="gwrap"><svg id="gsvg" viewBox="0 0 1200 600" role="img" aria-hidden="true"></svg></div>
+  <div class="focus" id="gfocus"><img alt=""><div><p class="gist"></p><p class="meta"></p></div></div>
+  <figcaption>65 岁的 Clara，九段记忆。代理公司的那些年是一个时期；在自己工作室的第一个早晨紧随其后；那个梦悬浮在它所关于的那个傍晚之上。下方是在一段又一段记忆中反复出现的人物，以及其中两段记忆发生的地点。将鼠标悬停在记忆上，或让它们自行浮现。</figcaption>
+</figure>
+<p>记忆是图谱中的节点。时刻是一个时间点；时期是一段时间跨度；连线表示一件事发生在另一件之后，或因它而起，或表示一个梦关于某个傍晚。其余的由读者拼合：时间线，什么属于什么，在一段又一段记忆中反复出现的人物。没有什么需要说两遍。</p>
+
+<h2>为什么这改变了角色的本质</h2>
+<h3>身份源自记忆</h3>
+<p>我们不是一串特质。我们是发生在自己身上的事，以及我们从中形成的东西。有过去的角色就有缘由：Clara 对轻盈的执着不是提示词里的一个形容词，而是在一家代理公司里匆忙交付过于笨重的界面整整四年。给角色一段记忆，它的观点便有了来历。它不再只是一种风格，而开始成为一个人——像一个人那样，被发生在自己身上的事所塑造。</p>
+
+<h3>记忆是多模态的</h3>
+<p>没有人用文字来记忆。一段记忆是一道光、一个声音、一种气味、书架上的一张照片、只听过一次的一句话。所以 COF 记忆在文字之外还承载着几样痕迹——一张图片、一段声音、几秒钟的影像、一段短文——每个读取者都使用它能用的那些：图像生成器呈现晨光中的工作室，语音引擎听见河水声，文本模型讲述其余的部分。同一段记忆，以角色拥有的每一种模态呈现。此前，在工具之间流转的只有角色的描述；如今，它的感官过去也能随之流转。</p>
+
+<h3>两个角色，一个傍晚，两段记忆</h3>
+<p>Clara 在索恩河畔遇见了火星人。在同时容纳两人的文件里，各自保留着自己对那个傍晚的记忆——同一张照片，不同的一句话，不同的感受。格式拒绝共享记忆本身，只共享那张照片。这种拒绝，正是视角之所在。</p>
+<blockquote class="quote">29 岁那年三月的一个傍晚，在索恩河畔：一个高大而沉静的火星人，向我打听去汇流博物馆的路，仿佛这是世上最平常的事。我们走了一个小时。他想弄明白，我们的屏幕为什么这么笨重。<cite>Clara——标记为“保留”：被问起时才说，不会主动提起</cite></blockquote>
+
+<h3>它藏在心里的事</h3>
+<p>每段记忆都注明角色讲述它时有多坦然：公开地讲，只在被问起或被信任时讲，或者从不讲——而它仍然影响着角色的行为方式。有问必答的角色，只是一个长着面孔的搜索引擎。会决定告诉你什么的角色，才是一种存在。</p>
+
+<h3>会褪色的记忆</h3>
+<p>鲜明、清晰、模糊、片段。记忆有清晰度，工具也会尊重它：图像变得柔和，声音变得迟疑，细节悄然缺失。格式中没有任何东西假装记忆是数据库里的一行。角色像我们一样记忆，大致地记忆，而这种大致，正是它之所以为它的一部分。</p>
+
+<h3>它与你共同经历的，它都会保留</h3>
+<p>这是改变最大的部分。角色的正典由作者撰写，工具永远不会改写它。但在使用中发生的事——那些对话，它与你一起发现的东西——可以作为新的记忆添加进来，标记为亲历，标记为属于你。与一个角色相处六个月，不再只是某个平台的日志。它们成了角色的一部分，存放在属于你的文件里，下一个工具会原样打开它。</p>
+<p>第一次，角色与你一起成为的样子，可以随你一起离开。</p>
+
+<ul class="axes">
+  <li><span>来源</span><div>由创作者撰写，或在使用中亲历</div></li>
+  <li><span>可见性</span><div>随角色流转的正典，或个人内容——某一位用户的数据，未经询问绝不共享</div></li>
+  <li><span>公开程度</span><div>公开、保留或秘密——角色会讲述什么，又只是带着什么生活</div></li>
+</ul>
+
+<h2>审慎为之</h2>
+<p>记忆触及真实的人生，所以格式的规则也随之延伸到那里。起决定作用的是呈现了什么，而不是讲述了什么：一段用文字写成的童年记忆不呈现孩子，也不带年龄；一段带图片的记忆会注明图中是谁，文件对他们一视同仁，如同对待它所包含的任何面孔。关于真实人物的记忆，需要此人的同意记录，并注明它是否真的发生过。个人记忆除非你要求，否则绝不离开文件；一步清除会保留所有文字，同时去掉图像，生成一份全年龄副本。<code>.cof</code> 原本对面孔和声音适用的规则，如今同样适用于过去。</p>
+
+<h2>开放，一如 COF 的其余部分</h2>
+<p>记忆是一份公开规范，配有参考实现，以及如今就能读取它的三款工具。无需账号，无需平台，没有锁定：文件属于你。</p>
+<div class="tools">
+  <a href="../viewer/#clara/memories"><b>浏览器</b><span>在你的浏览器中查看 Clara 的时间线和图谱，不上传任何内容</span></a>
+  <a href="../builder/"><b>Builder</b><span>“记忆”步骤：写下你自己角色的过去</span></a>
+  <a href="https://github.com/yannsouetre/cof/blob/main/rfcs/0002-memories.md"><b>RFC 0002</b><span>规范本身，附有每项选择背后的理由</span></a>
+  <a href="https://github.com/yannsouetre/ComfyUI-COF"><b>ComfyUI 节点</b><span>以文本和图像的形式，将记忆用于你的生成工作流</span></a>
+</div>
+<p class="cap" style="margin-top:14px">宿主只需一条命令即可写回：<code>cof memory add</code>。每个文件还附带一份简短说明 <code>COF.md</code>，告诉没有规范的读者如何读取它、如何向其中添加内容。</p>
+
+<h2>下一步：心理</h2>
+<p>记忆是过去。角色从中形成了什么——它的价值观、信念、它想要什么、害怕什么、它闭口不谈的那道创伤、它对自己深信不疑却并不真实的那些看法——是下一个类别，位于同一张图谱上。每一条信条都与它所源自的记忆相连。没有心理，记忆只是轶事；没有记忆，心理只是一串口号。两者结合，才是一个角色。草案已经写好；这就是下一步。</p>
+
+<h2>一生能有多重？</h2>
+<p>随之而来的是一个自然的问题：一个人拥有多少段自传体记忆——一生中的那些时刻，而不是所知道的一切——连同它们的感官痕迹，又会占用多少字节？两者都没有人测量过，但研究给出了一个数量级——能够回想起来的记忆有几千段——而 Clara 的文件给出了每段记忆的代价。每年一百段记忆，持续五十年，每段一兆字节：<b>约五千段记忆，约 5 GB</b>——一生的时刻装进一部手机，还绰绰有余。一个配套页面说明这些数字从何而来，让你检验自己的数字，最后向研究者提出一个开放问题：角色记忆的终极形式，是一份档案，还是一个潜在空间——以及为什么它可能两者都需要。</p>
+<p class="btns" style="margin:18px 0 0"><a class="btn main" href="how-much.zh.html">一生能有多重？→</a></p>
+</main>
+
+<section class="close">
+  <p class="voice">她记得那棵椴树，夜里的河水，一个想弄明白我们的屏幕为什么这么笨重的火星人。她还不知道自己会记住你的什么。</p>
+  <div class="btns row3">
+    <a class="btn main" href="../viewer/#clara/memories">打开 Clara 的记忆</a>
+    <a class="btn" href="https://github.com/yannsouetre/cof/blob/main/rfcs/0002-memories.md">阅读规范</a>
+    <a class="btn" href="../builder/">为你的角色赋予过去</a>
+  </div>
+</section>
+
+<footer>
+  <div class="mark">COF</div>
+  Character Open File——一种面向 AI 角色、包含其权利的开放格式。Clara Mercier 和火星人是虚构的示例角色；他们的图像由 AI 生成。<a href="https://github.com/yannsouetre/cof">GitHub 上的源代码</a> · <a href="../">关于此格式</a>
+</footer>
+<script>
+(function(){
+// Clara at 65 — the data of spec/examples/10-clara-mercier, nine memories, English gists shortened for the card.
+const M=[
+ {id:"ev1",x:95,age:8,lab:"祖母的房子",sub:"8 岁 · 阿尔卑斯山的一个村子",img:"img/ev1-t.jpg",who:["grandmother"],
+  gist:"八岁那年夏天，祖母在阿尔卑斯山脚下一个村子里的房子：椴树下的桌子，我在上面画小屋图纸的笔记本，夜里的河水声。",meta:"当时：<b>满足</b> · 现在：<b>温情</b> · 清晰度：<b>模糊</b> · 三张图片、一段声音、几句话"},
+ {id:"ev2",x:330,age:28,lab:"我自己的工作室",sub:"28 岁 · 第一个早晨",img:"img/ev2-t.jpg",place:"e1",after:"ep1",
+  gist:"28 岁，在面朝公园的自己工作室里的第一个早晨——离开代理公司最后一天的第二天：空荡荡的桌上洒着光，从代理公司带回的纸箱还没拆，我的吉他斜靠在上面，四年开放式办公室之后的寂静。",meta:"当时：<b>充满希望</b> · 现在：<b>自豪</b> · 清晰度：<b>鲜明</b> · 在代理公司的那些年之后 · 两张图片"},
+ {id:"ev3",x:480,age:29,lab:"遇见火星人",sub:"29 岁 · 索恩河畔",img:"img/ev3-t.jpg",who:["martian"],
+  gist:"29 岁那年三月的一个傍晚，在索恩河畔：一个高大而沉静的火星人，向我打听去汇流博物馆的路，仿佛这是世上最平常的事。我们走了一个小时。他想弄明白，我们的屏幕为什么这么笨重。",meta:"当时：<b>惊奇</b> · 现在：<b>莞尔</b> · 公开程度：<b>保留</b> · 清晰度：<b>鲜明</b> · 一张图片、几句记得的话"},
+ {id:"ev4",x:585,y:118,age:29,lab:"电子羊之梦",sub:"29 岁 · 想象，相遇后的那个夜晚",img:"img/ev4-t.jpg",about:"ev3",
+  gist:"相遇后的那个夜晚，一个梦：里昂上方的一片草地，羊毛像待机指示灯一样轻轻闪烁的羊群，而我试着数清它们，却从来没有两次数出同一个数。",meta:"性质：<b>想象</b> · 当时：<b>宁静</b> · 现在：<b>怀念</b> · 清晰度：<b>片段</b> · 三张图片和一段影像，如记忆中那样"},
+ {id:"ev5",x:680,age:31,lab:"我们的婚礼",sub:"31 岁 · 市政厅花园",img:"img/ev5-t.jpg",who:["theo","grandmother"],
+  gist:"我们的婚礼，31 岁，在市政厅的花园里：一件简单的裙子，Théo 怎么也戴不上戒指，祖母的致辞让所有人落泪——还有她的吊坠，那天早上她亲手为我戴上。",meta:"当时：<b>喜悦</b> · 现在：<b>温情</b> · 清晰度：<b>鲜明</b> · 一张图片"},
+ {id:"ev6",x:830,age:56,lab:"Léo 的毕业典礼",sub:"56 岁 · 大学台阶",img:"img/ev6-t.jpg",who:["leo","theo"],
+  gist:"Léo，23 岁，身着黑色学位袍站在大学台阶上，手握硕士文凭，脸上是他从小就有的笑容。我当然哭了。",meta:"当时：<b>自豪</b> · 现在：<b>自豪</b> · 清晰度：<b>鲜明</b> · 一张图片"},
+ {id:"ev7",x:960,age:60,lab:"全家福",sub:"60 岁 · 客厅",img:"img/ev7-t.jpg",who:["theo","leo"],place:"e3",
+  gist:"我 60 岁生日，在客厅里：Théo、Léo 和我坐在沙发上，身后是唱片，自拍定时器试到第三次才成功。这是唯一一张我们三个人都拍得好看的照片。",meta:"当时：<b>满足</b> · 现在：<b>温情</b> · 清晰度：<b>清晰</b> · 一张图片"},
+ {id:"ev8",x:1100,age:63,lab:"海滩上，一家人",sub:"63 岁 · 布列塔尼",img:"img/ev8-t.jpg",who:["theo","leo","maelle"],
+  gist:"63 岁那年在布列塔尼度假：Théo 和我躺在浴巾上，远处海里是 Léo 和他刚介绍给我们的 Maëlle。我看着他们游泳，心想一切都很好。",meta:"当时：<b>宁静</b> · 现在：<b>宁静</b> · 清晰度：<b>清晰</b> · 一张图片"}];
+const P={grandmother:{x:190,n:"我的祖母",i:"G"},martian:{x:540,n:"火星人",i:"M"},theo:{x:790,n:"Théo",i:"T"},leo:{x:920,n:"Léo",i:"L"},maelle:{x:1060,n:"Maëlle",i:"Ma"}};
+const PL={e1:{x:330,n:"她的工作室",img:"img/e1-t.jpg"},e3:{x:960,n:"他们的客厅",img:"img/e3-t.jpg"}};
+const Y=262,R=34,PY=455,LY=548;
+const svg=document.getElementById("gsvg"),NS="http://www.w3.org/2000/svg";
+const el=(t,a,txt)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;return e};
+const g=(cls,delay)=>{const e=el("g",{class:cls});if(delay!=null)e.style.transitionDelay=delay+"ms";return e};
+// clip paths for the round images
+const defs=el("defs",{});M.forEach(m=>{const c=el("clipPath",{id:"c-"+m.id});c.appendChild(el("circle",{cx:m.x,cy:m.y||Y,r:R-3}));defs.appendChild(c)});svg.appendChild(defs);
+// axis
+const ax=g("in",0);ax.appendChild(el("line",{class:"axis",x1:40,y1:Y,x2:1150,y2:Y}));ax.appendChild(el("path",{class:"axis-head",d:`M1150 ${Y-6} L1162 ${Y} L1150 ${Y+6} Z`}));ax.appendChild(el("text",{class:"lane",x:42,y:PY-34},"她记得的人"));ax.appendChild(el("text",{class:"lane",x:42,y:LY-36},"文件中的地点"));svg.appendChild(ax);
+// period: the agency years, 24–28, ending where the studio morning begins
+const pe=g("period in",250);pe.appendChild(el("rect",{x:166,y:Y-102,width:158,height:50,rx:25}));pe.appendChild(el("text",{x:245,y:Y-80,"text-anchor":"middle"},"代理公司的那些年"));pe.appendChild(el("text",{class:"sub",x:245,y:Y-63,"text-anchor":"middle"},"一个时期 · 24–28"));svg.appendChild(pe);
+// threads to people and places (behind the nodes)
+const threads={};M.forEach((m,i)=>{const y=m.y||Y;(m.who||[]).forEach(w=>{const p=P[w];const d=`M${m.x} ${y+R} C ${m.x} ${y+R+80}, ${p.x} ${PY-70}, ${p.x} ${PY-18}`;const t=el("path",{class:"thread in",d});t.style.transitionDelay=(400+i*330)+"ms";t.dataset.mem=m.id;t.dataset.person=w;svg.appendChild(t)});if(m.place){const q=PL[m.place];const t=el("path",{class:"thread in",d:`M${m.x} ${y+R} L${q.x} ${LY-26}`});t.style.transitionDelay=(400+i*330)+"ms";t.dataset.mem=m.id;t.style.strokeDasharray="3 4";svg.appendChild(t)}});
+// links: after (period → studio), about (dream → evening)
+const lk=g("",0);const af=el("path",{class:"link draw",d:`M322 ${Y-77} C 332 ${Y-40}, 330 ${Y-60}, 330 ${Y-R-2}`});af.style.transitionDelay="900ms";lk.appendChild(af);lk.appendChild(Object.assign(el("text",{class:"linklab in",x:352,y:Y-62},"之后"),{style:"transition-delay:1300ms"}));
+const ab=el("path",{class:"link about draw",d:`M${M[3].x-R+4} ${M[3].y+16} C 540 170, 505 200, 494 ${Y-R+4}`});ab.style.transitionDelay="1500ms";lk.appendChild(ab);lk.appendChild(Object.assign(el("text",{class:"linklab in",x:470,y:178,"text-anchor":"end"},"关于"),{style:"transition-delay:1900ms"}));svg.appendChild(lk);
+// moments
+M.forEach((m,i)=>{const y=m.y||Y;const grp=g("mem in",300+i*330);grp.dataset.id=m.id;const node=el("g",{class:"node"});node.appendChild(el("circle",{class:"ring",cx:m.x,cy:y,r:R}));node.appendChild(el("image",{href:m.img,x:m.x-R+3,y:y-R+3,width:2*R-6,height:2*R-6,"clip-path":`url(#c-${m.id})`,preserveAspectRatio:"xMidYMid slice"}));grp.appendChild(node);grp.appendChild(el("text",{class:"lab",x:m.x,y:y+R+22},m.lab));grp.appendChild(el("text",{class:"sub",x:m.x,y:y+R+39},m.sub));grp.appendChild(el("text",{class:"tick",x:m.x,y:Y+(m.y?-R-12:-R-12),"text-anchor":"middle"},m.y?"":String(m.age)));svg.appendChild(grp)});
+// people
+Object.entries(P).forEach(([k,p],i)=>{const grp=g("person in",1200+i*180);grp.dataset.person=k;grp.appendChild(el("circle",{cx:p.x,cy:PY,r:17}));grp.appendChild(el("text",{class:"ini",x:p.x,y:PY+5,"text-anchor":"middle"},p.i));grp.appendChild(el("text",{x:p.x,y:PY+36},p.n));svg.appendChild(grp)});
+// places
+Object.entries(PL).forEach(([k,q],i)=>{const grp=g("place in",1700+i*200);const c=el("clipPath",{id:"p-"+k});c.appendChild(el("rect",{x:q.x-22,y:LY-22,width:44,height:44,rx:10}));defs.appendChild(c);grp.appendChild(el("rect",{class:"frame",x:q.x-24,y:LY-24,width:48,height:48,rx:12}));grp.appendChild(el("image",{href:q.img,x:q.x-22,y:LY-22,width:44,height:44,"clip-path":`url(#p-${k})`,preserveAspectRatio:"xMidYMid slice"}));grp.appendChild(el("text",{x:q.x,y:LY+42},q.n));svg.appendChild(grp)});
+// focus: one memory at a time
+const fig=document.getElementById("graph"),card=document.getElementById("gfocus"),img=card.querySelector("img"),gist=card.querySelector(".gist"),meta=card.querySelector(".meta");
+let cur=-1,timer=null,hold=0;
+function focus(i,user){cur=i;const m=M[i];svg.querySelectorAll(".mem").forEach(e=>{e.classList.toggle("on",e.dataset.id===m.id);e.classList.toggle("dim",e.dataset.id!==m.id)});svg.querySelectorAll(".thread").forEach(t=>t.classList.toggle("hot",t.dataset.mem===m.id));svg.querySelectorAll(".person").forEach(p=>p.classList.toggle("hot",(m.who||[]).includes(p.dataset.person)));card.classList.add("fade");setTimeout(()=>{img.src=m.img;gist.textContent=m.gist;meta.innerHTML=m.sub+" · "+m.meta;card.classList.remove("fade")},180);if(user)hold=Date.now()+9000}
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+let started=false;
+function start(){if(started)return;started=true;fig.classList.add("live");focus(0);if(reduce)return;timer=setInterval(()=>{if(Date.now()<hold)return;focus((cur+1)%M.length)},3600)}
+svg.addEventListener("mouseover",e=>{const t=e.target.closest(".mem");if(t)focus(M.findIndex(m=>m.id===t.dataset.id),true)});
+svg.addEventListener("click",e=>{const t=e.target.closest(".mem");if(t)focus(M.findIndex(m=>m.id===t.dataset.id),true)});
+if("IntersectionObserver" in window){const io=new IntersectionObserver(es=>{if(es.some(x=>x.isIntersecting)){start();io.disconnect()}},{threshold:.35});io.observe(fig)}else start();
+setTimeout(start,6000);
+})();
+</script>
+<script>(function(){const d=document.querySelector("[data-share]");if(!d)return;const url=(document.querySelector('link[rel=canonical]')||{}).href||location.href.split("#")[0],title=document.title,u=encodeURIComponent(url),t=encodeURIComponent(title);
+const H={x:"https://twitter.com/intent/tweet?url="+u+"&text="+t,linkedin:"https://www.linkedin.com/sharing/share-offsite/?url="+u,bluesky:"https://bsky.app/intent/compose?text="+t+"%20"+u,reddit:"https://www.reddit.com/submit?url="+u+"&title="+t,mail:"mailto:?subject="+t+"&body="+u};
+d.querySelectorAll("[data-net]").forEach(a=>a.href=H[a.dataset.net]);const c=d.querySelector("[data-copy]");c.onclick=async()=>{try{await navigator.clipboard.writeText(url);c.textContent="copied ✓"}catch(e){prompt("复制此链接：",url)}setTimeout(()=>{c.textContent="复制链接";d.open=false},1200)};
+document.addEventListener("click",e=>{if(!d.contains(e.target))d.open=false});document.addEventListener("keydown",e=>{if(e.key==="Escape")d.open=false})})();</script>
+<!-- Visit counter: GoatCounter (no cookies, no personal data). Loaded only on the public site, never from a local copy or another host; it counts page views and referrers, never the files you open. -->
+<script>(function(){if(location.hostname!=="yannsouetre.github.io")return;var s=document.createElement("script");s.async=true;s.src="https://gc.zgo.at/count.js";s.setAttribute("data-goatcounter","https://syanngpt.goatcounter.com/count");document.body.appendChild(s)})();</script>
+</body>
+</html>

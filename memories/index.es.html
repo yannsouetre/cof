@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Los personajes de IA ya tienen recuerdos — COF 1.1</title>
+<meta name="description" content="COF da ahora un pasado a los personajes de IA: momentos y periodos de una vida, lo que sintieron, lo que se guardan para sí, lo que se desvanece — en el mismo archivo abierto que su rostro, su voz y sus derechos.">
+<meta property="og:title" content="Los personajes de IA ya tienen recuerdos">
+<meta property="og:description" content="Un personaje con pasado tiene razones. COF 1.1 — recuerdos, en un solo archivo abierto.">
+<meta property="og:image" content="https://yannsouetre.github.io/cof/memories/img/og-memories.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://yannsouetre.github.io/cof/memories/img/og-memories.jpg">
+<link rel="icon" type="image/svg+xml" href="../builder/icon/cof-icon-dark.svg">
+<style>
+@font-face{font-family:"Michroma";src:url(../clip/fonts/michroma-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Cormorant";src:url(../clip/fonts/cormorant-garamond-latin-500-italic.woff2) format("woff2");font-weight:500;font-style:italic;font-display:swap}
+@font-face{font-family:"Bricolage";src:url(../clip/fonts/bricolage-grotesque-latin-700-normal.woff2) format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Plex";src:url(../clip/fonts/ibm-plex-sans-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Plex";src:url(../clip/fonts/ibm-plex-sans-latin-500-normal.woff2) format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"PlexMono";src:url(../clip/fonts/ibm-plex-mono-latin-500-normal.woff2) format("woff2");font-weight:500;font-display:swap}
+:root{--bg:#0d1312;--night:#070b12;--panel:#18201f;--line:#2a3533;--ink:#eef3f1;--muted:#93a39e;--teal:#4cc2a8;--mint:#bfeee2;--violet:#a98ae8;--col:760px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.65 Plex,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--teal)}
+img{display:block;max-width:100%}
+
+/* hero: the image, the sentence, the voice */
+.hero{position:relative;min-height:92vh;display:flex;flex-direction:column;justify-content:flex-start;background:var(--night) url(img/electric-sheep.jpg) center 70%/cover no-repeat;isolation:isolate}
+.hero::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,11,18,.78) 0%,rgba(7,11,18,.55) 26%,rgba(7,11,18,0) 48%,rgba(7,11,18,0) 78%,rgba(13,19,18,1) 100%);z-index:-1}
+.hero .top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:12px;padding:22px clamp(20px,5vw,64px);font:500 14px/1 PlexMono,monospace;color:var(--mint);letter-spacing:.06em}
+.hero .top img{width:28px;height:28px;border-radius:7px}
+.hero .top a{color:inherit;text-decoration:none}.share{margin-left:auto;position:relative;letter-spacing:0}.share summary{list-style:none;cursor:pointer;font:500 12px/1 PlexMono,monospace;letter-spacing:.06em;color:var(--mint);opacity:.75;padding:6px 8px;border:1px solid transparent;border-radius:8px}.share summary::-webkit-details-marker{display:none}.share summary:hover,.share[open] summary{opacity:1;border-color:rgba(255,255,255,.18)}.share menu{position:absolute;right:0;top:calc(100% + 6px);margin:0;padding:6px;list-style:none;background:#0d1312;border:1px solid rgba(255,255,255,.14);border-radius:10px;min-width:11em;z-index:5;box-shadow:0 8px 24px rgba(0,0,0,.4)}.share menu a,.share menu button{display:block;width:100%;text-align:left;font:500 12px/1 PlexMono,monospace;letter-spacing:.04em;color:#dfe7e4;background:none;border:0;padding:8px 10px;border-radius:6px;text-decoration:none;cursor:pointer}.share menu a:hover,.share menu button:hover{background:rgba(255,255,255,.08);color:#fff}
+.hero .top span{opacity:.7}
+.hero .text{padding:clamp(84px,13vh,130px) clamp(20px,5vw,64px) 0;max-width:1200px}
+h1{font:400 clamp(21px,3.6vw,46px)/1.25 Michroma,sans-serif;letter-spacing:.22em;text-transform:uppercase;margin:0 0 18px;color:#ecE8e0;text-shadow:0 2px 24px rgba(0,0,0,.6)}
+.hero .rule{width:88px;height:1px;background:var(--mint);opacity:.8;margin:0 0 18px}
+.voice{font:500 clamp(22px,2.6vw,32px)/1.3 Cormorant,Georgia,serif;color:#e4dfd6;margin:0;max-width:720px}
+.voice small{display:block;font:500 14px/1 PlexMono,monospace;color:var(--mint);letter-spacing:.06em;margin-top:14px;font-style:normal}
+.hero .kicker{position:absolute;right:clamp(20px,5vw,64px);bottom:22px;font:400 11px/1 Michroma,sans-serif;letter-spacing:.3em;color:var(--mint);opacity:.85}
+
+/* reading column */
+main{max-width:var(--col);margin:0 auto;padding:72px 20px 40px}
+.lede{font-size:clamp(21px,2.3vw,25px);line-height:1.5;color:var(--ink);margin:0 0 28px}
+p{margin:0 0 22px;color:#d9e0dd}
+h2{font:400 clamp(17px,2vw,21px)/1.4 Michroma,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--mint);margin:84px 0 22px;padding-top:28px;border-top:1px solid var(--line)}
+h3{font:500 22px/1.3 Plex,sans-serif;margin:34px 0 10px;color:var(--ink)}
+.quote{font:500 clamp(24px,2.8vw,32px)/1.3 Cormorant,Georgia,serif;color:#e4dfd6;margin:40px 0;padding-left:22px;border-left:2px solid var(--violet)}
+.quote cite{display:block;font:500 13px/1 PlexMono,monospace;color:var(--muted);font-style:normal;margin-top:12px;letter-spacing:.04em}
+code{font:500 .88em PlexMono,monospace;color:var(--teal)}
+
+/* the memory card: Clara's first memory, as the file holds it */
+.memory{display:grid;grid-template-columns:200px 1fr;gap:0;background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;margin:32px 0 10px}
+.memory img{width:100%;height:100%;object-fit:cover;filter:saturate(.85)}
+.memory .body{padding:20px 22px}
+.memory .gist{font:500 19px/1.45 Cormorant,Georgia,serif;font-size:21px;color:#e8e3da;margin:0 0 16px}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:5px 14px;font-size:14px;margin:0}
+.facts dt{color:var(--muted);font:500 12px/1.9 PlexMono,monospace;letter-spacing:.04em}
+.facts dd{margin:0;color:var(--ink)}
+.facts dd b{color:var(--teal);font-weight:500}
+.cap{font-size:14px;color:var(--muted);margin:0 0 30px}
+
+/* full-bleed figure */
+.wide{width:min(1180px,calc(100vw - 40px));margin:36px auto 30px;position:relative;left:50%;transform:translateX(-50%)}
+.wide img{border-radius:18px;border:1px solid var(--line);background:#121917;width:100%}
+.wide figcaption{max-width:calc(var(--col) - 40px);margin:14px auto 0;font-size:14px;color:var(--muted)}
+
+/* axes: three small statements, no cards */
+.axes{margin:26px 0 8px;padding:0;list-style:none;border-top:1px solid var(--line)}
+.axes li{padding:16px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:150px 1fr;gap:18px;font-size:16px}
+.axes li span{font:500 13px/1.6 PlexMono,monospace;color:var(--mint);letter-spacing:.04em}
+.axes li em{font-style:normal;color:var(--muted)}
+
+/* tools */
+.tools{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:26px 0 8px}
+.tools a{display:block;padding:16px 18px;border:1px solid var(--line);border-radius:14px;color:inherit;text-decoration:none;background:var(--panel)}
+.tools a:hover,.tools a:focus-visible{border-color:var(--teal);outline:none}
+.tools b{display:block;font-weight:500;color:var(--teal);margin-bottom:4px}
+.tools span{font-size:14px;color:var(--muted)}
+
+/* closing */
+.close{margin:96px auto 0;max-width:var(--col);padding:0 20px}
+.close .voice{color:#e4dfd6;max-width:none}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin:34px 0 0}.btns.row3 .btn{padding:13px 16px;white-space:nowrap}
+.btn{display:inline-block;padding:13px 20px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);text-decoration:none;font-weight:500}
+.btn:hover,.btn:focus-visible{border-color:var(--teal);outline:none}
+.btn.main{background:var(--teal);border-color:var(--teal);color:#05201b}
+footer{max-width:var(--col);margin:72px auto 0;padding:18px 20px 48px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+footer a{color:var(--muted)}
+footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:-.02em;margin-bottom:6px}
+
+/* the memories graph: SVG built from data, animated on arrival, one memory in focus at a time */
+.graph .gwrap{overflow-x:auto;border-radius:18px;border:1px solid var(--line);background:linear-gradient(180deg,#121917 0%,#0e1514 100%)}
+.graph svg{display:block;width:100%;min-width:760px;font-family:Plex,system-ui,sans-serif}
+.graph .axis{stroke:#2f3b39;stroke-width:1.5}
+.graph .axis-head{fill:#2f3b39}
+.graph .tick{font:500 11px PlexMono,monospace;fill:#5f6f6b}
+.graph .period rect{fill:rgba(169,138,232,.10);stroke:rgba(169,138,232,.55);stroke-width:1}
+.graph .period text{font:500 13px Plex,sans-serif;fill:#cbbcf0}
+.graph .period .sub{font:500 11px PlexMono,monospace;fill:#9f8cd0}
+.graph .link{fill:none;stroke:var(--teal);stroke-width:1.6;stroke-dasharray:5 5;opacity:.75}
+.graph .link.about{stroke-dasharray:2 5;stroke-linecap:round}
+.graph .linklab{font:500 11px PlexMono,monospace;fill:var(--mint);letter-spacing:.04em}
+.graph .thread{fill:none;stroke:#2f3b39;stroke-width:1.1;transition:stroke .3s,opacity .3s}
+.graph .thread.hot{stroke:var(--teal);opacity:.9}
+.graph .mem{cursor:pointer}
+.graph .mem .ring{fill:#0b100f;stroke:var(--teal);stroke-width:2;transition:stroke-width .3s,filter .3s}
+.graph .mem image{transition:filter .4s}
+.graph .mem .lab{font:500 14px Plex,sans-serif;fill:var(--ink);text-anchor:middle}
+.graph .mem .sub{font:400 11.5px Plex,sans-serif;fill:var(--muted);text-anchor:middle}
+.graph .mem .node{transform-box:fill-box;transform-origin:center;transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.graph .mem.on .node{transform:scale(1.22)}
+.graph .mem.on .ring{stroke-width:3;filter:drop-shadow(0 0 10px rgba(76,194,168,.55))}
+.graph .mem.dim image{filter:saturate(.5) brightness(.75)}
+.graph .person circle{fill:#1b2624;stroke:#3a4a47;stroke-width:1.2;transition:stroke .3s}
+.graph .person text{font:500 12px Plex,sans-serif;fill:#c7d1ce;text-anchor:middle}
+.graph .person .ini{font:500 13px PlexMono,monospace;fill:var(--mint)}
+.graph .person.hot circle{stroke:var(--teal)}
+.graph .place .frame{fill:#0b100f;stroke:#3a4a47;stroke-width:1.2}
+.graph .place text{font:400 11.5px Plex,sans-serif;fill:var(--muted);text-anchor:middle}
+.graph .lane{font:500 11px PlexMono,monospace;fill:#5f6f6b;letter-spacing:.06em}
+/* arrival */
+.graph .in{opacity:0;transition:opacity .6s ease}
+.graph.live .in{opacity:1}
+.graph .draw{stroke-dasharray:600;stroke-dashoffset:600;transition:stroke-dashoffset 1.4s ease}
+.graph.live .draw{stroke-dashoffset:0}
+/* focus card */
+.focus{display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:center;max-width:calc(var(--col) - 40px);margin:18px auto 0;min-height:120px;transition:opacity .35s}
+.focus.fade{opacity:0}
+.focus img{width:120px;height:120px;object-fit:cover;border-radius:14px;border:1px solid var(--line)}
+.focus .gist{font:500 20px/1.4 Cormorant,Georgia,serif;color:#e8e3da;margin:0 0 8px}
+.focus .meta{font:500 12px/1.7 PlexMono,monospace;color:var(--muted);margin:0;letter-spacing:.03em}
+.focus .meta b{color:var(--teal);font-weight:500}
+@media (max-width:640px){.focus{grid-template-columns:84px 1fr}.focus img{width:84px;height:84px}.focus .gist{font-size:17px}}
+@media (prefers-reduced-motion:reduce){.graph .in,.graph .draw{transition:none;opacity:1;stroke-dashoffset:0}.graph .mem .node{transition:none}.focus{transition:none}}
+
+@media (max-width:640px){
+  .hero{min-height:78vh}
+  h1{letter-spacing:.14em}
+  .memory{grid-template-columns:1fr}
+  .memory img{height:200px}
+  .axes li{grid-template-columns:1fr;gap:4px}
+  .tools{grid-template-columns:1fr}
+  main{padding-top:52px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .hero .text{animation:rise 1.1s ease-out both}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+}
+.top .langs{margin-left:auto;display:flex;gap:2px;letter-spacing:.04em}.top .langs a{font:500 11px/1 PlexMono,monospace;color:var(--mint);opacity:.6;padding:6px 6px;border-radius:6px;border:1px solid transparent}.top .langs a:hover{opacity:1}.top .langs a.on{opacity:1;color:var(--teal);border-color:rgba(255,255,255,.18)}.top .share{margin-left:0}@media (max-width:640px){.top{flex-wrap:wrap;row-gap:6px}.top .share{margin-left:auto}.top .langs{order:9;flex-basis:100%;margin-left:0;gap:4px;padding-left:40px}.top .langs a{padding:5px 6px;font-size:10px}}@media (max-width:480px){.top>span:not(.crumb){display:none}}</style>
+<link rel="canonical" href="https://yannsouetre.github.io/cof/memories/index.es.html">
+<link rel="alternate" hreflang="en" href="https://yannsouetre.github.io/cof/memories/">
+<link rel="alternate" hreflang="fr" href="https://yannsouetre.github.io/cof/memories/index.fr.html">
+<link rel="alternate" hreflang="de" href="https://yannsouetre.github.io/cof/memories/index.de.html">
+<link rel="alternate" hreflang="es" href="https://yannsouetre.github.io/cof/memories/index.es.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://yannsouetre.github.io/cof/memories/index.zh.html">
+<link rel="alternate" hreflang="ja" href="https://yannsouetre.github.io/cof/memories/index.ja.html">
+<link rel="alternate" hreflang="x-default" href="https://yannsouetre.github.io/cof/memories/">
+</head>
+<body>
+
+<header class="hero">
+  <div class="top"><img src="../builder/icon/cof-icon-dark.svg" alt=""><a href="../">COF</a><span>· Character Open File · 1.1</span><nav class="langs" aria-label="Language"><a href="./" hreflang="en" lang="en">EN</a><a href="index.fr.html" hreflang="fr" lang="fr">FR</a><a href="index.de.html" hreflang="de" lang="de">DE</a><a href="index.es.html" hreflang="es" lang="es" class="on" aria-current="page">ES</a><a href="index.zh.html" hreflang="zh" lang="zh">ZH</a><a href="index.ja.html" hreflang="ja" lang="ja">JA</a></nav><details class="share" data-share><summary aria-label="Compartir esta página">compartir ↗</summary><menu><li><button type="button" data-copy>copiar enlace</button></li><li><a data-net="x" target="_blank" rel="noopener">X / Twitter</a></li><li><a data-net="linkedin" target="_blank" rel="noopener">LinkedIn</a></li><li><a data-net="bluesky" target="_blank" rel="noopener">Bluesky</a></li><li><a data-net="reddit" target="_blank" rel="noopener">Reddit</a></li><li><a data-net="mail">Correo</a></li></menu></details></div>
+  <div class="text">
+    <h1>Los personajes de IA ya tienen recuerdos</h1>
+    <div class="rule"></div>
+    <p class="voice">“Recuerdo mi sueño de ovejas eléctricas. Fue maravilloso.”<small>— Clara, un personaje COF</small></p>
+  </div>
+  <div class="kicker">COF · CHARACTER OPEN FILE</div>
+</header>
+
+<main>
+<p class="lede">Un personaje de IA siempre ha sido una descripción. Un rostro, una voz, una manera de hablar, unos pocos rasgos. Si lo describes bien, se interpreta a sí mismo de forma convincente mientras dura la conversación. Luego olvida.</p>
+<p>COF da ahora un pasado a los personajes. No un registro de lo que se les dijo: una memoria. Momentos y periodos de una vida, lo que pasó y con quién, cómo se sintió entonces y cómo se siente hoy, con qué claridad vuelve — y lo que el personaje preferiría no contarte.</p>
+<p>Vive en el mismo archivo abierto que todo lo demás que hace al personaje: su aspecto, su voz, su cuerpo, sus derechos. Un solo <code>.cof</code>, legible por cualquier herramienta, que puedes conservar, copiar y llevar a otra parte.</p>
+<p>Un recuerdo aquí no son solo palabras. Lleva lo que guardaron los sentidos: una fotografía, el sonido de un río por la noche, unos segundos de película, una frase que alguien dijo. Esas huellas son lo que hace de un recuerdo algo más que una nota, y de un personaje algo más que una descripción. Un rostro, una voz y una lista de rasgos describen a alguien desde fuera; un pasado es lo que lo convierte en alguien desde dentro. Esa pieza faltaba. Con ella, los personajes de IA se acercan a lo que somos, ya que somos, en buena parte, lo que recordamos — y lo que un personaje puede llegar a ser a partir de ahí apenas empieza a verse.</p>
+
+<h2>Un recuerdo, no un párrafo</h2>
+<p>Este es el primer recuerdo del archivo de Clara. Clara es una diseñadora ficticia de Lyon, el personaje de ejemplo que acompaña al formato.</p>
+<figure class="memory">
+  <img src="img/ev1.jpg" alt="Una casa al pie de los Alpes, una mesa bajo un tilo">
+  <div class="body">
+    <p class="gist">El verano de mis ocho años, la casa de mi abuela en un pueblo al pie de los Alpes: la mesa bajo el tilo, la libreta donde dibujaba planos de cabañas, el sonido del río por la noche.</p>
+    <dl class="facts">
+      <dt>cuándo</dt><dd>el verano de mis ocho años, hacia los 8</dd>
+      <dt>dónde</dt><dd>la casa de mi abuela, al pie de los Alpes</dd>
+      <dt>con quién</dt><dd>mi abuela</dd>
+      <dt>sentido entonces</dt><dd>contenta</dd>
+      <dt>sentido hoy</dt><dd>con cariño</dd>
+      <dt>claridad</dt><dd><b>desvaído</b></dd>
+      <dt>medios</dt><dd>tres imágenes, el sonido del río, unas pocas frases recordadas</dd>
+    </dl>
+  </div>
+</figure>
+<p class="cap">El recuerdo tal como lo guarda el archivo: un resumen en cada uno de los idiomas de Clara, marcadores, sentimientos, una claridad y las huellas que lo acompañan.</p>
+<p>Un párrafo en una ficha de personaje se lee entero o no se lee. Un recuerdo es algo pequeño y estructurado. Cuando una conversación gira hacia la infancia, un agente puede sacar este y dejar los demás de lado. Un motor de renderizado puede difuminar sus imágenes como se difuminan los recuerdos desvaídos. Un modelo de texto puede contarlo con la vacilación de lo que se recuerda a medias. El pasado del personaje se vuelve materia, no relleno.</p>
+
+<h2>Una vida, como un mapa</h2>
+<figure class="wide graph" id="graph" aria-label="Los recuerdos de Clara a los 65 años, como grafo">
+  <div class="gwrap"><svg id="gsvg" viewBox="0 0 1200 600" role="img" aria-hidden="true"></svg></div>
+  <div class="focus" id="gfocus"><img alt=""><div><p class="gist"></p><p class="meta"></p></div></div>
+  <figcaption>Clara a los 65 años, nueve recuerdos. Los años en la agencia son un periodo; la primera mañana en su propio estudio viene justo después; el sueño flota sobre la tarde de la que trata. Abajo, las personas que vuelven de un recuerdo a otro y los lugares donde ocurrieron dos de ellos. Pasa el cursor sobre un recuerdo, o deja que vayan llegando.</figcaption>
+</figure>
+<p>Los recuerdos son nodos de un grafo. Un momento es un punto en el tiempo; un periodo es un intervalo; los enlaces dicen que una cosa vino después de otra, o a causa de ella, o que un sueño trataba de una tarde. Quien lee reconstruye el resto: la línea de tiempo, qué pertenece a qué, las personas que vuelven de un recuerdo a otro. Nada se cuenta dos veces.</p>
+
+<h2>Por qué esto cambia lo que es un personaje</h2>
+<h3>La memoria es de donde viene la identidad</h3>
+<p>No somos nuestra lista de rasgos. Somos lo que nos pasó y lo que hicimos con ello. Un personaje con pasado tiene razones: la obsesión de Clara por la ligereza no es un adjetivo en un prompt, son cuatro años en una agencia entregando interfaces demasiado pesadas, demasiado rápido. Dale un recuerdo a un personaje y sus opiniones adquieren una historia. Deja de ser un estilo y empieza a ser alguien — moldeado por lo que le pasó, como una persona.</p>
+
+<h3>Los recuerdos son multimodales</h3>
+<p>Nadie recuerda en texto. Un recuerdo es una luz, una voz, un olor, una fotografía en una estantería, una frase oída una vez. Por eso un recuerdo COF lleva unas pocas huellas — una imagen, un sonido, unos segundos de película, un texto breve — junto a sus palabras, y cada lector usa las que puede: un generador de imágenes muestra el estudio con la luz de la mañana, un motor de voz oye el río, un modelo de texto cuenta el resto. El mismo recuerdo, en todas las modalidades que tiene el personaje. Hasta ahora, solo la descripción de un personaje viajaba entre herramientas; ahora también viaja su pasado sensorial.</p>
+
+<h3>Dos personajes, una tarde, dos recuerdos</h3>
+<p>Clara conoció al marciano en el muelle del Saona. En un archivo que los contiene a ambos, cada uno guarda su propio recuerdo de esa tarde — la misma fotografía, una frase distinta, un sentimiento distinto. El formato se niega a compartir el recuerdo en sí, solo la imagen. Esa negativa es lo que es un punto de vista.</p>
+<blockquote class="quote">Una tarde de marzo, a los 29, en el muelle del Saona: un marciano, alto y tranquilo, que me preguntó cómo llegar al museo de las Confluencias como si fuera lo más normal del mundo. Caminamos una hora. Quería entender por qué nuestras pantallas son tan pesadas.<cite>Clara — marcado como «reservado»: lo cuenta si se le pregunta, no por iniciativa propia</cite></blockquote>
+
+<h3>Lo que se guarda para sí</h3>
+<p>Cada recuerdo dice con qué libertad lo cuenta el personaje: abiertamente, solo si se le pregunta o hay confianza, o nunca — mientras sigue moldeando cómo se comporta. Un personaje que responde a todas las preguntas es un buscador con cara. Un personaje que decide qué contarte es una presencia.</p>
+
+<h3>Recuerdos que se desvanecen</h3>
+<p>Vívido, claro, desvaído, fragmento. Un recuerdo tiene una claridad, y las herramientas la respetan: las imágenes se suavizan, las voces vacilan, se pierden detalles. Nada en el formato pretende que un recuerdo sea una fila de base de datos. El personaje recuerda como nosotros, de forma aproximada, y esa aproximación forma parte de quien es.</p>
+
+<h3>Lo que vive contigo, lo conserva</h3>
+<p>Esta es la parte que más cambia las cosas. El canon de un personaje lo escribe su autor y las herramientas nunca lo reescriben. Pero lo que ocurre con el uso — las conversaciones, lo que descubre contigo — puede añadirse como nuevos recuerdos, marcados como vividos, marcados como tuyos. Seis meses con un personaje ya no son el registro de una plataforma. Forman parte del personaje, en un archivo que es tuyo y que la siguiente herramienta abre tal cual.</p>
+<p>Por primera vez, lo que un personaje llegó a ser contigo puede irse contigo.</p>
+
+<ul class="axes">
+  <li><span>origen</span><div>escrito por su creador, o vivido durante el uso</div></li>
+  <li><span>visibilidad</span><div>canon que viaja con el personaje, o personal — datos de un usuario, nunca compartidos sin preguntar</div></li>
+  <li><span>revelación</span><div>abierto, reservado o secreto — lo que el personaje cuenta y lo que solo vive</div></li>
+</ul>
+
+<h2>Con cuidado</h2>
+<p>La memoria toca vidas reales, así que las reglas del formato la acompañan hasta ahí. Decide lo que se muestra, no lo que se cuenta: un recuerdo de infancia en palabras no muestra a ningún niño ni lleva edad; un recuerdo con imagen nombra a quien aparece en ella, y el archivo lo trata como cualquier rostro que contiene. Un recuerdo de una persona real necesita el registro de consentimiento de esa persona y dice si ocurrió de verdad. Los recuerdos personales nunca salen de un archivo a menos que tú lo pidas, y una purga en un solo paso conserva cada palabra y elimina las imágenes para obtener una copia apta para todos los públicos. Las mismas reglas que un <code>.cof</code> ya aplicaba a los rostros y las voces se aplican ahora al pasado.</p>
+
+<h2>Abierto, como el resto de COF</h2>
+<p>Los recuerdos son una especificación pública, con una implementación de referencia y tres herramientas que ya los leen hoy. Sin cuenta, sin plataforma, sin dependencia: el archivo es tuyo.</p>
+<div class="tools">
+  <a href="../viewer/#clara/memories"><b>Explorador</b><span>la línea de tiempo y el grafo de Clara, en tu navegador, sin subir nada</span></a>
+  <a href="../builder/"><b>Builder</b><span>un paso Recuerdos: escribe el pasado de tu propio personaje</span></a>
+  <a href="https://github.com/yannsouetre/cof/blob/main/rfcs/0002-memories.md"><b>RFC 0002</b><span>la especificación, con el razonamiento detrás de cada decisión</span></a>
+  <a href="https://github.com/yannsouetre/ComfyUI-COF"><b>Nodos ComfyUI</b><span>recuerdos como texto e imágenes para tus flujos de generación</span></a>
+</div>
+<p class="cap" style="margin-top:14px">Las aplicaciones anfitrionas escriben de vuelta con un solo comando: <code>cof memory add</code>. Cada archivo lleva además una nota breve, <code>COF.md</code>, que explica a quien no conoce la especificación cómo leerlo y cómo añadirle cosas.</p>
+
+<h2>Lo siguiente: una psique</h2>
+<p>Los recuerdos son el pasado. Lo que un personaje hizo con él — sus valores, sus creencias, lo que desea, lo que teme, la herida de la que no habla, las cosas que cree de sí mismo y que no son ciertas — es la siguiente categoría, en el mismo grafo. Cada convicción ligada al recuerdo del que procede. Sin psique, los recuerdos son anécdotas; sin recuerdos, una psique es una lista de eslóganes. Juntos son un personaje. El borrador está escrito; es el siguiente paso.</p>
+
+<h2>¿Cuánto podría pesar una vida?</h2>
+<p>Surge una pregunta natural: ¿cuántos recuerdos autobiográficos tiene una persona — los momentos de una vida, no todo lo que sabe — y cuántos bytes ocuparían con sus huellas sensoriales? Nadie ha medido ninguna de las dos cosas, pero la investigación da un orden de magnitud — unos pocos miles de recuerdos que uno puede evocar — y el archivo de Clara da un precio por recuerdo. Cien recuerdos al año durante cincuenta años, un megabyte cada uno: <b>unos cinco mil recuerdos, unos cinco gigabytes</b> — los momentos de toda una vida en un teléfono, con espacio de sobra. Una página complementaria explica de dónde salen las cifras, te deja probar las tuyas y termina con una pregunta abierta para los investigadores: si la forma definitiva de la memoria de un personaje es un archivo o un espacio latente — y por qué puede necesitar ambos.</p>
+<p class="btns" style="margin:18px 0 0"><a class="btn main" href="how-much.es.html">¿Cuánto podría pesar una vida? →</a></p>
+</main>
+
+<section class="close">
+  <p class="voice">Recuerda el tilo, el río por la noche, un marciano que quería entender por qué nuestras pantallas son tan pesadas. Todavía no sabe qué recordará de ti.</p>
+  <div class="btns row3">
+    <a class="btn main" href="../viewer/#clara/memories">Abrir los recuerdos de Clara</a>
+    <a class="btn" href="https://github.com/yannsouetre/cof/blob/main/rfcs/0002-memories.md">Leer la especificación</a>
+    <a class="btn" href="../builder/">Da un pasado a tu personaje</a>
+  </div>
+</section>
+
+<footer>
+  <div class="mark">COF</div>
+  Character Open File — un formato abierto para personajes de IA, con sus derechos. Clara Mercier y el marciano son personajes de ejemplo ficticios; sus imágenes están generadas por IA. <a href="https://github.com/yannsouetre/cof">Código fuente en GitHub</a> · <a href="../">Sobre el formato</a>
+</footer>
+<script>
+(function(){
+// Clara at 65 — the data of spec/examples/10-clara-mercier, nine memories, English gists shortened for the card.
+const M=[
+ {id:"ev1",x:95,age:8,lab:"La casa de mi abuela",sub:"8 años · un pueblo de los Alpes",img:"img/ev1-t.jpg",who:["grandmother"],
+  gist:"El verano de mis ocho años, la casa de mi abuela en un pueblo al pie de los Alpes: la mesa bajo el tilo, la libreta donde dibujaba planos de cabañas, el sonido del río por la noche.",meta:"sentido entonces: <b>contenta</b> · hoy: <b>con cariño</b> · claridad: <b>desvaído</b> · tres imágenes, un sonido, unas frases"},
+ {id:"ev2",x:330,age:28,lab:"Mi propio estudio",sub:"28 años · primera mañana",img:"img/ev2-t.jpg",place:"e1",after:"ep1",
+  gist:"La primera mañana en mi propio estudio frente al parque, a los 28 — el día después de mi último día en la agencia: luz sobre la mesa vacía, la caja de la agencia aún sin abrir, mi guitarra apoyada en ella, el silencio tras cuatro años de oficinas diáfanas.",meta:"sentido entonces: <b>esperanzada</b> · hoy: <b>orgullosa</b> · claridad: <b>vívido</b> · después de los años en la agencia · dos imágenes"},
+ {id:"ev3",x:480,age:29,lab:"El encuentro con el marciano",sub:"29 años · muelle del Saona",img:"img/ev3-t.jpg",who:["martian"],
+  gist:"Una tarde de marzo, a los 29, en el muelle del Saona: un marciano, alto y tranquilo, que me preguntó cómo llegar al museo de las Confluencias como si fuera lo más normal del mundo. Caminamos una hora. Quería entender por qué nuestras pantallas son tan pesadas.",meta:"sentido entonces: <b>asombrada</b> · hoy: <b>divertida</b> · revelación: <b>reservado</b> · claridad: <b>vívido</b> · una imagen, unas frases recordadas"},
+ {id:"ev4",x:585,y:118,age:29,lab:"El sueño de las ovejas eléctricas",sub:"29 años · imaginado, la noche siguiente",img:"img/ev4-t.jpg",about:"ev3",
+  gist:"La noche después del encuentro, un sueño: un prado sobre Lyon, ovejas cuya lana parpadeaba suavemente como LED en reposo, y yo intentando contarlas sin llegar nunca dos veces al mismo número.",meta:"naturaleza: <b>imaginado</b> · sentido entonces: <b>serena</b> · hoy: <b>nostálgica</b> · claridad: <b>fragmento</b> · tres imágenes y un clip, tal como se recuerdan"},
+ {id:"ev5",x:680,age:31,lab:"Nuestra boda",sub:"31 años · jardín del ayuntamiento",img:"img/ev5-t.jpg",who:["theo","grandmother"],
+  gist:"Nuestra boda, a los 31, en el jardín del ayuntamiento: un vestido sencillo, Théo sin conseguir ponerme el anillo, el discurso de mi abuela que hizo llorar a todos — y su colgante, que me había puesto al cuello esa misma mañana.",meta:"sentido entonces: <b>alegre</b> · hoy: <b>con cariño</b> · claridad: <b>vívido</b> · una imagen"},
+ {id:"ev6",x:830,age:56,lab:"La graduación de Léo",sub:"56 años · escalinata de la universidad",img:"img/ev6-t.jpg",who:["leo","theo"],
+  gist:"Léo, 23 años, con toga negra en la escalinata de la universidad, su título de máster en la mano y la sonrisa que tiene desde pequeño. Lloré, claro.",meta:"sentido entonces: <b>orgullosa</b> · hoy: <b>orgullosa</b> · claridad: <b>vívido</b> · una imagen"},
+ {id:"ev7",x:960,age:60,lab:"Foto de familia",sub:"60 años · salón",img:"img/ev7-t.jpg",who:["theo","leo"],place:"e3",
+  gist:"Mi 60.º cumpleaños, en el salón: Théo, Léo y yo en el sofá, los discos detrás, el temporizador que solo funcionó al tercer intento. La única foto en la que salimos bien los tres.",meta:"sentido entonces: <b>contenta</b> · hoy: <b>con cariño</b> · claridad: <b>claro</b> · una imagen"},
+ {id:"ev8",x:1100,age:63,lab:"La playa, todos juntos",sub:"63 años · Bretaña",img:"img/ev8-t.jpg",who:["theo","leo","maelle"],
+  gist:"Unas vacaciones en Bretaña, a los 63: Théo y yo en nuestras toallas y, a lo lejos en el agua, Léo con Maëlle, a quien acababa de presentarnos. Los miraba nadar y pensaba que todo estaba bien.",meta:"sentido entonces: <b>serena</b> · hoy: <b>serena</b> · claridad: <b>claro</b> · una imagen"}];
+const P={grandmother:{x:190,n:"mi abuela",i:"G"},martian:{x:540,n:"el marciano",i:"M"},theo:{x:790,n:"Théo",i:"T"},leo:{x:920,n:"Léo",i:"L"},maelle:{x:1060,n:"Maëlle",i:"Ma"}};
+const PL={e1:{x:330,n:"su estudio",img:"img/e1-t.jpg"},e3:{x:960,n:"su salón",img:"img/e3-t.jpg"}};
+const Y=262,R=34,PY=455,LY=548;
+const svg=document.getElementById("gsvg"),NS="http://www.w3.org/2000/svg";
+const el=(t,a,txt)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;return e};
+const g=(cls,delay)=>{const e=el("g",{class:cls});if(delay!=null)e.style.transitionDelay=delay+"ms";return e};
+// clip paths for the round images
+const defs=el("defs",{});M.forEach(m=>{const c=el("clipPath",{id:"c-"+m.id});c.appendChild(el("circle",{cx:m.x,cy:m.y||Y,r:R-3}));defs.appendChild(c)});svg.appendChild(defs);
+// axis
+const ax=g("in",0);ax.appendChild(el("line",{class:"axis",x1:40,y1:Y,x2:1150,y2:Y}));ax.appendChild(el("path",{class:"axis-head",d:`M1150 ${Y-6} L1162 ${Y} L1150 ${Y+6} Z`}));ax.appendChild(el("text",{class:"lane",x:42,y:PY-34},"PERSONAS QUE RECUERDA"));ax.appendChild(el("text",{class:"lane",x:42,y:LY-36},"LUGARES DEL ARCHIVO"));svg.appendChild(ax);
+// period: the agency years, 24–28, ending where the studio morning begins
+const pe=g("period in",250);pe.appendChild(el("rect",{x:166,y:Y-102,width:158,height:50,rx:25}));pe.appendChild(el("text",{x:245,y:Y-80,"text-anchor":"middle"},"Los años en la agencia"));pe.appendChild(el("text",{class:"sub",x:245,y:Y-63,"text-anchor":"middle"},"un periodo · 24–28"));svg.appendChild(pe);
+// threads to people and places (behind the nodes)
+const threads={};M.forEach((m,i)=>{const y=m.y||Y;(m.who||[]).forEach(w=>{const p=P[w];const d=`M${m.x} ${y+R} C ${m.x} ${y+R+80}, ${p.x} ${PY-70}, ${p.x} ${PY-18}`;const t=el("path",{class:"thread in",d});t.style.transitionDelay=(400+i*330)+"ms";t.dataset.mem=m.id;t.dataset.person=w;svg.appendChild(t)});if(m.place){const q=PL[m.place];const t=el("path",{class:"thread in",d:`M${m.x} ${y+R} L${q.x} ${LY-26}`});t.style.transitionDelay=(400+i*330)+"ms";t.dataset.mem=m.id;t.style.strokeDasharray="3 4";svg.appendChild(t)}});
+// links: after (period → studio), about (dream → evening)
+const lk=g("",0);const af=el("path",{class:"link draw",d:`M322 ${Y-77} C 332 ${Y-40}, 330 ${Y-60}, 330 ${Y-R-2}`});af.style.transitionDelay="900ms";lk.appendChild(af);lk.appendChild(Object.assign(el("text",{class:"linklab in",x:352,y:Y-62},"después"),{style:"transition-delay:1300ms"}));
+const ab=el("path",{class:"link about draw",d:`M${M[3].x-R+4} ${M[3].y+16} C 540 170, 505 200, 494 ${Y-R+4}`});ab.style.transitionDelay="1500ms";lk.appendChild(ab);lk.appendChild(Object.assign(el("text",{class:"linklab in",x:470,y:178,"text-anchor":"end"},"sobre"),{style:"transition-delay:1900ms"}));svg.appendChild(lk);
+// moments
+M.forEach((m,i)=>{const y=m.y||Y;const grp=g("mem in",300+i*330);grp.dataset.id=m.id;const node=el("g",{class:"node"});node.appendChild(el("circle",{class:"ring",cx:m.x,cy:y,r:R}));node.appendChild(el("image",{href:m.img,x:m.x-R+3,y:y-R+3,width:2*R-6,height:2*R-6,"clip-path":`url(#c-${m.id})`,preserveAspectRatio:"xMidYMid slice"}));grp.appendChild(node);grp.appendChild(el("text",{class:"lab",x:m.x,y:y+R+22},m.lab));grp.appendChild(el("text",{class:"sub",x:m.x,y:y+R+39},m.sub));grp.appendChild(el("text",{class:"tick",x:m.x,y:Y+(m.y?-R-12:-R-12),"text-anchor":"middle"},m.y?"":String(m.age)));svg.appendChild(grp)});
+// people
+Object.entries(P).forEach(([k,p],i)=>{const grp=g("person in",1200+i*180);grp.dataset.person=k;grp.appendChild(el("circle",{cx:p.x,cy:PY,r:17}));grp.appendChild(el("text",{class:"ini",x:p.x,y:PY+5,"text-anchor":"middle"},p.i));grp.appendChild(el("text",{x:p.x,y:PY+36},p.n));svg.appendChild(grp)});
+// places
+Object.entries(PL).forEach(([k,q],i)=>{const grp=g("place in",1700+i*200);const c=el("clipPath",{id:"p-"+k});c.appendChild(el("rect",{x:q.x-22,y:LY-22,width:44,height:44,rx:10}));defs.appendChild(c);grp.appendChild(el("rect",{class:"frame",x:q.x-24,y:LY-24,width:48,height:48,rx:12}));grp.appendChild(el("image",{href:q.img,x:q.x-22,y:LY-22,width:44,height:44,"clip-path":`url(#p-${k})`,preserveAspectRatio:"xMidYMid slice"}));grp.appendChild(el("text",{x:q.x,y:LY+42},q.n));svg.appendChild(grp)});
+// focus: one memory at a time
+const fig=document.getElementById("graph"),card=document.getElementById("gfocus"),img=card.querySelector("img"),gist=card.querySelector(".gist"),meta=card.querySelector(".meta");
+let cur=-1,timer=null,hold=0;
+function focus(i,user){cur=i;const m=M[i];svg.querySelectorAll(".mem").forEach(e=>{e.classList.toggle("on",e.dataset.id===m.id);e.classList.toggle("dim",e.dataset.id!==m.id)});svg.querySelectorAll(".thread").forEach(t=>t.classList.toggle("hot",t.dataset.mem===m.id));svg.querySelectorAll(".person").forEach(p=>p.classList.toggle("hot",(m.who||[]).includes(p.dataset.person)));card.classList.add("fade");setTimeout(()=>{img.src=m.img;gist.textContent=m.gist;meta.innerHTML=m.sub+" · "+m.meta;card.classList.remove("fade")},180);if(user)hold=Date.now()+9000}
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+let started=false;
+function start(){if(started)return;started=true;fig.classList.add("live");focus(0);if(reduce)return;timer=setInterval(()=>{if(Date.now()<hold)return;focus((cur+1)%M.length)},3600)}
+svg.addEventListener("mouseover",e=>{const t=e.target.closest(".mem");if(t)focus(M.findIndex(m=>m.id===t.dataset.id),true)});
+svg.addEventListener("click",e=>{const t=e.target.closest(".mem");if(t)focus(M.findIndex(m=>m.id===t.dataset.id),true)});
+if("IntersectionObserver" in window){const io=new IntersectionObserver(es=>{if(es.some(x=>x.isIntersecting)){start();io.disconnect()}},{threshold:.35});io.observe(fig)}else start();
+setTimeout(start,6000);
+})();
+</script>
+<script>(function(){const d=document.querySelector("[data-share]");if(!d)return;const url=(document.querySelector('link[rel=canonical]')||{}).href||location.href.split("#")[0],title=document.title,u=encodeURIComponent(url),t=encodeURIComponent(title);
+const H={x:"https://twitter.com/intent/tweet?url="+u+"&text="+t,linkedin:"https://www.linkedin.com/sharing/share-offsite/?url="+u,bluesky:"https://bsky.app/intent/compose?text="+t+"%20"+u,reddit:"https://www.reddit.com/submit?url="+u+"&title="+t,mail:"mailto:?subject="+t+"&body="+u};
+d.querySelectorAll("[data-net]").forEach(a=>a.href=H[a.dataset.net]);const c=d.querySelector("[data-copy]");c.onclick=async()=>{try{await navigator.clipboard.writeText(url);c.textContent="copied ✓"}catch(e){prompt("Copia este enlace:",url)}setTimeout(()=>{c.textContent="copiar enlace";d.open=false},1200)};
+document.addEventListener("click",e=>{if(!d.contains(e.target))d.open=false});document.addEventListener("keydown",e=>{if(e.key==="Escape")d.open=false})})();</script>
+<!-- Visit counter: GoatCounter (no cookies, no personal data). Loaded only on the public site, never from a local copy or another host; it counts page views and referrers, never the files you open. -->
+<script>(function(){if(location.hostname!=="yannsouetre.github.io")return;var s=document.createElement("script");s.async=true;s.src="https://gc.zgo.at/count.js";s.setAttribute("data-goatcounter","https://syanngpt.goatcounter.com/count");document.body.appendChild(s)})();</script>
+</body>
+</html>
