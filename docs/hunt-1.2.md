@@ -113,6 +113,8 @@ Five test agents competed, each on a territory, to break COF 1.2 before its publ
 | H4-13 | minor | 1.3 | Quadratic time: 10 000 memories make `export --format agent` ~78 s and `psyche propose --bundle-out` ~88 s (validate 7 s) |
 | H4-14 | minor | 1.3 | `memory add --media` / `psyche add --image` keep the raw file name: accents/spaces and equal basenames are refused with cryptic errors |
 | H5-23 | minor | 1.2 text | Stale and contradictory sentences in RFC 0004/0005 and IMPLEMENTING |
+| H3-32 | cosmetic | 1.3 | Retest of 7 November: the Psyché step overflows at 390 and 480 px too (scrollWidth 557: the step header and the « Other languages » summary are cut on the right); the Memories step and the identity step are fine |
+| H2-09 | cosmetic | 1.3 | Explorer: changing preset keeps the memory cards open but folds their inner `<details>` (« 1 memory refers to it », the fr text of psyche nodes) |
 | H3-29 | cosmetic | 1.3 | Layout at 390 px: the Build step overflows horizontally (scrollWidth 787) and the easy version too (593); the drop zone and tables are cut |
 | H4-15 | cosmetic | fixed | English default pronoun "they" is plugged in singular templates: "Who they is", "a belief they holds" |
 
