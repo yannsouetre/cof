@@ -24,7 +24,7 @@ def remap(t):
     if t < 28.0: return t + 4.6            # presets, rights, several characters (source 18.8–32.6)
     if t < 32.6: return t - 13.8           # the psyche scene (source 14.2–18.8)
     return t                               # outro
-FADE_IN, FADE_OUT = 0.35, 1.4          # the fade-in is cubic and preceded by 15 ms of silence: a loud first sample clicks at open
+FADE_IN, FADE_OUT = 0.175, 1.4         # the fade-in is cubic and preceded by 15 ms of silence: a loud first sample clicks at open
 X264 = ["-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", "-preset", "slow", "-movflags", "+faststart"]
 
 
