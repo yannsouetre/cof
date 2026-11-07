@@ -1,6 +1,5 @@
-"""Translations of the two psyche announcement pages (psyche/index.html, psyche/how-many.html).
-
-The English pages are written by build_psyche_pages.py. This module
+"""Translations of the announcement pages: psyche/ (index.html, how-many.html, written by build_psyche_pages.py)
+and memories/ (index.html, how-much.html, static). This module
 
   * extract  — cuts the English pages into translation units (block-level HTML fragments with their inline tags,
                a few attributes, the <head> metadata and the English string literals of the page scripts) and
@@ -9,9 +8,11 @@ The English pages are written by build_psyche_pages.py. This module
                psyche/<page>.<lang>.html: the English page with every unit replaced, lang="<lang>", the
                language switcher on the right language, the companion links pointing at the same language.
 
-Usage:  python tools/announce/i18n_psyche.py extract
-        python tools/announce/i18n_psyche.py apply [lang ...]      (default: every language with a dictionary)
-        python tools/announce/i18n_psyche.py check [lang ...]      (same keys, same tags, same ${...} expressions)
+Usage:  python tools/announce/i18n_psyche.py prepare SITE          (memories only: switcher, hreflang, CSS in the EN pages)
+        python tools/announce/i18n_psyche.py extract SITE
+        python tools/announce/i18n_psyche.py apply SITE [lang ...]      (default: every language)
+        python tools/announce/i18n_psyche.py check SITE [lang ...]      (same keys, same tags, same ${...} expressions)
+SITE is psyche, memories or all. Dictionaries: tools/announce/i18n/SITE/PAGE.LANG.json.
 
 A unit's key is a short hash of its English text, so a dictionary survives edits elsewhere on the page; an
 edited English unit gets a new key and shows up as missing in `check`.
@@ -24,7 +25,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 DICT = Path(__file__).resolve().parent / "i18n"
-PAGES = {"index": "index.html", "how-many": "how-many.html"}
+SITES = {"psyche": {"index": "index.html", "how-many": "how-many.html"},
+         "memories": {"index": "index.html", "how-much": "how-much.html"}}
+BASE = "https://yannsouetre.github.io/cof/"
 LANGS = ["en", "fr", "de", "es", "zh", "ja"]
 NAMES = {"en": "English", "fr": "Français", "de": "Deutsch", "es": "Español", "zh": "中文", "ja": "日本語"}
 HTML_LANG = {"zh": "zh-Hans"}
@@ -41,25 +44,46 @@ def key(text):
     return hashlib.sha1(text.encode("utf-8")).hexdigest()[:10]
 
 
-def file_for(page, lang):
-    return PAGES[page] if lang == "en" else PAGES[page].replace(".html", f".{lang}.html")
+def file_for(page, lang, site="psyche"):
+    fn = SITES[site][page]
+    return fn if lang == "en" else fn.replace(".html", f".{lang}.html")
 
 
-def href_for(page, lang):
-    return "./" if (page == "index" and lang == "en") else file_for(page, lang)
+def href_for(page, lang, site="psyche"):
+    return "./" if (page == "index" and lang == "en") else file_for(page, lang, site)
 
 
-def langs_nav(page, cur):
-    items = "".join(f'<a href="{href_for(page, l)}" hreflang="{l}" lang="{l}"{" class=\"on\" aria-current=\"page\"" if l == cur else ""}>{l.upper()}</a>'
+def langs_nav(page, cur, site="psyche"):
+    items = "".join(f'<a href="{href_for(page, l, site)}" hreflang="{l}" lang="{l}"{" class=\"on\" aria-current=\"page\"" if l == cur else ""}>{l.upper()}</a>'
                     for l in LANGS)
     return f'<nav class="langs" aria-label="Language">{items}</nav>'
 
 
-def hreflang_links(page):
-    base = "https://yannsouetre.github.io/cof/psyche/"
-    out = [f'<link rel="alternate" hreflang="{HTML_LANG.get(l, l)}" href="{base}{"" if (page == "index" and l == "en") else file_for(page, l)}">' for l in LANGS]
-    out.append(f'<link rel="alternate" hreflang="x-default" href="{base}{"" if page == "index" else PAGES[page]}">')
+def canonical(page, lang, site="psyche"):
+    return BASE + site + "/" + ("" if (page == "index" and lang == "en") else file_for(page, lang, site))
+
+
+def hreflang_links(page, site="psyche"):
+    out = [f'<link rel="alternate" hreflang="{HTML_LANG.get(l, l)}" href="{canonical(page, l, site)}">' for l in LANGS]
+    out.append(f'<link rel="alternate" hreflang="x-default" href="{canonical(page, "en", site)}">')
     return "\n".join(out)
+
+
+def prepare(site):
+    """Static EN pages (memories): add the switcher before the share menu, canonical + hreflang in <head>, the CSS. Idempotent."""
+    for page, fn in SITES[site].items():
+        f = ROOT / site / fn
+        s = f.read_text("utf-8")
+        s = re.sub(r'<nav class="langs".*?</nav>', "", s, count=1)
+        s = s.replace('<details class="share"', langs_nav(page, "en", site) + '<details class="share"', 1)
+        s = re.sub(r'<link rel="canonical"[^>]*>\n?', "", s)
+        s = re.sub(r'<link rel="alternate" hreflang=[^>]*>\n?', "", s)
+        links = f'<link rel="canonical" href="{canonical(page, "en", site)}">\n' + hreflang_links(page, site) + "\n"
+        s = s.replace("</head>", links + "</head>", 1)
+        if LANGS_CSS not in s:
+            s = s.replace("</style>", LANGS_CSS + "</style>", 1)
+        f.write_text(s, "utf-8")
+        print("prepared", site, fn)
 
 
 # node kinds and stability levels as the builder and the explorer name them (rendered from code in the hover card)
@@ -205,8 +229,8 @@ def js_units(s):
                 continue
             if re.match(r"^[.#:\[(]|^https?:|^mailto:|^url\(|^rgba?\(", v) or re.fullmatch(r"[\w\-./:#%]+", v) or v.startswith("xMid"):
                 continue
-            if "[rel=" in v or v in ("ln off", "n off", "n piv", "n on", "ln on", "on"):
-                continue
+            if "[rel=" in v or v in ("ln off", "n off", "n piv", "n on", "ln on", "on") or re.fullmatch(r"\w+ (?:in|on|off|draw)", v):
+                continue      # class-name strings of the graph scripts
             plain = re.sub(r"\$\{[^}]*\}", " ", v)
             plain = re.sub(r"<[^>]+>", " ", plain)
             if not (re.search(r"[A-Za-z]{2,}\W+[A-Za-z]{2,}", plain) or re.search(r"[.!?:…]$", plain.strip())
@@ -228,15 +252,15 @@ def units(s):
     return out
 
 
-def extract():
-    DICT.mkdir(exist_ok=True)
-    for page, fn in PAGES.items():
-        s = (ROOT / "psyche" / fn).read_text("utf-8")
+def extract(site):
+    (DICT / site).mkdir(parents=True, exist_ok=True)
+    for page, fn in SITES[site].items():
+        s = (ROOT / site / fn).read_text("utf-8")
         d = {}
         for a, b, t in units(s):
             d.setdefault(key(t), t)
-        (DICT / f"{page}.en.json").write_text(json.dumps(d, ensure_ascii=False, indent=1), "utf-8")
-        print(page, len(d), "units", sum(len(v) for v in d.values()), "chars")
+        (DICT / site / f"{page}.en.json").write_text(json.dumps(d, ensure_ascii=False, indent=1), "utf-8")
+        print(site, page, len(d), "units", sum(len(v) for v in d.values()), "chars")
 
 
 def _tpl_spans(v):
@@ -300,11 +324,12 @@ def _escape_for(s, a, b, t):
     return t
 
 
-def apply(langs):
-    for page, fn in PAGES.items():
-        en = (ROOT / "psyche" / fn).read_text("utf-8")
+def apply(site, langs):
+    pages = SITES[site]
+    for page, fn in pages.items():
+        en = (ROOT / site / fn).read_text("utf-8")
         for lang in langs:
-            df = DICT / f"{page}.{lang}.json"
+            df = DICT / site / f"{page}.{lang}.json"
             if not df.exists():
                 print("no dictionary", df.name)
                 continue
@@ -317,26 +342,26 @@ def apply(langs):
                     continue
                 s = s[:a] + _escape_for(en, a, b, tr[k]) + s[b:]
             s = s.replace('<html lang="en">', f'<html lang="{HTML_LANG.get(lang, lang)}">', 1)
-            if page == "index" and lang in WORDS:
+            if site == "psyche" and page == "index" and lang in WORDS:
                 s = s.replace("${n.k}", "${(window.__KW||{})[n.k]||n.k}").replace("${n.st}", "${(window.__KW||{})[n.st]||n.st}")
                 s = s.replace("<script>", "<script>window.__KW=" + json.dumps(WORDS[lang], ensure_ascii=False) + ";</script>\n<script>", 1)
-            s = re.sub(r'<nav class="langs".*?</nav>', langs_nav(page, lang), s, count=1)
-            other = "how-many" if page == "index" else "index"
-            s = s.replace(f'href="{PAGES[other]}"', f'href="{file_for(other, lang)}"')
+            s = re.sub(r'<nav class="langs".*?</nav>', langs_nav(page, lang, site), s, count=1)
+            other = [q for q in pages if q != page][0]
+            s = s.replace(f'href="{pages[other]}"', f'href="{file_for(other, lang, site)}"')
             if other == "index":
-                s = s.replace('href="./"', f'href="{file_for(other, lang)}"')
-            s = s.replace(f'<link rel="canonical" href="https://yannsouetre.github.io/cof/psyche/{"" if page == "index" else PAGES[page]}">',
-                          f'<link rel="canonical" href="https://yannsouetre.github.io/cof/psyche/{file_for(page, lang)}">')
-            (ROOT / "psyche" / file_for(page, lang)).write_text(s, "utf-8")
-            print(page, lang, len(s), "missing", len(missing), missing[:5])
+                s = s.replace('href="./"', f'href="{file_for(other, lang, site)}"')
+            s = s.replace(f'<link rel="canonical" href="{canonical(page, "en", site)}">',
+                          f'<link rel="canonical" href="{canonical(page, lang, site)}">')
+            (ROOT / site / file_for(page, lang, site)).write_text(s, "utf-8")
+            print(site, page, lang, len(s), "missing", len(missing), missing[:5])
 
 
-def check(langs):
+def check(site, langs):
     bad = 0
-    for page in PAGES:
-        en = json.loads((DICT / f"{page}.en.json").read_text("utf-8"))
+    for page in SITES[site]:
+        en = json.loads((DICT / site / f"{page}.en.json").read_text("utf-8"))
         for lang in langs:
-            df = DICT / f"{page}.{lang}.json"
+            df = DICT / site / f"{page}.{lang}.json"
             if not df.exists():
                 print("MISSING FILE", df.name); bad += 1
                 continue
@@ -364,12 +389,19 @@ def check(langs):
 
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "extract"
-    langs = sys.argv[2:] or [l for l in LANGS if l != "en"]
-    if cmd == "extract":
-        extract()
-    elif cmd == "apply":
-        apply(langs)
-    elif cmd == "check":
-        sys.exit(1 if check(langs) else 0)
-    else:
-        sys.exit(__doc__)
+    site = sys.argv[2] if len(sys.argv) > 2 else "psyche"
+    sites = list(SITES) if site == "all" else [site]
+    langs = sys.argv[3:] or [l for l in LANGS if l != "en"]
+    bad = 0
+    for st in sites:
+        if cmd == "prepare":
+            prepare(st)
+        elif cmd == "extract":
+            extract(st)
+        elif cmd == "apply":
+            apply(st, langs)
+        elif cmd == "check":
+            bad += check(st, langs)
+        else:
+            sys.exit(__doc__)
+    sys.exit(1 if bad else 0)
