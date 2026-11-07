@@ -137,6 +137,8 @@ const PL={hubs:{ep1:[565,440],ev2:[1100,440],ev1:[1610,440]},hubW:460,nodeW:320,
   nodes:{wound1:[450,680],fear1:[690,680],bel1:[570,870],val1:[1015,680],contra1:[1170,870],val4:[1480,680],taste1:[1715,680]},
   panels:[[330,600,470,400],[900,600,400,400],[1375,600,470,225]],legend:[120,1022],
   bend:{"val1|wound1":[900,575,600,575],"bel1|wound1":[565,690],"bel1|val1":[800,870,880,680],"contra1|val1":[1190,715]}};
+{const dx=-127;   /* the group (panels 330–1845) sat 127 px right of the stage centre (Yann, 7 Nov.): shift it, legend excepted */
+ for(const o of [PL.hubs,PL.nodes])for(const k in o)o[k][0]+=dx;for(const p of PL.panels)p[0]+=dx;for(const k in PL.bend){const b=PL.bend[k];for(let i=0;i<b.length;i+=2)b[i]+=dx}}
 const psyEl=$("psy"),SVGNS="http://www.w3.org/2000/svg";
 const ppanels=PL.panels.map(([x,y,w,h])=>{const d=document.createElement("div");d.className="abs ppanel";Object.assign(d.style,{left:x+"px",top:y+"px",width:w+"px",height:h+"px"});psyEl.appendChild(d);return d});
 const psvg=document.createElementNS(SVGNS,"svg");psvg.setAttribute("width",STAGE_W);psvg.setAttribute("height",STAGE_H);psyEl.appendChild(psvg);
