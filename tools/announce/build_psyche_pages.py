@@ -61,7 +61,7 @@ KINDS = {"wound": "#e8876b", "value": "#4cc2a8", "belief": "#a98ae8", "want": "#
 
 EXTRA_CSS = """
 /* 1.2: the psyche pages (same system as the memories pages) */
-.hero::before{background:linear-gradient(180deg,rgba(7,11,18,.55) 0%,rgba(7,11,18,0) 30%,rgba(7,11,18,0) 75%,rgba(13,19,18,1) 100%),linear-gradient(90deg,rgba(7,11,18,.9) 0%,rgba(7,11,18,.78) 42%,rgba(7,11,18,.35) 72%,rgba(7,11,18,.2) 100%)}   /* the fade into the page first: the first layer is drawn on top (the bottom edge was the darkening layer's night, not the page colour) */
+.hero::before{background:linear-gradient(180deg,rgba(7,11,18,.45) 0%,rgba(7,11,18,0) 22%,rgba(7,11,18,0) 76%,rgba(13,19,18,1) 100%),linear-gradient(90deg,rgba(7,11,18,.9) 0%,rgba(7,11,18,.8) 36%,rgba(7,11,18,.3) 54%,rgba(7,11,18,0) 66%,rgba(7,11,18,0) 100%)}   /* 7 Nov.: no darkening over the head any more — the left stays dark for the text, the skull and its galaxy keep the picture's own light */   /* the fade into the page first: the first layer is drawn on top (the bottom edge was the darkening layer's night, not the page colour) */
 .hero .sub{font:500 clamp(18px,2vw,23px)/1.45 Plex,system-ui,sans-serif;color:#dfe8e5;max-width:680px;margin:0 0 26px}
 figure.node{margin:30px 0 8px;padding:22px 24px;border:1px solid var(--line);border-radius:18px;background:var(--panel)}
 figure.node .nk{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px}
@@ -238,9 +238,9 @@ def cell(x): return f'<td class="{x[0]}">{x[1]}</td>' if isinstance(x, tuple) el
 # psyche (hunt finding H5-09) — docs/roadmap.md.
 TXT_ROWS = [
     ("what it is", "a few paragraphs", "nodes: convictions with a strength, dates, reasons, links to memories"),
-    ("to write", ("y", "minutes — anyone can"), ("n", "longer — a tool proposes nodes from your text, you tick")),
+    ("to write", ("y", "minutes — anyone can"), ("n", "longer — a tool proposes nodes from your text, you tick; a generator and an assisted mode are on the 1.3 roadmap")),
     ("what the model receives", ("n", "the whole text, every time"), ("y", "only the nodes the preset holds, with their strength")),
-    ("time", ("n", "one snapshot: rewrite it for every age"), ("y", "since, until: the same character at 20 and at 45")),
+    ("time", ("n", "one snapshot: rewrite it for every age"), ("y", "since, until: the same character at 20 and at 45, with a psyche that changed")),
     ("several uses — work, intimate, all audiences", ("n", "one copy per use, drifting apart"), ("y", "presets that select from one set")),
     ("<i>why</i>", ("n", "implicit — the model improvises"), ("y", "a fear points to the memory that explains it")),
     ("privacy", ("n", "all or nothing"), ("y", "secret, guarded, personal: what a user lived stays theirs")),
@@ -297,7 +297,9 @@ INDEX = head("AI characters now have an inner life — COF 1.2",
 
 <h2>Why this changes what a character is</h2>
 <h3>The why</h3>
-<p>A list of opinions is flat. “She hates heavy interfaces — because of four years at an agency shipping them too fast” is a character. Memories without a psyche stay anecdotes; a psyche without memories stays slogans. Together, each gives the other its meaning — and a character can explain itself instead of improvising an explanation.</p>
+<p>A list of opinions is flat. “She hates heavy interfaces — because of four years at an agency shipping them too fast” is a character.</p>
+<blockquote class="quote">Memories without a psyche stay anecdotes; a psyche without memories stays slogans.</blockquote>
+<p>Together, each gives the other its meaning — and a character can explain itself instead of improvising an explanation.</p>
 
 <h3>What it hides, and what it doesn't know</h3>
 <p>Some convictions are told freely, some only when it matters, some never. And some the character acts on without knowing them. Clara believes, deep down, that <i>if she slows down, she disappears</i>. She would never say it — she doesn't know it. The file does, so an agent can play it the way a good actor would: in what she does, never in what she says.</p>
@@ -373,7 +375,7 @@ CMP_ROWS = [
     ("can it keep a secret, or not know itself?", ("n", "everything is on the page"), ("y", "open, guarded, secret; aware or not"), ("n", "not on purpose")),
     ("does it move with time?", ("n", "one snapshot"), ("y", "since, until, revisions"), ("n", "one training run")),
     ("size", "about a kilobyte", "Clara: 12 KB for 23 nodes; a whole modelled life, a few hundred KB", "tens to hundreds of megabytes"),
-    ("what it takes to make", "a pen", "a pen, or a tool that proposes and you tick", "data, GPUs, hours of training"),
+    ("what it takes to make", "writing it by hand", "writing it by hand, or a tool that proposes and you tick", "data, GPUs, hours of training"),
     ("works with", "any model", "any model, today", "one model family"),
 ]
 CMP = "".join(f"<tr><th>{r[0]}</th>{cell(r[1])}{cell(r[2])}{cell(r[3])}</tr>" for r in CMP_ROWS)
@@ -440,6 +442,14 @@ HOWMANY_CSS = """
 .scen{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
 .scen button{font:500 13px Plex,sans-serif;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer}
 .scen button:hover,.scen button:focus-visible,.scen button.on{border-color:var(--teal);color:var(--teal);outline:none}
+/* wide view of the simulator (Yann, 7 Nov.): the panel moves into a full-width overlay, controls left, results right; the cross or Escape puts it back */
+.wbtn{position:absolute;top:12px;right:12px;font:500 12px PlexMono,monospace;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:5px 11px;cursor:pointer;letter-spacing:.04em}.wbtn:hover,.wbtn:focus-visible{color:var(--teal);border-color:var(--teal);outline:none}
+.wover{position:fixed;inset:0;z-index:60;background:rgba(5,8,12,.78);backdrop-filter:blur(6px);overflow:auto;padding:3vh 3vw;display:flex;align-items:flex-start;justify-content:center}
+.wover .wpanel{width:min(1560px,94vw);margin:auto;display:grid;grid-template-columns:minmax(360px,5fr) minmax(0,7fr);gap:26px;align-items:start;padding:26px 28px 24px;position:relative}
+.wover .wpanel .row{grid-template-columns:1fr}.wover .wpanel .wl,.wover .wpanel .wr{min-width:0}.wover .wpanel .wbtn{display:none}
+.wclose{position:absolute;top:10px;right:12px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:500 20px/1 Plex,sans-serif;cursor:pointer}.wclose:hover,.wclose:focus-visible{border-color:var(--teal);color:var(--teal);outline:none}
+@media (max-width:1000px){.wover .wpanel{grid-template-columns:1fr}}
+
 .res{background:linear-gradient(135deg,#102a25,#0f1d2b);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:12px}
 .res .t{font:700 44px/1 Bricolage,sans-serif;color:var(--ink);letter-spacing:-.02em}.res .t small{font:500 16px Plex,sans-serif;color:var(--muted);letter-spacing:0;margin-left:8px}
 .res .s{font-size:13.5px;color:var(--muted);margin-top:8px}
@@ -507,6 +517,8 @@ PROFILES = [
      "three or four traits commonly attached to the sign"),
 ]
 PROF_HTML = "".join(f"<tr><th>{a}</th><td>{b}</td><td>{c}</td><td>{d}</td></tr>" for a, b, c, d in PROFILES)
+
+WIDE_JS = '(function(){const P=document.getElementById("sim");if(!P)return;P.style.position="relative";const LEFT=[".scen",".row"];const b=document.createElement("button");b.type="button";b.className="wbtn";b.textContent="⤢ wide view";b.setAttribute("aria-label","Open the simulator in a wide view");P.appendChild(b);let over=null,order=null,ph=null;function redraw(){window.dispatchEvent(new Event("resize"));const i=P.querySelector("input");if(i)i.dispatchEvent(new Event("input",{bubbles:true}))}function open(){if(over)return;order=[...P.children];ph=document.createComment("sim");P.parentNode.insertBefore(ph,P);over=document.createElement("div");over.className="wover";over.setAttribute("role","dialog");over.setAttribute("aria-modal","true");over.setAttribute("aria-label","Simulator, wide view");const wl=document.createElement("div");wl.className="wl";const wr=document.createElement("div");wr.className="wr";for(const c of order){if(c===b)continue;(LEFT.some(s=>c.matches(s))?wl:wr).appendChild(c)}P.classList.add("wpanel");P.appendChild(wl);P.appendChild(wr);const x=document.createElement("button");x.type="button";x.className="wclose";x.innerHTML="&times;";x.setAttribute("aria-label","Close the wide view");x.onclick=close;P.appendChild(x);over.appendChild(P);document.body.appendChild(over);document.body.style.overflow="hidden";over.addEventListener("click",e=>{if(e.target===over)close()});setTimeout(()=>{redraw();x.focus()},30)}function close(){if(!over)return;const x=P.querySelector(".wclose");if(x)x.remove();for(const c of order)P.appendChild(c);P.querySelectorAll(":scope>.wl,:scope>.wr").forEach(e=>e.remove());P.classList.remove("wpanel");ph.parentNode.insertBefore(P,ph);ph.remove();over.remove();over=null;document.body.style.overflow="";setTimeout(()=>{redraw();b.focus()},30)}b.addEventListener("click",open);document.addEventListener("keydown",e=>{if(e.key==="Escape"&&over)close()})})();'
 
 SIM_JS = """
 (function(){
@@ -718,7 +730,7 @@ HOWMANY = head("How many convictions make a person? — COF 1.2",
 <p>Nine types, each defined by a basic fear and a basic desire, widely used in coaching and spiritual direction. A systematic review of 104 samples found mixed evidence of reliability and validity: some subscales relate to the Big Five in the expected ways and several studies report that people find it helpful for personal growth, but factor analyses usually recover fewer than nine factors, and little supports the wings and movements between types ({L(DOI("10.1002/jclp.23097"), "Hook et al., 2021")}).</p>
 
 <h3>Astrology</h3>
-<p>A sun sign is the oldest personality shorthand there is. In controlled tests it has no predictive power. In a double-blind experiment published in <i>Nature</i>, astrologers matched birth charts to one of three personality profiles from a standard questionnaire, and got it right about one time in three — what chance gives ({L(DOI("10.1038/318419a0"), "Carlson, 1985")}). A review of more than forty controlled studies found astrologers doing no better than chance, and people born minutes apart showed none of the similarities astrology predicts ({L("https://www.ingentaconnect.com/content/imp/jcs/2003/00000010/f0020006/art00010", "Dean &amp; Kelly, 2003")}). In a story, though, a character who reads her horoscope every morning is a fact about her — and that is a node too.</p>
+<p>A sun sign is the oldest personality shorthand there is. In controlled tests it has no predictive power. In a double-blind experiment published in <i>Nature</i>, astrologers matched birth charts to one of three personality profiles from a standard questionnaire, and got it right about one time in three — what chance gives ({L(DOI("10.1038/318419a0"), "Carlson, 1985")}). A review of more than forty controlled studies found astrologers doing no better than chance, and people born minutes apart showed none of the similarities astrology predicts ({L("https://www.ingentaconnect.com/content/imp/jcs/2003/00000010/f0020006/art00010", "Dean &amp; Kelly, 2003")}). One finding matters for a character, though: the sign can still shape the person. In a sample of 2,324 adults, people born under the odd-numbered signs scored as more extraverted on a standard questionnaire, just as astrology says ({L(DOI("10.1080/00224545.1978.9924119"), "Mayo, White &amp; Eysenck, 1978")}) — and the effect disappeared among people who did not know what their sign was supposed to make them ({L("https://search.worldcat.org/title/8347924", "Eysenck &amp; Nias, 1982")}). The horoscope had done the work: a belief about oneself, repeated, becomes behaviour. In a story, a character who reads hers every morning is a fact about her — a node, often <i>aware: no</i>, with a <code>because</code> on the habit.</p>
 
 <table class="prof"><thead><tr><th></th><th>what it gives</th><th>what the evidence says</th><th>what COF proposes from it</th></tr></thead><tbody>{PROF_HTML}</tbody></table>
 
@@ -734,6 +746,7 @@ HOWMANY = head("How many convictions make a person? — COF 1.2",
 <h2>Not instead of weights</h2>
 <p>Weights are richer, and nothing on this page competes with that. But they are mute about themselves: they can produce the no, never the <i>why</i>. You cannot read them, correct one conviction, keep one secret, or take them to another model.</p>
 <p>So the two are not rivals. A graph is the score; weights are a performance of it. The score can be read, argued with, versioned, carried to any orchestra — and one day it can be what a model is tuned from, and what its performance is checked against. Until then, it is the only one of the three that you can write by hand tonight, and that every model can read tomorrow.</p>
+<p>In practice the two work best together. Weights give the voice its grain; the graph gives it something to hold on to — buoys in a channel: the current does the moving, the buoys keep it from drifting. Prompt the graph into a model you fine-tuned on the same character, and each corrects the other's failure mode: the weights stop improvising convictions the file never gave, the graph stops reading like a list.</p>
 
 <h2>An open question: the score and the performance</h2>
 <p>That last sentence is a research question, and we would like someone to take it on. Can a psyche graph be the <b>supervision signal</b> for a character's weights — and can it be the <b>evaluation set</b>?</p>
@@ -773,6 +786,8 @@ HOWMANY = head("How many convictions make a person? — COF 1.2",
   <p>Pittenger, D. J. (2005). Cautionary comments regarding the Myers-Briggs Type Indicator. <i>Consulting Psychology Journal: Practice and Research</i>, 57(3), 210–221. {L(DOI("10.1037/1065-9293.57.3.210"), "doi:10.1037/1065-9293.57.3.210")}</p>
   <p>Hook, J. N. et al. (2021). The Enneagram: a systematic review of the literature and directions for future research. <i>Journal of Clinical Psychology</i>, 77(4), 865–883. {L(DOI("10.1002/jclp.23097"), "doi:10.1002/jclp.23097")}</p>
   <p>Carlson, S. (1985). A double-blind test of astrology. <i>Nature</i>, 318, 419–425. {L(DOI("10.1038/318419a0"), "doi:10.1038/318419a0")}</p>
+  <p>Mayo, J., White, O., &amp; Eysenck, H. J. (1978). An empirical study of the relation between astrological factors and personality. <i>The Journal of Social Psychology</i>, 105(2), 229–236. {L(DOI("10.1080/00224545.1978.9924119"), "doi:10.1080/00224545.1978.9924119")}</p>
+  <p>Eysenck, H. J., &amp; Nias, D. K. B. (1982). <i>Astrology: Science or Superstition?</i> Maurice Temple Smith, London. The self-attribution reanalysis: the sign–extraversion link holds only among people who know what their sign predicts.</p>
   <p>Dean, G. &amp; Kelly, I. W. (2003). Is astrology relevant to consciousness and psi? <i>Journal of Consciousness Studies</i>, 10(6–7), 175–198. {L("https://www.ingentaconnect.com/content/imp/jcs/2003/00000010/f0020006/art00010", "ingentaconnect")}</p>
   <h3>Counting tokens</h3>
   <p>OpenAI Help Center, {L("https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them", "What are tokens and how to count them?")} — “1 token ≈ 4 characters in English”, the rule the simulator uses (the same as <code>cof tokens</code> without a tokenizer).</p>
@@ -789,7 +804,7 @@ HOWMANY = head("How many convictions make a person? — COF 1.2",
     <a class="btn" href="../builder/">Write a psyche</a>
   </div>
 </section>
-""" + tail("<script>" + WHY_JS + "</script>\n<script>" + SIM_JS.replace("__SIM__", json.dumps(SIM)) + "</script>",
+""" + tail("<script>" + WHY_JS + "</script>\n<script>" + SIM_JS.replace("__SIM__", json.dumps(SIM)) + "</script>\n<script>" + WIDE_JS + "</script>",
            " Myers-Briggs is a trademark of its owner, mentioned here descriptively, with no affiliation.")
 HOWMANY = HOWMANY.replace("</style>", HOWMANY_CSS + "</style>", 1)
 
