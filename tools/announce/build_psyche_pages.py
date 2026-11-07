@@ -9,7 +9,7 @@ with Yann on 3 Nov. 2026: title « AI characters now have an inner life », subt
 take with you — every conviction tied to the memory that made it. »; on 4 Nov. 2026 the companion page became « How
 many convictions make a person? » (psyche/how-many.html, the companion of memories/how-much.html), with « Why did she
 say no? » as its opening section. The earlier name psyche/why.html was never published and is no longer written."""
-import json, re
+import json, re, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -48,6 +48,9 @@ def memories():
         out[vid] = {"l": en(v.get("label")), "g": (n.get("gist") or {}).get("en", ""), "a": a, "b": b, "per": v.get("kind") == "period"}
     return out
 
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from i18n_psyche import langs_nav, hreflang_links, LANGS_CSS  # noqa: E402
 
 SRC = (ROOT / "memories/index.html").read_text("utf-8")
 CSS = SRC[SRC.index("<style>"):SRC.index("</style>")]
@@ -144,8 +147,9 @@ def head(title, desc, ogt, ogd, img, url):
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://yannsouetre.github.io/cof/psyche/img/{'og-how-many.jpg' if url.startswith('how-many') else 'og-psyche.jpg'}">
 <link rel="canonical" href="https://yannsouetre.github.io/cof/psyche/{url}">
+{hreflang_links("index" if url == "" else "how-many")}
 <link rel="icon" type="image/svg+xml" href="../builder/icon/cof-icon-dark.svg">
-{css}{EXTRA_CSS}</style>
+{css}{EXTRA_CSS}{LANGS_CSS}</style>
 </head>
 <body>
 """
@@ -162,6 +166,8 @@ def tail(scripts, note=""):
 
 
 TOP12 = TOP.replace("· 1.1</span>", "· 1.2</span>")
+TOPI = TOP12.replace('<details class="share"', langs_nav("index", "en") + '<details class="share"')
+TOPH = TOP12.replace('<details class="share"', langs_nav("how-many", "en") + '<details class="share"')
 N, MEM = nodes(), memories()
 ND = {n["id"]: n for n in N}
 
@@ -255,7 +261,7 @@ INDEX = head("AI characters now have an inner life — COF 1.2",
              "A psyche you can read, edit and take with you — every conviction tied to the memory that made it.",
              HERO_INDEX, "") + f"""
 <header class="hero">
-  {TOP12}
+  {TOPI}
   <div class="text">
     <h1>AI characters now have an inner life</h1>
     <div class="rule"></div>
@@ -443,7 +449,7 @@ HOWMANY_CSS = """
 .scen button{font:500 13px Plex,sans-serif;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer}
 .scen button:hover,.scen button:focus-visible,.scen button.on{border-color:var(--teal);color:var(--teal);outline:none}
 /* wide view of the simulator (Yann, 7 Nov.): the panel moves into a full-width overlay, controls left, results right; the cross or Escape puts it back */
-.wbtn{position:absolute;top:12px;right:12px;font:500 12px PlexMono,monospace;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:5px 11px;cursor:pointer;letter-spacing:.04em}.wbtn:hover,.wbtn:focus-visible{color:var(--teal);border-color:var(--teal);outline:none}
+.wbtn{margin-left:auto;align-self:center;font:500 12px PlexMono,monospace;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:5px 11px;cursor:pointer;letter-spacing:.04em}.wbtn:hover,.wbtn:focus-visible{color:var(--teal);border-color:var(--teal);outline:none}
 .wover{position:fixed;inset:0;z-index:60;background:rgba(5,8,12,.78);backdrop-filter:blur(6px);overflow:auto;padding:3vh 3vw;display:flex;align-items:flex-start;justify-content:center}
 .wover .wpanel{width:min(1560px,94vw);margin:auto;display:grid;grid-template-columns:minmax(360px,5fr) minmax(0,7fr);gap:26px;align-items:start;padding:26px 28px 24px;position:relative}
 .wover .wpanel .row{grid-template-columns:1fr}.wover .wpanel .wl,.wover .wpanel .wr{min-width:0}.wover .wpanel .wbtn{display:none}
@@ -518,7 +524,7 @@ PROFILES = [
 ]
 PROF_HTML = "".join(f"<tr><th>{a}</th><td>{b}</td><td>{c}</td><td>{d}</td></tr>" for a, b, c, d in PROFILES)
 
-WIDE_JS = '(function(){const P=document.getElementById("sim");if(!P)return;P.style.position="relative";const LEFT=[".scen",".row"];const b=document.createElement("button");b.type="button";b.className="wbtn";b.textContent="⤢ wide view";b.setAttribute("aria-label","Open the simulator in a wide view");P.appendChild(b);let over=null,order=null,ph=null;function redraw(){window.dispatchEvent(new Event("resize"));const i=P.querySelector("input");if(i)i.dispatchEvent(new Event("input",{bubbles:true}))}function open(){if(over)return;order=[...P.children];ph=document.createComment("sim");P.parentNode.insertBefore(ph,P);over=document.createElement("div");over.className="wover";over.setAttribute("role","dialog");over.setAttribute("aria-modal","true");over.setAttribute("aria-label","Simulator, wide view");const wl=document.createElement("div");wl.className="wl";const wr=document.createElement("div");wr.className="wr";for(const c of order){if(c===b)continue;(LEFT.some(s=>c.matches(s))?wl:wr).appendChild(c)}P.classList.add("wpanel");P.appendChild(wl);P.appendChild(wr);const x=document.createElement("button");x.type="button";x.className="wclose";x.innerHTML="&times;";x.setAttribute("aria-label","Close the wide view");x.onclick=close;P.appendChild(x);over.appendChild(P);document.body.appendChild(over);document.body.style.overflow="hidden";over.addEventListener("click",e=>{if(e.target===over)close()});setTimeout(()=>{redraw();x.focus()},30)}function close(){if(!over)return;const x=P.querySelector(".wclose");if(x)x.remove();for(const c of order)P.appendChild(c);P.querySelectorAll(":scope>.wl,:scope>.wr").forEach(e=>e.remove());P.classList.remove("wpanel");ph.parentNode.insertBefore(P,ph);ph.remove();over.remove();over=null;document.body.style.overflow="";setTimeout(()=>{redraw();b.focus()},30)}b.addEventListener("click",open);document.addEventListener("keydown",e=>{if(e.key==="Escape"&&over)close()})})();'
+WIDE_JS = '(function(){const P=document.getElementById("sim");if(!P)return;P.style.position="relative";const LEFT=[".scen",".row"];const b=document.createElement("button");b.type="button";b.className="wbtn";b.textContent="⤢ wide view";b.setAttribute("aria-label","Open the simulator in a wide view");(P.querySelector(".scen")||P).appendChild(b);let over=null,order=null,ph=null;function redraw(){window.dispatchEvent(new Event("resize"));const i=P.querySelector("input");if(i)i.dispatchEvent(new Event("input",{bubbles:true}))}function open(){if(over)return;order=[...P.children];ph=document.createComment("sim");P.parentNode.insertBefore(ph,P);over=document.createElement("div");over.className="wover";over.setAttribute("role","dialog");over.setAttribute("aria-modal","true");over.setAttribute("aria-label","Simulator, wide view");const wl=document.createElement("div");wl.className="wl";const wr=document.createElement("div");wr.className="wr";for(const c of order){if(c===b)continue;(LEFT.some(s=>c.matches(s))?wl:wr).appendChild(c)}P.classList.add("wpanel");P.appendChild(wl);P.appendChild(wr);const x=document.createElement("button");x.type="button";x.className="wclose";x.innerHTML="&times;";x.setAttribute("aria-label","Close the wide view");x.onclick=close;P.appendChild(x);over.appendChild(P);document.body.appendChild(over);document.body.style.overflow="hidden";over.addEventListener("click",e=>{if(e.target===over)close()});setTimeout(()=>{redraw();x.focus()},30)}function close(){if(!over)return;const x=P.querySelector(".wclose");if(x)x.remove();for(const c of order)P.appendChild(c);P.querySelectorAll(":scope>.wl,:scope>.wr").forEach(e=>e.remove());P.classList.remove("wpanel");ph.parentNode.insertBefore(P,ph);ph.remove();over.remove();over=null;document.body.style.overflow="";setTimeout(()=>{redraw();b.focus()},30)}b.addEventListener("click",open);document.addEventListener("keydown",e=>{if(e.key==="Escape"&&over)close()})})();'
 
 SIM_JS = """
 (function(){
@@ -646,7 +652,7 @@ HOWMANY = head("How many convictions make a person? — COF 1.2",
                "Nobody has counted. What psychology measured instead, a simulator to test your own, and what the popular profiles are worth.",
                HERO_HOW_MANY, COMPANION) + f"""
 <header class="hero">
-  {TOP12.replace('<span>· Character Open File · 1.2</span>', '<span>·</span><a href="./">psyche</a><span class="crumb">·</span><span class="crumb">how many?</span>')}
+  {TOPH.replace('<span>· Character Open File · 1.2</span>', '<span>·</span><a href="./">psyche</a><span class="crumb">·</span><span class="crumb">how many?</span>')}
   <div class="text">
     <h1>How many convictions<br>make a person?</h1>
     <div class="rule"></div>

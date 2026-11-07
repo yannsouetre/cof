@@ -52,7 +52,7 @@ The three profiles and the sign are an author's shorthand: they produce ordinary
 
 ## Known issue
 
-- **Opening an existing file in the builder and building it again can lose what the builder does not model** (present since 1.0): `story` and `lorebook` variants and their files, variant `tags` and `neutral`, unknown keys, `derived` assets, `outfit.json`, the older fields of a `psyche.json` (contradictions, baseline emotion, custom traits, goal horizon and priority, fear intensity), and a linked LoRA can be duplicated. Until **builder 0.14.1** (COF 1.2.2, planned the week after 1.2.1 — 1.2.1, the day after this release, is the Character.AI import), edit such files with `cof-cli`, or keep the original next to the rebuilt one and compare with `cof diff`. The command line, the explorer and ComfyUI-COF are not affected.
+- **Opening an existing file in the builder and building it again can lose what the builder does not model** (present since 1.0): `story` and `lorebook` variants and their files, variant `tags` and `neutral`, unknown keys, `derived` assets, `outfit.json`, the older fields of a `psyche.json` (contradictions, baseline emotion, custom traits, goal horizon and priority, fear intensity), and a linked LoRA can be duplicated. Until **builder 0.14.2** (COF 1.2.2, planned the week after 1.2.1 — 1.2.1, the day after this release, is the Character.AI import), edit such files with `cof-cli`, or keep the original next to the rebuilt one and compare with `cof diff`. The command line, the explorer and ComfyUI-COF are not affected.
 
 ## For implementers
 
