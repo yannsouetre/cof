@@ -16,7 +16,15 @@ from playwright.async_api import async_playwright
 
 BASE = "http://localhost:8765"
 FPS, DUR = 30, 38
-FADE_IN, FADE_OUT = 0.3, 1.4
+# Since 7 November 2026 the psyche scene is shown LAST, before the outro, as « New in 1.2: Psyche, an inner life. »
+# (Yann): the page keeps its source timeline (14.2–18.8 s), the render remaps time scene by scene.
+PSYCHE_TITLE = "New in 1.2:<br>Psyche, an inner life."
+def remap(t):
+    if t < 14.2: return t                  # pieces, the file, everything that makes Clara
+    if t < 28.0: return t + 4.6            # presets, rights, several characters (source 18.8–32.6)
+    if t < 32.6: return t - 13.8           # the psyche scene (source 14.2–18.8)
+    return t                               # outro
+FADE_IN, FADE_OUT = 0.35, 1.4          # the fade-in is cubic and preceded by 15 ms of silence: a loud first sample clicks at open
 X264 = ["-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", "-preset", "slow", "-movflags", "+faststart"]
 
 
@@ -26,10 +34,11 @@ async def frames(br, page, w, h, out: Path, hero_dir: Path | None = None):
                             "-framerate", str(FPS), "-i", "-", *X264, str(out)], stdin=subprocess.PIPE)
     pg = await br.new_page(viewport={"width": w, "height": h}, device_scale_factor=1)
     await pg.goto(f"{BASE}/clip/{page}?render"); await pg.evaluate("document.fonts.ready"); await pg.wait_for_timeout(600)
+    await pg.evaluate("(t)=>{TEXT[3][2]=t}", PSYCHE_TITLE)
     n = FPS * DUR
     try:
         for i in range(n):
-            await pg.evaluate(f"render({i / FPS})")
+            await pg.evaluate(f"render({remap(i / FPS)})")
             png = await pg.screenshot(type="png")
             enc.stdin.write(png)
             if hero_dir is not None and i % (FPS // 15) == 0:
@@ -42,7 +51,7 @@ async def frames(br, page, w, h, out: Path, hero_dir: Path | None = None):
 
 def add_music(video: Path, music: Path, out: Path):
     """Muxes the music under an already encoded video (video stream copied), with the fades."""
-    af = f"afade=t=in:d={FADE_IN},afade=t=out:st={DUR - FADE_OUT}:d={FADE_OUT}"
+    af = f"adelay=15|15,afade=t=in:st=0:d={FADE_IN}:curve=cub,afade=t=out:st={DUR - FADE_OUT}:d={FADE_OUT}"
     subprocess.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", str(video), "-i", str(music),
                     "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-af", af, "-c:a", "aac", "-b:a", "192k", "-t", str(DUR),   # not -shortest: with a copied video it drops the last frames
                     "-movflags", "+faststart", str(out)], check=True)
