@@ -1613,7 +1613,7 @@ function stripIntimateBuild(manifest,entries){const E=manifest.elements||{};cons
   manifest.assets=(manifest.assets||[]).filter(a=>{if(!(drop.has(a.id)||(a.source&&drop.has(a.source))))return true;for(const pth of [a.path,a.transcript])if(pth){const i=entries.findIndex(en=>en.name===pth);if(i>=0)entries.splice(i,1)}return false});
   for(const p of Object.values(manifest.presets||{})){if(p.permissions_override?.allowSexualUsage)p.permissions_override.allowSexualUsage=false;if(p.primary_image&&drop.has(p.primary_image))delete p.primary_image}
   for(const r of [manifest.rights||{},...Object.values(manifest.identities||{}).map(i=>i.rights||{})])if(r.permissions&&"allowSexualUsage" in r.permissions)r.permissions.allowSexualUsage=false;
-  const tc=manifest.tags?.content;if(Array.isArray(tc)){const i=tc.indexOf("nudity");if(i>=0)tc.splice(i,1);if(!tc.length)tc.push("none")}
+  const tc=manifest.tags?.content;if(Array.isArray(tc)){for(const w of ["nudity","sexual"]){const i=tc.indexOf(w);if(i>=0)tc.splice(i,1)}if(!tc.length)tc.push("none")}   /* « sexual » came with the intimate variants that just left (7 Nov.) */
   if(manifest.coverage){manifest.coverage.elements=Object.keys(E);manifest.coverage.variants=Object.values(E).reduce((n,e)=>n+Object.keys(e.variants||{}).length,0)}
   S._lastPurged=gone;return gone}
 async function memAssemble(manifest,entries,opts){memSync();const vids=Object.keys(S.memories);if(!vids.length)return;const allAud=!!$("#b_mem_allaud")?.checked,keepPers=!!$("#b_mem_droppers")&&!$("#b_mem_droppers").checked;
