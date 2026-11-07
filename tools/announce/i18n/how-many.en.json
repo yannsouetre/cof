@@ -238,8 +238,11 @@
  "d9f4cc23e1": "at ${A}: ${nf(S.ever)} formed in all (${nf(S.ever-S.end*r)} new, ${nf(S.end*r)} revision${Math.round(S.end*r)===1?\"\":\"s\"}), ${nf(S.end)} let go — every one stays in the file, closed by its until",
  "1e3cf4659e": "${nf(S.ever)} nodes × ${nf(per)} bytes, ${L} language${L>1?\"s\":\"\"}",
  "90da3fdb9a": "the ${Math.min(k,Math.round(S.held))} nodes the moment calls for",
+ "2370eb6c5d": "<text x=\"${rt}\" y=\"${b+18}\" text-anchor=\"end\" style=\"font:500 11px PlexMono,monospace;fill:#7d8d89\">age</text>",
+ "4aa656a5c4": "<text x=\"${x(A)-4}\" y=\"${y(last[1])-8}\" text-anchor=\"end\" style=\"font:500 12px Plex,sans-serif;fill:#dfe8e5\">held · ${nf(last[1])}</text>",
  "58393cf150": "<text x=\"${x(A)-4}\" y=\"${Math.min(b-6,y(last[2])+16)}\" text-anchor=\"end\" style=\"font:500 12px Plex,sans-serif;fill:#dfe8e5\">let go · ${nf(last[2])}</text>",
  "e5dabecb5b": "Convictions held and let go from birth to age ${A}: ${nf(last[1])} held, ${nf(last[2])} let go at the end.",
+ "fd631d90cb": "<br>Clara · ${D.CLARA[a][1]}",
  "c523b27402": "age ${a}<br>held · ${nf(q[1])}<br>let go · ${nf(q[2])}${cl}",
  "6a859a85c0": "Clara's whole psyche",
  "ffccc6bb95": "One picture of her wedding",
@@ -252,6 +255,5 @@
  "d7af3ef1a3": "⤢ wide view",
  "6195906ece": "Open the simulator in a wide view",
  "edd5e779fc": "Simulator, wide view",
- "385b9885e7": "Close the wide view",
- "7de7e7e1a4": ":scope>.wl,:scope>.wr"
+ "385b9885e7": "Close the wide view"
 }

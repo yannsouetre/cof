@@ -62,6 +62,15 @@ def hreflang_links(page):
     return "\n".join(out)
 
 
+# node kinds and stability levels as the builder and the explorer name them (rendered from code in the hover card)
+_K = ["wound", "value", "belief", "want", "need", "fear", "stance", "taste", "habit", "contradiction", "rule", "core", "settled", "shifting", "fragile"]
+_W = {"fr": ["blessure", "valeur", "croyance", "désir", "besoin", "peur", "position", "goût", "habitude", "contradiction", "règle", "noyau", "établi", "mouvant", "fragile"],
+      "de": ["Wunde", "Wert", "Überzeugung", "Wunsch", "Bedürfnis", "Angst", "Haltung", "Geschmack", "Gewohnheit", "Widerspruch", "Regel", "Kern", "gefestigt", "im Wandel", "fragil"],
+      "es": ["herida", "valor", "creencia", "deseo", "necesidad", "miedo", "postura", "gusto", "hábito", "contradicción", "regla", "núcleo", "asentado", "cambiante", "frágil"],
+      "zh": ["创伤", "价值观", "信念", "欲望", "需求", "恐惧", "立场", "喜好", "习惯", "矛盾", "规则", "核心", "稳定", "变动", "脆弱"],
+      "ja": ["傷", "価値観", "信念", "欲求", "必要", "恐れ", "態度", "好み", "習慣", "矛盾", "ルール", "核", "安定", "変動", "脆弱"]}
+WORDS = {l: dict(zip(_K, w)) for l, w in _W.items()}
+
 LANGS_CSS = (".top .langs{margin-left:auto;display:flex;gap:2px;letter-spacing:.04em}"
              ".top .langs a{font:500 11px/1 PlexMono,monospace;color:var(--mint);opacity:.6;padding:6px 6px;border-radius:6px;border:1px solid transparent}"
              ".top .langs a:hover{opacity:1}.top .langs a.on{opacity:1;color:var(--teal);border-color:rgba(255,255,255,.18)}"
@@ -188,15 +197,20 @@ def js_units(s):
     for sm in re.finditer(r"<script\b[^>]*>([\s\S]*?)</script>", s):
         js, base = sm.group(1), sm.start(1)
         for a, b, v in _js_literals(js):
-            if not v.strip() or not re.search(r"[A-Za-z]{3,}", v):
+            if not v.strip():
                 continue
-            if re.match(r"^[.#\[(]|^https?:|^mailto:|^url\(", v) or re.fullmatch(r"[\w\-./:#%]+", v) or v.startswith("xMid"):
+            if re.search(r'"[lg]":\s*$', js[max(0, a - 8):a - 1]) and re.search(r"[A-Za-z\u00C0-\u024F]{2,}", v):
+                out.append((base + a, base + b, v)); continue
+            if not re.search(r"[A-Za-z]{3,}", v):
+                continue
+            if re.match(r"^[.#:\[(]|^https?:|^mailto:|^url\(|^rgba?\(", v) or re.fullmatch(r"[\w\-./:#%]+", v) or v.startswith("xMid"):
                 continue
             if "[rel=" in v or v in ("ln off", "n off", "n piv", "n on", "ln on", "on"):
                 continue
             plain = re.sub(r"\$\{[^}]*\}", " ", v)
             plain = re.sub(r"<[^>]+>", " ", plain)
-            if not (re.search(r"[A-Za-z]{2,}\W+[A-Za-z]{2,}", plain) or re.search(r"[.!?:…]$", plain.strip())):
+            if not (re.search(r"[A-Za-z]{2,}\W+[A-Za-z]{2,}", plain) or re.search(r"[.!?:…]$", plain.strip())
+                    or ("${" in v and re.search(r"[A-Za-z]{3,}", plain))):
                 continue
             out.append((base + a, base + b, v))
     return out
@@ -225,6 +239,49 @@ def extract():
         print(page, len(d), "units", sum(len(v) for v in d.values()), "chars")
 
 
+def _tpl_spans(v):
+    """[(start, end)] of the top-level ${...} expressions of a template value (end after the closing brace)."""
+    spans, i, n = [], 0, len(v)
+    while i < n:
+        if v.startswith("${", i):
+            j, depth = i + 2, 1
+            while j < n and depth:
+                c = v[j]
+                if c in "\"'":
+                    q = c; j += 1
+                    while j < n and v[j] != q:
+                        j += 2 if v[j] == "\\" else 1
+                elif c == "`":
+                    j += 1
+                    while j < n and v[j] != "`":
+                        if v.startswith("${", j):
+                            k = _tpl_spans(v[j:])[0][1] if _tpl_spans(v[j:]) else 2
+                            j += k; continue
+                        j += 2 if v[j] == "\\" else 1
+                elif c == "{": depth += 1
+                elif c == "}": depth -= 1
+                j += 1
+            spans.append((i, j)); i = j
+        else:
+            i += 1
+    return spans
+
+
+def _exprs(v):
+    """Normalized top-level expressions: the literal text of nested template literals is blanked, so a
+    translation may reword `${c?`age ${a}`:`age ${b}`}` and still match."""
+    out = []
+    for a, b in _tpl_spans(v):
+        e = v[a:b]
+        def blank(m):
+            inner = m.group(1)
+            keep = "".join(inner[x:y] for x, y in _tpl_spans(inner))
+            return "`" + keep + "`"
+        e = re.sub(r"`((?:[^`\\]|\\.)*)`", blank, e)
+        out.append(e)
+    return out
+
+
 # -------------------------------------------------------------------------------------------------------- application
 def _escape_for(s, a, b, t):
     """The replacement must be escaped like its context: a JS literal gets its quote escaped, an attribute its quotes."""
@@ -233,10 +290,13 @@ def _escape_for(s, a, b, t):
     if re.search(r'(?:\s(?:alt|title|aria-label|placeholder|data-tip)|content)="$', before):
         return t.replace('"', "&quot;")
     if q in ('"', "'", "`") and re.search(r"<script\b", s[:a]) and s.rfind("<script", 0, a) > s.rfind("</script>", 0, a):
-        t = t.replace("\\", "\\\\").replace(q, "\\" + q)
-        if q != "`":
-            t = t.replace("\n", "\\n")
-        return t
+        if q == "`":
+            out, i = [], 0
+            for x, y in _tpl_spans(t):
+                out.append(t[i:x].replace("\\", "\\\\").replace("`", "\\`")); out.append(t[x:y]); i = y
+            out.append(t[i:].replace("\\", "\\\\").replace("`", "\\`"))
+            return "".join(out)
+        return t.replace("\\", "\\\\").replace(q, "\\" + q).replace("\n", "\\n")
     return t
 
 
@@ -257,6 +317,9 @@ def apply(langs):
                     continue
                 s = s[:a] + _escape_for(en, a, b, tr[k]) + s[b:]
             s = s.replace('<html lang="en">', f'<html lang="{HTML_LANG.get(lang, lang)}">', 1)
+            if page == "index" and lang in WORDS:
+                s = s.replace("${n.k}", "${(window.__KW||{})[n.k]||n.k}").replace("${n.st}", "${(window.__KW||{})[n.st]||n.st}")
+                s = s.replace("<script>", "<script>window.__KW=" + json.dumps(WORDS[lang], ensure_ascii=False) + ";</script>\n<script>", 1)
             s = re.sub(r'<nav class="langs".*?</nav>', langs_nav(page, lang), s, count=1)
             other = "how-many" if page == "index" else "index"
             s = s.replace(f'href="{PAGES[other]}"', f'href="{file_for(other, lang)}"')
@@ -286,8 +349,8 @@ def check(langs):
                 tags_en = re.findall(r"<(/?\w+)", v); tags_tr = re.findall(r"<(/?\w+)", w)
                 if sorted(tags_en) != sorted(tags_tr):
                     print(page, lang, "tags", k, v[:50], "->", w[:50]); bad += 1
-                plural = re.compile(r'\$\{[^}]*\?"":"s"\}')      # an English plural suffix may be dropped by a translation
-                ex_en = re.findall(r"\$\{[^}]*\}", v); ex_tr = re.findall(r"\$\{[^}]*\}", w)
+                plural = re.compile(r'\$\{[^}]*\?(?:"":"s"|"s":"")\}')      # an English plural suffix may be dropped by a translation
+                ex_en = _exprs(v); ex_tr = _exprs(w)
                 if sorted(ex_en) != sorted(ex_tr) and sorted(e for e in ex_en if not plural.fullmatch(e)) != sorted(e for e in ex_tr if not plural.fullmatch(e)):
                     print(page, lang, "${}", k, v[:50], "->", w[:50]); bad += 1
                 if re.findall(r'href="[^"]*"', v) != re.findall(r'href="[^"]*"', w):

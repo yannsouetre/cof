@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>多少条信条，才构成一个人？— COF 1.2</title>
+<meta name="description" content="心理学从未统计过一个人的信条。它统计过的是别的东西——价值观、特质、人格的层次——这里还有一个模拟器供你检验自己的数字，有大五人格、迈尔斯-布里格斯类型、九型人格和占星术的价值几何，以及保存一个心智的三种方式。">
+<meta property="og:title" content="多少条信条，才构成一个人？">
+<meta property="og:description" content="没有人统计过。心理学转而测量了什么，一个检验你自己数字的模拟器，以及流行人格画像的价值几何。">
+<meta property="og:image" content="https://yannsouetre.github.io/cof/psyche/img/og-how-many.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://yannsouetre.github.io/cof/psyche/img/og-how-many.jpg">
+<link rel="canonical" href="https://yannsouetre.github.io/cof/psyche/how-many.zh.html">
+<link rel="alternate" hreflang="en" href="https://yannsouetre.github.io/cof/psyche/how-many.html">
+<link rel="alternate" hreflang="fr" href="https://yannsouetre.github.io/cof/psyche/how-many.fr.html">
+<link rel="alternate" hreflang="de" href="https://yannsouetre.github.io/cof/psyche/how-many.de.html">
+<link rel="alternate" hreflang="es" href="https://yannsouetre.github.io/cof/psyche/how-many.es.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://yannsouetre.github.io/cof/psyche/how-many.zh.html">
+<link rel="alternate" hreflang="ja" href="https://yannsouetre.github.io/cof/psyche/how-many.ja.html">
+<link rel="alternate" hreflang="x-default" href="https://yannsouetre.github.io/cof/psyche/how-many.html">
+<link rel="icon" type="image/svg+xml" href="../builder/icon/cof-icon-dark.svg">
+<style>
+@font-face{font-family:"Michroma";src:url(../clip/fonts/michroma-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Cormorant";src:url(../clip/fonts/cormorant-garamond-latin-500-italic.woff2) format("woff2");font-weight:500;font-style:italic;font-display:swap}
+@font-face{font-family:"Bricolage";src:url(../clip/fonts/bricolage-grotesque-latin-700-normal.woff2) format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Plex";src:url(../clip/fonts/ibm-plex-sans-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Plex";src:url(../clip/fonts/ibm-plex-sans-latin-500-normal.woff2) format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"PlexMono";src:url(../clip/fonts/ibm-plex-mono-latin-500-normal.woff2) format("woff2");font-weight:500;font-display:swap}
+:root{--bg:#0d1312;--night:#070b12;--panel:#18201f;--line:#2a3533;--ink:#eef3f1;--muted:#93a39e;--teal:#4cc2a8;--mint:#bfeee2;--violet:#a98ae8;--col:760px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.65 Plex,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--teal)}
+img{display:block;max-width:100%}
+
+/* hero: the image, the sentence, the voice */
+.hero{position:relative;min-height:92vh;display:flex;flex-direction:column;justify-content:flex-start;background:var(--night) url(img/hero-how-many.jpg) 72% center/cover no-repeat;isolation:isolate}
+.hero::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,11,18,.78) 0%,rgba(7,11,18,.55) 26%,rgba(7,11,18,0) 48%,rgba(7,11,18,0) 78%,rgba(13,19,18,1) 100%);z-index:-1}
+.hero .top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:12px;padding:22px clamp(20px,5vw,64px);font:500 14px/1 PlexMono,monospace;color:var(--mint);letter-spacing:.06em}
+.hero .top img{width:28px;height:28px;border-radius:7px}
+.hero .top a{color:inherit;text-decoration:none}.share{margin-left:auto;position:relative;letter-spacing:0}.share summary{list-style:none;cursor:pointer;font:500 12px/1 PlexMono,monospace;letter-spacing:.06em;color:var(--mint);opacity:.75;padding:6px 8px;border:1px solid transparent;border-radius:8px}.share summary::-webkit-details-marker{display:none}.share summary:hover,.share[open] summary{opacity:1;border-color:rgba(255,255,255,.18)}.share menu{position:absolute;right:0;top:calc(100% + 6px);margin:0;padding:6px;list-style:none;background:#0d1312;border:1px solid rgba(255,255,255,.14);border-radius:10px;min-width:11em;z-index:5;box-shadow:0 8px 24px rgba(0,0,0,.4)}.share menu a,.share menu button{display:block;width:100%;text-align:left;font:500 12px/1 PlexMono,monospace;letter-spacing:.04em;color:#dfe7e4;background:none;border:0;padding:8px 10px;border-radius:6px;text-decoration:none;cursor:pointer}.share menu a:hover,.share menu button:hover{background:rgba(255,255,255,.08);color:#fff}
+.hero .top span{opacity:.7}
+.hero .text{padding:clamp(84px,13vh,130px) clamp(20px,5vw,64px) 0;max-width:1200px}
+h1{font:400 clamp(21px,3.6vw,46px)/1.25 Michroma,sans-serif;letter-spacing:.22em;text-transform:uppercase;margin:0 0 18px;color:#ecE8e0;text-shadow:0 2px 24px rgba(0,0,0,.6)}
+.hero .rule{width:88px;height:1px;background:var(--mint);opacity:.8;margin:0 0 18px}
+.voice{font:500 clamp(22px,2.6vw,32px)/1.3 Cormorant,Georgia,serif;color:#e4dfd6;margin:0;max-width:720px}
+.voice small{display:block;font:500 14px/1 PlexMono,monospace;color:var(--mint);letter-spacing:.06em;margin-top:14px;font-style:normal}
+.hero .kicker{position:absolute;right:clamp(20px,5vw,64px);bottom:22px;font:400 11px/1 Michroma,sans-serif;letter-spacing:.3em;color:var(--mint);opacity:.85}
+
+/* reading column */
+main{max-width:var(--col);margin:0 auto;padding:72px 20px 40px}
+.lede{font-size:clamp(21px,2.3vw,25px);line-height:1.5;color:var(--ink);margin:0 0 28px}
+p{margin:0 0 22px;color:#d9e0dd}
+h2{font:400 clamp(17px,2vw,21px)/1.4 Michroma,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--mint);margin:84px 0 22px;padding-top:28px;border-top:1px solid var(--line)}
+h3{font:500 22px/1.3 Plex,sans-serif;margin:34px 0 10px;color:var(--ink)}
+.quote{font:500 clamp(24px,2.8vw,32px)/1.3 Cormorant,Georgia,serif;color:#e4dfd6;margin:40px 0;padding-left:22px;border-left:2px solid var(--violet)}
+.quote cite{display:block;font:500 13px/1 PlexMono,monospace;color:var(--muted);font-style:normal;margin-top:12px;letter-spacing:.04em}
+code{font:500 .88em PlexMono,monospace;color:var(--teal)}
+
+/* the memory card: Clara's first memory, as the file holds it */
+.memory{display:grid;grid-template-columns:200px 1fr;gap:0;background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;margin:32px 0 10px}
+.memory img{width:100%;height:100%;object-fit:cover;filter:saturate(.85)}
+.memory .body{padding:20px 22px}
+.memory .gist{font:500 19px/1.45 Cormorant,Georgia,serif;font-size:21px;color:#e8e3da;margin:0 0 16px}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:5px 14px;font-size:14px;margin:0}
+.facts dt{color:var(--muted);font:500 12px/1.9 PlexMono,monospace;letter-spacing:.04em}
+.facts dd{margin:0;color:var(--ink)}
+.facts dd b{color:var(--teal);font-weight:500}
+.cap{font-size:14px;color:var(--muted);margin:0 0 30px}
+
+/* full-bleed figure */
+.wide{width:min(1180px,calc(100vw - 40px));margin:36px auto 30px;position:relative;left:50%;transform:translateX(-50%)}
+.wide img{border-radius:18px;border:1px solid var(--line);background:#121917;width:100%}
+.wide figcaption{max-width:calc(var(--col) - 40px);margin:14px auto 0;font-size:14px;color:var(--muted)}
+
+/* axes: three small statements, no cards */
+.axes{margin:26px 0 8px;padding:0;list-style:none;border-top:1px solid var(--line)}
+.axes li{padding:16px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:150px 1fr;gap:18px;font-size:16px}
+.axes li span{font:500 13px/1.6 PlexMono,monospace;color:var(--mint);letter-spacing:.04em}
+.axes li em{font-style:normal;color:var(--muted)}
+
+/* tools */
+.tools{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:26px 0 8px}
+.tools a{display:block;padding:16px 18px;border:1px solid var(--line);border-radius:14px;color:inherit;text-decoration:none;background:var(--panel)}
+.tools a:hover,.tools a:focus-visible{border-color:var(--teal);outline:none}
+.tools b{display:block;font-weight:500;color:var(--teal);margin-bottom:4px}
+.tools span{font-size:14px;color:var(--muted)}
+
+/* closing */
+.close{margin:96px auto 0;max-width:var(--col);padding:0 20px}
+.close .voice{color:#e4dfd6;max-width:none}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin:34px 0 0}.btns.row3 .btn{padding:13px 16px;white-space:nowrap}
+.btn{display:inline-block;padding:13px 20px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);text-decoration:none;font-weight:500}
+.btn:hover,.btn:focus-visible{border-color:var(--teal);outline:none}
+.btn.main{background:var(--teal);border-color:var(--teal);color:#05201b}
+footer{max-width:var(--col);margin:72px auto 0;padding:18px 20px 48px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+footer a{color:var(--muted)}
+footer .mark{font:700 20px Bricolage,sans-serif;color:var(--ink);letter-spacing:-.02em;margin-bottom:6px}
+
+/* the memories graph: SVG built from data, animated on arrival, one memory in focus at a time */
+.graph .gwrap{overflow-x:auto;border-radius:18px;border:1px solid var(--line);background:linear-gradient(180deg,#121917 0%,#0e1514 100%)}
+.graph svg{display:block;width:100%;min-width:760px;font-family:Plex,system-ui,sans-serif}
+.graph .axis{stroke:#2f3b39;stroke-width:1.5}
+.graph .axis-head{fill:#2f3b39}
+.graph .tick{font:500 11px PlexMono,monospace;fill:#5f6f6b}
+.graph .period rect{fill:rgba(169,138,232,.10);stroke:rgba(169,138,232,.55);stroke-width:1}
+.graph .period text{font:500 13px Plex,sans-serif;fill:#cbbcf0}
+.graph .period .sub{font:500 11px PlexMono,monospace;fill:#9f8cd0}
+.graph .link{fill:none;stroke:var(--teal);stroke-width:1.6;stroke-dasharray:5 5;opacity:.75}
+.graph .link.about{stroke-dasharray:2 5;stroke-linecap:round}
+.graph .linklab{font:500 11px PlexMono,monospace;fill:var(--mint);letter-spacing:.04em}
+.graph .thread{fill:none;stroke:#2f3b39;stroke-width:1.1;transition:stroke .3s,opacity .3s}
+.graph .thread.hot{stroke:var(--teal);opacity:.9}
+.graph .mem{cursor:pointer}
+.graph .mem .ring{fill:#0b100f;stroke:var(--teal);stroke-width:2;transition:stroke-width .3s,filter .3s}
+.graph .mem image{transition:filter .4s}
+.graph .mem .lab{font:500 14px Plex,sans-serif;fill:var(--ink);text-anchor:middle}
+.graph .mem .sub{font:400 11.5px Plex,sans-serif;fill:var(--muted);text-anchor:middle}
+.graph .mem .node{transform-box:fill-box;transform-origin:center;transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.graph .mem.on .node{transform:scale(1.22)}
+.graph .mem.on .ring{stroke-width:3;filter:drop-shadow(0 0 10px rgba(76,194,168,.55))}
+.graph .mem.dim image{filter:saturate(.5) brightness(.75)}
+.graph .person circle{fill:#1b2624;stroke:#3a4a47;stroke-width:1.2;transition:stroke .3s}
+.graph .person text{font:500 12px Plex,sans-serif;fill:#c7d1ce;text-anchor:middle}
+.graph .person .ini{font:500 13px PlexMono,monospace;fill:var(--mint)}
+.graph .person.hot circle{stroke:var(--teal)}
+.graph .place .frame{fill:#0b100f;stroke:#3a4a47;stroke-width:1.2}
+.graph .place text{font:400 11.5px Plex,sans-serif;fill:var(--muted);text-anchor:middle}
+.graph .lane{font:500 11px PlexMono,monospace;fill:#5f6f6b;letter-spacing:.06em}
+/* arrival */
+.graph .in{opacity:0;transition:opacity .6s ease}
+.graph.live .in{opacity:1}
+.graph .draw{stroke-dasharray:600;stroke-dashoffset:600;transition:stroke-dashoffset 1.4s ease}
+.graph.live .draw{stroke-dashoffset:0}
+/* focus card */
+.focus{display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:center;max-width:calc(var(--col) - 40px);margin:18px auto 0;min-height:120px;transition:opacity .35s}
+.focus.fade{opacity:0}
+.focus img{width:120px;height:120px;object-fit:cover;border-radius:14px;border:1px solid var(--line)}
+.focus .gist{font:500 20px/1.4 Cormorant,Georgia,serif;color:#e8e3da;margin:0 0 8px}
+.focus .meta{font:500 12px/1.7 PlexMono,monospace;color:var(--muted);margin:0;letter-spacing:.03em}
+.focus .meta b{color:var(--teal);font-weight:500}
+@media (max-width:640px){.focus{grid-template-columns:84px 1fr}.focus img{width:84px;height:84px}.focus .gist{font-size:17px}}
+@media (prefers-reduced-motion:reduce){.graph .in,.graph .draw{transition:none;opacity:1;stroke-dashoffset:0}.graph .mem .node{transition:none}.focus{transition:none}}
+
+@media (max-width:640px){
+  .hero{min-height:78vh}
+  h1{letter-spacing:.14em}
+  .memory{grid-template-columns:1fr}
+  .memory img{height:200px}
+  .axes li{grid-template-columns:1fr;gap:4px}
+  .tools{grid-template-columns:1fr}
+  main{padding-top:52px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .hero .text{animation:rise 1.1s ease-out both}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+}
+
+/* 1.2: the psyche pages (same system as the memories pages) */
+.hero::before{background:linear-gradient(180deg,rgba(7,11,18,.45) 0%,rgba(7,11,18,0) 22%,rgba(7,11,18,0) 76%,rgba(13,19,18,1) 100%),linear-gradient(90deg,rgba(7,11,18,.9) 0%,rgba(7,11,18,.8) 36%,rgba(7,11,18,.3) 54%,rgba(7,11,18,0) 66%,rgba(7,11,18,0) 100%)}   /* 7 Nov.: no darkening over the head any more — the left stays dark for the text, the skull and its galaxy keep the picture's own light */   /* the fade into the page first: the first layer is drawn on top (the bottom edge was the darkening layer's night, not the page colour) */
+.hero .sub{font:500 clamp(18px,2vw,23px)/1.45 Plex,system-ui,sans-serif;color:#dfe8e5;max-width:680px;margin:0 0 26px}
+figure.node{margin:30px 0 8px;padding:22px 24px;border:1px solid var(--line);border-radius:18px;background:var(--panel)}
+figure.node .nk{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px}
+figure.node .nk b{font:700 22px/1.2 Bricolage,Plex,sans-serif}
+.pill{font:500 12px/1 PlexMono,monospace;letter-spacing:.04em;text-transform:uppercase;padding:5px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.pill.k{color:#0d1312;border:0}
+figure.node .gist{font:500 21px/1.45 Cormorant,Georgia,serif;color:#e4dfd6;margin:0 0 14px}
+figure.node .facts{display:grid;grid-template-columns:110px 1fr;gap:4px 14px;margin:0;font-size:15px}
+figure.node .facts dt{color:var(--muted)}figure.node .facts dd{margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted);margin:10px auto 0;max-width:calc(var(--col) - 40px)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.pgraph .replay{position:absolute;right:14px;top:12px;font:500 13px PlexMono,monospace;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;z-index:1}
+.pgraph{position:relative}.pgraph .agec{position:absolute;left:18px;top:14px;font:500 11px PlexMono,monospace;color:#5f6f6b;letter-spacing:.06em;text-transform:uppercase;z-index:1}
+/* the psyche graph, in the visual language of the memories graph (memories/index.html): rings, halo and scale on focus, arrival by fade and drawing */
+.pgraph svg .lane{font:500 11px PlexMono,monospace;fill:#5f6f6b;letter-spacing:.06em}
+.pgraph svg .n{cursor:pointer;transition:opacity .6s ease}
+.pgraph svg .n .node{transform-box:fill-box;transform-origin:center;transition:transform .45s cubic-bezier(.2,.8,.2,1),filter .3s}
+.pgraph svg .n.off{opacity:0!important}.pgraph svg .n.off .node{transform:scale(.55)}
+.pgraph svg .piv .ring{fill:#0b100f;stroke:var(--teal);stroke-width:2;transition:stroke-width .3s}
+.pgraph svg .piv image{transition:filter .4s}
+.pgraph svg .piv .pill{fill:rgba(169,138,232,.10);stroke:rgba(169,138,232,.55);stroke-width:1}
+.pgraph svg .piv .pt{font:500 13px Plex,sans-serif;fill:#cbbcf0;text-anchor:middle}.pgraph svg .piv .ps{font:500 11px PlexMono,monospace;fill:#9f8cd0;text-anchor:middle}
+.pgraph svg .lab{font:500 14px Plex,sans-serif;fill:var(--ink);text-anchor:middle}
+.pgraph svg .sub{font:400 11.5px Plex,sans-serif;fill:var(--muted);text-anchor:middle}
+.pgraph svg .nl{font:500 11.5px Plex,sans-serif;fill:#dfe8e5;text-anchor:middle}
+.pgraph svg .ln{transition:opacity .6s ease,stroke-dashoffset 1.4s ease}.pgraph svg .ln.off{opacity:0}
+.pgraph svg.hl .ln{opacity:.12}.pgraph svg.hl .ln.on{opacity:1}
+.pgraph svg.hl .n:not(.on){opacity:.35}.pgraph svg.hl .piv:not(.on) image{filter:saturate(.5) brightness(.75)}
+.pgraph svg .n.on .node{transform:scale(1.2);filter:drop-shadow(0 0 10px var(--hc,rgba(76,194,168,.55)))}
+.pgraph svg .piv.on .ring{stroke-width:3}
+.pfocus{display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:center;max-width:calc(var(--col) - 40px);margin:18px auto 0;min-height:120px;transition:opacity .35s}
+.pfocus.fade{opacity:0}
+.pfocus .vis{width:120px;height:120px;border-radius:14px;border:1px solid var(--line);background:#0e1514;display:grid;place-items:center;overflow:hidden}
+.pfocus .vis:empty{visibility:hidden}.pfocus .vis img{width:100%;height:100%;object-fit:cover}.pfocus .vis i{display:block;border-radius:50%}
+.pfocus .vis b{font:500 12px PlexMono,monospace;color:#cbbcf0;letter-spacing:.04em}
+.pfocus .gist{font:500 20px/1.4 Cormorant,Georgia,serif;color:#e8e3da;margin:0 0 8px}
+.pfocus .meta{font:500 12px/1.7 PlexMono,monospace;color:var(--muted);margin:0;letter-spacing:.03em}.pfocus .meta b{color:var(--teal);font-weight:500}
+@media (max-width:640px){.pfocus{grid-template-columns:84px 1fr}.pfocus .vis{width:84px;height:84px}.pfocus .gist{font-size:17px}}
+@media (prefers-reduced-motion:reduce){.pgraph svg .n,.pgraph svg .n .node,.pgraph svg .ln,.pfocus{transition:none}}
+table.cmp{width:100%;border-collapse:collapse;margin:22px 0 8px;font-size:15px}
+table.cmp th,table.cmp td{text-align:left;vertical-align:top;padding:9px 10px;border-bottom:1px solid var(--line)}
+table.cmp thead th{font:700 15px Bricolage,Plex,sans-serif;color:var(--ink)}table.cmp tbody th{color:var(--muted);font-weight:500;width:28%}
+table.cmp td.y{color:var(--mint)}table.cmp td.n{color:#d9a0a0}table.cmp thead .hint{display:block;font:400 13px Plex,sans-serif;color:var(--muted);margin-top:2px}
+.chain{margin:26px 0 10px}
+.chat{border:1px solid var(--line);border-radius:18px;padding:18px 20px;background:var(--panel)}
+.chat p{margin:0 0 12px}.chat .who{font:500 12px PlexMono,monospace;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px}
+.chat .her{font:500 22px/1.4 Cormorant,Georgia,serif;color:#e4dfd6}
+.step{display:grid;grid-template-columns:30px 1fr;gap:14px;margin:18px 0 0;opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s}
+.step.on{opacity:1;transform:none}.step[hidden]{display:none}
+.step .dot{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:700 13px PlexMono,monospace;color:#0d1312}
+.step .card{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:var(--panel)}
+.step .card .t{font:700 18px/1.3 Bricolage,Plex,sans-serif;margin:0 0 3px}.step .card .m{font:500 12px PlexMono,monospace;color:var(--muted);margin:0 0 8px}
+.step .card .g{font:500 19px/1.45 Cormorant,Georgia,serif;color:#e4dfd6;margin:0}.step .card img{border-radius:10px;margin:12px 0 4px;width:100%;max-height:280px;object-fit:cover}
+.step .why{font-size:15px;color:var(--muted);margin:10px 0 0}
+.step.hidden-layer .card{border-style:dashed;border-color:var(--violet)}
+.whyb{margin:22px 0 0;display:flex;gap:10px;flex-wrap:wrap}
+.whyb button{font:700 17px Bricolage,Plex,sans-serif;padding:12px 22px;border-radius:999px;border:0;background:var(--teal);color:#0d1312;cursor:pointer}
+.whyb button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.whyb button:disabled{opacity:.4;cursor:default}
+.orders{list-style:none;padding:0;margin:22px 0 8px;border-top:1px solid var(--line)}
+.orders li{display:grid;grid-template-columns:150px 1fr;gap:16px;padding:12px 0;border-bottom:1px solid var(--line)}
+.orders b{font:700 24px Bricolage,Plex,sans-serif;color:var(--mint)}
+@media (max-width:640px){figure.node .facts{grid-template-columns:90px 1fr}.orders li{grid-template-columns:1fr;gap:2px}table.cmp{font-size:13px}table.cmp th,table.cmp td{padding:7px 5px}}
+.top .langs{margin-left:auto;display:flex;gap:2px;letter-spacing:.04em}.top .langs a{font:500 11px/1 PlexMono,monospace;color:var(--mint);opacity:.6;padding:6px 6px;border-radius:6px;border:1px solid transparent}.top .langs a:hover{opacity:1}.top .langs a.on{opacity:1;color:var(--teal);border-color:rgba(255,255,255,.18)}.top .share{margin-left:0}@media (max-width:640px){.top{flex-wrap:wrap;row-gap:6px}.top .share{margin-left:auto}.top .langs{order:9;flex-basis:100%;margin-left:0;gap:4px;padding-left:40px}.top .langs a{padding:5px 6px;font-size:10px}}@media (max-width:480px){.top>span:not(.crumb){display:none}}
+/* the companion page: tiles, the ladder of counts, the simulator (same language as memories/how-much.html) */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:26px 0 8px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 16px 14px}
+.tile b{display:block;font:700 30px/1 Bricolage,sans-serif;color:var(--teal);letter-spacing:-.02em;margin-bottom:8px}
+.tile span{font-size:13.5px;color:var(--muted);line-height:1.4;display:block}
+.ladder{list-style:none;margin:26px 0 6px;padding:18px 18px 10px;background:var(--panel);border:1px solid var(--line);border-radius:18px}
+.ladder li{display:grid;grid-template-columns:230px 1fr 92px;gap:12px;align-items:center;padding:6px 0}
+.ladder .l{font-size:14.5px;color:#d9e0dd;line-height:1.25}.ladder .l small{display:block;font:500 11.5px PlexMono,monospace;color:#8b9b97;margin-top:2px}
+.ladder .tr{position:relative;height:14px;border-radius:7px;background:repeating-linear-gradient(90deg,transparent 0,transparent calc(20% - 1px),#2a3533 calc(20% - 1px),#2a3533 20%)}
+.ladder .tr i{position:absolute;top:2px;height:10px;border-radius:5px;background:#35a38b;min-width:10px}
+.ladder li.me .tr i{background:#9a7ae0}.ladder li.me .l{color:#cbbcf0}
+.ladder .v{font:500 13px PlexMono,monospace;color:var(--mint);text-align:right}
+.ladder .ax{display:grid;grid-template-columns:230px 1fr 92px;gap:12px;font:500 11px PlexMono,monospace;color:#7d8d89;padding:6px 0 0;border-top:1px solid var(--line);margin-top:6px}
+.ladder .ax span{position:relative;height:14px}.ladder .ax b{position:absolute;top:0;transform:translateX(-50%);font-weight:500;white-space:nowrap}.ladder .ax b:first-child{transform:none}.ladder .ax b:last-child{transform:translateX(-100%)}
+.sim{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;margin:28px 0 10px}
+.sim .row{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.sim fieldset{border:1px solid var(--line);border-radius:12px;padding:12px 14px 14px;margin:0 0 14px;min-width:0}
+.sim legend{font:500 12px PlexMono,monospace;color:var(--mint);letter-spacing:.06em;text-transform:uppercase;padding:0 6px}
+.sim label{display:block;font-size:13.5px;color:var(--muted);margin:8px 0 3px}.sim label b{color:var(--ink);font-weight:500}
+.sim input[type=number],.sim select{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:500 14px PlexMono,monospace}
+.sim input[type=range]{width:100%;accent-color:var(--teal)}
+.sim .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.sim .g2>div{display:flex;flex-direction:column;justify-content:flex-end}
+.sim .hint{font-size:12.5px;color:#7d8d89;margin:6px 0 0}
+.scen{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+.scen button{font:500 13px Plex,sans-serif;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer}
+.scen button:hover,.scen button:focus-visible,.scen button.on{border-color:var(--teal);color:var(--teal);outline:none}
+/* wide view of the simulator (Yann, 7 Nov.): the panel moves into a full-width overlay, controls left, results right; the cross or Escape puts it back */
+.wbtn{margin-left:auto;align-self:center;font:500 12px PlexMono,monospace;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:5px 11px;cursor:pointer;letter-spacing:.04em}.wbtn:hover,.wbtn:focus-visible{color:var(--teal);border-color:var(--teal);outline:none}
+.wover{position:fixed;inset:0;z-index:60;background:rgba(5,8,12,.78);backdrop-filter:blur(6px);overflow:auto;padding:3vh 3vw;display:flex;align-items:flex-start;justify-content:center}
+.wover .wpanel{width:min(1560px,94vw);margin:auto;display:grid;grid-template-columns:minmax(360px,5fr) minmax(0,7fr);gap:26px;align-items:start;padding:26px 28px 24px;position:relative}
+.wover .wpanel .row{grid-template-columns:1fr}.wover .wpanel .wl,.wover .wpanel .wr{min-width:0}.wover .wpanel .wbtn{display:none}
+.wclose{position:absolute;top:10px;right:12px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:500 20px/1 Plex,sans-serif;cursor:pointer}.wclose:hover,.wclose:focus-visible{border-color:var(--teal);color:var(--teal);outline:none}
+@media (max-width:1000px){.wover .wpanel{grid-template-columns:1fr}}
+
+.res{background:linear-gradient(135deg,#102a25,#0f1d2b);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:12px}
+.res .t{font:700 44px/1 Bricolage,sans-serif;color:var(--ink);letter-spacing:-.02em}.res .t small{font:500 16px Plex,sans-serif;color:var(--muted);letter-spacing:0;margin-left:8px}
+.res .s{font-size:13.5px;color:var(--muted);margin-top:8px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.kpi{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.kpi b{display:block;font:700 20px/1.1 Bricolage,sans-serif;color:var(--ink)}.kpi span{font-size:12px;color:var(--muted);line-height:1.35;display:block;margin-top:3px}
+.simchart{position:relative;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 10px 4px}
+.simchart svg{display:block;width:100%;height:230px;font-family:Plex,system-ui,sans-serif;outline:none}
+.simchart svg:focus-visible{box-shadow:0 0 0 2px var(--teal);border-radius:8px}
+.simchart .lg{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12.5px;color:var(--muted);margin:2px 4px 6px}
+.simchart .lg i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:6px;vertical-align:3px}
+.simchart .tip{position:absolute;pointer-events:none;background:#0b100f;border:1px solid var(--line);border-radius:8px;padding:6px 9px;font:500 12px/1.5 PlexMono,monospace;color:var(--ink);white-space:nowrap;opacity:0;transition:opacity .15s}
+.simchart .tip.on{opacity:1}
+.sbars{margin-top:16px}.sbars h4{font:500 12px PlexMono,monospace;color:var(--mint);letter-spacing:.06em;text-transform:uppercase;margin:14px 0 6px}
+.sbars .b{display:grid;grid-template-columns:190px 1fr 84px;gap:10px;align-items:center;font-size:13px;color:var(--muted);margin:6px 0}
+.sbars .b .t{height:12px;background:var(--bg);border-radius:4px;overflow:hidden}.sbars .b .f{display:block;height:100%;background:#3a4a47;border-radius:0 4px 4px 0}
+.sbars .b.me{color:var(--teal)}.sbars .b.me .f{background:var(--teal)}.sbars .b .x{text-align:right;font:500 12px PlexMono,monospace}
+table.prof{width:100%;border-collapse:collapse;margin:22px 0 8px;font-size:14.5px}
+table.prof th,table.prof td{text-align:left;vertical-align:top;padding:9px 8px;border-bottom:1px solid var(--line)}
+table.prof thead th{font:500 12px PlexMono,monospace;color:var(--mint);letter-spacing:.05em;text-transform:uppercase}
+table.prof tbody th{font-weight:500;color:var(--ink);width:22%}
+.refs{font-size:14px;color:var(--muted)}.refs p{margin:0 0 9px;color:var(--muted)}.refs a{word-break:break-word}
+.refs h3{font:500 13px PlexMono,monospace;color:var(--mint);letter-spacing:.06em;text-transform:uppercase;margin:22px 0 8px}
+@media (max-width:720px){.tiles{grid-template-columns:1fr 1fr}.sim .row{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}
+ .ladder li,.ladder .ax{grid-template-columns:1fr 70px}.ladder .l{grid-column:1/-1}.ladder .ax>span:first-child,.ladder .ax b.odd{display:none}.hero .top .crumb{display:none}
+ .sbars .b{grid-template-columns:118px 1fr 70px}.res .t{font-size:36px}table.prof{font-size:13px}table.prof th,table.prof td{padding:7px 4px}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="top"><img src="../builder/icon/cof-icon-dark.svg" alt=""><a href="../">COF</a><span>·</span><a href="index.zh.html">心理</a><span class="crumb">·</span><span class="crumb">多少？</span><nav class="langs" aria-label="Language"><a href="how-many.html" hreflang="en" lang="en">EN</a><a href="how-many.fr.html" hreflang="fr" lang="fr">FR</a><a href="how-many.de.html" hreflang="de" lang="de">DE</a><a href="how-many.es.html" hreflang="es" lang="es">ES</a><a href="how-many.zh.html" hreflang="zh" lang="zh" class="on" aria-current="page">ZH</a><a href="how-many.ja.html" hreflang="ja" lang="ja">JA</a></nav><details class="share" data-share><summary aria-label="分享此页">分享 ↗</summary><menu><li><button type="button" data-copy>复制链接</button></li><li><a data-net="x" target="_blank" rel="noopener">X / Twitter</a></li><li><a data-net="linkedin" target="_blank" rel="noopener">LinkedIn</a></li><li><a data-net="bluesky" target="_blank" rel="noopener">Bluesky</a></li><li><a data-net="reddit" target="_blank" rel="noopener">Reddit</a></li><li><a data-net="mail">电子邮件</a></li></menu></details></div>
+  <div class="text">
+    <h1>多少条信条，<br>才构成一个人？</h1>
+    <div class="rule"></div>
+    <p class="sub">没有人统计过。下面是心理学转而测量的东西、一个角色文件需要什么，以及一个检验你自己数字的模拟器。</p>
+    <p class="voice">“我工作方式的理由，我能给你二十个。真正要紧的只有三个。”<small>CLARA MERCIER · 如果你问她</small></p>
+  </div>
+  <div class="kicker">COF · CHARACTER OPEN FILE</div>
+</header>
+
+<main>
+<p class="lede">COF 1.2 为 AI 角色赋予心理：价值观、信念、欲望、需求、恐惧、创伤，每一项都是一个带有权重、日期和理由的节点，与造就它的记忆相连。显而易见的问题是：一个角色需要多少这样的节点——一个人又有多少？本页从一次拒绝出发，一路追溯到它的根源，然后说明研究知道什么、不知道什么，让你检验自己的数字，并坦诚面对那些流行的捷径。</p>
+
+<div class="tiles">
+  <div class="tile"><b>零</b><span>项研究统计过一个人的信条：心理学测量的是维度，而不是清单</span></div>
+  <div class="tile"><b>10 → 19</b><span>Schwartz 理论中的基本人类价值观，跨文化得到认可</span></div>
+  <div class="tile"><b>≈ 4,500</b><span>个描述稳定特质的英语词汇，1936 年从词典中找出</span></div>
+  <div class="tile"><b>50 – 150</b><span>个节点，用于一个精心塑造的主角——这是我们的估计，欢迎商榷</span></div>
+</div>
+<p class="cap">是数量级，不是测量值。本页每个数字都注明了出处。</p>
+
+<h2>她为什么说不？</h2>
+<p>Clara 是一位来自里昂的虚构设计师，是 COF 格式的示例角色。一位潜在客户给她写信。下面是这段对话——为本页虚构，但依据她的文件演绎。然后问她<i>为什么</i>，问多少次都行。</p>
+
+<div class="chain">
+<div class="chat">
+  <p><span class="who">客户</span>能在周五前交付我们的整个新网站吗？首页自动播放视频、聊天气泡、推送通知——一应俱全。</p>
+  <p class="her"><span class="who">Clara</span>不行。不能这样做。我可以在周五前给您一个更轻盈的网站，或者一个月后交付这个版本。但我不会再交付又笨重又仓促的东西了。</p>
+</div>
+<div class="step" hidden><div class="dot" style="background:#9fd27c">1</div><div class="card"><p class="t">不要通知</p><p class="m">喜好 · 强度 60 · 稳定 · 效价 -80</p><p class="g">讨厌通知，也讨厌冲你闪烁的界面。</p><p class="why">第一个答案是一种喜好：她无法忍受的东西。强烈，也来得快——但仅凭喜好，她只会抱怨，不会拒绝。</p></div></div>
+<div class="step" hidden><div class="dot" style="background:#4cc2a8">2</div><div class="card"><p class="t">轻盈</p><p class="m">价值观 · 强度 95 · 核心 · 自 28 岁</p><p class="g">轻盈：少做，做好——一个页面应当让地球和读者付出尽可能少的代价。</p><img src="../memories/img/ev2.jpg" alt=""><p class="why">在它之下，是一种价值观，处于她为人的核心。正是它把反感变成了拒绝。它有一个日期，28 岁——以及两个理由。</p></div></div>
+<div class="step" hidden><div class="dot" style="background:#e8876b">3</div><div class="card"><p class="t">代理公司的那些年</p><p class="m">创伤 · 强度 85 · 核心 · 自 24 岁</p><p class="g">四年里匆忙交付笨重的界面，客户却从未见过真正的用户。</p><p class="why">第一个理由是一道创伤。那四年她不会当作故事讲述，却塑造了她的工作方式。</p></div></div>
+<div class="step" hidden><div class="dot" style="background:#a98ae8">4</div><div class="card"><p class="t">代理公司的那些年</p><p class="m">记忆 · 一段时期 · 24–28 岁</p><p class="g">在里昂一家数字代理公司的四年，从 24 岁到 28 岁：匆忙交付的笨重界面，熬夜测试的深夜，以及慢慢形成的信条——网络本可以更轻盈。</p><p class="why">而在创伤之下，是记忆本身。链条在这里终结：不是终结于一个形容词，而是一段人生。</p></div></div>
+<div class="step hidden-layer" hidden><div class="dot" style="background:#a98ae8">5</div><div class="card"><p class="t">如果我慢下来，我就会消失</p><p class="m">信念 · 强度 60 · 变动 · 自 24 岁 · 直到约 45 岁 · 不自知——她从不说出口 · 虚假，但仍被持有</p><p class="g">如果我慢下来，我就会消失。</p><p class="why">还有一层，是她自己无法告诉你的。Clara 不自知地相信，如果她慢下来，她就会消失。这就是为什么她先提出更快的方案，也是她在夜里工作的原因。读取文件的智能体会演绎它——体现在她的所作所为中，而不是她的言语里。</p></div></div>
+<div class="step" id="whyend" hidden><div class="dot" style="background:#eef3f1">✓</div><div class="card"><p class="t">五个问题，从一句话追溯到从二十四岁开始的四年。</p><p class="why">上面每一个答案都是 Clara 文件中的一个节点，与下一个相连——<i>支持</i>、<i>因为</i>——由她的作者写下一次，任何工具都能读取，在演绎她的每一个模型中都完全相同。这里没有任何即兴编造。</p></div></div>
+</div>
+<div class="whyb"><button id="whyb" type="button">为什么？</button><button id="whyr" class="ghost" type="button">重新开始</button></div>
+<p style="margin-top:26px">五个节点作答。Clara 的文件有 23 个节点，节点之间及其与记忆之间共有 31 条链接。这算一个人吗？显然不是一个完整的人。那么需要多少？</p>
+
+<h2>多少？已经统计过的</h2>
+<p>没有研究统计过一个人的信条，也不可能有：“一条信条”并不是心智保存的单位。心理学统计过的，是描述人与人之间差异所需的<em>维度</em>数量。这些数字很小，也是最接近答案的东西。</p>
+
+<h3>价值观：至多几十个</h3>
+<p>Milton Rokeach 区分了信念、态度和价值观，并认为一个人持有的价值观远少于态度：价值观是其余一切围绕其组织起来的少数核心信念。他的问卷请人们对其中 <b>36</b> 个进行排序，18 个目的、18 个手段（<a href="https://en.wikipedia.org/wiki/Rokeach_Value_Survey">Rokeach, 1973</a>）。Shalom Schwartz 随后提出了跨文化得到认可的<b>十</b>种基本价值观——安全、仁慈、成就等等——排列成一个由相容与冲突动机构成的圆环，并在二十个国家检验了这一结构（<a href="https://doi.org/10.1016/S0065-2601(08)60281-6">Schwartz, 1992</a>）；修订后的理论区分出<b>十九</b>种，在来自十个国家的十五个样本中得到证实（<a href="https://doi.org/10.1037/a0029393">Schwartz et al., 2012</a>）。一个人不是十种价值观：一个人是它们之间的一种排序。这就是为什么 COF 的 <code>value</code> 节点带有强度，也是为什么 RFC 把 Schwartz 的列表列为可选词汇，而绝不是一张待填的表格。</p>
+
+<h3>特质：数千个词，五个维度</h3>
+<p>词汇假设认为，凡是人与人之间重要的差异，最终都会成为一个词。Gordon Allport 和 Henry Odbert 翻遍了韦氏词典——约 400,000 个词条——保留了 <b>17,953</b> 个描述人格或行为的词，其中 <b>4,504</b> 个用于稳定特质（<a href="https://en.wikipedia.org/wiki/Lexical_hypothesis">Allport &amp; Odbert, 1936</a>）。数十年的因素分析将这些词汇浓缩为<b>五</b>个宽泛领域——大五人格——标准问卷通过 <b>30</b> 个层面（每个领域六个）、240 个题目来测量它们（<a href="https://dlab.sauder.ubc.ca/sjdm/dmidi/NEO%20PI-R.html">Costa &amp; McCrae, 1992</a>）。而当社会学家只请人们回答“我是谁？”时，他们给了<b>二十</b>行来填写（<a href="https://doi.org/10.2307/2088175">Kuhn &amp; McPartland, 1954</a>）——这是一种格式，不是上限，但很能说明问题。</p>
+
+<ul class="ladder" aria-label="心理学与小说写作得出的数量，以及 COF 的估计，以对数刻度呈现"><li class=""><span class="l">大五人格<small>人格的五个宽泛领域</small></span><span class="tr" title="大五人格：5"><i style="left:calc(13.98% - 5px);width:calc(0.00% + 10px)"></i></span><span class="v">5</span></li><li class=""><span class="l">基本人类价值观<small>Schwartz 1992：十种 · 2012：十九种</small></span><span class="tr" title="基本人类价值观：10–19"><i style="left:calc(20.00% - 5px);width:calc(5.58% + 10px)"></i></span><span class="v">10–19</span></li><li class=""><span class="l">“我是谁？”<small>二十句陈述测验要求写二十句</small></span><span class="tr" title="“我是谁？”：20"><i style="left:calc(26.02% - 5px);width:calc(0.00% + 10px)"></i></span><span class="v">20</span></li><li class="me"><span class="l">Clara，如其所写<small>格式示例 10 · 23 个节点</small></span><span class="tr" title="Clara，如其所写：23"><i style="left:calc(27.23% - 5px);width:calc(0.00% + 10px)"></i></span><span class="v">23</span></li><li class=""><span class="l">NEO PI-R 的层面<small>五个领域各六个</small></span><span class="tr" title="NEO PI-R 的层面：30"><i style="left:calc(29.54% - 5px);width:calc(0.00% + 10px)"></i></span><span class="v">30</span></li><li class=""><span class="l">Rokeach 价值观调查<small>18 个终极价值观 + 18 个工具性价值观</small></span><span class="tr" title="Rokeach 价值观调查：36"><i style="left:calc(31.13% - 5px);width:calc(0.00% + 10px)"></i></span><span class="v">36</span></li><li class="me"><span class="l">一个精心塑造的主角<small>我们的估计</small></span><span class="tr" title="一个精心塑造的主角：50–150"><i style="left:calc(33.98% - 5px);width:calc(9.54% + 10px)"></i></span><span class="v">50–150</span></li><li class="me"><span class="l">完整建模的一生<small>我们的估计，包括开始与结束的</small></span><span class="tr" title="完整建模的一生：300–600"><i style="left:calc(49.54% - 5px);width:calc(6.02% + 10px)"></i></span><span class="v">300–600</span></li><li class="me"><span class="l">我们测试过的上限<small>工具仍能绘制</small></span><span class="tr" title="我们测试过的上限：1,000"><i style="left:calc(60.00% - 5px);width:calc(0.00% + 10px)"></i></span><span class="v">1,000</span></li><li class=""><span class="l">描述稳定特质的英语词汇<small>Allport & Odbert 1936，“第 I 栏”</small></span><span class="tr" title="描述稳定特质的英语词汇：4,504"><i style="left:calc(73.07% - 5px);width:calc(0.00% + 10px)"></i></span><span class="v">4,504</span></li><li class=""><span class="l">关于人格的英语词汇<small>Allport & Odbert 1936，全部四栏</small></span><span class="tr" title="关于人格的英语词汇：17,953"><i style="left:calc(85.08% - 5px);width:calc(0.00% + 10px)"></i></span><span class="v">17,953</span></li><li class="ax" aria-hidden="true"><span></span><span><b style="left:0%">1</b><b style="left:20%" class=odd>10</b><b style="left:40%">100</b><b style="left:60%" class=odd>1 k</b><b style="left:80%">10 k</b><b style="left:100%">100 k</b></span><span></span></li></ul>
+<p class="cap">已统计过的数量，放在同一条对数刻度上——<b>统计的并非同一种东西</b>：描述所有人的维度、问卷的题目、一门语言的词汇，以及紫色标出的 COF 自己的数字。一部小说或一段人生的心理规模，介于一份问卷所问与一本词典所收之间。</p>
+
+<h3>三个层次，以及心理所处的位置</h3>
+<p>对于“当我们了解一个人时，我们了解的是什么？”这个问题，Dan McAdams 用三个层次作答（<a href="https://doi.org/10.1111/j.1467-6494.1995.tb00500.x">McAdams, 1995</a>；<a href="https://doi.org/10.1037/0003-066X.61.3.204">McAdams &amp; Pals, 2006</a>）。<b>特质</b>，宽泛且不依赖情境：大五人格，提供的是“陌生人心理学”。<b>特征性适应</b>：目标、价值观、关切、应对策略，与某个时间、地点、角色相关。以及<b>叙事身份</b>：一个人对自己的人生不断演变的叙述，将记忆中的过去与想象中的未来连接起来（<a href="https://doi.org/10.1177/0963721413475622">McAdams &amp; McLean, 2013</a>）。</p>
+<p>COF 的心理位于第二和第三层次。特质留在 1.0 时的位置，作为一个可选的分数附录。节点是一种特征性适应——一个欲望、一种恐惧、对某人的立场——而它指向记忆的 <code>because</code> 链接，是人生故事的一部分。记忆研究描述了同样的双向联系：在 Martin Conway 的自我-记忆系统中，我们记住什么，是由当前自我的目标挑选和塑造的，而自我又反过来扎根于我们所记住的东西（<a href="https://doi.org/10.1037/0033-295X.107.2.261">Conway &amp; Pleydell-Pearce, 2000</a>；<a href="https://doi.org/10.1016/j.jml.2005.08.005">Conway, 2005</a>）。没有心理的记忆只是轶事；没有记忆的心理只是口号。</p>
+
+<h3>作家们统计什么</h3>
+<p>小说有自己的数字，而核心部分很小。John Truby 把角色建立在一个弱点和一个主角看不见的<em>需求</em>之上，加上主角追求的<em>欲望</em>，常常还有一个<em>幽灵</em>——“过去发生、至今仍萦绕主角的事件”（<i>The Anatomy of Story</i>, 2007）。K. M. Weiland 又加上角色深信的<em>谎言</em>，它由那个幽灵造成，又被故事拆解（<a href="https://www.helpingwritersbecomeauthors.com/character-arcs-3/">Weiland 谈欲望与需求</a>；<a href="https://www.vidlit.com/articles/whats-the-difference-your-characters-ghost-vs-wound-vs-lie-vs-weakness/">幽灵、创伤、谎言、弱点</a>）。一道创伤、一个谎言、一个欲望、一个需求：四个节点撑起一条弧线。COF 对每一项都有对应类型——<code>wound</code>、标记为虚假但仍被持有的 <code>belief</code>、<code>want</code>、<code>need</code>——还有小说家知道的其他一切：喜好、习惯、立场，它们让角色在弧线无关紧要的场景里依然可辨。</p>
+
+<h3>而且它会变化</h3>
+<p>一个人的心理不是一张快照。一项涵盖 92 个纵向样本的元分析发现，人格特质在整个成年期持续变化，大多在二十到四十岁之间，有些一直延续到老年（<a href="https://doi.org/10.1037/0033-2909.132.1.1">Roberts, Walton &amp; Viechtbauer, 2006</a>）。超过 19,000 人在被问及自己的人格、价值观和偏好时，回忆起过去十年有很多变化，却预测未来十年变化很少，各个年龄都是如此——这就是“历史终结错觉”（<a href="https://doi.org/10.1126/science.1229294">Quoidbach, Gilbert &amp; Wilson, 2013</a>）。这就是为什么节点有 <code>since</code> 和 <code>until</code>，也是为什么一条改变了的信条会把它早先的样子留在文件里。</p>
+
+<h3>我们的估计</h3>
+<p>所以，文献中没有一个现成的数字可取，只有边界：寥寥几个维度足以描述任何人，价值观至多几十个，其余的则有数千个词。下面是我们的估计，来自塑造 Clara 的过程和工具的负载测试——一个估计，并明确标注为估计。</p>
+<ul class="orders">
+  <li><b>23</b><div>如今的 Clara：足以让智能体始终如一地演绎她，并回答<i>为什么</i>。</div></li>
+  <li><b>50 – 150</b><div>一个精心塑造的主角：小说家会了解的关于她的一切。</div></li>
+  <li><b>300 – 600</b><div>完整建模的一生，包括一路上开始和结束的。</div></li>
+  <li><b>1,000</b><div>我们测试过的上限：工具仍能绘制，而一次对话从不需要全部。</div></li>
+</ul>
+
+<h2>亲自试试</h2>
+<p>每一个假设都是一个可调参数。预设重现了上面的估计；Clara 的预设依据她的文件拟合——23 个手写节点，65 岁时持有 21 个，四十五岁时放下了两个。任意修改吧。</p>
+<div class="sim" id="sim">
+  <div class="scen" id="simscen" role="group" aria-label="预设">
+    <button type="button" data-s="clara" class="on" aria-pressed="true">Clara，如其所写</button>
+    <button type="button" data-s="novel" aria-pressed="false">一部小说的主角</button>
+    <button type="button" data-s="life" aria-pressed="false">完整建模的一生</button>
+    <button type="button" data-s="bound" aria-pressed="false">我们测试过的上限</button>
+  </div>
+  <div class="row">
+    <div>
+      <fieldset><legend>一生</legend>
+        <div class="g2">
+          <div><label for="sAge">年龄</label><input id="sAge" type="number" min="1" max="120" value="65"></div>
+          <div><label for="sRate">每十年新增信条数</label><input id="sRate" type="number" min="0" max="500" step="0.1" value="3.7"></div>
+        </div>
+        <p class="hint">从五岁起以恒定速率形成。Clara 的作者大约每十年写了四条；小说家知道的要多得多。</p>
+      </fieldset>
+      <fieldset><legend>什么会变</legend>
+        <label for="sEnd">至今放下的比例：<b id="sEndV">9 %</b></label>
+        <input id="sEnd" type="range" min="0" max="60" step="1" value="9">
+        <label for="sRev">其中修订为新信条、而非直接放弃的：<b id="sRevV">50 %</b></label>
+        <input id="sRev" type="range" min="0" max="100" step="5" value="50">
+        <p class="hint">Clara 在 45 岁时放下了两条：一条被修订（“如果我慢下来，我就会消失”变成了“慢下来并不是消失”），一条被放弃。人们低估了自己将来还会改变多少（Quoidbach et al., 2013）。</p>
+      </fieldset>
+    </div>
+    <div>
+      <fieldset><legend>文件</legend>
+        <label for="sLen">每条信条的长度</label><select id="sLen"><option value="short">一行短句，像 Clara 的</option><option value="sentence">一个完整句子</option><option value="paragraph">一小段文字</option></select>
+        <div class="g2">
+          <div><label for="sLang">语言数</label><input id="sLang" type="number" min="1" max="12" value="2"></div>
+          <div><label for="sTurn">每轮加载的节点数</label><input id="sTurn" type="number" min="1" max="200" value="8"></div>
+        </div>
+        <label for="sMem">通过 <code>because</code> 与记忆相连：<b id="sMemV">39 %</b></label>
+        <input id="sMem" type="range" min="0" max="100" step="1" value="39">
+        <p class="hint">以 Clara 为基准：2 种语言、要旨约 66 个字符时，每个节点 693 字节；文本按约 4 个字符一个 token 计。</p>
+      </fieldset>
+    </div>
+  </div>
+  <div class="res" aria-live="polite"><div class="s">当前持有的信条</div><div class="t" id="oHeld">–<small>个节点</small></div><div class="s" id="oSub">–</div></div>
+  <div class="kpis">
+    <div class="kpi"><b id="oSize">–</b><span>在文件中（未压缩）<br><i id="oSizeS" style="font-style:normal"></i></span></div>
+    <div class="kpi"><b id="oAll">–</b><span>个 token，以文本形式读完所有持有的节点</span></div>
+    <div class="kpi"><b id="oTurn">–</b><span>个 token / 每轮<br><i id="oTurnS" style="font-style:normal"></i></span></div>
+    <div class="kpi"><b id="oMem">–</b><span>能把<i>为什么</i>追溯到一段记忆</span></div>
+  </div>
+  <div class="simchart">
+    <div class="lg" aria-hidden="true"><span><i style="background:#35a38b"></i>持有</span><span><i style="background:repeating-linear-gradient(90deg,#c08528 0 6px,transparent 6px 10px)"></i>累计放下</span><span id="lgClara"><i style="background:repeating-linear-gradient(90deg,#9a7ae0 0 2px,transparent 2px 5px)"></i>Clara，如其所写</span></div>
+    <svg id="simsvg" role="img" tabindex="0" aria-label="历年持有与放下的信条"></svg>
+    <div class="tip" id="simtip" aria-hidden="true"></div>
+  </div>
+  <div class="sbars"><h4>它有多大</h4><div id="bSize"></div><h4>模型读取它的成本</h4><div id="bTok"></div></div>
+  <p class="hint" style="margin-top:10px">对数刻度。1 KB = 1,000 字节。这是一个简单模型的期望值，而非对任何人的测量：将鼠标悬停或聚焦在图表上，用方向键逐年查看。</p>
+</div>
+<p>无论怎样设置，有两点都很突出。文件始终很小：两种语言的一千条信条不到 1 MB——相当于三张她婚礼那样的照片，是她整个文件的十七分之一。而模型<i>每轮</i>必须读取的内容几乎不变：智能体挑选核心节点和当下需要的少数几个——按标签、按对话涉及的人物或记忆、按强度——其余的留在磁盘上。限制不在于大小，而在于把它们写出来。</p>
+
+<h2>流行的人格画像：价值几何</h2>
+<p>许多作者并不是从一张白纸开始，而是从一个类型开始：“她是 INFJ”“一个 4 号”“非常开放，不太随和”“处女座”。COF 的工具把这四种都当作起点。它们的科学地位差别很大，值得直言不讳——但对觉得它们有用的人毫无轻视之意。一个能帮人思考角色的简写，就是在发挥作用。</p>
+
+<h3>大五人格</h3>
+<p>从词典中提炼出的五个领域——开放性、尽责性、外向性、宜人性、神经质——是人格心理学中验证最充分的模型。它们是分数，不是格子：每个人在每个领域都处于某个位置。它们与人生中所发生之事的关联站得住脚：一项对 78 个已发表的特质与人生结果关联的大规模重复研究，重现了其中约 87 %，尽管效应通常比最初报告的小（<a href="https://doi.org/10.1177/0956797619831612">Soto, 2019</a>）。对一个角色而言，它们的局限在于只说<i>有多少</i>，从不说<i>关于什么</i>：神经质得分高，并不能说明她害怕什么。</p>
+
+<h3>迈尔斯-布里格斯类型</h3>
+<p>四个字母，十六种类型，源自荣格的理论，在职场和网络上极为流行。研究发现，字母背后的四个量表确实测量了某种真实的东西——大五人格五个领域中的四个——但测不出类型：分数并不呈双峰分布，不会把人在每个量表上分成两个阵营（<a href="https://doi.org/10.1111/j.1467-6494.1989.tb00759.x">McCrae &amp; Costa, 1989</a>）。在中间区域，一个字母由寥寥几个回答决定，而且常常翻转：在得分居中的人当中，有四分之一到三分之一在一个月后重测时，某个量表上得到了另一个字母（Howes &amp; Carskadon, 1979，见 <a href="https://doi.org/10.1037/1065-9293.57.3.210">Pittenger, 2005</a> 的综述）。四个字母的类型，是比其背后分数更不稳定的概括。</p>
+
+<h3>九型人格</h3>
+<p>九种类型，每种由一种基本恐惧和一种基本欲望定义，广泛用于教练辅导和灵性指导。一项涵盖 104 个样本的系统综述发现，其信度和效度证据好坏参半：一些子量表与大五人格的关系符合预期，若干研究报告人们认为它有助于个人成长，但因素分析通常得出少于九个因素，而侧翼和类型间的移动几乎没有证据支持（<a href="https://doi.org/10.1002/jclp.23097">Hook et al., 2021</a>）。</p>
+
+<h3>占星术</h3>
+<p>太阳星座是现存最古老的人格简写。在对照测试中，它没有任何预测力。在一项发表于 <i>Nature</i> 的双盲实验中，占星师将出生星盘与来自标准问卷的三份人格画像之一进行匹配，正确率约为三分之一——恰是随机水平（<a href="https://doi.org/10.1038/318419a0">Carlson, 1985</a>）。一篇涵盖四十多项对照研究的综述发现，占星师的表现并不比随机更好，而相隔几分钟出生的人也没有表现出占星术所预言的任何相似之处（<a href="https://www.ingentaconnect.com/content/imp/jcs/2003/00000010/f0020006/art00010">Dean &amp; Kelly, 2003</a>）。不过，有一个发现对角色很重要：星座仍可能塑造一个人。在一个 2,324 名成年人的样本中，出生于奇数星座的人在标准问卷上外向性得分更高，正如占星术所说（<a href="https://doi.org/10.1080/00224545.1978.9924119">Mayo, White &amp; Eysenck, 1978</a>）——而在不知道自己星座“应该”让自己成为什么样的人当中，这一效应消失了（<a href="https://search.worldcat.org/title/8347924">Eysenck &amp; Nias, 1982</a>）。是星座运势起了作用：一个关于自己的信念，反复重复，就变成了行为。在故事里，一个每天早上都读星座运势的角色，这本身就是关于她的一个事实——一个节点，往往是<i>自知：否</i>，并带有一条指向这个习惯的 <code>because</code>。</p>
+
+<table class="prof"><thead><tr><th></th><th>它给出什么</th><th>证据怎么说</th><th>COF 据此提议什么</th></tr></thead><tbody><tr><th>大五人格</th><td>五个分数，0–100：开放性、尽责性、外向性、宜人性、神经质</td><td>人格心理学中验证最充分的模型；与人生结果的关联大多得到重复验证</td><td>70 分及以上或 30 分及以下，为该极提议一到两个候选节点</td></tr><tr><th>迈尔斯-布里格斯类型</th><td>四个字母，十六种类型</td><td>四个量表对应大五人格中的四个；类型本身缺乏有力支持，接近中间的字母在重测时常常翻转</td><td>该类型的三到四种常见解读：一个价值观、一个喜好、一个习惯、一种恐惧或一个欲望</td></tr><tr><th>九型人格</th><td>九种类型之一，附其基本恐惧与基本欲望</td><td>信度和效度证据好坏参半；九种类型并未作为九个因素被重现</td><td>该类型的基本恐惧、基本欲望、一个价值观和一个习惯</td></tr><tr><th>占星术</th><td>太阳星座，十二个</td><td>在双盲对照测试中没有预测效度</td><td>通常与该星座相关的三到四种特质</td></tr></tbody></table>
+
+<h3>仅作起点</h3>
+<p>所以 COF 以同样的方式使用这四种：作为一个<b>提议</b>，而绝不是格式中的一个字段。给 builder 或 <code>cof psyche propose</code> 一个星座、一个四字母类型、一个九型人格号码或五个分数，它会提供几个普通节点——强度 50，稳定性为<i>变动</i>，并标注其来源——每一个都不勾选，直到作者读过并做出决定。没有需要填写的“类型”字段：数以百万计的人共享同一个星座或类型，而类型无法说明为什么。一个人是一张带有理由的图谱。简写是开始构建图谱的好地方，却是停下来的糟糕地方。</p>
+
+<h2>保存一个心智的三种方式</h2>
+<p>告诉模型一个角色是谁，有三种方式。<b>描述</b>：提示词中的几行字。<b>图谱</b>：COF 的心理，信条彼此相连，并与记忆相连。<b>权重</b>：在该角色上微调过的模型，或一个 LoRA——角色溶解在潜在空间中。</p>
+<table class="cmp"><thead><tr><th></th><th>描述</th><th>图谱</th><th>权重</th></tr></thead><tbody><tr><th>它包含什么</th><td>寥寥几行的肖像</td><td>信条，带有权重、日期、理由及其背后的记忆</td><td>说话习惯、条件反射、一种文字无法确定的风格</td></tr><tr><th>能读懂吗？</th><td class="y">能</td><td class="y">能——逐个节点</td><td class="n">不能——数以百万计的数字</td></tr><tr><th>能手动修正吗？</th><td class="y">能</td><td class="y">能，一次一个节点</td><td class="n">只能重新训练</td></tr><tr><th>能回答<i>为什么</i>吗？</th><td class="n">很少——它会即兴编造</td><td class="y">能，一条链接接一条链接</td><td class="n">不能——它只会行动</td></tr><tr><th>能保守秘密，或不自知吗？</th><td class="n">一切都写在纸面上</td><td class="y">公开、保留、秘密；自知与否</td><td class="n">无法刻意做到</td></tr><tr><th>会随时间变化吗？</th><td class="n">一张快照</td><td class="y">自、直到、修订</td><td class="n">一次训练</td></tr><tr><th>大小</th><td>约 1 KB</td><td>Clara：23 个节点 12 KB；完整建模的一生，几百 KB</td><td>几十到几百 MB</td></tr><tr><th>制作需要什么</th><td>手写</td><td>手写，或由工具提议、你来勾选</td><td>数据、GPU、数小时训练</td></tr><tr><th>兼容</th><td>任何模型</td><td>任何模型，今天就行</td><td>一个模型家族</td></tr></tbody></table>
+<p class="cap">是数量级，不是测量值。权重的大小取决于模型和方法；图谱的大小取决于写下了多少人生。</p>
+<p>诚实的排序并不是一架梯子。图谱优于描述：它可以被挑选，能回答<i>为什么</i>，能保守秘密，并随时间变化。它不如潜在空间丰富，后者包含任何信条清单都无法容纳的东西——一句话的转折、一次迟疑、一种幽默感。但图谱是三者中唯一一种<b>任何人都能制作</b>（用一支笔，或一个会提议的工具）、能逐个节点<b>阅读</b>、能一次一条信条地<b>编辑</b>、并能<b>带到任何模型</b>的方式，今天如此，十年后亦然。</p>
+
+<h2>不是取代权重</h2>
+<p>权重更丰富，本页没有任何内容与之竞争。但它们对自身沉默不语：它们能做出拒绝，却永远给不出<i>为什么</i>。你无法读懂它们，无法修正其中一条信条，无法保守一个秘密，也无法把它们带到另一个模型。</p>
+<p>所以两者并非对手。图谱是乐谱；权重是对它的一次演奏。乐谱可以被阅读、被争论、被版本化、被带给任何一支乐队——有朝一日，它还可以成为模型调校的依据，以及检验其演奏的标准。在那之前，它是三者中唯一一种今晚就能手写、明天每个模型都能读取的方式。</p>
+<p>实践中，两者结合效果最好。权重赋予声音质感；图谱给它可以依凭的东西——就像航道中的浮标：水流负责推动，浮标防止偏航。把图谱放进在同一角色上微调过的模型的提示词中，两者便能纠正彼此的失误模式：权重不再即兴编造文件从未给出的信条，图谱读起来也不再像一张清单。</p>
+
+<h2>一个开放问题：乐谱与演奏</h2>
+<p>最后那句话是一个研究问题，我们希望有人来承担它。心理图谱能否成为角色权重的<b>监督信号</b>——它又能否成为<b>评估集</b>？</p>
+<p>每个节点读起来已经像一道测试。强度 95 的核心价值观预示着一次拒绝；脆弱的立场预示着在一次对话内改变主意；标记为<i>自知：否</i>的节点预示着角色从不点明的行为；一条 <code>because</code> 链预示着对“为什么？”的回答。所以研究设计如下。选取几十个角色，各有一张由作者编写、约一百个节点的图谱。把每个节点转化为情境——一位着急的客户、一位求助的朋友——并根据其类型、强度和稳定性推导出预期行为。然后测量三件事。以图谱为提示的模型是否按节点预示的方式行事，以及只加载部分节点时表现如何下降。在由图谱生成的对话上训练的适配器，在被问到时能否还原<i>因为</i>链条，而无需看到它们。以及编辑一个节点并重新训练后，是否只改变该节点所预示的行为，而不影响其他。如果答案令人满意，图谱就会成为 COF 中面孔参考图像对 LoRA 那样的东西：模型由之派生的可读源头，源头一变便重新生成。</p>
+
+<div class="btns">
+  <a class="btn main" href="../viewer/#clara/psyche">打开 Clara 的心理</a>
+  <a class="btn" href="../builder/">编写一个心理</a>
+  <a class="btn" href="https://github.com/yannsouetre/cof/blob/main/rfcs/0004-psyche-graph.md">阅读 RFC 0004</a>
+  <a class="btn" href="index.zh.html">AI 角色如今有了内心世界</a>
+</div>
+
+<h2>参考文献</h2>
+<div class="refs">
+  <h3>价值观</h3>
+  <p>Rokeach, M. (1973). <i>The Nature of Human Values</i>. Free Press——<a href="https://en.wikipedia.org/wiki/Rokeach_Value_Survey">Rokeach 价值观调查</a>。</p>
+  <p>Schwartz, S. H. (1992). Universals in the content and structure of values: theoretical advances and empirical tests in 20 countries. <i>Advances in Experimental Social Psychology</i>, 25, 1–65. <a href="https://doi.org/10.1016/S0065-2601(08)60281-6">doi:10.1016/S0065-2601(08)60281-6</a></p>
+  <p>Schwartz, S. H. et al. (2012). Refining the theory of basic individual values. <i>Journal of Personality and Social Psychology</i>, 103(4), 663–688. <a href="https://doi.org/10.1037/a0029393">doi:10.1037/a0029393</a></p>
+  <h3>特质与自我</h3>
+  <p>Allport, G. W. &amp; Odbert, H. S. (1936). Trait-names: a psycho-lexical study. <i>Psychological Monographs</i>, 47(1). 概述：<a href="https://en.wikipedia.org/wiki/Lexical_hypothesis">词汇假设</a>。</p>
+  <p>Costa, P. T. &amp; McCrae, R. R. (1992). <i>NEO PI-R Professional Manual</i>. Psychological Assessment Resources——<a href="https://dlab.sauder.ubc.ca/sjdm/dmidi/NEO%20PI-R.html">该工具的介绍</a>。</p>
+  <p>Kuhn, M. H. &amp; McPartland, T. S. (1954). An empirical investigation of self-attitudes. <i>American Sociological Review</i>, 19(1), 68–76. <a href="https://doi.org/10.2307/2088175">doi:10.2307/2088175</a></p>
+  <p>McAdams, D. P. (1995). What do we know when we know a person? <i>Journal of Personality</i>, 63(3), 365–396. <a href="https://doi.org/10.1111/j.1467-6494.1995.tb00500.x">doi:10.1111/j.1467-6494.1995.tb00500.x</a></p>
+  <p>McAdams, D. P. &amp; Pals, J. L. (2006). A new Big Five: fundamental principles for an integrative science of personality. <i>American Psychologist</i>, 61(3), 204–217. <a href="https://doi.org/10.1037/0003-066X.61.3.204">doi:10.1037/0003-066X.61.3.204</a></p>
+  <p>McAdams, D. P. &amp; McLean, K. C. (2013). Narrative identity. <i>Current Directions in Psychological Science</i>, 22(3), 233–238. <a href="https://doi.org/10.1177/0963721413475622">doi:10.1177/0963721413475622</a></p>
+  <p>Conway, M. A. &amp; Pleydell-Pearce, C. W. (2000). The construction of autobiographical memories in the self-memory system. <i>Psychological Review</i>, 107(2), 261–288. <a href="https://doi.org/10.1037/0033-295X.107.2.261">doi:10.1037/0033-295X.107.2.261</a></p>
+  <p>Conway, M. A. (2005). Memory and the self. <i>Journal of Memory and Language</i>, 53(4), 594–628. <a href="https://doi.org/10.1016/j.jml.2005.08.005">doi:10.1016/j.jml.2005.08.005</a></p>
+  <h3>变化</h3>
+  <p>Roberts, B. W., Walton, K. E. &amp; Viechtbauer, W. (2006). Patterns of mean-level change in personality traits across the life course: a meta-analysis of longitudinal studies. <i>Psychological Bulletin</i>, 132(1), 1–25. <a href="https://doi.org/10.1037/0033-2909.132.1.1">doi:10.1037/0033-2909.132.1.1</a></p>
+  <p>Quoidbach, J., Gilbert, D. T. &amp; Wilson, T. D. (2013). The end of history illusion. <i>Science</i>, 339(6115), 96–98. <a href="https://doi.org/10.1126/science.1229294">doi:10.1126/science.1229294</a></p>
+  <h3>角色写作</h3>
+  <p>Truby, J. (2007). <i>The Anatomy of Story: 22 Steps to Becoming a Master Storyteller</i>. Faber and Faber.</p>
+  <p>Weiland, K. M. (2016). <i>Creating Character Arcs</i>. PenForASword——以及网上的<a href="https://www.helpingwritersbecomeauthors.com/character-arcs-3/">角色想要的东西与角色需要的东西</a>和<a href="https://www.vidlit.com/articles/whats-the-difference-your-characters-ghost-vs-wound-vs-lie-vs-weakness/">角色的幽灵、创伤、谎言与弱点</a>。</p>
+  <h3>流行的人格画像</h3>
+  <p>Soto, C. J. (2019). How replicable are links between personality traits and consequential life outcomes? The Life Outcomes of Personality Replication Project. <i>Psychological Science</i>, 30(5), 711–727. <a href="https://doi.org/10.1177/0956797619831612">doi:10.1177/0956797619831612</a></p>
+  <p>McCrae, R. R. &amp; Costa, P. T. (1989). Reinterpreting the Myers-Briggs Type Indicator from the perspective of the five-factor model of personality. <i>Journal of Personality</i>, 57(1), 17–40. <a href="https://doi.org/10.1111/j.1467-6494.1989.tb00759.x">doi:10.1111/j.1467-6494.1989.tb00759.x</a></p>
+  <p>Pittenger, D. J. (2005). Cautionary comments regarding the Myers-Briggs Type Indicator. <i>Consulting Psychology Journal: Practice and Research</i>, 57(3), 210–221. <a href="https://doi.org/10.1037/1065-9293.57.3.210">doi:10.1037/1065-9293.57.3.210</a></p>
+  <p>Hook, J. N. et al. (2021). The Enneagram: a systematic review of the literature and directions for future research. <i>Journal of Clinical Psychology</i>, 77(4), 865–883. <a href="https://doi.org/10.1002/jclp.23097">doi:10.1002/jclp.23097</a></p>
+  <p>Carlson, S. (1985). A double-blind test of astrology. <i>Nature</i>, 318, 419–425. <a href="https://doi.org/10.1038/318419a0">doi:10.1038/318419a0</a></p>
+  <p>Mayo, J., White, O., &amp; Eysenck, H. J. (1978). An empirical study of the relation between astrological factors and personality. <i>The Journal of Social Psychology</i>, 105(2), 229–236. <a href="https://doi.org/10.1080/00224545.1978.9924119">doi:10.1080/00224545.1978.9924119</a></p>
+  <p>Eysenck, H. J., &amp; Nias, D. K. B. (1982). <i>Astrology: Science or Superstition?</i> Maurice Temple Smith, London. 自我归因的再分析：星座与外向性的关联，只在知道自己星座预示什么的人当中成立。</p>
+  <p>Dean, G. &amp; Kelly, I. W. (2003). Is astrology relevant to consciousness and psi? <i>Journal of Consciousness Studies</i>, 10(6–7), 175–198. <a href="https://www.ingentaconnect.com/content/imp/jcs/2003/00000010/f0020006/art00010">ingentaconnect</a></p>
+  <h3>token 计数</h3>
+  <p>OpenAI 帮助中心，<a href="https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them">What are tokens and how to count them?</a>——“英文中 1 个 token ≈ 4 个字符”，模拟器采用的就是这条规则（与不带分词器的 <code>cof tokens</code> 相同）。</p>
+  <h3>基于格式的实测</h3>
+  <p>Clara 的心理，<code>spec/examples/10-clara-mercier</code>，COF 1.2：23 个节点，节点文件 12.0 KB，连同清单条目共 15.9 KB，31 条链接，9 个节点与记忆相连；她的“她是谁”由 <code>cof psyche text --preset en-agent</code> 渲染，共 1,943 个字符。上限：生成的 150、500 和 1,000 个节点的心理，在浏览器中打开（负载测试，2026 年 11 月 3 日）。</p>
+</div>
+</main>
+
+<section class="close">
+  <p class="voice">她说不，是因为她从不谈起的那四年。现在你知道为什么了。任何打开她文件的工具也都知道。</p>
+  <div class="btns row3">
+    <a class="btn main" href="index.zh.html">AI 角色如今有了内心世界</a>
+    <a class="btn" href="../viewer/#clara/psyche">打开 Clara 的心理</a>
+    <a class="btn" href="../builder/">编写一个心理</a>
+  </div>
+</section>
+<footer>
+  <div class="mark">COF</div>
+  Character Open File——一种面向 AI 角色、包含其权利的开放格式。Clara Mercier 是一个虚构的示例角色；她的图像由 AI 生成，她的心理由人手写。Myers-Briggs 是其所有者的商标，此处仅作描述性提及，并无任何关联。<a href="https://github.com/yannsouetre/cof">GitHub 上的源代码</a> · <a href="../">关于此格式</a>
+</footer>
+<script>(function(){const d=document.querySelector("[data-share]");if(!d)return;const url=(document.querySelector('link[rel=canonical]')||{}).href||location.href.split("#")[0],title=document.title,u=encodeURIComponent(url),t=encodeURIComponent(title);
+const H={x:"https://twitter.com/intent/tweet?url="+u+"&text="+t,linkedin:"https://www.linkedin.com/sharing/share-offsite/?url="+u,bluesky:"https://bsky.app/intent/compose?text="+t+"%20"+u,reddit:"https://www.reddit.com/submit?url="+u+"&title="+t,mail:"mailto:?subject="+t+"&body="+u};
+d.querySelectorAll("[data-net]").forEach(a=>a.href=H[a.dataset.net]);const c=d.querySelector("[data-copy]");c.onclick=async()=>{try{await navigator.clipboard.writeText(url);c.textContent="copied ✓"}catch(e){prompt("复制此链接：",url)}setTimeout(()=>{c.textContent="复制链接";d.open=false},1200)};
+document.addEventListener("click",e=>{if(!d.contains(e.target))d.open=false});document.addEventListener("keydown",e=>{if(e.key==="Escape")d.open=false})})();</script>
+<script>
+(function(){const steps=[...document.querySelectorAll(".chain .step")],b=document.getElementById("whyb"),r=document.getElementById("whyr"),end=document.getElementById("whyend");let i=0;
+const L=["为什么？","为什么？","那又是为什么？","这又从何而来？","就这些吗？"];
+function go(){if(i>=steps.length)return;const s=steps[i];s.hidden=false;requestAnimationFrame(()=>requestAnimationFrame(()=>s.classList.add("on")));i++;
+  if(i<steps.length)b.textContent=L[i]||"为什么？";else{b.disabled=true;b.textContent="这就是整条链";end.hidden=false;requestAnimationFrame(()=>end.classList.add("on"))}
+  s.scrollIntoView({behavior:"smooth",block:"nearest"})}
+b.onclick=go;r.onclick=()=>{steps.forEach(s=>{s.hidden=true;s.classList.remove("on")});end.hidden=true;end.classList.remove("on");i=0;b.disabled=false;b.textContent=L[0]};
+})();
+</script>
+<script>
+(function(){
+const D={"F": 538, "LX": 12, "G": 66, "GEN": 60, "HEAD": 430, "PER": 8, "PSY": 15937, "WED": 288202, "COF": 15480756, "CLARA": [[0, 10, 0], [1, 10, 0], [2, 10, 0], [3, 10, 0], [4, 10, 0], [5, 10, 0], [6, 10, 0], [7, 10, 0], [8, 12, 0], [9, 12, 0], [10, 12, 0], [11, 12, 0], [12, 12, 0], [13, 12, 0], [14, 12, 0], [15, 12, 0], [16, 12, 0], [17, 12, 0], [18, 12, 0], [19, 12, 0], [20, 12, 0], [21, 12, 0], [22, 12, 0], [23, 12, 0], [24, 14, 0], [25, 14, 0], [26, 15, 0], [27, 15, 0], [28, 21, 0], [29, 22, 0], [30, 22, 0], [31, 22, 0], [32, 22, 0], [33, 22, 0], [34, 22, 0], [35, 22, 0], [36, 22, 0], [37, 22, 0], [38, 22, 0], [39, 22, 0], [40, 22, 0], [41, 22, 0], [42, 22, 0], [43, 22, 0], [44, 22, 0], [45, 21, 2], [46, 21, 2], [47, 21, 2], [48, 21, 2], [49, 21, 2], [50, 21, 2], [51, 21, 2], [52, 21, 2], [53, 21, 2], [54, 21, 2], [55, 21, 2], [56, 21, 2], [57, 21, 2], [58, 21, 2], [59, 21, 2], [60, 21, 2], [61, 21, 2], [62, 21, 2], [63, 21, 2], [64, 21, 2], [65, 21, 2]], "N": 23},$=s=>document.querySelector(s);
+const nf=n=>Math.round(n).toLocaleString("en-US");
+function fb(b){if(!isFinite(b)||b<=0)return "0 KB";if(b<1e6)return (b/1e3).toLocaleString("en-US",{maximumFractionDigits:b<1e4?1:0})+" KB";if(b<1e9)return (b/1e6).toLocaleString("en-US",{maximumFractionDigits:b<1e7?1:0})+" MB";return (b/1e9).toLocaleString("en-US",{maximumFractionDigits:1})+" GB"}
+function ft(t){return t<1e4?nf(t):(t/1e3).toLocaleString("en-US",{maximumFractionDigits:t<1e5?1:0})+" k"}
+const LEN={short:D.G,sentence:150,paragraph:300};
+/* expected numbers, year by year: new convictions from age 5 at a steady rate; each held one is let go with the same
+   yearly probability h; a share r of those let go are revised into a new node (derives_from), which joins the pool */
+function run(A,R,h,r){let held=0,ever=0,end=0;const rows=[[0,0,0]];for(let t=0;t<A;t++){const e=held*h;held-=e;end+=e;const nw=(t>=5?R/10:0)+e*r;held+=nw;ever+=nw;rows.push([t+1,held,end])}return {held,ever,end,rows}}
+function solve(A,R,p,r){if(p<=0)return run(A,R,0,r);let lo=0,hi=1;for(let i=0;i<48;i++){const m=(lo+hi)/2,s=run(A,R,m,r);if(s.ever>0&&s.end/s.ever<p)lo=m;else hi=m}return run(A,R,lo,r)}
+const num=(id,lo,hi,def)=>{let v=parseFloat($("#"+id).value);if(!isFinite(v))v=def;return Math.min(hi,Math.max(lo,v))};
+let S=null,cur=null;
+function calc(){
+ const A=Math.round(num("sAge",1,120,65)),R=num("sRate",0,500,4),p=num("sEnd",0,60,9)/100,r=num("sRev",0,100,50)/100,L=Math.round(num("sLang",1,12,2)),g=LEN[$("#sLen").value]||D.G,m=num("sMem",0,100,39)/100,k=Math.round(num("sTurn",1,200,8));
+ $("#sEndV").textContent=Math.round(p*100)+" %";$("#sRevV").textContent=Math.round(r*100)+" %";$("#sMemV").textContent=Math.round(m*100)+" %";
+ S=solve(A,R,p,r);const per=D.F+L*(g+D.LX),bytes=S.ever*per,gt=g*D.GEN/D.G,tokAll=(D.HEAD+S.held*(gt+D.PER))/4,tokTurn=Math.min(k,S.held)*(gt+D.PER)/4;
+ $("#oHeld").firstChild.textContent=nf(S.held);
+ $("#oSub").textContent=`${A} 岁时：累计形成 ${nf(S.ever)} 条（${nf(S.ever-S.end*r)} 条新增，${nf(S.end*r)} 条修订），放下 ${nf(S.end)} 条——每一条都留在文件中，以其 until 关闭`;
+ $("#oSize").textContent=fb(bytes);$("#oAll").textContent=ft(tokAll);$("#oTurn").textContent=ft(tokTurn);$("#oMem").textContent=nf(S.ever*m);
+ $("#oSizeS").textContent=`${nf(S.ever)} 个节点 × ${nf(per)} 字节，${L} 种语言`;
+ $("#oTurnS").textContent=`当下需要的 ${Math.min(k,Math.round(S.held))} 个节点`;
+ draw();bars(bytes,tokAll,tokTurn)}
+/* ---- held and let go over the years, Clara's own curve when it fits */
+const svg=$("#simsvg"),tip=$("#simtip"),NS="http://www.w3.org/2000/svg";
+function draw(){const W=Math.max(280,svg.clientWidth||680),H=230,l=44,rt=W-14,tp=14,b=H-28;svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+ const rows=S.rows,A=rows.length-1,top=Math.max(4,...rows.map(x=>Math.max(x[1],x[2])));const clara=top<=120&&A>=20;const ymax=niceMax(Math.max(top,clara?Math.max(...D.CLARA.map(c=>c[1])):0));
+ const x=a=>l+(a/Math.max(1,A))*(rt-l),y=v=>b-(v/ymax)*(b-tp);
+ const dv=ymax/Math.pow(10,Math.floor(Math.log10(ymax)))===2?4:5;let s="";for(let i=0;i<=dv;i++){const v=ymax*i/dv;s+=`<line x1="${l}" x2="${rt}" y1="${y(v)}" y2="${y(v)}" stroke="${i?"#222c2a":"#3a4a47"}" stroke-width="1"/><text x="${l-8}" y="${y(v)+4}" text-anchor="end" style="font:500 11px PlexMono,monospace;fill:#7d8d89">${nf(v)}</text>`}
+ const step=A>60?20:A>24?10:5;for(let a=0;a<=A;a+=step)if(x(a)<rt-34)s+=`<text x="${x(a)}" y="${b+18}" text-anchor="middle" style="font:500 11px PlexMono,monospace;fill:#7d8d89">${a}</text>`;
+ s+=`<text x="${rt}" y="${b+18}" text-anchor="end" style="font:500 11px PlexMono,monospace;fill:#7d8d89">年龄</text>`;
+ const pth=k=>rows.map((q,i)=>(i?"L":"M")+x(q[0]).toFixed(1)+" "+y(q[k]).toFixed(1)).join(" ");
+ s+=`<path d="${pth(1)} L${x(A)} ${b} L${x(0)} ${b} Z" fill="rgba(53,163,139,.16)"/><path d="${pth(1)}" fill="none" stroke="#35a38b" stroke-width="2"/>`;
+ s+=`<path d="${pth(2)}" fill="none" stroke="#c08528" stroke-width="2" stroke-dasharray="6 4"/>`;
+ if(clara){const c=D.CLARA.filter(q=>q[0]<=A);s+=`<path d="${c.map((q,i)=>(i?"L":"M")+x(q[0]).toFixed(1)+" "+y(q[1]).toFixed(1)).join(" ")}" fill="none" stroke="#9a7ae0" stroke-width="2" stroke-dasharray="2 3"/>`}
+ $("#lgClara").hidden=!clara;
+ const last=rows[A];s+=`<text x="${x(A)-4}" y="${y(last[1])-8}" text-anchor="end" style="font:500 12px Plex,sans-serif;fill:#dfe8e5">持有 · ${nf(last[1])}</text>`;
+ if(last[2]>=.5)s+=`<text x="${x(A)-4}" y="${Math.min(b-6,y(last[2])+16)}" text-anchor="end" style="font:500 12px Plex,sans-serif;fill:#dfe8e5">放下 · ${nf(last[2])}</text>`;
+ s+=`<line id="simx" x1="0" x2="0" y1="${tp}" y2="${b}" stroke="#93a39e" stroke-width="1" opacity="0"/><rect x="${l}" y="${tp}" width="${rt-l}" height="${b-tp}" fill="transparent" id="simhit"/>`;
+ svg.innerHTML=s;svg.setAttribute("aria-label",`从出生到 ${A} 岁持有与放下的信条：最终持有 ${nf(last[1])} 条，放下 ${nf(last[2])} 条。`);
+ const hit=$("#simhit");const at=a=>{a=Math.max(0,Math.min(A,Math.round(a)));cur=a;const q=rows[a],X=x(a);const ln=$("#simx");ln.setAttribute("x1",X);ln.setAttribute("x2",X);ln.setAttribute("opacity",".7");
+  const cl=clara&&a<=D.CLARA.length-1?`<br>Clara · ${D.CLARA[a][1]}`:"";tip.innerHTML=`${a} 岁<br>持有 · ${nf(q[1])}<br>放下 · ${nf(q[2])}${cl}`;tip.classList.add("on");
+  const bw=svg.getBoundingClientRect().width,sx=bw/W;tip.style.left=Math.min(bw-tip.offsetWidth-4,Math.max(4,X*sx+12))+"px";tip.style.top="18px"};
+ hit.addEventListener("pointermove",e=>{const r=svg.getBoundingClientRect(),sx=W/r.width;at(((e.clientX-r.left)*sx-l)/(rt-l)*A)});
+ hit.addEventListener("pointerleave",()=>{tip.classList.remove("on");$("#simx").setAttribute("opacity","0")});
+ svg.onkeydown=e=>{if(!["ArrowLeft","ArrowRight","Home","End"].includes(e.key))return;e.preventDefault();const a=cur==null?A:cur;at(e.key==="Home"?0:e.key==="End"?A:a+(e.key==="ArrowLeft"?-1:1))};
+ svg.onblur=()=>{tip.classList.remove("on");const v=$("#simx");if(v)v.setAttribute("opacity","0")}}
+function niceMax(v){const p=Math.pow(10,Math.floor(Math.log10(v))),n=v/p;return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p}
+/* ---- the weight and the tokens, against things one knows */
+function bars(bytes,all,turn){const mk=(el,list,f,lo,hi)=>{el.innerHTML="";list.sort((a,b)=>a[1]-b[1]).forEach(r=>{const me=r[0].startsWith("→"),w=Math.max(1.5,Math.min(100,(Math.log10(Math.max(r[1],1))-lo)/(hi-lo)*100));
+  const d=document.createElement("div");d.className="b"+(me?" me":"");d.innerHTML='<span></span><span class="t"><i class="f"></i></span><span class="x"></span>';d.firstChild.textContent=r[0];d.querySelector(".f").style.width=w+"%";d.lastChild.textContent=f(r[1]);el.appendChild(d)})};
+ mk($("#bSize"),[["Clara 的整个心理",D.PSY],["她婚礼的一张照片",D.WED],["Clara 的整个文件（.cof）",D.COF],["→ 这个心理",bytes]],fb,3,Math.max(8,Math.log10(bytes)+.5));
+ mk($("#bTok"),[["→ 每轮，少数几个",turn],["→ 全部，以文本形式",all],["Clara 的“她是谁”",(D.HEAD+(D.N-1)*(D.GEN+D.PER))/4],["128,000 token 的上下文",128000]],ft,1,Math.max(5.5,Math.log10(all)+.5))}
+const SC={clara:{sAge:65,sRate:3.7,sEnd:9,sRev:50,sLang:2,sLen:"short",sMem:39,sTurn:8},
+ novel:{sAge:45,sRate:25,sEnd:20,sRev:50,sLang:2,sLen:"sentence",sMem:40,sTurn:10},
+ life:{sAge:80,sRate:60,sEnd:35,sRev:60,sLang:2,sLen:"sentence",sMem:50,sTurn:12},
+ bound:{sAge:90,sRate:95,sEnd:35,sRev:60,sLang:2,sLen:"sentence",sMem:50,sTurn:12}};
+document.querySelectorAll("#simscen button").forEach(b=>b.onclick=()=>{const s=SC[b.dataset.s];for(const k in s)$("#"+k).value=s[k];document.querySelectorAll("#simscen button").forEach(x=>{x.classList.toggle("on",x===b);x.setAttribute("aria-pressed",x===b)});calc()});
+document.querySelectorAll("#sim input,#sim select").forEach(i=>i.addEventListener("input",()=>{document.querySelectorAll("#simscen button").forEach(x=>{x.classList.remove("on");x.setAttribute("aria-pressed","false")});calc()}));
+let rz;window.addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(draw,120)});
+calc();
+})();
+</script>
+<script>(function(){const P=document.getElementById("sim");if(!P)return;P.style.position="relative";const LEFT=[".scen",".row"];const b=document.createElement("button");b.type="button";b.className="wbtn";b.textContent="⤢ 宽屏视图";b.setAttribute("aria-label","在宽屏视图中打开模拟器");(P.querySelector(".scen")||P).appendChild(b);let over=null,order=null,ph=null;function redraw(){window.dispatchEvent(new Event("resize"));const i=P.querySelector("input");if(i)i.dispatchEvent(new Event("input",{bubbles:true}))}function open(){if(over)return;order=[...P.children];ph=document.createComment("sim");P.parentNode.insertBefore(ph,P);over=document.createElement("div");over.className="wover";over.setAttribute("role","dialog");over.setAttribute("aria-modal","true");over.setAttribute("aria-label","模拟器，宽屏视图");const wl=document.createElement("div");wl.className="wl";const wr=document.createElement("div");wr.className="wr";for(const c of order){if(c===b)continue;(LEFT.some(s=>c.matches(s))?wl:wr).appendChild(c)}P.classList.add("wpanel");P.appendChild(wl);P.appendChild(wr);const x=document.createElement("button");x.type="button";x.className="wclose";x.innerHTML="&times;";x.setAttribute("aria-label","关闭宽屏视图");x.onclick=close;P.appendChild(x);over.appendChild(P);document.body.appendChild(over);document.body.style.overflow="hidden";over.addEventListener("click",e=>{if(e.target===over)close()});setTimeout(()=>{redraw();x.focus()},30)}function close(){if(!over)return;const x=P.querySelector(".wclose");if(x)x.remove();for(const c of order)P.appendChild(c);P.querySelectorAll(":scope>.wl,:scope>.wr").forEach(e=>e.remove());P.classList.remove("wpanel");ph.parentNode.insertBefore(P,ph);ph.remove();over.remove();over=null;document.body.style.overflow="";setTimeout(()=>{redraw();b.focus()},30)}b.addEventListener("click",open);document.addEventListener("keydown",e=>{if(e.key==="Escape"&&over)close()})})();</script>
+<!-- Visit counter: GoatCounter (no cookies, no personal data). Loaded only on the public site, never from a local copy or another host; it counts page views and referrers, never the files you open. -->
+<script>(function(){if(location.hostname!=="yannsouetre.github.io")return;var s=document.createElement("script");s.async=true;s.src="https://gc.zgo.at/count.js";s.setAttribute("data-goatcounter","https://syanngpt.goatcounter.com/count");document.body.appendChild(s)})();</script>
+</body>
+</html>
