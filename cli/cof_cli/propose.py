@@ -484,7 +484,11 @@ def parse_answer(raw) -> dict:
         return {"nodes": raw}
     txt = raw
     if isinstance(raw, dict) and "choices" in raw:
-        txt = (((raw.get("choices") or [{}])[0].get("message") or {}).get("content")) or ""
+        msg = ((raw.get("choices") or [{}])[0].get("message") or {})
+        txt = msg.get("content")
+        if isinstance(txt, list):                       # some gateways answer with content parts (Gemini's OpenAI endpoint, 2026)
+            txt = "".join(p.get("text", "") for p in txt if isinstance(p, dict))
+        txt = txt or msg.get("refusal") or ""
     if isinstance(txt, dict):
         return txt
     txt = str(txt).strip()
