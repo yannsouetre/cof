@@ -66,7 +66,7 @@ The three profiles and the sign are an author's shorthand: they produce ordinary
 
 ## Open for comments
 
-RFC 0004 (psyche) and RFC 0005 (people, places, objects) open with this release and take comments until **22 November 2026** through the [issues](https://github.com/yannsouetre/cof/issues). 1.x is additive only, so what the comments change will ship in 1.2.1 rather than hold the release.
+RFC 0004 (psyche) and RFC 0005 (people, places, objects) open with this release and take comments until **22 November 2026** through the [issues](https://github.com/yannsouetre/cof/issues). 1.x is additive only, so what the comments change will ship in a 1.2.x patch rather than hold the release.
 
 ## Credits
 
