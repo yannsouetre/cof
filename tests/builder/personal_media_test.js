@@ -27,7 +27,7 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
   check(await page.evaluate(() => (S.psyche.hab1?.media || []).some(a => /^elements\/memories\/ev1\//.test(a.path || ""))), "hab1 is illustrated by ev1's image in the builder");
   await page.evaluate(() => { window.__dl.length = 0; go("build"); });
   check(await page.evaluate(() => !!document.querySelector("#b_mem_droppers")?.checked), "the personal purge is ticked by default");
-  await page.click("#btnBuild"); await page.waitForFunction(() => window.__dl.some(b => b.type === "application/vnd.cof.character+zip"), null, { timeout: 90000 });
+  await page.click("#btnBuild"); await page.waitForSelector("#dlg.on .dbtns .primary", { timeout: 10000 }); await page.click("#dlg.on .dbtns .primary");   /* the build confirmation (7 Nov.) */ await page.waitForFunction(() => window.__dl.some(b => b.type === "application/vnd.cof.character+zip"), null, { timeout: 90000 });
   const b64 = await page.evaluate(async () => { const b = window.__dl.filter(x => x.type === "application/vnd.cof.character+zip").pop(); const u = new Uint8Array(await b.arrayBuffer()); let s = ""; for (let i = 0; i < u.length; i += 32768) s += String.fromCharCode.apply(null, u.subarray(i, i + 32768)); return btoa(s); });
   fs.writeFileSync(out, Buffer.from(b64, "base64"));
   const info = JSON.parse(py(["-c", "import json,zipfile,sys;z=zipfile.ZipFile(sys.argv[1]);m=json.loads(z.read('manifest.json'));print(json.dumps({'ev1':'ev1' in (m['elements'].get('memories') or {}).get('variants',{}),'media':m['elements']['psyche']['variants']['hab1'].get('media'),'asset':any(a['id']=='a-mem-ev1-1' for a in m['assets']),'files':[n for n in z.namelist() if n.startswith('elements/memories/ev1/')]}))", out]).stdout);

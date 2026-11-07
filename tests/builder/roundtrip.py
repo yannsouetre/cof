@@ -20,6 +20,8 @@ with sync_playwright() as p:
     page.wait_for_timeout(2500)
     with page.expect_download(timeout=60000) as dl:
         page.evaluate("document.getElementById('btnBuild').click()")
+        page.wait_for_selector("#dlg.on .dbtns .primary", timeout=10000)   # the build confirmation (7 Nov.)
+        page.click("#dlg.on .dbtns .primary")
     dl.value.save_as(str(OUT))
     page.wait_for_timeout(500)
     log = page.inner_text("#buildLog")

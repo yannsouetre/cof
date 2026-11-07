@@ -18,7 +18,7 @@
 <a href="https://yannsouetre.github.io/cof/memories/how-much.html"><img src="docs/img/btn-read-howmuch.png" alt="Read: How much could a life weigh?" width="330"></a>
 </p>
 
-<p align="center"><a href="https://yannsouetre.github.io/cof/#clip">▶ Watch the 60-second clip, with sound</a> · <a href="README.fr.md">Français</a></p>
+<p align="center"><a href="https://yannsouetre.github.io/cof/#clip">▶ Watch the 60-second clip, with sound</a> · <b>English</b> · <a href="README.fr.md">Français</a> · <a href="README.de.md">Deutsch</a> · <a href="README.es.md">Español</a> · <a href="README.zh.md">中文</a> · <a href="README.ja.md">日本語</a></p>
 <p align="center"><a href="https://doi.org/10.5281/zenodo.23434045"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.23434045.svg" alt="DOI"></a> <a href="https://pypi.org/project/cof-cli/"><img src="https://img.shields.io/pypi/v/cof-cli?label=cof-cli" alt="cof-cli on PyPI"></a> <a href="https://github.com/yannsouetre/cof/releases/latest"><img src="https://img.shields.io/github/v/release/yannsouetre/cof?label=release" alt="Latest release"></a> <a href="https://huggingface.co/spaces/yannsouetre/cof-explorer"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Space-cof--explorer-yellow" alt="Hugging Face Space"></a></p>
 
 COF is an open file format (`.cof`, a ZIP container) that bundles everything that defines an AI character: personality, appearance (photos, vector code, description), voice, 3D body, motion — **and** its rights, consent and provenance. The same file opens in a chat app, an image or video generator, a game engine, Blender, or serves as the "soul" of an agent.
@@ -149,4 +149,4 @@ Details in [`LICENSES.md`](LICENSES.md). Requested attribution for the specifica
 
 ---
 
-*COF — Character Open File, by Yann Souetre. French version of this page: [`README.fr.md`](README.fr.md).*
+*COF — Character Open File, by Yann Souetre. This page in other languages: [Français](README.fr.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [中文](README.zh.md) · [日本語](README.ja.md). The English version is the reference.*
