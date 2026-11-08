@@ -31,3 +31,5 @@ jobs:
           name: dist
           path: dist/
       - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true   # a tooling release that does not change cof-cli must not fail here

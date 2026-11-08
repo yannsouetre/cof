@@ -1,0 +1,39 @@
+# COF 1.2.2 — release notes (DATE_TBD)
+
+**Open, edit, build: nothing else moves.** A tooling release: no change to the format — a 1.2.2 tool reads and writes exactly the files a 1.2.0 tool does, `cof: "1.2"` stays what a file declares.
+
+▶ [Build one](https://yannsouetre.github.io/cof/builder/) · [Explore Clara](https://yannsouetre.github.io/cof/viewer/#clara/psyche:graph) · [Changelog](https://github.com/yannsouetre/cof/blob/main/CHANGELOG.md)
+
+The 1.2.0 notes carried a known issue: opening an existing file in the builder and building it again could lose what the builder does not model. The five-agent bug hunt had listed it in detail (findings H3-08 to H3-14 of [`docs/hunt-1.2.md`](https://github.com/yannsouetre/cof/blob/main/docs/hunt-1.2.md)). This release closes it, and adds a tile view to every list of the builder.
+
+## Builder 0.14.2
+
+- **A reopened file keeps what the builder does not model.** The builder now edits only what its forms show; everything else it read is written back as it was — on every record (manifest root, identity, preset, variant, asset, voice profile, `weights.json`, legacy `psyche.json`): fields it does not model (`story`, `lorebook`, variant `tags`, `derived`, token `profiles`, a clothing `spec`), unknown keys at every level (`x-…`), `mapping_vocabularies`, `priorities.by_target`, and every file of a variant it does not regenerate (`story.md`, `lorebook.json`, `outfit.json`, `face.json`…), plus `rights/` and the other root files. What you delete in the builder is gone from the file; what you never saw is kept. The declared `cof` minor never goes down.
+- **Legacy `psyche.json` edited on top of itself**: a goal or fear whose text is unchanged keeps its id, horizon, priority or intensity; contradictions, baseline emotion, custom traits and renderings are kept; an emptied form does not erase the file.
+- **A linked LoRA keeps the asset id the file gave it** (no more duplicate `a-weights-…`), with `base_model.version` and the page label of `weights.json`.
+- **A child preset's default on an inherited category is kept** (hunt H3-12).
+- **Inheritance loops are errors**: a preset that `extends` itself through a chain, or a variant that `derives_from` itself, stops the build at the Checks step — `cof validate` refused such files already (hunt H3-14).
+- **Tile view**: a ☰ List / ▦ Tiles switch in the fold bar of every list (elements, memories, psyche, presets, characters). The same cards, forms and actions, laid out as a grid that follows the width (four columns at 1 400 px, two at 900, one under 560); a tile opens full width on click; image variants show their first picture. List remains the default; the choice is remembered per list, in the browser. Six languages.
+- Test: `tests/builder/make_fixture_keep.py` writes a file that carries everything the 1.2.0 builder used to lose; `tests/builder/roundtrip_keep.py` opens it, builds it untouched and checks 33 points, then runs `cof validate` on the result.
+
+## Explorer 1.2.2
+
+- English footer: straight quotes around “Checks” (the French guillemets had leaked into the English text).
+
+## `cof-cli`
+
+- Unchanged (1.2.1). The PyPI workflow now skips a version that already exists, so a release that does not change the command line no longer fails there.
+
+## Credits
+
+Design, specification and tools: Yann Souetre, with Claude. The round-trip findings come from the bug hunt of 5 November (Hunter 3 — builder).
+
+## Cite
+
+See `CITATION.cff`; this release is archived with a DOI on Zenodo.
+
+## Licences
+
+Code MIT; specification, documentation and examples CC BY 4.0; schemas and vocabularies CC0.
+
+Full history: `CHANGELOG.md`. Feedback: GitHub issues.
