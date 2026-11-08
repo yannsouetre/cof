@@ -254,6 +254,7 @@ def card_to_cof_dir(card: dict, dest: Path, *, png: bytes | None = None, age: in
 
     v3 = {**card, "spec": "chara_card_v3", "spec_version": "3.0"}
     v3.setdefault("data", {}).setdefault("extensions", {})
+    v3["data"].setdefault("group_only_greetings", [])      # a V2 card relabelled V3: the one V3 field the spec says MUST be present (SPEC_V3 § group_only_greetings)
     (pdir / "card.json").write_text(json.dumps(v3, ensure_ascii=False, indent=2) + "\n", "utf-8")
 
     elements = {"personality": {"variants": {"p1": {"kind": "card", "label": data.get("name") or "Personality", "language": language, "card": "elements/personality/p1/card.json"}}}}

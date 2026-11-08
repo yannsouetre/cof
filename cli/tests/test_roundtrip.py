@@ -2544,3 +2544,13 @@ def test_extract_recomputes_auto_tags(tmp_path):
     hab1 = m["elements"]["psyche"]["variants"]["hab1"]
     assert "a-mem-ev1-1" not in (hab1.get("media") or []) and not any(a["id"] == "a-mem-ev1-1" for a in m["assets"])
     assert "ERROR" not in r.stdout, r.stdout
+
+
+def test_import_of_a_v2_card_writes_a_complete_v3(tmp_path):
+    """A V2 card imported as V3 carries `group_only_greetings`, which SPEC_V3 says MUST be present (8 Nov. 2026)."""
+    card = {"spec": "chara_card_v2", "spec_version": "2.0", "data": {"name": "Zoé", "description": "a test", "personality": "", "scenario": "",
+            "first_mes": "", "mes_example": "", "creator_notes": "", "system_prompt": "", "post_history_instructions": "",
+            "alternate_greetings": [], "tags": [], "creator": "", "character_version": "1.0"}}
+    d = card_to_cof_dir(card, tmp_path / "imp", png=None, age=30, language="fr")
+    out = json.loads((d / "elements" / "personality" / "p1" / "card.json").read_text("utf-8"))
+    assert out["spec"] == "chara_card_v3" and out["data"]["group_only_greetings"] == []
