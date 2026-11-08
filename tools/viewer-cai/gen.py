@@ -45,6 +45,18 @@ WELCOME = {  # title, open the file, the graph, the rest of COF, open button, cl
            "自分の .cof を開く", "閉じる", "Character.AI 版", "例：Wren", "例を見る"],
 }
 
+BASE_OG = """<meta property="og:type" content="website">
+<meta property="og:title" content="COF Explorer — open a character file">
+<meta property="og:description" content="Presets, looks, voices, memories, psyche and rights of a .cof, in your browser. Nothing leaves your machine.">
+<meta property="og:url" content="https://yannsouetre.github.io/cof/viewer/">
+<meta property="og:image" content="https://yannsouetre.github.io/cof/viewer/og-explorer.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="COF Explorer — Clara Mercier's file open, in dark theme">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://yannsouetre.github.io/cof/viewer/og-explorer.jpg">
+"""   # exactly the block of viewer/index.html, an anchor like the others
+
 OG = ("\n<meta property=\"og:type\" content=\"website\">"
       "\n<meta property=\"og:title\" content=\"COF Explorer — Character.AI version\">"
       "\n<meta property=\"og:description\" content=\"Read your Character.AI conversations again, as the memories of your character, in one open file. Nothing leaves your browser.\">"
@@ -90,7 +102,7 @@ def patches(src: str) -> str:
             raise SystemExit(f"tools/viewer-cai/gen.py: patch not applicable ({n} matches): {pattern[:80]!r} — update the script")
         out = re.sub(pattern, lambda m: m.expand(repl), out) if regex else out.replace(pattern, repl)
 
-    sub("<title>COF Explorer</title>", "<title>COF Explorer · Character.AI</title>" + OG)
+    sub("<title>COF Explorer</title>\n" + BASE_OG, "<title>COF Explorer · Character.AI</title>" + OG + "\n")   # the base explorer's own share card (1.2.2) is replaced, not doubled
     sub(r'(<span id="ver">explorer [0-9.]+</span>)', r'\1 · <button id="caiHelp" type="button">Character.AI version</button>', regex=True)
     sub('fetch("samples/"+name)', 'fetch("../samples/"+name)')
     # an example of what an import gives: Wren, a character imported from a (made-up) Character.AI export, with four looks
