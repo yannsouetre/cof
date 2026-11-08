@@ -173,6 +173,17 @@ Everything in 1.1 is optional; a 1.0 reader ignores it. A file that uses any of 
 
 Purges a host may apply at import: `cof extract --all-audiences` (intimate and nude variants out, media of explicit memories out, gists kept) and the default drop of personal memories (`--keep-personal` to keep them).
 
+### 7 ter. Importing a platform export (RFC 0006)
+
+A conversation a user held with a character on a platform (Character.AI, SillyTavern…) is **one memory node**: `kind: moment`, `origin: lived`, `visibility: personal`, `disclosure: guarded`, linked `part-of` one `period` per platform (« Conversations on Character.AI »), titled by the start of the user's first message, with the verbatim transcript as a `memory-media` asset in quoted Markdown (front matter `cof_transcript: 1`, one heading `## n · speaker · time` per message, every line prefixed `> `). The character comes from its card (foreign keys moved to `data.extensions.<tool>`, `tags.ip.original: false`, conservative rights, the avatar only with an age). Rules an importer follows:
+
+- **Never an invented date**: `when` only from real timestamps; CAI Tools writes the export instant on every message, so its chats are undated moments without `when` (the Character.AI period spans 2022 to the export year, both bounds `approx`, with the label "between 2022 and <export year>"; its conversations stay undated).
+- **Speakers** from the platform (`speaker_source: platform`), from names (`names`) or inferred (`inferred-from-greeting`), said in the transcript and to the user.
+- **A conversation never goes into the card**; account files and objects (e-mail, password, birth date) are never read; the content flags the conversations would raise are reported, not written in `tags.content`.
+- **Untrusted input**: bounded archives (entries, size, compression ratio, nesting), no `..` paths, bounded JSON depth.
+
+Reference implementation: `cof import <files, zips or folders> [--age N | NAME=N] [--apparent] [--no-avatar] [--lang L] [--card-lang L] [--persona NAME] [--content LIST] [--keep-source] [--inspect]` (`cli/cof_cli/platform_import.py`) and the builder's « Import conversations » (Memories step). `cof import --inspect` prints an unknown export's structure with every value redacted. Readers show a long transcript folded (the explorer: the first messages and « + »).
+
 ---
 
 ## 8. Versioning and extension

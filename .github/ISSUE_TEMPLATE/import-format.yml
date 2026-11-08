@@ -1,0 +1,33 @@
+name: Import — an export is not recognised
+description: The import page or `cof import` does not read a file from Character.AI, CAI Tools, PersonaText, SillyTavern…
+labels: [import]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you: each report helps the next people save their characters.
+        **Never paste or attach your conversations, your e-mail, your account files or any personal data.** The structure of the file is enough.
+  - type: dropdown
+    id: source
+    attributes:
+      label: Which export?
+      options: [CAI Tools (card), CAI Tools (Tavern chat), CAI Tools (history zip), PersonaText, Character.AI official export (zip), SillyTavern, Other]
+    validations: {required: true}
+  - type: input
+    id: version
+    attributes: {label: Tool version, description: "The version of the extension or tool, if you know it (e.g. CAI Tools 3.8.3)."}
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where did it fail?
+      options: [The import page (yannsouetre.github.io/cof/import/), cof import (command line), The builder (Import conversations)]
+    validations: {required: true}
+  - type: textarea
+    id: message
+    attributes: {label: What did it say?, description: "The message shown (« not recognised », an error…)."}
+  - type: textarea
+    id: structure
+    attributes:
+      label: Structure of the file (optional)
+      description: "If you can run it: the output of `cof import --inspect <file>` — it shows the file's structure with every value redacted. Otherwise describe the file names inside the zip."
+      render: text

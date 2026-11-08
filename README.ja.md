@@ -25,6 +25,8 @@ COF は、AIキャラクターを定義するすべてをひとつにまとめ�
 
 > ステータス：**1.2、2026年11月8日リリース**——[AIキャラクターに内面が宿る](https://yannsouetre.github.io/cof/psyche/index.ja.html)。記憶と結びついた心理グラフ（RFC 0004）と、記憶と心理が共有する人・場所・モノ（RFC 0005）。どちらも2026年11月22日までコメントを受け付けています。1.0 と 1.1 のファイルはすべて有効なままで、1.x のどのツールでも読めます。リファレンスツールは `cof-cli` 1.2.0（`pip install cof-cli`）、ビルダー 0.14.0、エクスプローラー 1.2.0、ComfyUI ノード 0.7（[リリースノート](docs/release-notes-1.2.0.md)）。それ以前：1.1 は2026年10月30日——[記憶](https://yannsouetre.github.io/cof/memories/index.ja.html)（RFC 0002）、ジェンダー、関係、アーキタイプと役割（RFC 0003）、すべてのファイルに `COF.md`。ツール 1.1.1 は2026年11月2日——記憶グラフがひとつの人生をまるごと収めるように（[リリースノート](docs/release-notes-1.1.1.md)）。フォーマット 1.0 は2026年10月17日。ご意見は [issues](https://github.com/yannsouetre/cof/issues) へどうぞ。
 
+> **Character.AI から来ましたか？**[キャラクターを保存 →](https://yannsouetre.github.io/cof/import/) CAI Tools または PersonaText のエクスポートをドロップし、3 つを確認して、`.cof` ファイルを 1 つダウンロード：キャラクターと、その記憶になった非公開の会話。そしてバックアップの先へ：外見、声、プリセット、画像や音のある記憶、グラフで描く心理 —— [builder](https://yannsouetre.github.io/cof/builder/) で加え、[explorer](https://yannsouetre.github.io/cof/viewer/character-ai/) で読めます。すべてブラウザ内で行われます。COF 1.2.1（2026年11月8日）で `cof import`、インポートページ、builder 0.14.1、explorer 1.2.1 が加わりました（[リリースノート](docs/release-notes-1.2.1.md)、[RFC 0006](rfcs/0006-platform-import.md)、2026年11月22日までコメント受付）。
+
 ## なぜ COF なのか
 - PNG、WAV、VRM、LoRA、散らばったメモを**もう行き来しなくていい**。
 - **プラットフォームに縛られない**：COF は、独自ツールが用意していない*書き出し*のためのフォーマットです。

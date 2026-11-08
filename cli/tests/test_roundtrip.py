@@ -2477,7 +2477,11 @@ def test_import_drops_an_embedded_chat_and_avatar(tmp_path):
     out = tmp_path / "wren"
     r = subprocess.run([sys.executable, "-c", "import sys; from cof_cli.cli import main; sys.exit(main())", "import", str(src), "-o", str(out)], capture_output=True, text=True)
     assert r.returncode == 0, r.stdout + r.stderr
-    assert "embedded chat / avatar not imported: a user's personal data, not part of the character" in r.stdout
+    # since the platform import (RFC 0006, branch cai-import), a PersonaText file's conversation becomes ONE personal memory
+    # instead of being dropped; it never stays in the card
+    node = json.loads((out / "elements/memories/ep1/memory.json").read_text("utf-8"))
+    assert node["visibility"] == "personal" and node["origin"] == "lived" and node["disclosure"] == "guarded"
+    assert "personal memories (a user's data)" in r.stdout
     imported = (out / "elements/personality/p1/card.json").read_text("utf-8")
     assert "chat_history" not in imported and "avatar_data_url" not in imported and "Paul" not in imported
     c = json.loads(imported)["data"]

@@ -147,21 +147,125 @@ def cmd_read_text(a):
 
 
 def cmd_import(a):
-    src = Path(a.src)
-    if src.suffix.lower() == ".png":
+    """A character card (PNG/JSON, V1/V2/V3) as before; a platform export (Character.AI through CAI Tools or PersonaText,
+    SillyTavern, Oobabooga, the official zip) through platform_import (RFC 0006): the character, and each conversation
+    as one personal memory."""
+    from . import platform_import as PI
+    srcs = [Path(x) for x in a.src]
+    for s_ in srcs:
+        if not s_.exists():
+            print(f"ERROR  {s_}: no such file or folder", file=sys.stderr); return 2
+    try:
+        ages = PI.parse_age(a.age)
+    except ValueError as e:
+        print(f"ERROR  {e}", file=sys.stderr); return 2
+    if a.inspect:
+        for s_ in srcs:
+            sys.stdout.write(PI.inspect(s_))
+        return 0
+    kinds = [PI.sniff(s_) for s_ in srcs]
+    if len(srcs) == 1 and kinds[0] in ("card-png", "card-json") and not (a.persona or a.no_chats or a.keep_source or a.content or a.apparent or a.original or a.no_avatar or a.card_lang):
+        return _import_card(a, srcs[0], ages)                 # a plain card: the 1.0 path, unchanged
+    rep = PI.Report()
+    bundle = PI.Bundle(report=rep)
+    try:
+        for s_ in srcs:
+            b = PI.read_file(s_, rep)
+            bundle.characters += b.characters; bundle.chats += b.chats
+        groups = PI.group(bundle)
+        if not groups:
+            for x in rep.alerts:
+                print(f"ERROR  {x}", file=sys.stderr)
+            for what, n in rep.ignored:
+                print(f"NOTE   {what}: {n}", file=sys.stderr)
+            print("nothing imported: no character and no conversation recognised", file=sys.stderr)
+            return 1
+        if len(groups) > 1 and "" in ages:
+            print("ERROR  several characters found (" + ", ".join(c.name or "?" for c, _ in groups) + "): give each age as --age \"NAME=N\"", file=sys.stderr)
+            return 2
+        content = [c.strip() for c in a.content.split(",") if c.strip()] if a.content else None
+        CONTENT = ("none", "nudity", "sexual", "violence", "gore", "drugs", "profanity", "horror", "political", "religious")
+        bad = [c for c in (content or []) if c not in CONTENT] + (["none with another value"] if content and "none" in content and len(content) > 1 else [])
+        bad += [f"--{k.replace('_', '-')} {v}" for k, v in (("lang", a.lang), ("card_lang", a.card_lang)) if v and not re.fullmatch(r"[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*", v)]
+        if bad:                                     # checked before anything is written (hunt CLI-1)
+            print(f"ERROR  not valid: {', '.join(bad)} (--content: {', '.join(CONTENT)}; --lang / --card-lang: a language tag such as fr or pt-BR) — nothing written", file=sys.stderr)
+            return 2
+        opts = PI.Options(lang=a.lang, card_lang=a.card_lang, age=ages, real=a.real, original=a.original, persona=a.persona, no_avatar=a.no_avatar,
+                          no_chats=a.no_chats, keep_source=a.keep_source, content=content, apparent=a.apparent)
+        plans = [PI.plan_character(char, chats, opts) for char, chats in groups]     # every stop happens here, before any write
+        PI.assign_destinations(plans, Path(a.out) if a.out else None)
+    except PI.ImportStop as e:
+        print(f"STOP   {e}", file=sys.stderr)
+        return e.code
+    except (ValueError, TypeError) as e:
+        print(f"ERROR  {e} — nothing written", file=sys.stderr)
+        return 1
+    dests = []
+    try:
+        for pl in plans:
+            dests.append(PI.write_character(pl, opts, rep))
+    except Exception as e:                          # all or nothing: the characters already written go (RFC 0006 § 3.7.4, hunt CLI-5)
+        for d in dests:
+            shutil.rmtree(d, ignore_errors=True)
+        print(f"ERROR  {e} — nothing written", file=sys.stderr)
+        return 1
+    worst, out_json = 0, []
+    for d in dests:
+        r = Report()
+        manifest = validate_dir(d, r, recompute=True)
+        if manifest:
+            (d / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", "utf-8")
+            from .selfdesc import write_self_description
+            write_self_description(d, manifest)
+        personal = [w for w in r.warnings if "personal memory (a user's data)" in w]
+        head_only = [w for w in r.warnings if "shows only the head" in w]
+        r.warnings = [w for w in r.warnings if w not in personal and w not in head_only]
+        if personal:
+            r.warnings.append(f"{len(personal)} personal memories (a user's data): extract / export / the builder's build drop them unless asked (--keep-personal); do not share this folder as is")
+        if head_only:
+            r.warnings.append("the avatar is a head only: the default outfit is undefined (expected for an imported avatar)")
+        if a.json:                                  # one JSON document on stdout (hunt CLI-15)
+            out_json.append({"folder": str(d), **r.to_dict()})
+            worst = max(worst, 1 if r.errors else 0)
+            continue
+        print(f"COF folder created: {d}")
+        worst = max(worst, _print_report(r, a.json))
+    if a.json:
+        print(json.dumps({"characters": out_json, "import": {"lines": rep.lines, "ignored": [list(x) for x in rep.ignored], "alerts": rep.alerts}},
+                         ensure_ascii=False, indent=2))
+        return worst
+    _print_import_report(rep)
+    return worst
+
+
+def _print_import_report(rep) -> None:
+    print("\nimport report")
+    for x in rep.lines:
+        print(f"  {x}")
+    for what, n in rep.ignored:
+        print(f"  left out / noted: {what}: {n}")
+    for x in rep.alerts:
+        print(f"  CHECK  {x}")
+    print("  CHECK  `fictional` and the intellectual property (tags.ip) were not verified; rights left at the conservative defaults "
+          "(personal use, no redistribution, no training). The conversations are your personal data: memories `visibility: personal`.")
+
+
+def _import_card(a, src: Path, ages: dict):
+    if len(ages) > 1:
+        print("ERROR  one character: give --age N", file=sys.stderr); return 2
+    age = next(iter(ages.values()), None)
+    if src.suffix.lower() == ".png" or src.read_bytes()[:8] == b"\x89PNG\r\n\x1a\n":
         png = src.read_bytes()
         card = read_card_from_png(png)
-    elif src.suffix.lower() == ".json":
+    else:
         card = json.loads(src.read_text("utf-8"))
         png = None
         if "spec" not in card:
             card = {"spec": "chara_card_v2", "spec_version": "2.0", "data": card}
-    else:
-        print("expected source: .png (card) or .json (card)", file=sys.stderr)
-        return 1
+    from .platform_import import _purge_msg_arrays
+    removed = _purge_msg_arrays(card) if isinstance(card, dict) else []   # a conversation never stays in a card, whatever its key (RFC 0006 § 3.1.2)
     dest = Path(a.out) if a.out else Path(src.stem)
-    removed = []
-    card_to_cof_dir(card, dest, png=png if a.keep_png else None, age=a.age, fictional=not a.real, language=a.lang, removed=removed)
+    card_to_cof_dir(card, dest, png=png if a.keep_png else None, age=age, fictional=not a.real, language=a.lang or "en", removed=removed)
     rep = Report()
     validate_dir(dest, rep, recompute=True)
     if removed:
@@ -615,7 +719,23 @@ def main(argv=None) -> int:
     s = sub.add_parser("tokens", help="token estimate per block"); s.add_argument("path"); s.set_defaults(fn=cmd_tokens)
     s = sub.add_parser("embed-text", help="write a text (.md/.txt) into a PNG as iTXt 'Description' — readable by the builder (personality + appearance)"); s.add_argument("png"); s.add_argument("text"); s.add_argument("-o", "--out"); s.set_defaults(fn=cmd_embed_text)
     s = sub.add_parser("read-text", help="show the descriptive text embedded in an image (PNG/JPEG: iTXt, XMP, EXIF)"); s.add_argument("image"); s.set_defaults(fn=cmd_read_text)
-    s = sub.add_parser("import", help="PNG/JSON card (CCv2/V3) → COF folder"); s.add_argument("src"); s.add_argument("-o", "--out"); s.add_argument("--age", type=int); s.add_argument("--real", action="store_true", help="character based on a real person (consent required)"); s.add_argument("--lang", default="en"); s.add_argument("--keep-png", action="store_true", help="keep the PNG as the head.front view"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_import)
+    s = sub.add_parser("import", help="a character card (PNG/JSON, V1/V2/V3), or a platform export — Character.AI through CAI Tools or PersonaText, SillyTavern, Oobabooga, the official zip (RFC 0006): the character, and each conversation as one personal memory")
+    s.add_argument("src", nargs="+", help="files, zips or folders; several files of one character make one COF")
+    s.add_argument("-o", "--out", help="output folder (a parent folder when several characters are found)")
+    s.add_argument("--age", action="append", metavar="N|NAME=N", help="the character's age (years) — required to keep an avatar; NAME=N for one of several characters")
+    s.add_argument("--apparent", action="store_true", help="the --age given is an apparent age (basis apparent), not a declared one")
+    s.add_argument("--no-avatar", action="store_true", help="import without the avatar (when no age can be given)")
+    s.add_argument("--real", action="store_true", help="character based on a real person (consent required)")
+    s.add_argument("--original", action="store_true", help="platform import: the character is your own original creation (tags.ip.original)")
+    s.add_argument("--lang", help="the language of the conversations and of the memory texts (en, fr, de, es, zh, ja…); default: detected, else en (a plain card: en)")
+    s.add_argument("--card-lang", help="platform import: the language of the character's card; default: detected, else --lang")
+    s.add_argument("--persona", help="your name in the conversations (default: the name the export gives, else 'You')")
+    s.add_argument("--content", metavar="LIST", help="tags.content after reading, comma separated (none, violence, sexual…): removes the content-unreviewed tag")
+    s.add_argument("--no-chats", action="store_true", help="import the character only")
+    s.add_argument("--keep-source", action="store_true", help="also keep each source chat file, byte for byte, beside its transcript (personal)")
+    s.add_argument("--inspect", action="store_true", help="print the structure of the files with every value redacted (to share an unknown export's shape), write nothing")
+    s.add_argument("--keep-png", action="store_true", help="plain card import: keep the PNG as the head.front view")
+    s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_import)
     s = sub.add_parser("export", help="folder/.cof → png | soul | card | agent (workspace: SOUL.md, IDENTITY.md, skills/, memories) — from the default preset or --preset"); s.add_argument("src"); s.add_argument("--format", choices=["png", "soul", "card", "agent"], required=True); s.add_argument("-o", "--out"); s.add_argument("--preset"); s.add_argument("--keep-personal", action="store_true", help="agent: also export `visibility: personal` memories and psyche nodes (dropped by default)"); s.add_argument("--keep-dangerous", action="store_true", help="agent: also render psyche nodes of risk `dangerous` (dropped by default: an agent acts — RFC 0004 § 3 septies)"); s.set_defaults(fn=cmd_export)
     s = sub.add_parser("migrate", help="folder v0.2 … v0.5 → v1.0; --psyche converts the 1.0 lists (goals, fears, values, behaviours) into psyche nodes (1.2)"); s.add_argument("dir"); s.add_argument("--psyche", action="store_true", help="write psyche nodes from psyche.json goals / fears / values and the card's cof.goals / cof.fears / cof.behavior (the lists stay); idempotent"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_migrate)
     s = sub.add_parser("merge", help="merge several .cof files/folders (same name, nickname, fictional status and morphology class ⇒ same identity, otherwise multiple identities)"); s.add_argument("sources", nargs="+"); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_merge)

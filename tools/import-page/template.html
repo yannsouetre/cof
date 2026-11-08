@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- Content-Security-Policy (as the explorer, D-H5): this page can send nothing anywhere — no network request is allowed at all,
+     so « nothing is sent » is enforced by the browser, not only promised. Scripts and styles are this page's own; images are
+     the files you drop (blob:, data:) and the COF icon. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'">
+<title>Save your Character.AI bots · COF</title>
+<meta name="description" content="Turn a Character.AI export into a Character Open File (.cof): your character, and your conversations kept private. Everything happens in your browser.">
+<link rel="icon" href="../builder/icon/cof-icon-dark.svg">
+<!-- GENERATED from tools/import-page/template.html by tools/import-page/gen.py — the shared blocks come from builder/index.html: edit them there -->
+<style>
+:root{--bg:#0d1312;--panel:#18201f;--line:#2a3533;--ink:#eef3f1;--muted:#93a39e;--accent:#4cc2a8;--deep:#0f6b5c;--mint:#bfeee2;--violet:#a98ae8;--coral:#f07a72;--warn:#e0a54a;--chip:#1f2927;--display:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Consolas,monospace}   /* no web fonts: the page requests nothing from anywhere */
+:root[data-theme="light"]{--bg:#f3f6f5;--panel:#ffffff;--line:#d6e0dd;--ink:#13201d;--muted:#5d6e69;--chip:#e9f0ee}
+*{box-sizing:border-box}html{scroll-padding-top:72px}html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--body)}
+a{color:var(--accent)}button,input,select{font:inherit;color:inherit}
+header{border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--bg) 88%,transparent);position:sticky;top:0;z-index:5;backdrop-filter:blur(8px)}
+.hw{max-width:860px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{font:800 18px/1.1 var(--display);display:flex;align-items:center;gap:10px}.brand img{width:30px;height:30px}
+.brand small{display:block;font:500 12px var(--body);color:var(--muted)}
+.sp{flex:1}select.lang,.tbtn{background:var(--chip);border:1px solid var(--line);border-radius:10px;padding:6px 10px}
+main{max-width:860px;margin:0 auto;padding:22px 18px 80px}
+h1{font:800 32px/1.1 var(--display);margin:0 0 10px;letter-spacing:-.02em}
+.lead{color:var(--muted);margin:0 0 18px}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px 20px;margin:0 0 16px}
+.step h2{font:700 20px var(--display);margin:0 0 10px;display:flex;align-items:center;gap:10px}
+.step h2 .n{font:600 13px var(--mono);color:var(--accent);background:color-mix(in srgb,var(--accent) 15%,transparent);border-radius:8px;padding:2px 9px}
+.step.off{opacity:.45;pointer-events:none}
+.drop{border:2px dashed var(--line);border-radius:14px;padding:26px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s}
+.drop:hover,.drop.over{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 7%,transparent)}
+.drop b{display:block;font-size:17px;margin-bottom:4px}
+.hint{color:var(--muted);font-size:14px}
+details.help{margin-top:12px}details.help summary{cursor:pointer;color:var(--accent)}
+details.help li{margin:4px 0}
+ul.files{list-style:none;padding:0;margin:12px 0 0}ul.files li{display:flex;gap:10px;align-items:baseline;padding:6px 0;border-top:1px dashed var(--line);font-size:14px}ul.files li{flex-wrap:wrap;row-gap:2px}ul.files li>span:last-child{overflow-wrap:anywhere;min-width:0}.chats li,.prev div,#stop{overflow-wrap:anywhere}
+ul.files li .k{font:500 12px var(--mono);border-radius:6px;padding:1px 7px;background:var(--chip);white-space:nowrap}
+ul.files li.bad .k{color:var(--coral)}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:8px 0}
+label.f{display:block;font-size:14px;color:var(--muted);margin-bottom:4px}
+input[type=text],input[type=number],select.f{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.char{display:flex;gap:16px;align-items:flex-start}.char img{width:96px;height:96px;object-fit:cover;border-radius:14px;border:1px solid var(--line);background:var(--chip)}
+.box{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:10px 0}
+.box.warn{border-color:var(--warn)}.box.stop{border-color:var(--coral);background:color-mix(in srgb,var(--coral) 10%,transparent)}
+.chats{list-style:none;padding:0;margin:8px 0}.chats li{border-top:1px dashed var(--line);padding:8px 0}
+.chats .meta{font-size:13px;color:var(--muted)}
+.prev{margin:6px 0 0;font-size:14px}.prev div{border-left:3px solid var(--line);padding:2px 8px;margin:4px 0}.prev div.u{border-left-color:var(--accent)}.prev b{font-size:12px;color:var(--muted);display:block}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}.chips label{border:1px solid var(--line);border-radius:999px;padding:4px 12px;background:var(--chip);cursor:pointer;font-size:14px}
+.chips input{margin-right:6px}
+.btn{border:1px solid var(--line);background:var(--chip);border-radius:12px;padding:10px 16px;cursor:pointer;font-weight:600}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#05201b}.btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(1)}
+#content label.off{opacity:.45;cursor:not-allowed}
+.need{outline:2px solid var(--coral);outline-offset:2px}.hint.need{outline:0;color:var(--coral)}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.next{margin-top:14px}.next li{margin:4px 0}
+footer{color:var(--muted);font-size:13px;text-align:center;padding:20px}
+@media(max-width:520px){.char{flex-direction:column}.char img{width:80px;height:80px}}
+.linkbtn{background:none;border:0;color:var(--accent);cursor:pointer;padding:0;text-decoration:underline;font-size:14px}
+.ok{color:var(--accent)}.bad{color:var(--coral)}
+</style>
+</head>
+<body>
+<header><div class="hw"><div class="brand"><img src="../builder/icon/cof-icon-dark.svg" alt=""><span>Character.AI → COF<small data-t="un fichier ouvert pour vos personnages">an open file for your characters</small></span></div><div class="sp"></div>
+<select class="lang" id="lang" aria-label="language"><option value="en">English</option><option value="fr">Français</option><option value="de">Deutsch</option><option value="es">Español</option><option value="zh">中文</option><option value="ja">日本語</option></select>
+<button class="tbtn" id="theme" title="light / dark">☀️</button></div></header>
+<main>
+<h1 data-t="Sauvez vos personnages Character.AI">Save your Character.AI bots</h1>
+<p class="lead" data-t="Votre personnage et vos conversations dans un seul fichier ouvert (.cof) : vos conversations deviennent ses souvenirs, et vous pourrez ensuite lui donner des apparences, une voix, des presets. Vos conversations restent privées : elles ne partent jamais d'un fichier partagé. Tout se passe dans votre navigateur : rien n'est envoyé nulle part.">Your character and your conversations in one open file (.cof): your conversations become its memories, and you can then give it looks, a voice, presets. Your conversations stay private: they never leave with a shared file. Everything happens in your browser: nothing is sent anywhere.</p>
+
+<section class="step" id="s1"><h2><span class="n">1</span><span data-t="Vos fichiers">Your files</span></h2>
+<div class="drop" id="drop" tabindex="0" role="button" aria-describedby="dropHint"><b data-t="Déposez vos fichiers ici, ou cliquez">Drop your files here, or click</b><span class="hint" id="dropHint" data-t="Une carte (PNG ou JSON) et vos conversations (.jsonl, .json, .zip) — tout en une fois">A card (PNG or JSON) and your conversations (.jsonl, .json, .zip) — all at once</span></div>
+<input type="file" id="file" multiple accept=".png,.json,.jsonl,.zip" hidden>
+<ul class="files" id="files"></ul>
+<p class="hint" id="report" hidden><span data-t="Un fichier n'est pas reconnu ?">A file is not recognised?</span> <a href="https://github.com/yannsouetre/cof/issues/new?template=import-format.yml" target="_blank" rel="noopener" data-t="Signalez-le (sans vos conversations ni données personnelles)">Report it (without your conversations or personal data)</a></p>
+<p id="againP" hidden><button class="linkbtn" id="again" data-t="Recommencer avec d'autres fichiers">Start again with other files</button></p>
+<details class="help"><summary data-t="Où trouver ces fichiers ?">Where do I get these files?</summary><ul>
+<li data-t="h1"><b>CAI Tools</b> (browser extension): « Download Character » (PNG or JSON card), « Download Tavern chat » (one conversation) or « Download History » (all conversations of a character, a .zip).</li>
+<li data-t="h2"><b>PersonaText</b> (personatext.com, Character.AI exporter): one .personatext.json file with the card, the avatar and the open conversation, with its dates.</li>
+<li data-t="h3"><b>Character.AI's official export</b> (Profile › Settings › Account › Manage Account &amp; Data › Export Data): a .zip e-mailed after 3 to 4 weeks, link valid 7 days. Request it now. Its structure is not documented: it is read as well as possible, and you are told who speaks when it has to be guessed.</li>
+<li data-t="h4"><b>SillyTavern</b> chats (.jsonl) work too.</li>
+<li data-t="h5">These tools use your own Character.AI session; this page never asks for a password and never contacts Character.AI.</li>
+<li><span data-t="Un export qui n'est pas reconnu ?">An export that is not recognised?</span> <a href="https://github.com/yannsouetre/cof/issues/new?template=import-format.yml" target="_blank" rel="noopener" data-t="Signalez-le (sans vos conversations ni données personnelles)">Report it (without your conversations or personal data)</a></li></ul></details>
+</section>
+
+<section class="step off" id="s2" inert><h2><span class="n">2</span><span data-t="Vérifiez">Check</span></h2>
+<div id="stop" role="alert"></div>
+<h3 data-t="Le personnage">The character</h3>
+<div class="char"><img id="av" alt="" hidden><div style="flex:1">
+<div class="row"><div><label class="f" for="name" data-t="Nom du personnage">Character's name</label><input type="text" id="name" maxlength="120"></div>
+<div id="ageBox"><label class="f" for="age" data-t="Âge de l'avatar (années)">Avatar's age (years)</label><input type="number" id="age" min="0" max="200" step="1"><label class="hint"><input type="checkbox" id="noav"> <span data-t="Importer sans l'avatar">Import without the avatar</span></label></div></div>
+<p class="hint" id="ageWhy" data-t="COF demande un âge pour tout visage (règle de protection des mineurs) : celui du personnage tel que l'avatar le montre — pour un avatar non humain, l'âge qu'il paraît. Sinon, importez sans l'avatar.">COF asks for an age for every face (a rule that protects minors): the character's age as the avatar shows it — for a non-human avatar, the age it looks. Otherwise, import without the avatar.</p>
+<p class="hint" data-t="Un personnage créé par quelqu'un d'autre reste le sien : votre fichier est pour un usage personnel (pas de redistribution, pas d'entraînement d'IA).">A character made by someone else stays theirs: your file is for personal use (no redistribution, no AI training).</p>
+</div></div>
+<h3 data-t="Vos conversations">Your conversations</h3>
+<div class="row"><div><label class="f" for="persona" data-t="Votre nom dans les conversations">Your name in the conversations</label><input type="text" id="persona" maxlength="80"></div>
+<div><label class="f" for="clang" data-t="Langue des conversations">Language of the conversations</label><select class="f" id="clang"><option value="en">English</option><option value="fr">Français</option><option value="de">Deutsch</option><option value="es">Español</option><option value="zh">中文</option><option value="ja">日本語</option></select></div></div>
+<ul class="chats" id="chats"></ul>
+<h3 data-t="Contenu">Content</h3>
+<p class="hint" data-t="Ce que la carte du personnage contient, pour que les applications sachent à qui la montrer. Ce que disent vos conversations n'est jamais écrit ici.">What the character's card contains, so that apps know whom to show it to. What your conversations say is never written here.</p>
+<div class="chips" id="content"></div>
+<label class="hint"><input type="checkbox" id="checked"> <span data-t="J'ai vérifié (sinon le fichier garde l'étiquette « non vérifié »)">I have checked (otherwise the file keeps the « not reviewed » tag)</span></label>
+</section>
+
+<section class="step off" id="s3" inert><h2><span class="n">3</span><span data-t="Votre fichier .cof">Your .cof file</span></h2>
+<div class="btns"><button class="btn primary" id="dlMine" data-t="Télécharger mon .cof (avec mes conversations — à garder pour moi)">Download my .cof (with my conversations — keep it to yourself)</button>
+<button class="btn" id="dlShare" data-t="Télécharger une copie sans les conversations (pour une autre application)">Download a copy without the conversations (for another app)</button></div>
+<p class="hint" id="dlNote" role="status" aria-live="polite"></p>
+<div class="next"><b data-t="Et ensuite ?">What next?</b><ul>
+<li><a href="../viewer/character-ai/" target="_blank" rel="noopener" data-t="Ouvrir votre fichier dans l'explorateur COF">Open your file in the COF explorer</a> — <span data-t="relisez vos conversations, voyez tout ce qu'un personnage COF peut porter (looks, voix, souvenirs, vie intérieure).">read your conversations again, see everything a COF character can hold (looks, voices, memories, inner life).</span></li>
+<li><a href="../builder/" target="_blank" rel="noopener" data-t="Aller plus loin dans le builder">Go further in the builder</a> — <span data-t="ajoutez des images, une voix, des souvenirs, une psyché.">add images, a voice, memories, a psyche.</span></li>
+<li><a href="../" target="_blank" rel="noopener" data-t="Qu'est-ce que COF ?">What is COF?</a></li></ul></div>
+</section>
+<footer><span data-t="Character Open File — format ouvert. Cette page ne fait que lire vos fichiers dans votre navigateur.">Character Open File — an open format. This page only reads your files in your browser.</span> <span data-t="Projet indépendant, sans lien avec Character.AI.">An independent project, not affiliated with Character.AI.</span> · <a href="https://github.com/yannsouetre/cof">GitHub</a> · RFC 0006</footer>
+</main>
+<script>
+"use strict";
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let LANG="en";
+/*@shared:zip@*/
+/*@shared:png@*/
+/*@shared:payloads@*/
+/*@shared:selfdesc@*/
+/*@shared:cai-core@*/
+/* ---- the page (not shared): three steps ---- */
+const UI={
+ "un fichier ouvert pour vos personnages":["an open file for your characters","eine offene Datei für Ihre Figuren","un archivo abierto para sus personajes","为您的角色准备的开放文件","キャラクターのためのオープンなファイル"],
+ "Sauvez vos personnages Character.AI":["Save your Character.AI bots","Retten Sie Ihre Character.AI-Figuren","Salve sus personajes de Character.AI","保存您的 Character.AI 角色","Character.AI のキャラクターを保存しよう"],
+ "Votre personnage et vos conversations dans un seul fichier ouvert (.cof) : vos conversations deviennent ses souvenirs, et vous pourrez ensuite lui donner des apparences, une voix, des presets. Vos conversations restent privées : elles ne partent jamais d'un fichier partagé. Tout se passe dans votre navigateur : rien n'est envoyé nulle part.":["Your character and your conversations in one open file (.cof): your conversations become its memories, and you can then give it looks, a voice, presets. Your conversations stay private: they never leave with a shared file. Everything happens in your browser: nothing is sent anywhere.","Ihre Figur und Ihre Gespräche in einer einzigen offenen Datei (.cof): die Gespräche werden zu Erinnerungen der Figur, und Sie können ihr danach Aussehen, eine Stimme, Presets geben. Ihre Gespräche bleiben privat: sie verlassen nie eine geteilte Datei. Alles geschieht in Ihrem Browser: nichts wird irgendwohin gesendet.","Su personaje y sus conversaciones en un solo archivo abierto (.cof): las conversaciones se convierten en recuerdos del personaje, y después podrá darle apariencias, una voz, presets. Sus conversaciones siguen siendo privadas: nunca salen con un archivo compartido. Todo ocurre en su navegador: no se envía nada a ninguna parte.","您的角色和对话保存在一个开放文件（.cof）中：对话成为角色的记忆，之后还可以为它添加外观、声音和预设。您的对话保持私密：绝不会随分享的文件一起流出。一切都在您的浏览器中完成：不会发送任何内容。","キャラクターと会話を 1 つのオープンなファイル（.cof）に。会話はキャラクターの記憶になり、あとから外見・声・プリセットを加えられます。会話は非公開のまま、共有するファイルには含まれません。すべてブラウザ内で行われ、どこにも送信されません。"],
+ "Vos fichiers":["Your files","Ihre Dateien","Sus archivos","您的文件","あなたのファイル"],
+ "Déposez vos fichiers ici, ou cliquez":["Drop your files here, or click","Dateien hier ablegen oder klicken","Suelte sus archivos aquí o haga clic","将文件拖到这里，或点击","ここにファイルをドロップ、またはクリック"],
+ "Une carte (PNG ou JSON) et vos conversations (.jsonl, .json, .zip) — tout en une fois":["A card (PNG or JSON) and your conversations (.jsonl, .json, .zip) — all at once","Eine Karte (PNG oder JSON) und Ihre Gespräche (.jsonl, .json, .zip) — alles auf einmal","Una tarjeta (PNG o JSON) y sus conversaciones (.jsonl, .json, .zip), todo a la vez","一张角色卡（PNG 或 JSON）和您的对话（.jsonl、.json、.zip）——一次全部拖入","カード（PNG または JSON）と会話（.jsonl、.json、.zip）をまとめて"],
+ "Un fichier n'est pas reconnu ?":["A file is not recognised?","Eine Datei wird nicht erkannt?","¿Un archivo no se reconoce?","有文件无法识别？","認識できないファイルがありますか？"],
+ "Un export qui n'est pas reconnu ?":["An export that is not recognised?","Ein Export wird nicht erkannt?","¿Una exportación que no se reconoce?","导出文件无法识别？","認識できないエクスポートがありますか？"],
+ "Signalez-le (sans vos conversations ni données personnelles)":["Report it (without your conversations or personal data)","Melden Sie es (ohne Ihre Gespräche oder persönlichen Daten)","Infórmelo (sin sus conversaciones ni datos personales)","请反馈（不要附上您的对话或个人数据）","報告してください（会話や個人データは含めずに）"],
+ "Où trouver ces fichiers ?":["Where do I get these files?","Woher bekomme ich diese Dateien?","¿Dónde consigo estos archivos?","在哪里获取这些文件？","これらのファイルはどこで入手できますか？"],
+ "h1":["<b>CAI Tools</b> (browser extension): « Download Character » (PNG or JSON card), « Download Tavern chat » (one conversation) or « Download History » (all conversations of a character, a .zip).","<b>CAI Tools</b> (Browser-Erweiterung): „Download Character“ (PNG- oder JSON-Karte), „Download Tavern chat“ (ein Gespräch) oder „Download History“ (alle Gespräche einer Figur, ein .zip).","<b>CAI Tools</b> (extensión del navegador): « Download Character » (tarjeta PNG o JSON), « Download Tavern chat » (una conversación) o « Download History » (todas las conversaciones de un personaje, un .zip).","<b>CAI Tools</b>（浏览器扩展）：“Download Character”（PNG 或 JSON 角色卡）、“Download Tavern chat”（单段对话）或“Download History”（某角色的全部对话，一个 .zip）。","<b>CAI Tools</b>（ブラウザ拡張）：「Download Character」（PNG / JSON カード）、「Download Tavern chat」（1 つの会話）、「Download History」（キャラクターの全会話、.zip）。"],
+ "h2":["<b>PersonaText</b> (personatext.com, Character.AI exporter): one .personatext.json file with the card, the avatar and the open conversation, with its dates.","<b>PersonaText</b> (personatext.com, Character.AI exporter): eine .personatext.json-Datei mit Karte, Avatar und dem offenen Gespräch, mit Datum.","<b>PersonaText</b> (personatext.com, Character.AI exporter): un archivo .personatext.json con la tarjeta, el avatar y la conversación abierta, con sus fechas.","<b>PersonaText</b>（personatext.com，Character.AI exporter）：一个 .personatext.json 文件，含角色卡、头像和当前对话及其日期。","<b>PersonaText</b>（personatext.com、Character.AI exporter）：カード、アバター、開いている会話（日付付き）を含む .personatext.json ファイル。"],
+ "h3":["<b>Character.AI's official export</b> (Profile › Settings › Account › Manage Account &amp; Data › Export Data): a .zip e-mailed after 3 to 4 weeks, link valid 7 days. Request it now. Its structure is not documented: it is read as well as possible, and you are told who speaks when it has to be guessed.","<b>Offizieller Export von Character.AI</b> (Profil › Settings › Account › Manage Account &amp; Data › Export Data): ein .zip per E-Mail nach 3 bis 4 Wochen, Link 7 Tage gültig. Fordern Sie ihn jetzt an. Seine Struktur ist nicht dokumentiert: er wird so gut wie möglich gelesen, und Sie erfahren, wenn erraten werden muss, wer spricht.","<b>Exportación oficial de Character.AI</b> (Perfil › Settings › Account › Manage Account &amp; Data › Export Data): un .zip enviado por correo tras 3 o 4 semanas, enlace válido 7 días. Pídala ya. Su estructura no está documentada: se lee lo mejor posible y se le indica cuando hay que adivinar quién habla.","<b>Character.AI 官方导出</b>（个人资料 › Settings › Account › Manage Account &amp; Data › Export Data）：3 到 4 周后通过邮件发送的 .zip，链接 7 天内有效。请现在就申请。其结构未公开：会尽可能读取，需要推断说话者时会告诉您。","<b>Character.AI の公式エクスポート</b>（プロフィール › Settings › Account › Manage Account &amp; Data › Export Data）：3〜4 週間後にメールで届く .zip、リンクの有効期限は 7 日。今すぐ申請を。構造は非公開のため、できる限り読み取り、話者を推定した場合はお知らせします。"],
+ "h4":["<b>SillyTavern</b> chats (.jsonl) work too.","<b>SillyTavern</b>-Chats (.jsonl) funktionieren auch.","Los chats de <b>SillyTavern</b> (.jsonl) también funcionan.","<b>SillyTavern</b> 的对话（.jsonl）同样可用。","<b>SillyTavern</b> の会話（.jsonl）も使えます。"],
+ "h5":["These tools use your own Character.AI session; this page never asks for a password and never contacts Character.AI.","Diese Werkzeuge nutzen Ihre eigene Character.AI-Sitzung; diese Seite fragt nie nach einem Passwort und kontaktiert Character.AI nie.","Estas herramientas usan su propia sesión de Character.AI; esta página nunca pide una contraseña y nunca contacta con Character.AI.","这些工具使用您自己的 Character.AI 会话；本页面从不索要密码，也从不联系 Character.AI。","これらのツールはあなた自身の Character.AI セッションを使います。このページはパスワードを求めず、Character.AI に接続することもありません。"],
+ "Vérifiez":["Check","Prüfen","Compruebe","核对","確認"],
+ "Le personnage":["The character","Die Figur","El personaje","角色","キャラクター"],
+ "Nom du personnage":["Character's name","Name der Figur","Nombre del personaje","角色名","キャラクター名"],
+ "Âge de l'avatar (années)":["Avatar's age (years)","Alter des Avatars (Jahre)","Edad del avatar (años)","头像年龄（岁）","アバターの年齢（歳）"],
+ "Importer sans l'avatar":["Import without the avatar","Ohne Avatar importieren","Importar sin el avatar","不带头像导入","アバターなしで取り込む"],
+ "COF demande un âge pour tout visage (règle de protection des mineurs) : celui du personnage tel que l'avatar le montre — pour un avatar non humain, l'âge qu'il paraît. Sinon, importez sans l'avatar.":["COF asks for an age for every face (a rule that protects minors): the character's age as the avatar shows it — for a non-human avatar, the age it looks. Otherwise, import without the avatar.","COF verlangt für jedes Gesicht ein Alter (eine Regel zum Schutz Minderjähriger): das Alter der Figur, wie der Avatar sie zeigt — bei einem nicht menschlichen Avatar das Alter, nach dem er aussieht. Sonst ohne Avatar importieren.","COF pide una edad para todo rostro (una regla que protege a los menores): la edad del personaje tal como la muestra el avatar; para un avatar no humano, la edad que aparenta. Si no, importe sin el avatar.","COF 要求每张脸都有年龄（保护未成年人的规则）：即头像所呈现的角色年龄；非人类头像填写其看起来的年龄。否则请不带头像导入。","COF はすべての顔に年齢を求めます（未成年者を守るルール）：アバターが示すキャラクターの年齢です。人間でないアバターは見た目の年齢を。わからなければアバターなしで取り込んでください。"],
+ "Un personnage créé par quelqu'un d'autre reste le sien : votre fichier est pour un usage personnel (pas de redistribution, pas d'entraînement d'IA).":["A character made by someone else stays theirs: your file is for personal use (no redistribution, no AI training).","Eine von jemand anderem erstellte Figur bleibt dessen Figur: Ihre Datei ist für den persönlichen Gebrauch (keine Weitergabe, kein KI-Training).","Un personaje creado por otra persona sigue siendo suyo: su archivo es para uso personal (sin redistribución ni entrenamiento de IA).","他人创建的角色仍归其所有：您的文件仅供个人使用（不得再分发，不得用于 AI 训练）。","他の人が作ったキャラクターはその人のものです：ファイルは個人利用のみ（再配布・AI 学習は不可）。"],
+ "Vos conversations":["Your conversations","Ihre Gespräche","Sus conversaciones","您的对话","あなたの会話"],
+ "Contenu":["Content","Inhalt","Contenido","内容","コンテンツ"],
+ "Ce que la carte du personnage contient, pour que les applications sachent à qui la montrer. Ce que disent vos conversations n'est jamais écrit ici.":["What the character's card contains, so that apps know whom to show it to. What your conversations say is never written here.","Was die Karte der Figur enthält, damit Apps wissen, wem sie sie zeigen dürfen. Was Ihre Gespräche sagen, wird hier nie eingetragen.","Lo que contiene la tarjeta del personaje, para que las aplicaciones sepan a quién mostrarla. Lo que dicen sus conversaciones nunca se escribe aquí.","角色卡包含的内容，让应用知道可以向谁展示。您的对话内容绝不会写在这里。","キャラクターカードの内容。アプリが誰に表示してよいか判断するためのものです。会話の内容がここに書かれることはありません。"],
+ "J'ai vérifié (sinon le fichier garde l'étiquette « non vérifié »)":["I have checked (otherwise the file keeps the « not reviewed » tag)","Ich habe es geprüft (sonst behält die Datei den Tag „nicht geprüft“)","Lo he comprobado (si no, el archivo conserva la etiqueta « sin revisar »)","我已核对（否则文件保留“未核对”标签）","確認しました（未確認の場合は「未確認」タグが残ります）"],
+ "Votre fichier .cof":["Your .cof file","Ihre .cof-Datei","Su archivo .cof","您的 .cof 文件","あなたの .cof ファイル"],
+ "Télécharger mon .cof (avec mes conversations — à garder pour moi)":["Download my .cof (with my conversations — keep it to yourself)","Meine .cof herunterladen (mit meinen Gesprächen — für mich behalten)","Descargar mi .cof (con mis conversaciones — para mí)","下载我的 .cof（含我的对话——请自己保存）","自分の .cof をダウンロード（会話入り・自分用）"],
+ "Télécharger une copie sans les conversations (pour une autre application)":["Download a copy without the conversations (for another app)","Kopie ohne die Gespräche herunterladen (für eine andere App)","Descargar una copia sin las conversaciones (para otra aplicación)","下载不含对话的副本（用于其他应用）","会話なしのコピーをダウンロード（別のアプリ用）"],
+ "Et ensuite ?":["What next?","Und dann?","¿Y después?","接下来？","次は？"],
+ "Ouvrir votre fichier dans l'explorateur COF":["Open your file in the COF explorer","Ihre Datei im COF-Explorer öffnen","Abrir su archivo en el explorador COF","在 COF 浏览器中打开您的文件","COF エクスプローラーでファイルを開く"],
+ "relisez vos conversations, voyez tout ce qu'un personnage COF peut porter (looks, voix, souvenirs, vie intérieure).":["read your conversations again, see everything a COF character can hold (looks, voices, memories, inner life).","lesen Sie Ihre Gespräche noch einmal und sehen Sie alles, was eine COF-Figur tragen kann (Looks, Stimmen, Erinnerungen, Innenleben).","relea sus conversaciones y vea todo lo que puede llevar un personaje COF (looks, voces, recuerdos, vida interior).","重温您的对话，看看一个 COF 角色能承载的一切（造型、声音、记忆、内心世界）。","会話を読み返し、COF キャラクターが持てるすべて（見た目、声、記憶、内面）をご覧ください。"],
+ "Aller plus loin dans le builder":["Go further in the builder","Im Builder weitermachen","Ir más lejos en el builder","在构建器中进一步完善","ビルダーでさらに作り込む"],
+ "ajoutez des images, une voix, des souvenirs, une psyché.":["add images, a voice, memories, a psyche.","fügen Sie Bilder, eine Stimme, Erinnerungen, eine Psyche hinzu.","añada imágenes, una voz, recuerdos, una psique.","添加图片、声音、记忆、心理。","画像、声、記憶、心理を追加。"],
+ "Qu'est-ce que COF ?":["What is COF?","Was ist COF?","¿Qué es COF?","什么是 COF？","COF とは？"],
+ "Projet indépendant, sans lien avec Character.AI.":["An independent project, not affiliated with Character.AI.","Ein unabhängiges Projekt, nicht mit Character.AI verbunden.","Un proyecto independiente, sin relación con Character.AI.","独立项目，与 Character.AI 无关联。","Character.AI とは無関係の独立したプロジェクトです。"],
+ "Character Open File — format ouvert. Cette page ne fait que lire vos fichiers dans votre navigateur.":["Character Open File — an open format. This page only reads your files in your browser.","Character Open File — ein offenes Format. Diese Seite liest Ihre Dateien nur in Ihrem Browser.","Character Open File — un formato abierto. Esta página solo lee sus archivos en su navegador.","Character Open File——开放格式。本页面只在您的浏览器中读取文件。","Character Open File — オープンな形式。このページはブラウザ内でファイルを読むだけです。"],
+ "carte":["card","Karte","tarjeta","角色卡","カード"],
+ "conversation":["conversation","Gespräch","conversación","对话","会話"],
+ "message":["message","Nachricht","mensaje","消息","メッセージ"],
+ "carte de personnage":["character card","Charakterkarte","tarjeta de personaje","角色卡","キャラクターカード"],
+ "non reconnu":["not recognised","nicht erkannt","no reconocido","无法识别","認識できません"],
+ "fichier de compte ignoré (jamais lu)":["account file skipped (never read)","Kontodatei übersprungen (nie gelesen)","archivo de cuenta omitido (nunca leído)","已跳过账户文件（从不读取）","アカウントファイルを無視（読みません）"],
+ "messages":["messages","Nachrichten","mensajes","条消息","件のメッセージ"],
+ "sans date":["undated","ohne Datum","sin fecha","无日期","日付なし"],
+ "auteurs déduits : à vérifier":["speakers inferred: check them","Sprecher erschlossen: bitte prüfen","hablantes deducidos: compruébelos","说话者为推断：请核对","話者は推定：確認してください"],
+ "Aucun personnage ni conversation reconnu pour l'instant.":["No character or conversation recognised yet.","Noch keine Figur und kein Gespräch erkannt.","Todavía no se ha reconocido ningún personaje ni conversación.","尚未识别出角色或对话。","まだキャラクターも会話も認識されていません。"],
+ "Rien de sensible":["Nothing sensitive","Nichts Heikles","Nada delicado","无敏感内容","センシティブな内容なし"],
+ "violence":["violence","Gewalt","violencia","暴力","暴力"],"sexuel":["sexual","sexuell","sexual","性内容","性的"],"nudité":["nudity","Nacktheit","desnudez","裸露","ヌード"],"horreur":["horror","Horror","terror","恐怖","ホラー"],"langage grossier":["profanity","Vulgärsprache","lenguaje soez","粗俗语言","卑語"],"drogues":["drugs","Drogen","drogas","毒品","薬物"],
+ "La carte mentionne :":["The card mentions:","Die Karte erwähnt:","La tarjeta menciona:","角色卡提到：","カードに含まれる内容："],
+ "Vos conversations mentionnent :":["Your conversations mention:","Ihre Gespräche erwähnen:","Sus conversaciones mencionan:","您的对话提到：","会話に含まれる内容："],
+ "(non écrit dans le fichier)":["(not written in the file)","(nicht in die Datei geschrieben)","(no se escribe en el archivo)","（不会写入文件）","（ファイルには書かれません）"],
+ "Import impossible":["Cannot import","Import nicht möglich","No se puede importar","无法导入","取り込めません"],
+ "Indiquez l'âge de l'avatar, ou cochez « Importer sans l'avatar ».":["Enter the avatar's age, or tick « Import without the avatar ».","Geben Sie das Alter des Avatars an oder kreuzen Sie „Ohne Avatar importieren“ an.","Indique la edad del avatar o marque « Importar sin el avatar ».","请填写头像年龄，或勾选“不带头像导入”。","アバターの年齢を入力するか、「アバターなしで取り込む」にチェックしてください。"],
+ "Fichier prêt :":["File ready:","Datei bereit:","Archivo listo:","文件已就绪：","ファイルの準備ができました："],
+ "Gardez-le pour vous : il contient vos conversations.":["Keep it to yourself: it holds your conversations.","Behalten Sie sie für sich: sie enthält Ihre Gespräche.","Guárdelo para usted: contiene sus conversaciones.","请自己保存：其中含有您的对话。","自分だけで保管してください：会話が入っています。"],
+ "Celui-ci peut se partager : aucune conversation dedans.":["This one can be shared: no conversation inside.","Diese kann geteilt werden: kein Gespräch darin.","Este se puede compartir: no contiene ninguna conversación.","这个可以分享：其中没有对话。","こちらは共有できます：会話は含まれていません。"],
+ "Lire les premiers messages":["Read the first messages","Die ersten Nachrichten lesen","Leer los primeros mensajes","查看前几条消息","最初のメッセージを読む"],
+ "Personnage sans carte : seul son nom vient de la conversation.":["Character without a card: only its name comes from the conversation.","Figur ohne Karte: nur ihr Name stammt aus dem Gespräch.","Personaje sin tarjeta: solo su nombre procede de la conversación.","没有角色卡：只有名字来自对话。","カードのないキャラクター：名前だけを会話から取得します。"],
+"Recommencer avec d'autres fichiers":["Start again with other files","Mit anderen Dateien neu beginnen","Empezar de nuevo con otros archivos","用其他文件重新开始","別のファイルでやり直す"],
+ "conversation(s)":["conversation(s)","Gespräch(e)","conversación(es)","段对话","件の会話"],
+ "Impossible avec un visage de moins de 18 ans (règle d'âge de COF)":["Not possible with a face under 18 (COF's age rule)","Nicht möglich bei einem Gesicht unter 18 Jahren (Altersregel von COF)","No es posible con una cara de menos de 18 años (regla de edad de COF)","面孔未满 18 岁时不可选（COF 的年龄规则）","18 歳未満の顔では選べません（COF の年齢ルール）"],
+ "déjà importée":["already imported","bereits importiert","ya importada","已导入","取り込み済み"],
+ "Avatar du personnage":["The character's avatar","Avatar der Figur","Avatar del personaje","角色头像","キャラクターのアバター"],
+ "Télécharger mon .cof":["Download my .cof","Meine .cof herunterladen","Descargar mi .cof","下载我的 .cof","自分の .cof をダウンロード"],
+ "conversations":["conversations","Gespräche","conversaciones","段对话","件の会話"],
+ "« sans date » : l'export ne contient pas les vraies dates de ces conversations ; rien n'est inventé.":["« undated »: the export does not hold the real dates of these conversations; nothing is made up.","„ohne Datum“: Der Export enthält die echten Daten dieser Gespräche nicht; nichts wird erfunden.","« sin fecha »: la exportación no contiene las fechas reales de estas conversaciones; no se inventa nada.","“无日期”：导出文件不含这些对话的真实日期；不会编造任何日期。","「日付なし」：エクスポートにこれらの会話の本当の日付は含まれていません。日付を作ることはしません。"],
+ "aucune conversation":["no conversation","kein Gespräch","ninguna conversación","没有对话","会話なし"],
+ "Conversations avec un autre personnage, mises de côté (une page = un personnage ; déposez-les ensuite à part) :":["Conversations with another character, left out (one page = one character; drop them separately afterwards):","Gespräche mit einer anderen Figur, beiseitegelegt (eine Seite = eine Figur; legen Sie sie danach separat ab):","Conversaciones con otro personaje, apartadas (una página = un personaje; suéltelas aparte después):","与另一个角色的对话已搁置（一次一个角色；之后单独拖入）：","別のキャラクターとの会話は除外しました（1 回に 1 キャラクター。あとで別に取り込んでください）："],
+ "Une seule carte par fichier : la première est gardée.":["One card per file: the first one is kept.","Eine Karte pro Datei: die erste wird behalten.","Una tarjeta por archivo: se conserva la primera.","每个文件一张角色卡：保留第一张。","1 ファイルにつきカード 1 枚：最初のものを使います。"],
+};
+const QUOTES={en:["“","”"],de:["„","“"],zh:["“","”"],ja:["「","」"]};
+function t(s){if(LANG==="fr")return s;const i=["en","de","es","zh","ja"].indexOf(LANG);const a=UI[s]||(CAI.TR&&CAI.TR[s]);const v=a&&a[i]!==undefined?a[i]:(UI[s]?UI[s][0]:s);const q=QUOTES[LANG];return q&&typeof v==="string"?v.replace(/«\s?/g,q[0]).replace(/\s?»/g,q[1]):v}   /* each language its own quotation marks (hunt PAGE-8) */
+function applyLang(){document.documentElement.lang=LANG;for(const el of document.querySelectorAll("[data-t]")){const k=el.dataset.t;const v=t(k);if(/^h\d$/.test(k)&&LANG==="fr"){el.innerHTML=FRH[k];continue}if(/<b>/.test(v)||/^h\d$/.test(k))el.innerHTML=v;else el.textContent=v}try{localStorage.setItem("cofi-lang",LANG)}catch(e){}if(ST.ready){analyse();render()}else if(ST.files)render()}
+const FRH={h1:"<b>CAI Tools</b> (extension du navigateur) : « Download Character » (carte PNG ou JSON), « Download Tavern chat » (une conversation) ou « Download History » (toutes les conversations d'un personnage, un .zip).",h2:"<b>PersonaText</b> (personatext.com, Character.AI exporter) : un fichier .personatext.json avec la carte, l'avatar et la conversation ouverte, datée.",h3:"<b>L'export officiel de Character.AI</b> (Profil › Settings › Account › Manage Account &amp; Data › Export Data) : un .zip envoyé par courriel après 3 à 4 semaines, lien valable 7 jours. Demandez-le maintenant. Sa structure n'est pas documentée : il est lu au mieux, et on vous dit qui parle quand il faut le deviner.",h4:"Les conversations <b>SillyTavern</b> (.jsonl) marchent aussi.",h5:"Ces outils utilisent votre propre session Character.AI ; cette page ne demande jamais de mot de passe et ne contacte jamais Character.AI."};
+const PERM={avatarPermission:"onlyAuthor",commercialUsage:"personalNonProfit",modification:"prohibited",allowRedistribution:false,creditNotation:"required",allowExcessivelyViolentUsage:false,allowSexualUsage:false,allowPoliticalOrReligiousUsage:false,allowAntisocialOrHateUsage:false,allowVoiceCloning:false,allowTraining:"none",allowImpersonationOfRealPerson:false,aiDisclosure:true};   /* = cof-cli convert.default_permissions() */
+const CONTENT=[["none","Rien de sensible"],["violence","violence"],["sexual","sexuel"],["nudity","nudité"],["horror","horreur"],["profanity","langage grossier"],["drugs","drogues"]];
+const ST={ready:false,card:null,cardFmt:"",avatar:null,avatarType:"",chats:[],rep:null,files:[],flags:null,chatFlags:null,stop:null,personaEdited:false,nameEdited:false,contentSet:null,content:new Set(["none"]),mine:[],others:[]};
+const isObj=v=>!!v&&typeof v==="object"&&!Array.isArray(v);
+const sameP=(a,b)=>{const x=String(a||"").toLowerCase().split(/\s+/).filter(Boolean),y=String(b||"").toLowerCase().split(/\s+/).filter(Boolean);const n=Math.min(x.length,y.length);return n>0&&x.slice(0,n).join(" ")===y.slice(0,n).join(" ")};   /* = cof import's _same_person */
+const MAGIC={"image/png":u=>u[0]===0x89&&u[1]===0x50&&u[2]===0x4e&&u[3]===0x47&&String.fromCharCode(...u.subarray(12,16))==="IHDR","image/jpeg":u=>u[0]===0xff&&u[1]===0xd8&&u[2]===0xff&&u.length>100,"image/webp":u=>u.length>30&&String.fromCharCode(...u.subarray(0,4))==="RIFF"&&String.fromCharCode(...u.subarray(8,12))==="WEBP"&&String.fromCharCode(...u.subarray(12,15))==="VP8"};   /* = cof import _image_ok (hunt CLI-19) */
+function chatOrder(chats){chats.sort((a,b)=>a.group<b.group?-1:a.group>b.group?1:a.order-b.order);const d=chats.filter(c=>c.dated).sort((a,b)=>a.messages.find(m=>m.ts).ts-b.messages.find(m=>m.ts).ts);return d.concat(chats.filter(c=>!c.dated))}   /* = parseFiles' order */
+const PNG_IMAGE=new Set(["IHDR","PLTE","IDAT","IEND","tRNS","gAMA","cHRM","sRGB","iCCP","sBIT","pHYs"]);
+function stripPngText(u8){return pngBuild(pngChunks(u8).filter(c=>PNG_IMAGE.has(c.type)))}   /* the image only, as cof import (hunt SAF-5) */
+async function take(files){const cards=[],chatFiles=[],list=[];
+  for(const f of files){if(CAI.ACCOUNT.test(f.name)){list.push([f.name,"bad","fichier de compte ignoré (jamais lu)"]);continue}
+    const u8=new Uint8Array(await f.arrayBuffer());
+    if(u8[0]===0x89&&u8[1]===0x50){let c=null;try{c=readCardFromPng(u8)}catch(e){}if(isObj(c)&&isObj(c.data)){cards.push({f,u8,card:c,fmt:c.data.metadata?"caitools-card-png":"card-png"});list.push([f.name,"","carte de personnage"])}else list.push([f.name,"bad","non reconnu"]);continue}
+    if(u8[0]===0x50&&u8[1]===0x4b){chatFiles.push(f);list.push([f.name,"",""]);continue}
+    const o=CAI.J(CAI.lenient(u8));const k=o!==undefined?CAI.sniffObj(o):null;
+    if(k==="personatext"&&isObj(o.data)){cards.push({f,u8,card:o,fmt:"personatext"});chatFiles.push(f);list.push([f.name,"","PersonaText"])}
+    else if(k==="card"&&isObj(o)&&(o.spec?isObj(o.data):true)){cards.push({f,u8,card:o.spec?o:{spec:"chara_card_v2",spec_version:"2.0",data:o},fmt:o.metadata&&o.metadata.tool?"caitools-card-json":"card-json"});list.push([f.name,"","carte de personnage"])}
+    else if(k==="card"||k==="personatext")list.push([f.name,"bad","non reconnu"])
+    else{chatFiles.push(f);list.push([f.name,"",""])}}
+  ST.files=ST.files.concat(list);
+  if(cards.length){const kinds=new Set(cards.map(c=>JSON.stringify(c.card.data)));if(ST.card)kinds.add(JSON.stringify(ST.cardRaw.data));if(kinds.size>1)ST.cardNote="Une seule carte par fichier : la première est gardée.";if(!ST.card){const c=cards[0];const raw=JSON.parse(JSON.stringify(c.card));CAI.normCaiRaw(raw);
+      ST.cardRaw=c.card;ST.card=raw;ST.cardFmt=c.fmt;ST.avatar=null;
+      if(!ST.nameEdited)$("#name").value="";$("#checked").checked=false;ST.contentSet=false;   /* a new card: reviewed again (hunt PAGE-1) */
+      if(c.fmt.endsWith("png")){ST.avatar=stripPngText(c.u8);ST.avatarType="image/png"}
+      else if(c.fmt==="personatext"){const url=c.card.data&&c.card.data.extensions&&c.card.data.extensions.avatar_data_url;const m=typeof url==="string"&&/^data:(image\/(?:webp|png|jpeg));base64,([A-Za-z0-9+/=\s]+)$/.exec(url);
+        if(m&&m[2].length<7e6){try{const bin=atob(m[2].replace(/\s+/g,""));const b=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)b[i]=bin.charCodeAt(i);if(MAGIC[m[1]](b)){ST.avatar=new Blob([b],{type:m[1]});ST.avatarType=m[1]}}catch(e){}}}   /* only PersonaText's avatar, and only if its bytes are the image it claims (cof import: _image_ok) */
+      stripCardPayloads(ST.card)}}
+  if(chatFiles.length){const {rep,chats}=await CAI.parseFiles(chatFiles);ST.rep=ST.rep?{lines:ST.rep.lines.concat(rep.lines),ignored:Object.assign(ST.rep.ignored,rep.ignored),alerts:ST.rep.alerts.concat(rep.alerts)}:rep;
+    const seen=new Set(ST.chats.map(c=>c.messages.map(m=>m.text).join("\u0000")));const added=new Set();for(const c of chats){const h=c.messages.map(m=>m.text).join("\u0000");if(!seen.has(h)){seen.add(h);ST.chats.push(c);added.add(c)}}ST.chats=chatOrder(ST.chats);
+    for(const row of list){if(row[2])continue;const mine=chats.filter(c=>(c.source||"").split("/")[0]===row[0]||c.source===row[0]);const n=mine.filter(c=>added.has(c)).length;if(n){row[2]=n>1?"conversations":"conversation";row[3]=n}else if(mine.length){row[2]="déjà importée"}else{row[1]="bad";row[2]="aucune conversation"}}   /* hunt PAGE-4 */
+    const badRows=new Set(list.filter(r=>r[1]==="bad").map(r=>r[0]));for(const a of rep.alerts)if(![...badRows].some(n=>a.startsWith(n+" ")))ST.files.push([a,"bad","⚠"])}   /* one row per unreadable file (hunt PAGE-9) */
+  analyse();render()}
+function analyse(){ST.ready=!!(ST.card||ST.chats.length);if(!ST.ready)return;
+  const who=(ST.card&&typeof ST.card.data.name==="string"&&ST.card.data.name.trim())||(ST.chats.find(c=>c.character)||{}).character||"";   /* one character per file, as cof import groups them */
+  ST.mine=ST.chats.filter(c=>!c.character||!who||sameP(c.character,who));ST.others=ST.chats.filter(c=>!ST.mine.includes(c));
+  if(ST.card&&typeof ST.card.data.first_mes==="string")CAI.fixSwap(ST.mine,ST.card.data.first_mes,CAI.cleanSpeaker(who||"Character"));
+  ST.flags=ST.card?CAI.cardContent(ST.card):{sexual:0,violence:0};
+  ST.chatFlags=CAI.contentPass(ST.mine.flatMap((c,k)=>c.messages.map((m,i)=>[`${t("conversation")} ${k+1}, ${t("message")} ${i+1}`,m.text])));
+  if(!ST.nameEdited)$("#name").value=String(who).slice(0,120);
+  if(!ST.personaEdited)$("#persona").value=(ST.mine.find(c=>c.persona)||{}).persona||"You";
+  const lg=CAI.detectLang(ST.mine.flatMap(c=>c.messages.slice(0,400).map(m=>m.text)))||"en";if(!ST.langSet)$("#clang").value=lg;
+  if(!ST.contentSet){const fl=["sexual","violence"].filter(k=>ST.flags[k]);ST.content=new Set(fl.length?fl:["none"])}}
+function render(){
+  $("#files").innerHTML=ST.files.map(([n,cls,k,c])=>`<li class="${cls}"><span class="k">${esc(k?(c?c+" ":"")+t(c&&["zh","ja"].includes(LANG)?"conversations":k):"…")}</span><span>${esc(n)}</span></li>`).join("");
+  $("#againP").hidden=!ST.files.length;$("#report").hidden=!(ST.files.some(r=>r[1]==="bad"&&r[2]!=="fichier de compte ignoré (jamais lu)")||(ST.files.length&&!ST.ready));   /* D1: every failure can come back as a report */
+  for(const id of ["#s2","#s3"])$(id).classList.toggle("off",!ST.ready);$("#s2").inert=!ST.ready;$("#s3").inert=!ST.ready;   /* not reachable by keyboard either (hunt PAGE-5) */if(!ST.ready)return;
+  const stop=$("#stop");stop.innerHTML=(ST.cardNote?`<div class="box warn">${esc(t(ST.cardNote))}</div>`:"")+(ST.others.length?`<div class="box warn">${esc(t("Conversations avec un autre personnage, mises de côté (une page = un personnage ; déposez-les ensuite à part) :"))} ${esc([...new Set(ST.others.map(c=>c.character))].join(", "))}</div>`:"")+(!ST.card&&ST.mine.length?`<div class="box">${esc(t("Personnage sans carte : seul son nom vient de la conversation."))}</div>`:"");
+  const av=$("#av");av.alt=t("Avatar du personnage");$("#dlMine").textContent=t(ST.mine.length?"Télécharger mon .cof (avec mes conversations — à garder pour moi)":"Télécharger mon .cof");if(ST.avatar){if(!av.src)av.src=URL.createObjectURL(ST.avatar);av.hidden=false;$("#ageBox").hidden=false;$("#ageWhy").hidden=false}else{av.hidden=true;$("#ageBox").hidden=true;$("#ageWhy").hidden=true}
+  const persona=$("#persona").value.trim()||"You";
+  $("#chats").innerHTML=ST.mine.length?ST.mine.map((c,k)=>{const [f,l]=CAI.span(c.messages);const span=c.dated&&f?`${f.ts.toISOString().slice(0,10)} → ${l.ts.toISOString().slice(0,10)}`:t("sans date");
+    return `<li><b>${esc((CAI.PLAT[c.platform]||c.platform)+" · "+(c.character||$("#name").value||"?"))}</b> <span class="meta">· ${c.messages.length} ${esc(t(c.messages.length>1?"messages":"message"))} · ${esc(span)}${c.src!=="platform"?" · ⚠ "+esc(t("auteurs déduits : à vérifier")):""}</span>
+      <details><summary class="hint">${esc(t("Lire les premiers messages"))}</summary><div class="prev">${c.messages.slice(0,4).map(m=>`<div class="${m.user?"u":""}"><b>${esc(m.note?"[note]":(m.user?(ST.personaEdited?persona:(c.persona||persona)):m.speaker))}</b>${esc(m.text.length>280?m.text.slice(0,280)+"…":m.text)}</div>`).join("")}</div></details></li>`}).join(""):`<li class="hint">—</li>`;
+  if(ST.mine.some(c=>!c.dated))$("#chats").insertAdjacentHTML("beforeend",`<li class="hint">${esc(t("« sans date » : l'export ne contient pas les vraies dates de ces conversations ; rien n'est inventé."))}</li>`);
+  const lab=k=>t((CONTENT.find(x=>x[0]===k)||[k,k])[1]);const fl=["sexual","violence"].filter(k=>ST.flags[k]),cf=["sexual","violence"].filter(k=>ST.chatFlags[k]);
+  const minor=minorFace();if(minor){ST.content.delete("sexual");ST.content.delete("nudity");if(!ST.content.size)ST.content.add("none")}   /* COF's age rule: a face under 18 cannot be tagged sexual or nudity (as the builder) */
+  $("#content").innerHTML=CONTENT.map(([v,l])=>{const off=minor&&(v==="sexual"||v==="nudity");return `<label${off?` class="off" title="${esc(t("Impossible avec un visage de moins de 18 ans (règle d'âge de COF)"))}"`:""}><input type="checkbox" value="${v}" ${ST.content.has(v)?"checked":""}${off?" disabled":""}>${esc(t(l))}</label>`}).join("")
+    +(fl.length?`<span class="hint">${esc(t("La carte mentionne :"))} ${esc(fl.map(lab).join(", "))}</span>`:"")+(cf.length?`<span class="hint">${esc(t("Vos conversations mentionnent :"))} ${esc(cf.map(lab).join(", "))} ${esc(t("(non écrit dans le fichier)"))}</span>`:"");
+  $("#dlShare").hidden=!ST.mine.length}
+function minorFace(){const a=$("#age").value;return !!ST.avatar&&!$("#noav").checked&&a!==""&&isFinite(Number(a))&&Number(a)<18}
+/* ---- the .cof: the same structure as `cof import` (cli/cof_cli/platform_import.py) ---- */
+async function buildCof(withChats){if(!ST.ready)throw new Error(t("Aucun personnage ni conversation reconnu pour l'instant."));const CH=ST.mine||[];const name=(($("#name").value||"").replace(/\s+/g," ").trim()||(CH.find(c=>c.character)||{}).character||"Unnamed").slice(0,120).trim()||"Unnamed";
+  const keepAv=ST.avatar&&!$("#noav").checked;const ageV=$("#age").value===""?null:Number($("#age").value);
+  if(keepAv&&(ageV===null||!isFinite(ageV)||ageV<0||ageV>200))throw new Error(t("Indiquez l'âge de l'avatar, ou cochez « Importer sans l'avatar »."));
+  if(keepAv&&ageV<18&&["sexual","nudity"].some(x=>ST.content.has(x)))throw new Error(t("Impossible avec un visage de moins de 18 ans (règle d'âge de COF)"));   /* = cof import */
+  const lg=$("#clang").value||"en";const card=JSON.parse(JSON.stringify(ST.card||{spec:"chara_card_v2",spec_version:"2.0",data:{name,description:"",personality:"",scenario:"",first_mes:"",mes_example:"",creator:"",tags:[],extensions:{}}}));
+  const d=card.data=isObj(card.data)?card.data:{};d.name=name;for(const k of ["description","personality","scenario","first_mes","mes_example"])if(typeof d[k]!=="string")d[k]="";if(!d.extensions||typeof d.extensions!=="object")d.extensions={};
+  const cardLang=CAI.detectLang(CAI.strings(d))||lg;const now=new Date().toISOString().replace(/\.\d{3}Z$/,"Z");
+  const entries=[];const put=(p,o)=>entries.push({name:p,data:enc.encode(JSON.stringify(o,null,2)+"\n"),store:false});
+  put("elements/personality/p1/card.json",{...card,spec:"chara_card_v3",spec_version:"3.0"});
+  const assets=[],elements={personality:{variants:{p1:{kind:"card",label:name,language:cardLang,card:"elements/personality/p1/card.json"}}}},slots={personality:["p1"]};const preset={label:name,slots};   /* the explorer lists presets by label (= cof import) */
+  if(keepAv){const ext={"image/png":"png","image/webp":"webp","image/jpeg":"jpg"}[ST.avatarType]||"png";const u8=new Uint8Array(await ST.avatar.arrayBuffer());const path=`elements/appearance/f1/head.front.${ext}`;
+    entries.push({name:path,data:u8,store:true});assets.push({id:"a-face-f1-front",path,role:"view",subject:"head",angle:"front",framing:"head",mediaType:ST.avatarType,bytes:u8.length,sha256:await sha256(u8),license:"LicenseRef-Unknown"});
+    elements.appearance={variants:{f1:{kind:"face",label:"Face (avatar)",images:["a-face-f1-front"],age:{value:ageV,unit:"years",basis:"declared"}}}};slots.appearance=["f1"];preset.age_override={value:ageV,unit:"years",basis:"declared"}}
+  const checked=$("#checked").checked;const content=[...ST.content].filter(x=>x!=="none");const manual=[...new Set((Array.isArray(d.tags)?d.tags:[]).filter(x=>typeof x==="string").map(slug).filter(x=>x&&x!=="x"))].slice(0,28);
+  const plat=ST.card&&!ST.cardFmt.startsWith("card")?"character.ai":(CH[0]||{}).platform;if(plat)manual.push("imported-"+slug(plat));   /* = cof import: a plain card alone gets no imported-* tag */if(!checked)manual.push("content-unreviewed");
+  const sources=[];if(ST.card)sources.push(`import:${ST.cardFmt.startsWith("card")?"card":"character.ai"}/${ST.cardFmt}`);
+  const languages=[...new Set([cardLang])];
+  if(withChats&&CH.length){const V={},ms=[];const g=CAI.G(lg);let prev=null;const edited=ST.personaEdited,typed=$("#persona").value.trim()||"You";
+    /* = cof import (RFC 0006 § 3.2): one period per platform, each conversation a moment linked part-of it */
+    const byP={},pid={};for(const c of CH)(byP[c.platform]=byP[c.platform]||[]).push(c);const defP=(CH.find(c=>c.persona)||{}).persona;
+    CH.forEach((c,i)=>{const k=i+1,vid="ev"+k;const p=CAI.PLAT[c.platform]||c.platform;
+      if(!pid[c.platform]){const grp=byP[c.platform],id="ep"+(Object.keys(pid).length+1);pid[c.platform]=id;const gp=CAI.cleanSpeaker(edited?typed:((grp.find(x=>x.persona)||{}).persona||defP||typed));
+        const ts=grp.flatMap(x=>x.messages.filter(m=>m.ts).map(m=>m.ts.getTime()));const allD=grp.every(x=>x.dated)&&ts.length;const a=allD?new Date(Math.min(...ts)).toISOString().slice(0,10):null,b=allD?new Date(Math.max(...ts)).toISOString().slice(0,10):null;
+        const pn={gist:{[lg]:CAI.fill(grp.length>1?g[6]:g[7],{c:name,p,k:grp.length,m:grp.reduce((n,x)=>n+x.messages.length,0),d:a?CAI.fill(g[1],{a,b}):g[2]})},nature:["experienced"]};
+        if(allD)pn.when={from:{date:a},to:{date:b}};else if(c.platform==="character.ai"){const yb=Math.max(...grp.map(x=>x.exportYear||0))||new Date().getUTCFullYear();pn.when={from:{date:String(CAI.CAI_OPENED),approx:true},to:{date:String(Math.max(yb,CAI.CAI_OPENED)),approx:true},label:{[lg]:CAI.fill(g[8],{a:CAI.CAI_OPENED,b:Math.max(yb,CAI.CAI_OPENED)})}}}   /* = cof import: the service's lifetime, both bounds approximate */
+        pn.who=[{label:{[lg]:gp}}];Object.assign(pn,{fidelity:"clear",origin:"lived",visibility:"personal",disclosure:"guarded",tags:[slug(c.platform),"imported"]});
+        put(`elements/memories/${id}/memory.json`,pn);V[id]={kind:"period",label:CAI.fill(g[5],{p}),memory:`elements/memories/${id}/memory.json`};ms.push(id)}
+      const who=CAI.cleanSpeaker(edited?typed:(c.persona||defP||typed));const msgs=c.messages.map(m=>({...m,speaker:m.user&&!m.note?who:m.speaker}));const cc={...c,messages:msgs};
+      const [f,l]=CAI.span(msgs);
+      const node={gist:{[lg]:CAI.fill(g[0],{c:name,p,m:msgs.length,d:f?CAI.fill(g[1],{a:f.ts.toISOString().slice(0,10),b:l.ts.toISOString().slice(0,10)}):g[2]})},nature:["experienced"]};
+      if(c.dated&&f)node.when={date:f.ts.toISOString().slice(0,10)};
+      node.who=[{label:{[lg]:who}}];Object.assign(node,{fidelity:"clear",origin:"lived",visibility:"personal",disclosure:"guarded",tags:[slug(c.platform),"imported"]});
+      node.links=[{to:"memories/"+pid[c.platform],type:"part-of"}];if(prev&&!c.dated&&!prev.dated&&c.ordered&&prev.ordered&&c.group===prev.group)node.links.push({to:"memories/ev"+(k-1),type:"after"});
+      put(`elements/memories/${vid}/memory.json`,node);const media=[];
+      CAI.transcript(cc,CAI.cleanSpeaker(name),who).forEach((txt,pi,all)=>{const fn=all.length===1?`chat-${k}.md`:`chat-${k}.part-${pi+1}.md`;const path=`elements/memories/${vid}/${fn}`;const u8=enc.encode(txt.replace("exported_by: cof-builder","exported_by: cof-import-page"));entries.push({name:path,data:u8,store:false,_a:{id:`a-mem-${vid}-chat-${k}`+(all.length===1?"":`-part-${pi+1}`),path,role:"memory-media",mediaType:"text/markdown",language:lg,license:"LicenseRef-Personal",digitalSourceType:CAI.COMPOSITE}});media.push(`a-mem-${vid}-chat-${k}`+(all.length===1?"":`-part-${pi+1}`))});
+      const ti=CAI.chatTitle(msgs);V[vid]={kind:"moment",label:ti?CAI.fill(g[4],{n:k,t:ti}):CAI.fill(g[3],{n:k}),memory:`elements/memories/${vid}/memory.json`,media};ms.push(vid);prev=c;sources.push(`import:${c.platform}/${c.fmt}`)});
+    for(const e of entries)if(e._a){assets.push({...e._a,bytes:e.data.length,sha256:await sha256(e.data)});delete e._a}
+    elements.memories={variants:V};slots.memories=ms;languages.push(lg)}
+  const ageB=keepAv?ageV:null;const auto=["human",ageB===null?"age-unknown":ageB<13?"child":ageB<18?"teen":ageB>=65?"elder":"adult",...new Set(languages)];if(ageB!==null&&ageB<18)auto.push("has-minor-preset");if(withChats&&CH.length)auto.push("has-memories");   /* = validate.auto_tags for this shape */
+  const manifest={cof:withChats&&CH.length?"1.1":"1.0",id:ulid(),name,nickname:"",languages:[...new Set(languages)],summary:(d.description||"").slice(0,300),fictional:true,morphology:{class:"human",species:"human"},
+    tags:{auto:[...new Set(auto)].sort(),manual:[...new Set(manual)],content:content.length?content:["none"],ip:{original:false,franchise:null,based_on:null}},
+    elements,presets:{default:preset},default_preset:"default",...(()=>{const pt=[];if(ageB!==null)pt.push({id:"age-"+String(ageB).replace(".","-"),label:String(ageB),facet:"age",presets:["default"]});if(plat)pt.push({id:slug(plat),label:CAI.PLAT[plat]||plat,facet:"source",presets:["default"]});return pt.length?{preset_tags:pt}:{}})(),   /* = cof import: the explorer's facets */priorities:{visual:["identity_weights","images","avatar","descriptive"],voice:["samples","described"]},mapping_vocabularies:{},assets,size_class:"lite",container:{aligned:0,executableContent:"none"},
+    rights:{permissions:{...PERM},consent:null},provenance:{created:now,modified:now,generator:"cof-import-page/1.0",source:[...new Set(sources)],c2pa:null,signatures:[]},
+    metadata:{"@context":{dc:"http://purl.org/dc/elements/1.1/"},"dc:creator":[typeof d.creator==="string"&&ST.cardFmt!=="official-zip"?d.creator:""]},extensions:{},coverage:{elements:Object.keys(elements)}};
+  const md=selfDescription(manifest).replace(/by the COF builder/g,"by the COF import page");
+  entries.unshift({name:"COF.md",data:enc.encode(md),store:false});entries.unshift({name:"manifest.json",data:enc.encode(JSON.stringify(manifest,null,2)+"\n"),store:false});entries.unshift({name:"mimetype",data:enc.encode(MIME),store:true});
+  const blob=await zipBuild(entries);const base=name.normalize("NFC").replace(/[^\p{L}\p{N}._-]+/gu,"-").replace(/^[-.]+|[-.]+$/g,"").slice(0,60)||"character";
+  return {blob,file:withChats?`${base}.cof`:`${base}-without-conversations.cof`}}
+async function download(withChats){try{const {blob,file}=await buildCof(withChats);const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=file;document.body.appendChild(a);a.click();a.remove();
+    $("#dlNote").innerHTML=`<span class="ok">✓ ${esc(t("Fichier prêt :"))} <b>${esc(file)}</b></span> — ${esc(withChats?t("Gardez-le pour vous : il contient vos conversations."):t("Celui-ci peut se partager : aucune conversation dedans."))}`}
+  catch(e){$("#dlNote").innerHTML=`<span class="bad">${esc(e.message||e)}</span>`;if(ST.avatar&&!$("#noav").checked&&$("#age").value===""){const a=$("#age");a.classList.add("need");$("#ageWhy").classList.add("need");a.scrollIntoView({block:"center",behavior:"smooth"});a.focus()}}}
+/* ---- wiring ---- */
+const drop=$("#drop"),inp=$("#file");drop.onclick=()=>inp.click();drop.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();inp.click()}};
+drop.ondragover=e=>{e.preventDefault();drop.classList.add("over")};drop.ondragleave=()=>drop.classList.remove("over");drop.ondrop=e=>{e.preventDefault();drop.classList.remove("over");take([...e.dataTransfer.files])};
+inp.onchange=()=>{const fs=[...inp.files];inp.value="";if(fs.length)take(fs)};
+$("#persona").oninput=()=>{ST.personaEdited=true;render()};
+$("#age").oninput=()=>{$("#age").classList.remove("need");$("#ageWhy").classList.remove("need");const m=minorFace();if(ST.ready&&m!==!!ST.wasMinor){ST.wasMinor=m;render()}};$("#noav").onchange=$("#age").oninput;
+$("#clang").onchange=()=>{ST.langSet=true};$("#name").oninput=()=>{ST.nameEdited=true;render()};
+$("#content").onchange=e=>{const v=e.target.value;if(!v)return;ST.contentSet=true;if(v==="none"){ST.content=new Set(e.target.checked?["none"]:[])}else{ST.content.delete("none");e.target.checked?ST.content.add(v):ST.content.delete(v);if(!ST.content.size)ST.content.add("none")}render()};
+$("#again").onclick=()=>location.reload();
+$("#dlMine").onclick=()=>download(true);$("#dlShare").onclick=()=>download(false);
+$("#lang").onchange=()=>{LANG=$("#lang").value;$("#dlNote").textContent="";applyLang()};
+function theme(x){document.documentElement.dataset.theme=x;$("#theme").textContent=x==="dark"?"☀️":"🌙";try{localStorage.setItem("cofi-theme",x)}catch(e){}}
+$("#theme").onclick=()=>theme(document.documentElement.dataset.theme==="dark"?"light":"dark");
+try{theme(localStorage.getItem("cofi-theme")||"dark")}catch(e){theme("dark")}
+{let l=null;try{l=localStorage.getItem("cofi-lang")}catch(e){}if(!l){const n=(navigator.language||"en").slice(0,2).toLowerCase();l=["en","fr","de","es","zh","ja"].includes(n)?n:"en"}LANG=l;$("#lang").value=l;applyLang()}
+window.cofImport={take,buildCof,ST};
+</script>
+</body>
+</html>

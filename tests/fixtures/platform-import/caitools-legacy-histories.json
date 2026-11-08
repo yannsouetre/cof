@@ -1,0 +1,16 @@
+{
+  "_note": "SYNTHETIC. Shape taken from SillyTavern's importCAIChat (src/endpoints/chats.js): histories.histories[].msgs[].src.is_human + .text. Extra keys (external_id, created, src.name) are taken from CAI Tools' legacy fetch code and are a GUESS for the real file.",
+  "histories": {
+    "histories": [
+      {
+        "external_id": "00000000-aaaa-4aaa-8aaa-000000000001",
+        "created": "2026-10-20T09:12:44.000Z",
+        "msgs": [
+          { "src": { "is_human": false, "name": "Wren Calloway" }, "text": "*Wren looks up from a half-inked chart.* Ah, a visitor." },
+          { "src": { "is_human": true, "name": "You" }, "text": "I lost the teapot island." },
+          { "src": { "is_human": false, "name": "Wren Calloway" }, "text": "Everyone loses that one in the autumn fog." }
+        ]
+      }
+    ]
+  }
+}

@@ -119,3 +119,25 @@ node tests/builder/personal_media_test.js [repo-root] [work-dir]
 
 On a copy of example 10 where ev1 (hab1's illustration) is personal: the default build leaves ev1 out and its image with it
 (not hab1's illustration, no asset, no file); `cof validate` OK. Same rule as cof-cli `drop_personal_memories`.
+
+## The Character.AI import page (`import/`, RFC 0006)
+
+```
+python tools/import-page/gen.py        # after any change to builder/index.html's shared blocks or to the template
+node tests/builder/import_page_test.js [repo-root] [work-dir]
+```
+
+`import/index.html` is generated: `tools/import-page/template.html` holds the page (three steps, six languages), and the
+blocks marked `<shared:zip>`, `<shared:png>`, `<shared:payloads>`, `<shared:selfdesc>` and `<shared:cai-core>` in
+`builder/index.html` are copied into it, so the page and the builder read and write the same way. The test checks that
+the page is up to date (`gen.py --check`), opens offline from `file://`, every text in en, de, es, zh, ja; drops a CAI
+Tools card, a history zip and a SillyTavern chat at once; refuses the avatar without an age; builds the private `.cof`
+and the shareable copy, both valid with `cof validate`; compares the memories and transcripts byte for byte with what
+`cof import` writes for the same files; then PersonaText (WebP avatar, « without the avatar »), a chat without a card,
+the edited name, the content tick (a face under 18 cannot be tagged sexual or nudity), a file with nothing to import and an account file never read.
+
+The import page's suite also checks **the explorer for people coming from Character.AI**, `viewer/character-ai/index.html`,
+generated from `viewer/index.html` by `tools/viewer-cai/gen.py` (run it after every change to the explorer; `--check` fails
+when it is out of date or when one of its patches no longer applies): the page links to it, a welcome window in the
+explorer's language at every visit, an imported file opens on its memories graph with the age and the source in the
+left column.

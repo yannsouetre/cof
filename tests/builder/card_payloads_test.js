@@ -37,12 +37,21 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
 
   /* 1. import into the card variant */
   dialogs.length = 0;
-  await page.evaluate(async ([vid, json]) => { await importInto(vid, new File([json], "wren.personatext.json", { type: "application/json" })); }, [vid, JSON.stringify(CARD)]);
+  /* since the platform import (RFC 0006, branch cai-import), a Character.AI card is told apart and its conversation is
+     offered as a personal memory in the builder's own dialog (« Later » here): the generic alert is for other cards */
+  const imp = page.evaluate(async ([vid, json]) => { await importInto(vid, new File([json], "wren.personatext.json", { type: "application/json" })); }, [vid, JSON.stringify(CARD)]);
+  await page.waitForSelector("#dlg.on .dbtns button", { timeout: 15000 });
+  const offer = await page.evaluate(() => document.querySelector("#dlg .dbody").innerText);
+  await page.evaluate(() => [...document.querySelectorAll("#dlg.on .dbtns button")].find(b => !b.classList.contains("primary")).click()); await imp;
   const raw = await page.evaluate(vid => JSON.stringify(variants("personality")[vid]._raw), vid);
   check(!raw.includes("chat_history") && !raw.includes("avatar_data_url") && !raw.includes("Paul"), "import: neither chat_history nor avatar_data_url kept in the variant");
   const kept = JSON.parse(raw).data;
   check(kept.character_book?.entries?.[0]?.content === "Built in 1890." && kept.extensions?.character_ai?.external_id === "abc123" && kept.creator === "someone", "import: character_book, extensions.character_ai, creator intact");
-  check(dialogs.some(m => /^Embedded chat \/ avatar not imported: a user's personal data, not part of the character\. \(data\.extensions\.chat_history, data\.extensions\.avatar_data_url\)$/.test(m)), "import: the reader is told, in English (" + dialogs.join(" | ") + ")");
+  check(/also holds a conversation: import it as a personal memory \(never in the card\)\?/.test(offer), "import: the reader is told, in English, and offered a personal memory (" + offer.split("\n").pop() + ")");
+  /* the generic alert still applies to a card that is not a Character.AI one */
+  const OTHER = JSON.parse(JSON.stringify(CARD)); delete OTHER.data.extensions.character_ai; delete OTHER.data.extensions.chat_history; dialogs.length = 0;
+  await page.evaluate(async ([vid, json]) => { await importInto(vid, new File([json], "other.json", { type: "application/json" })); }, [vid, JSON.stringify(OTHER)]);
+  check(dialogs.some(m => /^Embedded chat \/ avatar not imported: a user's personal data, not part of the character\. \(data\.extensions\.avatar_data_url\)$/.test(m)), "import of another card: the generic alert, in English (" + dialogs.join(" | ") + ")");
   const built = await page.evaluate(vid => JSON.stringify(buildCard(variants("personality")[vid], "Wren")), vid);
   check(!built.includes("chat_history") && !built.includes("avatar_data_url") && built.includes("Built in 1890."), "build: the card written has no chat / avatar, keeps its lore");
   const call = await page.evaluate(() => JSON.stringify(CARD_PAYLOADS)); check(call === '["chat_history","avatar_data_url"]', "same keys as cof-cli convert.CARD_PAYLOADS");

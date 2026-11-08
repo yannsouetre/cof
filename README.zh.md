@@ -25,6 +25,8 @@ COF 是一种开放文件格式（`.cof`，一个 ZIP 容器），它把定义�
 
 > 状态：**1.2，发布于 2026 年 11 月 8 日**——[AI 角色如今有了内心世界](https://yannsouetre.github.io/cof/psyche/index.zh.html)：一张与记忆相连的心理图谱（RFC 0004），以及由记忆和心理共享的人物、地点和物品（RFC 0005），两者均开放征求意见至 2026 年 11 月 22 日；所有 1.0 和 1.1 文件依然有效，且可被所有 1.x 工具读取。参考工具：`cof-cli` 1.2.0（`pip install cof-cli`）、builder 0.14.0、浏览器 1.2.0、ComfyUI 节点 0.7（[发布说明](docs/release-notes-1.2.0.md)）。此前：1.1 于 2026 年 10 月 30 日发布——[记忆](https://yannsouetre.github.io/cof/memories/index.zh.html)（RFC 0002）、性别、关系、原型与角色定位（RFC 0003）、每个文件中的 `COF.md`；工具 1.1.1 于 2026 年 11 月 2 日发布——记忆图谱可容纳完整的一生（[发布说明](docs/release-notes-1.1.1.md)）；格式 1.0 于 2026 年 10 月 17 日发布。欢迎通过 [issues](https://github.com/yannsouetre/cof/issues) 提供反馈。
 
+> **从 Character.AI 过来？**[保存您的角色 →](https://yannsouetre.github.io/cof/import/) 拖入您用 CAI Tools 或 PersonaText 导出的文件，核对三项，下载一个 `.cof` 文件：您的角色，以及成为其记忆、保持私密的对话。然后不止于备份：外观、声音、预设、带图片和声音的记忆、以图呈现的心理——在 [builder](https://yannsouetre.github.io/cof/builder/) 中添加，在 [explorer](https://yannsouetre.github.io/cof/viewer/character-ai/) 中浏览。一切都在您的浏览器中完成。COF 1.2.1（2026 年 11 月 8 日）新增 `cof import`、导入页面、builder 0.14.1 和 explorer 1.2.1（[版本说明](docs/release-notes-1.2.1.md)，[RFC 0006](rfcs/0006-platform-import.md)，征求意见至 2026 年 11 月 22 日）。
+
 ## 为什么
 - **不再东拼西凑**：PNG、WAV、VRM、LoRA 和零散的笔记。
 - **永不被平台锁定**：COF 正是专有工具不提供的那种*导出*格式。
