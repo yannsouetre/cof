@@ -474,7 +474,7 @@ function charDefault(iid){const d=(ids()[iid]||{}).default_preset;if(d&&P()[d])r
 async function openBuffer(buf){
   const err=document.getElementById("loadErr");err.hidden=true;
   try{
-    const Z0=Z;Z=await zipRead(buf);await openZ(Z0,{tab:"memories",memView:"graph"});if(!(M&&M.elements&&M.elements.memories)){tab="look";await render()}else{const h=document.querySelector(".memhead");if(h)h.scrollIntoView({block:"start"})}
+    const Z0=Z;Z=await zipRead(buf);await openZ(Z0,{tab:"memories",memView:"graph"});if(!(M&&M.elements&&M.elements.memories)){tab="look";await render()}window.scrollTo(0,0)
   }catch(e){err.textContent=tr("badFile")+e.message;err.hidden=false;if(document.getElementById("drop").hidden)alert(err.textContent)}
 }
 async function openZ(Z0,opt){let mf=null;try{mf=await jsonAt("manifest.json")}finally{if(!mf)Z=Z0}if(!mf)throw new Error("manifest.json missing or not valid JSON");if(typeof mf!=="object"||Array.isArray(mf)||!mf.presets||typeof mf.presets!=="object"||Array.isArray(mf.presets)||!Object.keys(mf.presets).length){Z=Z0;throw new Error("manifest.json has no presets object")}const M0=M;   /* hunt H2-04: a file that cannot be shown leaves the previous one in place */

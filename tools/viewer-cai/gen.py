@@ -98,8 +98,7 @@ def patches(src: str) -> str:
     # a file opens on its memories graph (on the look when it has none)
     sub("const Z0=Z;Z=await zipRead(buf);await openZ(Z0);",
         'const Z0=Z;Z=await zipRead(buf);await openZ(Z0,{tab:"memories",memView:"graph"});'
-        'if(!(M&&M.elements&&M.elements.memories)){tab="look";await render()}'
-        'else{const h=document.querySelector(".memhead");if(h)h.scrollIntoView({block:"start"})}')
+        'if(!(M&&M.elements&&M.elements.memories)){tab="look";await render()}window.scrollTo(0,0)')   # the page starts at the top: the character first, the memories tab already open below
     # the time strip counts a moment at its own date only: an imported conversation is undated, even inside the
     # Character.AI period (the base explorer places it at the period's start, which would read « 3 conversations in 2022 »)
     sub("const dm=allMom.map(dOf),", "const dm=allMom.map(v=>{const w=info[v].n.when||{};return w.date||w.age?dOf(v):null}),")
