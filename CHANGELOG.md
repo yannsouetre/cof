@@ -11,6 +11,7 @@
 - **Explorer 1.2.1**: a long memory text shows folded; an imported conversation shows a one-line summary and its first messages, « + » opens it whole in its own pop-up.
 - **RFC 0006** (open for comments until 22 November 2026, as RFC 0004 and 0005); IMPLEMENTING § 7 ter; `cof-author` skill § 3 ter.
 - **Bug hunt** (5 agents competing, 56 findings, 39 fixed before release): one content lexicon for the three tools (Unicode word boundaries, NFKC, six languages), a chat at any depth of a card removed, avatars reduced to their image, the official export's flat message list split by chat, swapped speakers turned back, options checked before any write.
+- **Site, after the release (8 November evening)** — no change to the format or the tools: share cards (`og:` / `twitter:`) and an illustrated character on the import page; the version DOI; « Example: Wren » in the Character.AI explorer and its welcome window (`viewer/samples/wren-calloway.cof`: a character imported from a made-up Character.AI export, with four looks as presets).
 - Tests: cof-cli (the import's own tests, two independent reviews and the bug hunt); builder `cai_import_test.js`, `import_page_test.js` (the page against `cof import`, byte for byte; the Character.AI explorer; an independent review).
 
 ## 1.2.0 — 2026-11-08 (RFC 0004 psyche, RFC 0005 people, places, objects)

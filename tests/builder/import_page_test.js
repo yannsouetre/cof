@@ -152,6 +152,10 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
     await v.click("#caiWx"); await v.setInputFiles("#file", path.join(WORK, "wren-mine.cof")); await v.waitForTimeout(1200);
     const st = await v.evaluate(() => ({ tab, memView, facets: document.getElementById("facets").textContent }));
     check(st.tab === "memories" && st.memView === "graph" && /Character\.AI/.test(st.facets) && /30/.test(st.facets) && !errs.length, `an imported file opens on its memories graph, the age and the source in the left column (${st.tab}, ${st.memView}${errs.length ? ", " + errs.join(" | ") : ""})`);
+    await v.click("#btnWren"); await v.waitForTimeout(1500);
+    const ex = await v.evaluate(() => ({ tab, presets: Object.keys(M.presets).length, name: M.name, mem: Object.keys(M.elements.memories.variants).length }));
+    check(ex.name === "Wren Calloway" && ex.presets === 4 && ex.mem === 4 && ex.tab === "memories", "« Example: Wren » opens the sample on its memories graph: four looks (presets), one period and three conversations (" + JSON.stringify(ex) + ")");
+    await v.setInputFiles("#file", path.join(WORK, "wren-mine.cof")); await v.waitForTimeout(1200);
     const strip = await v.evaluate(() => { const ax = document.querySelector(".mgstrip .mgaxis"); return ax ? ax.textContent : ""; });
     check(/2022/.test(strip) && /n\.d\./.test(strip), "the time strip draws the Character.AI period from 2022 and keeps its conversations in « n.d. » (" + strip.replace(/\s+/g, " ").trim() + ")");
     const pop = await v.evaluate(async () => { const x = document.createElement("button"); x.dataset.memtext = "ev2"; x.dataset.memaid = "a-mem-ev2-chat-2"; document.body.appendChild(x); x.click(); x.remove(); await new Promise(r => setTimeout(r, 500));

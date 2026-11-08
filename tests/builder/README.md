@@ -140,4 +140,4 @@ The import page's suite also checks **the explorer for people coming from Charac
 generated from `viewer/index.html` by `tools/viewer-cai/gen.py` (run it after every change to the explorer; `--check` fails
 when it is out of date or when one of its patches no longer applies): the page links to it, a welcome window in the
 explorer's language at every visit, an imported file opens on its memories graph with the age and the source in the
-left column.
+left column, and « Example: Wren » (`viewer/samples/wren-calloway.cof`) opens the sample of an imported character with four looks.
