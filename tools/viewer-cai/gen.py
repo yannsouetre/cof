@@ -45,6 +45,15 @@ WELCOME = {  # title, open the file, the graph, the rest of COF, open button, cl
            "自分の .cof を開く", "閉じる", "Character.AI 版"],
 }
 
+OG = ("\n<meta property=\"og:type\" content=\"website\">"
+      "\n<meta property=\"og:title\" content=\"COF Explorer — Character.AI version\">"
+      "\n<meta property=\"og:description\" content=\"Read your Character.AI conversations again, as the memories of your character, in one open file. Nothing leaves your browser.\">"
+      "\n<meta property=\"og:url\" content=\"https://yannsouetre.github.io/cof/viewer/character-ai/\">"
+      "\n<meta property=\"og:image\" content=\"https://yannsouetre.github.io/cof/import/og-import.jpg\">"
+      "\n<meta property=\"og:image:width\" content=\"1200\">\n<meta property=\"og:image:height\" content=\"630\">"
+      "\n<meta name=\"twitter:card\" content=\"summary_large_image\">"
+      "\n<meta name=\"twitter:image\" content=\"https://yannsouetre.github.io/cof/import/og-import.jpg\">")
+
 CSS = ("#caiW{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px}"
        "#caiW[hidden]{display:none}#caiW .box{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:14px;max-width:560px;width:100%;"
        "padding:22px 22px 18px;box-shadow:0 12px 40px rgba(0,0,0,.3)}#caiW h2{margin:0 0 10px;font-size:1.2rem}#caiW ol{margin:0 0 14px;padding-left:20px}"
@@ -81,7 +90,7 @@ def patches(src: str) -> str:
             raise SystemExit(f"tools/viewer-cai/gen.py: patch not applicable ({n} matches): {pattern[:80]!r} — update the script")
         out = re.sub(pattern, lambda m: m.expand(repl), out) if regex else out.replace(pattern, repl)
 
-    sub("<title>COF Explorer</title>", "<title>COF Explorer · Character.AI</title>")
+    sub("<title>COF Explorer</title>", "<title>COF Explorer · Character.AI</title>" + OG)
     sub(r'(<span id="ver">explorer [0-9.]+</span>)', r'\1 · <button id="caiHelp" type="button">Character.AI version</button>', regex=True)
     sub('fetch("samples/"+name)', 'fetch("../samples/"+name)')
     # a file opens on its memories graph (on the look when it has none)

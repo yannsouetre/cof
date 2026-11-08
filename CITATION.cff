@@ -33,5 +33,8 @@ identifiers:
   - type: doi
     value: 10.5281/zenodo.24051451
     description: "Version 1.2.0"
+  - type: doi
+    value: 10.5281/zenodo.24055335
+    description: "Version 1.2.1"
 version: 1.2.1
 date-released: "2026-11-08"

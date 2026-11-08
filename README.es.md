@@ -138,7 +138,7 @@ Un `.cof` contiene una Character Card V3 válida y se exporta a una tarjeta PNG 
 
 ## Citar
 
-Cada versión se archiva en Zenodo. DOI de concepto (todas las versiones): [10.5281/zenodo.23434045](https://doi.org/10.5281/zenodo.23434045) · versión 1.1.1: [10.5281/zenodo.23879507](https://doi.org/10.5281/zenodo.23879507) · versión 1.2.0: [10.5281/zenodo.24051451](https://doi.org/10.5281/zenodo.24051451) · versión 1.1.0: [10.5281/zenodo.23805416](https://doi.org/10.5281/zenodo.23805416) · versión 1.0.0: [10.5281/zenodo.23434046](https://doi.org/10.5281/zenodo.23434046). Metadatos de citación: [`CITATION.cff`](CITATION.cff).
+Cada versión se archiva en Zenodo. DOI de concepto (todas las versiones): [10.5281/zenodo.23434045](https://doi.org/10.5281/zenodo.23434045) · versión 1.1.1: [10.5281/zenodo.23879507](https://doi.org/10.5281/zenodo.23879507) · versión 1.2.1: [10.5281/zenodo.24055335](https://doi.org/10.5281/zenodo.24055335) · versión 1.2.0: [10.5281/zenodo.24051451](https://doi.org/10.5281/zenodo.24051451) · versión 1.1.0: [10.5281/zenodo.23805416](https://doi.org/10.5281/zenodo.23805416) · versión 1.0.0: [10.5281/zenodo.23434046](https://doi.org/10.5281/zenodo.23434046). Metadatos de citación: [`CITATION.cff`](CITATION.cff).
 
 ## Licencia
 | Parte | Licencia |

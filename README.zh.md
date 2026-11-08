@@ -138,7 +138,7 @@ COF 有意保持灵活：几乎一切都是可选的，未知的键在往返转�
 
 ## 引用
 
-每个版本都存档于 Zenodo。概念 DOI（所有版本）：[10.5281/zenodo.23434045](https://doi.org/10.5281/zenodo.23434045) · 1.1.1 版：[10.5281/zenodo.23879507](https://doi.org/10.5281/zenodo.23879507) · 1.2.0 版：[10.5281/zenodo.24051451](https://doi.org/10.5281/zenodo.24051451) · 1.1.0 版：[10.5281/zenodo.23805416](https://doi.org/10.5281/zenodo.23805416) · 1.0.0 版：[10.5281/zenodo.23434046](https://doi.org/10.5281/zenodo.23434046)。引用元数据：[`CITATION.cff`](CITATION.cff)。
+每个版本都存档于 Zenodo。概念 DOI（所有版本）：[10.5281/zenodo.23434045](https://doi.org/10.5281/zenodo.23434045) · 1.1.1 版：[10.5281/zenodo.23879507](https://doi.org/10.5281/zenodo.23879507) · 1.2.1 版：[10.5281/zenodo.24055335](https://doi.org/10.5281/zenodo.24055335) · 1.2.0 版：[10.5281/zenodo.24051451](https://doi.org/10.5281/zenodo.24051451) · 1.1.0 版：[10.5281/zenodo.23805416](https://doi.org/10.5281/zenodo.23805416) · 1.0.0 版：[10.5281/zenodo.23434046](https://doi.org/10.5281/zenodo.23434046)。引用元数据：[`CITATION.cff`](CITATION.cff)。
 
 ## 许可证
 | 部分 | 许可证 |
