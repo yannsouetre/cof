@@ -15,6 +15,7 @@ cof extract clara.cof --preset default --no-risk -o clara-sans-risque/         #
 cof merge clara.cof martien.cof -o duo/             # un casting : même nom + surnom + statut fictif + morphologie ⇒ même personnage, sinon plusieurs
 cof memory add clara.cof --gist fr="Ce matin, relu avec Léo." --gist en="This morning, reread with Léo." --date 2026-10-25 --who "Léo" --what "le carnet" --what "item=appearance/x1" --tag travail --personal   # --what : un objet (1.2, RFC 0005), un nom et/ou item=<élément>, |shown s'il est dans un média
 cof memory add clara/ --kind period --gist en="The agency years." --age 24 --approx --fidelity faded   # sur un dossier ; `--help` liste tout (--where, --self-shown, --media, --preset…)
+cof memory add clara.cof --from-agent ./agent/        # le retour : les notes du jour d'un espace OpenClaw (memory/AAAA-MM-JJ.md) ou les entrées § d'un profil Hermes (memories/MEMORY.md) deviennent des souvenirs vécus, personnels, datés, étiquetés lived:<hôte> ; idempotent (--agent-source, --lang)
 cof psyche add clara.cof --kind stance --gist fr="Envers l'utilisateur : une collègue." --about user --strength 60 --stability shifting --link because=memories/ev3 --since-date 2026-10-25   # nœud vécu, `visibility: personal` (--canon sinon), première révision ; `--help` liste tout (--lie, --risk, --tag, --preset…)
 cof psyche add clara.cof --kind habit --gist fr="Garde la guitare près du bureau." --who "ma grand-mère" --where "environment=appearance/e1" --what "ma guitare|item=appearance/x1" --canon   # personnes, lieux, objets du nœud (RFC 0005) ; une personne du casting : --who identity=<id> (les liens --link ne visent que souvenirs et nœuds)
 cof psyche add clara.cof --kind stance --gist fr="Envers l'utilisateur : de la chaleur." --about user --valence 60 --aware partly --canon   # RFC 0004 § 3 nonies : --valence −100…+100 (position ou goût seulement), --aware yes|partly|no, --until-age / --until-date (quand le nœud a cessé d'être tenu)
@@ -27,6 +28,7 @@ cof export clara.cof --format png -o clara.png      # → PNG avec chunks chara 
 cof export clara.cof --format card -o clara.card.json
 cof export clara.cof --format soul -o ./agent/      # → SOUL.md + IDENTITY.md
 cof export clara.cof --format agent -o ./agent/     # → espace de travail d'agent : SOUL.md (avec « Qui elle est » rendu depuis la psyché), IDENTITY.md, skills/, MEMORY.md + memories/ (--keep-personal, --keep-dangerous, --preset)
+cof export clara.cof --format hermes -o ./hermes/   # → profil Hermes Agent (HERMES_HOME) : SOUL.md (identité fusionnée), memories/MEMORY.md en entrées § sous le plafond de l'hôte (2 200 caractères, les plus saillants), skills/, COF.md
 cof embed-text clara.png fiche.md -o clara-fiche.png   # texte descriptif dans un PNG (iTXt), lisible par le builder
 cof read-text clara-fiche.png
 cof migrate dossier-v0.5/                           # v0.2 … v0.5 → 1.0

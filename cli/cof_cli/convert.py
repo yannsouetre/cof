@@ -551,4 +551,8 @@ def export_agent(src: Path, out: Path, preset: str | None = None, keep_personal:
     if manifest.get("container", {}).get("executableContent") == "scripts":
         note += ["", "Skills may contain scripts: never run them without the user's explicit approval."]
     (out / "COF.md").write_text("\n".join(note) + "\n", "utf-8")
+    if not (out / "AGENTS.md").is_file():          # OpenClaw reads AGENTS.md every session: without it the agent has no instruction to write memory (8 Nov. 2026)
+        from .agents import agents_md
+        (out / "AGENTS.md").write_text(agents_md(ident.get("name") or manifest.get("name") or "the character"), "utf-8")
+        done["agents_md"] = True
     return done

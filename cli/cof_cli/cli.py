@@ -327,6 +327,17 @@ def cmd_export(a):
                 print(f"personal memories not exported: {done.get('personal_dropped', 0)}, personal psyche nodes: {done.get('psyche_personal_dropped', 0)} (--keep-personal exports them)")
             if done.get("dangerous_dropped"):
                 print(f"dangerous psyche nodes not exported: {done['dangerous_dropped']} (an agent acts — --keep-dangerous exports them)")
+        elif fmt == "hermes":
+            from .agents import export_hermes
+            out = out or Path(f"{_fname(manifest)}-hermes")
+            done = export_hermes(d, out, pid, keep_personal=getattr(a, "keep_personal", False), keep_dangerous=getattr(a, "keep_dangerous", False))
+            print(f"Hermes profile: SOUL.md · memories/MEMORY.md {done['hermes_memory_entries']} entries, {done['hermes_memory_chars']} chars"
+                  + (f" ({done['hermes_memory_dropped']} memories left in the .cof: the host caps MEMORY.md)" if done['hermes_memory_dropped'] else "")
+                  + f" · skills: {', '.join(done['skills']) or '—'} · psyche (nodes): {done.get('psyche_nodes', 0)}")
+            if done.get("personal_dropped") or done.get("psyche_personal_dropped"):
+                print(f"personal memories not exported: {done.get('personal_dropped', 0)}, personal psyche nodes: {done.get('psyche_personal_dropped', 0)} (--keep-personal exports them)")
+            if done.get("dangerous_dropped"):
+                print(f"dangerous psyche nodes not exported: {done['dangerous_dropped']} (an agent acts — --keep-dangerous exports them)")
         elif fmt == "card":
             out = out or Path(f"{_fname(manifest)}.card.json")
             out.write_text(json.dumps(card, ensure_ascii=False, indent=2), "utf-8")
@@ -403,6 +414,24 @@ def _add_node(a, what: str, add):
 
 def cmd_memory_add(a):
     from .selfdesc import memory_add
+    if getattr(a, "from_agent", None):
+        if a.gist:
+            print("ERROR  --from-agent takes its gists from the agent's notes: no --gist", file=sys.stderr); return 2
+        from .agents import import_agent_memories
+        folder = Path(a.from_agent)
+        if not folder.is_dir():
+            print(f"ERROR  {folder}: not a folder", file=sys.stderr); return 2
+        added: list[str] = []
+        def add_all(work):
+            nonlocal added
+            added = import_agent_memories(work, folder, identity=a.identity, presets=a.preset, source=a.agent_source, lang=a.lang)
+            return ", ".join(added) if added else "(nothing new)"
+        rc = _add_node(a, "Lived memories", add_all)
+        if rc == 0:
+            print(f"lived memories added: {len(added)} (personal, origin lived, tagged lived:<host>)")
+        return rc
+    if not a.gist:
+        print("ERROR  --gist LANG=TEXT is required (or --from-agent <folder>)", file=sys.stderr); return 2
     gists = _gists(a)
     if gists is None:
         return 2
@@ -660,7 +689,10 @@ def main(argv=None) -> int:
     ms = s.add_subparsers(dest="mcmd", required=True)
     ma = ms.add_parser("add", help="append one memory node"); ma.add_argument("src", help=".cof file or character folder")
     ma.add_argument("--identity", help="character id (default: the file's default character)"); ma.add_argument("--kind", choices=["moment", "period"], default="moment")
-    ma.add_argument("--gist", action="append", required=True, metavar="LANG=TEXT", help="the memory in one paragraph; repeat per language")
+    ma.add_argument("--gist", action="append", metavar="LANG=TEXT", help="the memory in one paragraph; repeat per language")
+    ma.add_argument("--from-agent", metavar="FOLDER", help="instead of --gist: what an agent lived, read from an OpenClaw workspace (memory/YYYY-MM-DD.md, lines written as AGENTS.md asks) or a Hermes profile (memories/MEMORY.md, § entries); each note becomes a lived, personal memory dated by its file, tagged lived:<host>; already-imported notes are skipped")
+    ma.add_argument("--agent-source", choices=["openclaw", "hermes"], help="with --from-agent: read only that host's notes")
+    ma.add_argument("--lang", help="with --from-agent: the language the agent wrote in (default: the personality's language)")
     ma.add_argument("--label"); ma.add_argument("--age", type=float); ma.add_argument("--date", help="YYYY, YYYY-MM or YYYY-MM-DD"); ma.add_argument("--approx", action="store_true")
     ma.add_argument("--where"); ma.add_argument("--who", action="append", metavar="LABEL[|shown][|AGE][|real]", help="a person: label, then optional words 'shown' (appears in a media), their age, 'real' (a real person who is not a character of the file); repeat");
     ma.add_argument("--what", action="append", metavar="LABEL[|item=REF][|shown]", help="an object (1.2, RFC 0005): its name and/or item=<category>/<id> (an accessory of the character, e.g. item=appearance/x1), 'shown' if it appears in a media; repeat")
@@ -736,7 +768,7 @@ def main(argv=None) -> int:
     s.add_argument("--inspect", action="store_true", help="print the structure of the files with every value redacted (to share an unknown export's shape), write nothing")
     s.add_argument("--keep-png", action="store_true", help="plain card import: keep the PNG as the head.front view")
     s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_import)
-    s = sub.add_parser("export", help="folder/.cof → png | soul | card | agent (workspace: SOUL.md, IDENTITY.md, skills/, memories) — from the default preset or --preset"); s.add_argument("src"); s.add_argument("--format", choices=["png", "soul", "card", "agent"], required=True); s.add_argument("-o", "--out"); s.add_argument("--preset"); s.add_argument("--keep-personal", action="store_true", help="agent: also export `visibility: personal` memories and psyche nodes (dropped by default)"); s.add_argument("--keep-dangerous", action="store_true", help="agent: also render psyche nodes of risk `dangerous` (dropped by default: an agent acts — RFC 0004 § 3 septies)"); s.set_defaults(fn=cmd_export)
+    s = sub.add_parser("export", help="folder/.cof → png | soul | card | agent (OpenClaw-style workspace: AGENTS.md, SOUL.md, IDENTITY.md, MEMORY.md, skills/, memories) | hermes (a Hermes Agent profile: SOUL.md, memories/MEMORY.md in § entries, skills/) — from the default preset or --preset"); s.add_argument("src"); s.add_argument("--format", choices=["png", "soul", "card", "agent", "hermes"], required=True); s.add_argument("-o", "--out"); s.add_argument("--preset"); s.add_argument("--keep-personal", action="store_true", help="agent: also export `visibility: personal` memories and psyche nodes (dropped by default)"); s.add_argument("--keep-dangerous", action="store_true", help="agent: also render psyche nodes of risk `dangerous` (dropped by default: an agent acts — RFC 0004 § 3 septies)"); s.set_defaults(fn=cmd_export)
     s = sub.add_parser("migrate", help="folder v0.2 … v0.5 → v1.0; --psyche converts the 1.0 lists (goals, fears, values, behaviours) into psyche nodes (1.2)"); s.add_argument("dir"); s.add_argument("--psyche", action="store_true", help="write psyche nodes from psyche.json goals / fears / values and the card's cof.goals / cof.fears / cof.behavior (the lists stay); idempotent"); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_migrate)
     s = sub.add_parser("merge", help="merge several .cof files/folders (same name, nickname, fictional status and morphology class ⇒ same identity, otherwise multiple identities)"); s.add_argument("sources", nargs="+"); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_merge)
     s = sub.add_parser("extract", help="extract a preset, a character (--identity), or the presets carrying one or more tags (intersection), into a lighter COF folder"); s.add_argument("src"); g = s.add_mutually_exclusive_group(required=True); g.add_argument("--preset"); g.add_argument("--identity", help="one character: all its presets, elements, files and rights"); g.add_argument("--tag", action="append", help="repeatable: --tag english --tag age-12"); s.add_argument("-o", "--out", required=True); s.add_argument("--json", action="store_true"); s.add_argument("--all-audiences", "--no-intimate", dest="no_intimate", action="store_true", help="all-audiences slice: drop intimate / nude variants and the media of explicit memories (gist kept), allowSexualUsage = false"); s.add_argument("--keep-personal", action="store_true", help="keep `visibility: personal` memories and psyche nodes (a user's data; dropped by default)"); s.add_argument("--no-risk", action="store_true", help="risk purge (RFC 0004 § 3 septies): drop psyche nodes of risk `inappropriate` and `dangerous` (and the contradictions that lose a side); separate from --all-audiences"); s.set_defaults(fn=cmd_extract)
