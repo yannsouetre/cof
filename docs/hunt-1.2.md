@@ -4,6 +4,8 @@ Five test agents competed, each on a territory, to break COF 1.2 before its publ
 
 **Scoring.** CRITICAL 10, MAJOR 5, MINOR 2, COSMETIC 1, DESIGN 3 (argued, with a proposal); × 1 when the judge re-ran the reproduction, × 0.5 when plausible but not re-run or when two hunters found it at the same time (points shared), −3 for a false positive; +2 for an automated reproduction. Every finding marked *fixed* was reproduced, fixed, and its reproduction run again.
 
+**8 November 2026 — builder 0.14.2 (COF 1.2.2).** The round-trip findings H3-08, H3-09, H3-10, H3-11, H3-12, H3-13 and H3-14 are fixed: the builder keeps, on every record it reads (manifest root, identity, preset, variant, asset, voice profile, legacy psyche.json, weights.json), what it does not edit, and writes back every file of a variant it does not regenerate; a linked LoRA keeps the asset id the file gave it; a child preset's default on an inherited category is kept; an `extends` / `derives_from` loop is an error of the Checks step. Test: `tests/builder/make_fixture_keep.py` + `roundtrip_keep.py`.
+
 ## Leaderboard
 
 | Rank | Hunter | Findings | Points |
@@ -39,8 +41,8 @@ Five test agents competed, each on a territory, to break COF 1.2 before its publ
 | H3-02 | critical | fixed | A memory variant `age` given in months is read as years and written back as years: a nude memory of an 8-year-old becomes a 100-year-old, `cof validate` then says OK |
 | H3-03 | critical | fixed | `age_override` with `unit: months` is read as years (200 months = 16.7 years becomes 200 years) |
 | H3-05 | critical | fixed | Consent record of a real person loses `excluded`, `revocation_uri`, `subject_ref`, URI/attestation `proof`; the rebuilt file is then INVALID |
-| H3-08 | critical | to decide | Spec-defined variant fields are lost at build: `story` (story.md), `lorebook` (lorebook.json), `tags`, `neutral` – the files are deleted from the container |
-| H3-09 | critical | to decide | Legacy `psyche.json` (cof-psyche/0.1) is rewritten from the card form: contradictions, baseline_emotion, traits.custom, goal horizon/priority, fear intensity, convai_sliders are lost; ids `goal:sobriety` renumbered `goal:1` |
+| H3-08 | critical | fixed (builder 0.14.2) | Spec-defined variant fields are lost at build: `story` (story.md), `lorebook` (lorebook.json), `tags`, `neutral` – the files are deleted from the container |
+| H3-09 | critical | fixed (builder 0.14.2) | Legacy `psyche.json` (cof-psyche/0.1) is rewritten from the card form: contradictions, baseline_emotion, traits.custom, goal horizon/priority, fear intensity, convai_sliders are lost; ids `goal:sobriety` renumbered `goal:1` |
 | H3-19 | critical | fixed | XSS: a variant `kind` / `garment` / `accessory` / `area` from the opened file is injected unescaped into the Presets step (code execution) |
 | H3-20 | critical | fixed | XSS: an identity `name` in a cast file executes in the Files filter select (`sel()` does not escape labels) |
 | H3-21 | critical | fixed | XSS: the `label` of a library variant (posture/motion/files) executes in the preset « par défaut » select |
@@ -61,10 +63,10 @@ Five test agents competed, each on a territory, to break COF 1.2 before its publ
 | H3-04 | major | fixed | `basis` of `age_override` and of a memory age is rewritten to `canonical` (apparent/declared lost) |
 | H3-06 | major | fixed | Declaring a real person in step 6 without uploading a proof builds a consent that `cof validate` rejects, and no builder check says so |
 | H3-07 | major | fixed | `rights.permissions.ageRating` and `minUserAge` (SPEC § 9.1) are dropped from every opened file |
-| H3-10 | major | to decide | Unknown JSON keys are not preserved (manifest root, identity, preset, variant, permissions, provenance, voice profile.json) |
-| H3-11 | major | to decide | Variant `derived[]`, token `profiles` and the clothing `spec` (outfit.json) are lost; their files/assets are orphaned or deleted; `mapping_vocabularies` emptied |
-| H3-13 | major | to decide | A linked LoRA is duplicated: a second asset `a-weights-l1` (same uri/sha256) is created, the old one stays orphaned; weights.json loses `base_model.version` and the page label |
-| H3-14 | major | to decide | Parity: the builder builds a file with an `extends` or `derives_from` cycle without any check (cof validate: ERROR) |
+| H3-10 | major | fixed (builder 0.14.2) | Unknown JSON keys are not preserved (manifest root, identity, preset, variant, permissions, provenance, voice profile.json) |
+| H3-11 | major | fixed (builder 0.14.2) | Variant `derived[]`, token `profiles` and the clothing `spec` (outfit.json) are lost; their files/assets are orphaned or deleted; `mapping_vocabularies` emptied |
+| H3-13 | major | fixed (builder 0.14.2) | A linked LoRA is duplicated: a second asset `a-weights-l1` (same uri/sha256) is created, the old one stays orphaned; weights.json loses `base_model.version` and the page label |
+| H3-14 | major | fixed (builder 0.14.2) | Parity: the builder builds a file with an `extends` or `derives_from` cycle without any check (cof validate: ERROR) |
 | H3-15 | major | 1.3 | Parity: a valid file is refused at build — « déclinaison sans fichier » on a clothing variant described by outfit.json only |
 | H3-16 | major | 1.3 | Easy version with a cast file open: typing the age rewrites the apparent age of every character |
 | H3-17 | major | fixed | State leak between files: the real-person consent of a previously opened file is written into the next opened (fictional) file's `rights.consent` |
@@ -80,7 +82,7 @@ Five test agents competed, each on a territory, to break COF 1.2 before its publ
 | H5-05 | major | to decide | `until` equal to the preset's age: RFC 0004 § 3 ter reports the node and builder/explorer do not hold it, cof validate holds it silently (and § 3 nonies says the opposite of § 3 ter) |
 | H5-06 | major | to decide | The life age is defined by the RFCs as 'its lowest age', which includes memory/psyche media ages; every reference tool leaves those out — an independent implementer truncates a preset's life at the age of a childhood photo |
 | H2-08 | design | to decide | No Content-Security-Policy while a third-party script runs in the page that holds private character files; tagline says "Your file never leaves your browser" |
-| H3-30 | design | to decide | DESIGN: a file opened and rebuilt untouched has every image silently downscaled and re-encoded (JPEG q88, 1024/2048 px): new hashes, generation loss at each save |
+| H3-30 | design | fixed (builder 0.14.0: images of the opened file kept as they are unless asked) | DESIGN: a file opened and rebuilt untouched has every image silently downscaled and re-encoded (JPEG q88, 1024/2048 px): new hashes, generation loss at each save |
 | H5-07 | design | 1.3 | age_override is overloaded: 1.0 safety floor, 1.2 life bound, and silently re-read on 1.1 files; when absent an *apparent* age bounds the life |
 | H5-08 | design | 1.3 | Older readers skip safety-bearing data: an unknown category is an unchecked library, yet psyche (and memory) variants carry age, nudity and images — a 1.1 validator says OK on a nude illustration of the character at 12 in a preset with allowSexualUsage |
 | H5-09 | design | 1.3 | The substance moves to a category CCv3 never sees: a 1.2-authored character exports to SillyTavern/Chub with no values, wants, fears or wound — and the flagship's default preset cannot be exported as a card at all |
@@ -100,7 +102,7 @@ Five test agents competed, each on a territory, to break COF 1.2 before its publ
 | H2-05 | minor | fixed | Hyperlinks from the file (identity_weights pages[].url) are rendered with any scheme, javascript: and data: included |
 | H2-06 | minor | 1.3 | Page stays unscrollable (body.noscroll) after a file is opened while a graph is full screen |
 | H2-07 | minor | 1.3 | Three aria-labels are hard-coded English in the six-language UI |
-| H3-12 | minor | 1.3 | `defaults` of a child preset are dropped when the preset does not redeclare the category |
+| H3-12 | minor | fixed (builder 0.14.2) | `defaults` of a child preset are dropped when the preset does not redeclare the category |
 | H3-23 | minor | 1.3 | Memory node `when.age` with `unit: months` is shown and sorted as years (330 months displayed as 330) |
 | H3-24 | minor | 1.3 | Top-level `languages` is emptied when the variants do not declare `language` (example 01 loses [en, fr]; identity completeness −10) |
 | H3-25 | minor | 1.3 | Builder completeness (written in the file) differs from cof-cli's rules on the same file (e.g. 62 vs 60, 38 vs 40) |
