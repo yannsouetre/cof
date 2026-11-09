@@ -1046,8 +1046,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-04T08:11:08Z"
+        "computed_by": "cof-cli/1.2.2",
+        "computed_at": "2026-11-09T22:19:33Z"
       },
       "prompts": {
         "greeting": {
@@ -1137,8 +1137,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-04T08:11:08Z"
+        "computed_by": "cof-cli/1.2.2",
+        "computed_at": "2026-11-09T22:19:33Z"
       }
     },
     "en-12": {
@@ -1203,8 +1203,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-04T08:11:08Z"
+        "computed_by": "cof-cli/1.2.2",
+        "computed_at": "2026-11-09T22:19:33Z"
       }
     },
     "en-65": {
@@ -1295,8 +1295,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-04T08:11:08Z"
+        "computed_by": "cof-cli/1.2.2",
+        "computed_at": "2026-11-09T22:19:33Z"
       }
     },
     "en-future": {
@@ -1381,8 +1381,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-04T08:11:08Z"
+        "computed_by": "cof-cli/1.2.2",
+        "computed_at": "2026-11-09T22:19:33Z"
       }
     },
     "en-agent": {
@@ -1424,8 +1424,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-04T08:11:08Z"
+        "computed_by": "cof-cli/1.2.2",
+        "computed_at": "2026-11-09T22:19:33Z"
       }
     },
     "fr": {
@@ -1466,8 +1466,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-04T08:11:08Z"
+        "computed_by": "cof-cli/1.2.2",
+        "computed_at": "2026-11-09T22:19:33Z"
       },
       "prompts": {
         "greeting": {
@@ -1557,8 +1557,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-04T08:11:08Z"
+        "computed_by": "cof-cli/1.2.2",
+        "computed_at": "2026-11-09T22:19:33Z"
       }
     },
     "fr-12": {
@@ -1623,8 +1623,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-04T08:11:08Z"
+        "computed_by": "cof-cli/1.2.2",
+        "computed_at": "2026-11-09T22:19:33Z"
       }
     },
     "fr-65": {
@@ -1715,8 +1715,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-04T08:11:08Z"
+        "computed_by": "cof-cli/1.2.2",
+        "computed_at": "2026-11-09T22:19:33Z"
       }
     },
     "fr-futur": {
@@ -1801,8 +1801,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-04T08:11:08Z"
+        "computed_by": "cof-cli/1.2.2",
+        "computed_at": "2026-11-09T22:19:33Z"
       }
     },
     "fr-agent": {
@@ -1844,8 +1844,8 @@
           "image-video-gen",
           "archive"
         ],
-        "computed_by": "cof-cli/1.2.0",
-        "computed_at": "2026-11-04T08:11:08Z"
+        "computed_by": "cof-cli/1.2.2",
+        "computed_at": "2026-11-09T22:19:33Z"
       }
     }
   },
@@ -3361,11 +3361,11 @@
       "path": "elements/memories/ev14/ev14.jpg",
       "role": "memory-media",
       "mediaType": "image/jpeg",
-      "bytes": 208629,
-      "sha256": "df7eed3a0874bd50b099d296fc59d31b6f13327cf741a135686137435a1be5ed",
+      "bytes": 218132,
+      "sha256": "1eecc4020440d10aa2d58ae495760c68d54b8ab837d946e6c9c397e63bfcfc46",
       "license": "CC-BY-4.0",
-      "width": 1134,
-      "height": 832,
+      "width": 1092,
+      "height": 766,
       "style": "manga",
       "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
       "generator": "kept from clara.memories/mg4.jpg"
@@ -3407,7 +3407,7 @@
   },
   "provenance": {
     "created": "2026-10-11T10:32:23Z",
-    "modified": "2026-11-04T08:11:08Z",
+    "modified": "2026-11-09T22:19:33Z",
     "generator": "cof-builder/0.7.1",
     "source": [
       "https://github.com/yannsouetre/cof/tree/main/spec/examples/10-clara-mercier",
@@ -3555,8 +3555,8 @@
       "image-video-gen",
       "archive"
     ],
-    "computed_by": "cof-cli/1.2.0",
-    "computed_at": "2026-11-04T08:11:08Z"
+    "computed_by": "cof-cli/1.2.2",
+    "computed_at": "2026-11-09T22:19:33Z"
   },
   "coverage": {
     "elements": [
