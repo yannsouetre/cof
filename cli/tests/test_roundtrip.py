@@ -2575,3 +2575,14 @@ def test_diff_tells_identical_from_different(tmp_path):
             zo.writestr(n, data)
     r = subprocess.run([sys.executable, "-m", "cof_cli.cli", "diff", str(sample), str(b)], capture_output=True, text=True, cwd=root / "cli")
     assert r.returncode == 1 and "only in A: COF.md" in r.stdout and "+ x-hunt = 1" in r.stdout and "~ name:" in r.stdout
+    # records with ids (assets) are matched by id: a reordered asset list is no difference, a changed asset is named by its id
+    c = tmp_path / "c.cof"
+    with zipfile.ZipFile(sample) as zi, zipfile.ZipFile(c, "w", zipfile.ZIP_DEFLATED) as zo:
+        for n in zi.namelist():
+            data = zi.read(n)
+            if n == "manifest.json":
+                m = json.loads(data); m["assets"] = list(reversed(m["assets"])); m["assets"][0]["x-seen"] = True; data = json.dumps(m).encode()
+            zo.writestr(n, data)
+    r = subprocess.run([sys.executable, "-m", "cof_cli.cli", "diff", str(sample), str(c)], capture_output=True, text=True, cwd=root / "cli")
+    lines = [l for l in r.stdout.splitlines() if l.strip().startswith(("+", "-", "~")) and "manifest" not in l]
+    assert r.returncode == 1 and len(lines) == 1 and lines[0].strip().startswith("+ assets[") and lines[0].strip().endswith("].x-seen = true") and "[0]" not in lines[0]

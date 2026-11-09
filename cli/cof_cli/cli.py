@@ -117,7 +117,9 @@ def cmd_diff(a):
             return out or {pre: {}}
         if isinstance(o, list):
             out = {}
-            for i, v in enumerate(o): out.update(flat(v, f"{pre}[{i}]"))
+            ids = [v.get("id") for v in o if isinstance(v, dict)]
+            by_id = len(ids) == len(o) and all(isinstance(i, str) and i for i in ids) and len(set(ids)) == len(ids)   # a list of records (assets…): matched by id, not by position
+            for i, v in enumerate(o): out.update(flat(v, f"{pre}[{v['id']}]" if by_id else f"{pre}[{i}]"))
             return out or {pre: []}
         return {pre: o}
     A, B = members(a.a), members(a.b); same = True
