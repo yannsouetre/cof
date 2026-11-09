@@ -86,7 +86,7 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
   let m = readManifest(t1);
   check(m.cof === "1.2" && m.auto.includes("has-psyche") && Object.keys(m.psyche).length === 23, "cof 1.2, has-psyche, 23 variants written");
   check(m.psyche.val1.strength === 96 && m.nodes.val1.strength === 96 && m.nodes.val1.gist.fr, "strength mirrored on the variant, gist written");
-  check(JSON.stringify(m.slots.default) === JSON.stringify(["wound1", "val1", "val2", "val3", "val4", "bel1", "bel2", "bel3", "want1", "want2", "want3", "need1", "fear1", "fear2", "fear3", "stance1", "stance2", "taste1", "taste2", "hab1", "hab2", "contra1"]) && JSON.stringify(m.slots["en-12"]) === JSON.stringify(["val4", "taste1", "hab2"]) && m.slots["en-manga"] === null, "preset slots kept (en-12 three nodes, en-manga inherits)");
+  check(JSON.stringify(m.slots.default) === JSON.stringify(["wound1", "val1", "val2", "val3", "val4", "bel1", "bel2", "bel3", "want1", "want2", "want3", "need1", "fear1", "fear2", "fear3", "stance1", "stance2", "taste1", "taste2", "hab1", "hab2", "contra1"]) && JSON.stringify(m.slots["en-12"]) === JSON.stringify(["val4", "taste1", "hab2"]) && JSON.stringify(m.slots["en-manga"]) === JSON.stringify(m.slots.default), "preset slots kept (en-12 three nodes, en-manga keeps the list it declared, equal to the inherited one: hunt 1.2.2 BUILDER-07)");
 
   /* ---- add, link, derive, delete ---- */
   await page.evaluate(() => go("psyche")); await page.click("#psyList [data-padd]"); await page.waitForTimeout(200);

@@ -36,6 +36,17 @@ with sync_playwright() as p:
         const r2 = runChecks().filter(i => i.sev === 'error' && /derives_from/.test(i.msg)).length;
         S.elements.personality.variants = JSON.parse(k2); runChecks();
         return [r1, r2] }""")
+    # hunt 1.2.2 BUILDER-05: a dangling derives_from is a Checks error; deleting p1 (p2 derives from it) and f1 (source of a derived asset) leaves nothing dangling
+    dang = page.evaluate("""() => { const v = S.elements.personality.variants; const k = JSON.stringify(v); v.p2.derives_from = 'zz';
+        const n = runChecks().filter(i => i.sev === 'error' && /derives_from/.test(i.msg) && /zz/.test(i.msg)).length; S.elements.personality.variants = JSON.parse(k); return n }""")
+    gone = page.evaluate("""() => { purgeVariant('personality', 'p1'); purgeVariant('appearance', 'f1');
+        return { p2: S.elements.personality.variants.p2?.derives_from ?? null, canny: S.assets.some(a => a.id === 'a-head-front-canny'), errors: runChecks().filter(i => i.sev === 'error').map(i => i.msg) } }""")
+    OUT2 = OUT.with_name(OUT.stem + ".del.cof")
+    with page.expect_download(timeout=60000) as dl2:
+        page.evaluate("document.getElementById('btnBuild').click()")
+        page.wait_for_selector("#dlg.on .dbtns .primary", timeout=10000)
+        page.click("#dlg.on .dbtns .primary")
+    dl2.value.save_as(str(OUT2))
     b.close()
 
 print("page errors:", errors or "none")
@@ -97,6 +108,26 @@ check(cyc == [1, 1], f"cycle checks report an error for extends and derives_from
 regen = {"manifest.json", "COF.md", "Thumbnails/thumbnail.png"}
 missing = [n for n in zi.namelist() if n not in names and n not in regen]
 check(not missing, f"no file lost ({len(zi.namelist())} in, {len(names)} out){': ' + ', '.join(missing) if missing else ''}")
+# hunt 1.2.2
+PS, MEM = m["elements"].get("psyche", {}), m["elements"].get("memories", {})
+check(PS.get("variants", {}).get("dream1", {}).get("kind") == "x-dream" and json.loads(zo.read("elements/psyche/dream1/psyche-node.json")) == json.loads(zi.read("elements/psyche/dream1/psyche-node.json")), "unknown psyche kind kept as written, node unchanged (BUILDER-03, D-H1)")
+check(MEM.get("variants", {}).get("ev1", {}).get("x-mood") == "blue" and MEM.get("x-index") == "v2" and PS.get("x-graph-layout") == {"seed": 7}, "x- keys on a memory entry and on the memories / psyche category objects kept (BUILDER-04)")
+check(MEM.get("variants", {}).get("ev1", {}).get("identity") == "clara", "memory identity kept with a single identity (BUILDER-08)")
+check(m.get("languages") == src["languages"] and all(l in m["tags"]["auto"] for l in src["languages"]), f"declared languages kept, with their tags (BUILDER-01, got {m.get('languages')})")
+check(m["metadata"].get("@context") == src["metadata"]["@context"], "metadata @context kept with all its prefixes (BUILDER-02)")
+check("elements/motion/m1/visemes.json" not in names and "visemes" not in m["elements"]["motion"]["variants"]["m1"], "no visemes.json added to a clips variant that had none (BUILDER-06)")
+check("elements/personality/p2/psyche.json" not in names and "psyche" not in m["elements"]["personality"]["variants"]["p2"], "no psyche.json made from a card that had none (BUILDER-06)")
+c_in, c_out = json.loads(zi.read("elements/personality/p1/card.json")), json.loads(zo.read("elements/personality/p1/card.json"))
+check(c_out["data"]["extensions"]["cof"] == c_in["data"]["extensions"]["cof"], "card extensions.cof goal / fear ids kept (BUILDER-06)")
+check(json.loads(zo.read("elements/personality/p2/card.json"))["data"].get("creator") == "", "empty card creator kept (BUILDER-08)")
+check(m["presets"]["young"]["slots"].get("psyche") == src["presets"]["young"]["slots"]["psyche"] and "memories" not in m["presets"]["young"]["slots"], "preset lists exactly as declared: own list equal to the inherited one kept, none added (BUILDER-07)")
+check(not any(k in m for k in ("x-casting", "language")), "identity unknown keys and language not copied to the manifest root (BUILDER-08)")
+check(dang == 1, f"a dangling derives_from is a Checks error (BUILDER-05, got {dang})")
+check(gone["p2"] is None and not gone["canny"] and not gone["errors"], f"deleting p1 and f1 clears p2.derives_from and drops the orphan derived asset (BUILDER-05, {gone})")
+md = json.loads(zipfile.ZipFile(OUT2).read("manifest.json"))
+check("derives_from" not in md["elements"]["personality"]["variants"]["p2"] and not any(a.get("source") == "a-head-front" for a in md["assets"]) and "elements/appearance/f1/head.front.canny.png" not in zipfile.ZipFile(OUT2).namelist(), "rebuilt file after the deletion: no dangling pointer, no orphan derived file")
+r2 = subprocess.run([sys.executable, "-m", "cof_cli.cli", "validate", str(OUT2)], capture_output=True, text=True)
+check(r2.returncode == 0, "cof validate accepts the file rebuilt after the deletion (BUILDER-05)" + ("" if r2.returncode == 0 else "\n" + r2.stdout[-1500:]))
 check(not errors, "no page errors")
 r = subprocess.run([sys.executable, "-m", "cof_cli.cli", "validate", str(OUT)], capture_output=True, text=True)
 check(r.returncode == 0, "cof validate accepts the rebuilt file" + ("" if r.returncode == 0 else "\n" + r.stdout[-1500:]))

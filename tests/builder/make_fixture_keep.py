@@ -59,6 +59,29 @@ with tempfile.TemporaryDirectory() as tmp:
     m["presets"]["young"]["defaults"] = {"appearance": "f1"}
     m["presets"]["young"]["slots"].pop("appearance", None)   # inherits f1, b1, o1 from default
     m["presets"]["young"]["slots"]["voice"] = []           # the 14-year-old preset keeps no adult voice
+    # --- hunt 1.2.2 (BUILDER-03/04/06/07/08): an unknown psyche kind, x- keys on memory entries and on category objects, a motion clips
+    # variant without visemes.json, preset lists equal to the inherited ones, an explicit identity on a memory, a card with an empty creator
+    m["cof"] = "1.3"   # a later minor: its unknown psyche kind is a warning for cof validate (D-H1)
+    (d / "elements/memories/ev1").mkdir(parents=True)
+    (d / "elements/memories/ev1/memory.json").write_text(json.dumps({"gist": {"fr": "Le marché de la Croix-Rousse.", "en": "The Croix-Rousse market."}, "origin": "authored", "visibility": "canon", "disclosure": "open", "fidelity": "clear", "nature": ["experienced"]}), "utf-8")
+    E["memories"] = {"variants": {"ev1": {"kind": "moment", "label": "Marché", "memory": "elements/memories/ev1/memory.json", "identity": "clara", "x-mood": "blue"}}, "x-index": "v2"}
+    (d / "elements/psyche/val1").mkdir(parents=True); (d / "elements/psyche/dream1").mkdir(parents=True)
+    (d / "elements/psyche/val1/psyche-node.json").write_text(json.dumps({"gist": {"fr": "La sobriété.", "en": "Sobriety."}, "strength": 80, "origin": "authored", "visibility": "canon", "disclosure": "open", "stability": "settled"}), "utf-8")
+    (d / "elements/psyche/dream1/psyche-node.json").write_text(json.dumps({"gist": {"en": "A recurring dream of a flooded library."}, "strength": 40, "origin": "authored", "visibility": "canon", "disclosure": "open"}), "utf-8")
+    E["psyche"] = {"variants": {"val1": {"kind": "value", "label": "Sobriété", "node": "elements/psyche/val1/psyche-node.json", "identity": "clara", "strength": 80},
+                                "dream1": {"kind": "x-dream", "label": "Rêve", "node": "elements/psyche/dream1/psyche-node.json", "identity": "clara", "strength": 40}},
+                   "x-graph-layout": {"seed": 7}}
+    m["presets"]["default"]["slots"]["memories"] = ["ev1"]
+    m["presets"]["default"]["slots"]["psyche"] = ["val1", "dream1"]
+    m["presets"]["young"]["slots"]["psyche"] = ["val1", "dream1"]   # equal to the inherited list, declared: kept verbatim; young declares no memories list
+    (d / "elements/motion/m1/clips").mkdir(parents=True)
+    bvh = b"HIERARCHY\nROOT Hips\n{\n OFFSET 0 0 0\n CHANNELS 3 Xrotation Yrotation Zrotation\n End Site\n {\n  OFFSET 0 1 0\n }\n}\nMOTION\nFrames: 1\nFrame Time: 0.033333\n0 0 0\n"
+    (d / "elements/motion/m1/clips/wave.bvh").write_bytes(bvh)
+    m["assets"].append({"id": "a-mo-m1-wave", "path": "elements/motion/m1/clips/wave.bvh", "role": "motion-clip", "mediaType": "application/x-bvh", "bytes": len(bvh), "sha256": hashlib.sha256(bvh).hexdigest(), "license": "CC-BY-4.0", "rig": "custom"})
+    E["motion"] = {"variants": {"m1": {"kind": "clips", "label": "Wave", "clips": ["a-mo-m1-wave"], "rig": "custom"}}}
+    m["presets"]["default"]["slots"]["motion"] = ["m1"]
+    cj = json.loads((d / "elements/personality/p2/card.json").read_text("utf-8")); cj.setdefault("data", {})["creator"] = ""
+    (d / "elements/personality/p2/card.json").write_text(json.dumps(cj, ensure_ascii=False, indent=1), "utf-8")
     (d / "manifest.json").write_text(json.dumps(m, indent=1, ensure_ascii=False), "utf-8")
     subprocess.run([sys.executable, "-m", "cof_cli.cli", "pack", str(d), "-o", str(out), "--force"], check=True)
     subprocess.run([sys.executable, "-m", "cof_cli.cli", "validate", str(out)], check=True)
