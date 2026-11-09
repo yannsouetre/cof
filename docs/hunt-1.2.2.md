@@ -52,7 +52,7 @@ T1, E1, P1, C1 pass. R1 (rich file reopened and rebuilt untouched) failed on the
 
 ### Left as designed (candidates for `cof diff` readers)
 
-On an untouched round trip the builder still changes, on purpose: `identities`, `default_identity` and `presets.*.identity` are added to a file written without the identities table (the builder writes every file in that model); `weights.json` gains `storage: "link"` for a linked LoRA; the root gains the default identity's `given_name`, `family_name`, `gender` (and `relations`) — the schema says the root carries a copy of the default identity; a memory without them gains the default `origin` / `disclosure` / `fidelity`; `modification_date`, `coverage`, `completeness`, `provenance.generator` and the thumbnail are recomputed.
+On an untouched round trip the builder still changes, on purpose: `identities`, `default_identity` and `presets.*.identity` are added to a file written without the identities table (the builder writes every file in that model); `weights.json` gains `storage: "link"` for a linked LoRA; the root gains the default identity's `given_name`, `family_name`, `gender` (and `relations`) — the schema says the root carries a copy of the default identity; a memory without them gains the default `origin` / `disclosure` / `fidelity`; `coverage`, `completeness`, `provenance` and the thumbnail are recomputed. Seen with `cof diff` after the hunt and changed: an untouched card keeps its `modification_date`, a voice profile without samples gains no `samples: []`, and `cof diff` matches assets by id so that a permuted list is no difference.
 
 ## Decisions put to the project
 
