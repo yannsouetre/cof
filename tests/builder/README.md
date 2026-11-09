@@ -141,3 +141,19 @@ generated from `viewer/index.html` by `tools/viewer-cai/gen.py` (run it after ev
 when it is out of date or when one of its patches no longer applies): the page links to it, a welcome window in the
 explorer's language at every visit, an imported file opens on its memories graph with the age and the source in the
 left column, and « Example: Wren » (`viewer/samples/wren-calloway.cof`) opens the sample of an imported character with four looks.
+
+## Conservation round trip and safety (builder 0.14.2, hunts of 5 and 9 November)
+
+```
+cd cli && PYTHONPATH=. python ../tests/builder/make_fixture_keep.py keep.cof
+PYTHONPATH=. python ../tests/builder/roundtrip_keep.py ../builder/index.html keep.cof out.cof
+PYTHONPATH=. python ../tests/builder/roundtrip_safety.py ../builder/index.html work/
+```
+
+`make_fixture_keep.py` builds, from example 07, a `cof` 1.3 file carrying everything the builder does not model (unknown keys at every level, an `x-dream`
+psyche node, `story.md`, `lorebook.json`, a legacy `psyche.json`, a linked LoRA, a derived map, a clips variant without `visemes.json`, a declared preset list
+equal to the inherited one, an explicit memory identity, an empty card creator). `roundtrip_keep.py` opens it, builds it untouched and checks 48 points
+(`docs/hunt-1.2.md` H3-08 to H3-14, `docs/hunt-1.2.2.md` BUILDER-01 to 08), then deletes a personality and an appearance variant, rebuilds and checks that
+nothing dangles; `cof validate` accepts both results. `roundtrip_safety.py` (8 checks): a crafted file with traversal, absolute, drive-letter, backslash and
+control-character entries and a variant path field pointing outside the container — all listed in the Checks, none in the output, `cof validate` OK; and a
+nudity variant of a 10-year-old in a category the builder keeps as read — a Checks error, the build refused (SAFETY-01, SAFETY-02).
