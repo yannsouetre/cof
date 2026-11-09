@@ -221,12 +221,11 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
   await page.click(pc(tn) + " [data-pvalclear]"); await page.waitForTimeout(100); const cleared = await page.evaluate(v => !("valence" in S.psyche[v].node), tn);
   await setE(pc(tn) + " [data-pn=valence]", "85");
   check(vv.join() === "-40,−40,true,false" && cleared, `moving the slider sets it (${vv[0]}, ✕ shown), ✕ clears it`);
-  await setE(pc("stance1") + " [data-pk=kind]", "belief"); await page.waitForTimeout(150);
-  const gone = await page.evaluate(c => [!("valence" in S.psyche.stance1.node), document.querySelector(c + " [data-pvalgone]")?.textContent || "", !document.querySelector(c + " [data-pn=valence]")], pc("stance1"));
-  check(gone[0] && /Valence \+60 retirée/.test(gone[1]) && gone[2], "a stance turned belief drops its valence and the card says so: " + gone[1]);
-  await setE(pc("stance1") + " [data-pk=kind]", "stance"); await page.waitForTimeout(150);
+  /* 9 Nov.: the kind is chosen in the « + Add a node » window and frozen — the card shows it read-only, after the name */
+  const ro = await page.evaluate(c => { const h = document.querySelector(c + " > h4"), k = h.querySelector("[data-pkind-ro]"), l = h.querySelector("[data-pk=label]"); return [!document.querySelector(c + " [data-pk=kind]"), k?.dataset.pkindRo, k?.textContent || "", !!(l && k && (l.compareDocumentPosition(k) & Node.DOCUMENT_POSITION_FOLLOWING)), !!h.querySelector(".psyico")]; }, pc("stance1"));
+  check(ro[0] && ro[1] === "stance" && /position/.test(ro[2]) && ro[3] && ro[4], "the kind is read-only on the card (no select), icon kept, shown after the name: " + ro[2]);
   const tE = path.join(WORK, "t9-nonies-edited.cof"); await build(tE); m = readManifest(tE); const badE = schemaBad(tE);
-  check(m.nodes[tn].valence === 85 && JSON.stringify(m.nodes.val1.until) === '{"age":{"value":50,"unit":"years"},"date":"2071"}' && !("aware" in m.nodes.val1) && !("aware" in m.nodes.bel3) && m.nodes.hab2.aware === "yes" && !("valence" in m.nodes.stance1) && !badE.length, "edited file: valence, until and the explicit default written, schema-valid" + (badE.length ? ": " + badE.slice(0, 3).join(" | ") : ""));
+  check(m.nodes[tn].valence === 85 && JSON.stringify(m.nodes.val1.until) === '{"age":{"value":50,"unit":"years"},"date":"2071"}' && !("aware" in m.nodes.val1) && !("aware" in m.nodes.bel3) && m.nodes.hab2.aware === "yes" && m.nodes.stance1.valence === 60 && !badE.length, "edited file: valence, until and the explicit default written, a stance keeps its valence, schema-valid" + (badE.length ? ": " + badE.slice(0, 3).join(" | ") : ""));
   /* checks */
   await page.evaluate(() => { const P = S.psyche; P.bel3.node.aware = "no"; P.bel3.node.disclosure = "secret"; P.val2.node.valence = 10; P.val3.node.since = { age: { value: 20, unit: "years" } }; P.val3.node.until = { age: { value: 18, unit: "years" } };
     P.val4.node.since = { date: "2019-06" }; P.val4.node.until = { date: "2018-12" }; P.want1.node.since = { date: "2019-06" }; P.want1.node.until = { date: "2019" }; P.want2.node.since = { age: { value: 20, unit: "years" } }; P.want2.node.until = { date: "1990" }; });
