@@ -2554,3 +2554,24 @@ def test_import_of_a_v2_card_writes_a_complete_v3(tmp_path):
     d = card_to_cof_dir(card, tmp_path / "imp", png=None, age=30, language="fr")
     out = json.loads((d / "elements" / "personality" / "p1" / "card.json").read_text("utf-8"))
     assert out["spec"] == "chara_card_v3" and out["data"]["group_only_greetings"] == []
+
+
+def test_diff_tells_identical_from_different(tmp_path):
+    """`cof diff` (1.2.2): the tool of the round-trip promise — exit 0 and « identical » for the same file, exit 1 with the
+    flattened JSON keys that changed otherwise."""
+    import shutil, subprocess, sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]; sample = root / "viewer" / "samples" / "clara-mercier.cof"
+    r = subprocess.run([sys.executable, "-m", "cof_cli.cli", "diff", str(sample), str(sample)], capture_output=True, text=True, cwd=root / "cli")
+    assert r.returncode == 0 and r.stdout.strip().endswith("identical")
+    import zipfile, json
+    b = tmp_path / "b.cof"
+    with zipfile.ZipFile(sample) as zi, zipfile.ZipFile(b, "w", zipfile.ZIP_DEFLATED) as zo:
+        for n in zi.namelist():
+            data = zi.read(n)
+            if n == "manifest.json":
+                m = json.loads(data); m["x-hunt"] = 1; m["name"] = "Someone"; data = json.dumps(m).encode()
+            if n.endswith("COF.md"): continue
+            zo.writestr(n, data)
+    r = subprocess.run([sys.executable, "-m", "cof_cli.cli", "diff", str(sample), str(b)], capture_output=True, text=True, cwd=root / "cli")
+    assert r.returncode == 1 and "only in A: COF.md" in r.stdout and "+ x-hunt = 1" in r.stdout and "~ name:" in r.stdout

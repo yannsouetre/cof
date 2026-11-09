@@ -27,6 +27,7 @@ cof import carte.png -o perso/ --age 30 --lang fr --keep-png   # carte PNG CCv2/
 cof export clara.cof --format png -o clara.png      # → PNG avec chunks chara + ccv3
 cof export clara.cof --format card -o clara.card.json
 cof export clara.cof --format soul -o ./agent/      # → SOUL.md + IDENTITY.md
+cof diff clara.cof rebuilt.cof                      # ce qui diffère entre deux .cof : membres, octets, clés JSON (code de sortie 1 si différent) — l'outil de la promesse « rien d'autre ne bouge » du builder
 cof export clara.cof --format agent -o ./agent/     # → espace de travail d'agent : SOUL.md (avec « Qui elle est » rendu depuis la psyché), IDENTITY.md, AGENTS.md (consignes de mémoire pour l'hôte), skills/, MEMORY.md, COF.md (--keep-personal, --keep-dangerous, --preset)
 cof export clara.cof --format hermes -o ./hermes/   # → profil Hermes Agent (HERMES_HOME) : SOUL.md (identité fusionnée), memories/MEMORY.md en entrées § sous le plafond de l'hôte (2 200 caractères, les plus saillants), skills/, COF.md
 cof embed-text clara.png fiche.md -o clara-fiche.png   # texte descriptif dans un PNG (iTXt), lisible par le builder

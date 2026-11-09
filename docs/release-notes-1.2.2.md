@@ -29,6 +29,7 @@ The 1.2.0 notes carried a known issue: opening an existing file in the builder a
 
 - **Agent hosts.** `export --format agent` also writes an `AGENTS.md` (how the host must treat the workspace: who the character is, where memories go, what the notes look like); new `export --format hermes` writes a Hermes Agent profile (`SOUL.md`, `memories/MEMORY.md` as `§` entries within the host's limit, salience first, `skills/`); new `memory add --from-agent DIR` reads back the day notes an OpenClaw workspace or a Hermes profile wrote and adds them as lived, personal memories (tag `lived:<host>`), idempotently. One character, several hosts, one memory — the demo of the agents note.
 - `cof import` of a V2 card relabelled V3 now writes `group_only_greetings` (the V3 spec says MUST).
+- **`cof diff a.cof b.cof`** — what differs between two files or folders: members on one side only, members whose bytes differ, and the flattened JSON keys added, removed or changed; exit code 1 when different. The tool of the round-trip promise: open a file in the builder, build it again, `cof diff` the two.
 - The PyPI workflow skips a version that already exists.
 
 ## Credits

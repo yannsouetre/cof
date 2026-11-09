@@ -99,6 +99,54 @@ def cmd_unpack(a):
     return 0
 
 
+def cmd_diff(a):
+    """What differs between two .cof files (or unpacked folders): members present on one side only, members whose bytes
+    differ, and for every JSON member the flattened keys added, removed or changed. Exit 0 when identical, 1 otherwise.
+    Made for the builder's round-trip promise of 1.2.2 (« open, edit, build: nothing else moves »)."""
+    import io, zipfile
+    def members(p):
+        p = Path(p)
+        if p.is_dir():
+            return {str(f.relative_to(p)).replace("\\", "/"): f.read_bytes() for f in sorted(p.rglob("*")) if f.is_file()}
+        with zipfile.ZipFile(p) as z:
+            return {n: z.read(n) for n in z.namelist() if not n.endswith("/")}
+    def flat(o, pre=""):
+        if isinstance(o, dict):
+            out = {}
+            for k, v in o.items(): out.update(flat(v, f"{pre}.{k}" if pre else str(k)))
+            return out or {pre: {}}
+        if isinstance(o, list):
+            out = {}
+            for i, v in enumerate(o): out.update(flat(v, f"{pre}[{i}]"))
+            return out or {pre: []}
+        return {pre: o}
+    A, B = members(a.a), members(a.b); same = True
+    for n in sorted(set(A) - set(B)): print(f"- only in A: {n}"); same = False
+    for n in sorted(set(B) - set(A)): print(f"+ only in B: {n}"); same = False
+    for n in sorted(set(A) & set(B)):
+        if A[n] == B[n]: continue
+        same = False
+        if n.endswith(".json"):
+            try:
+                fa, fb = flat(json.loads(A[n].decode("utf-8"))), flat(json.loads(B[n].decode("utf-8")))
+            except Exception:
+                print(f"~ {n}: bytes differ"); continue
+            keys = sorted(set(fa) | set(fb)); shown = 0
+            for k in keys:
+                if k in fa and k not in fb: line = f"  - {k} = {json.dumps(fa[k], ensure_ascii=False)[:120]}"
+                elif k in fb and k not in fa: line = f"  + {k} = {json.dumps(fb[k], ensure_ascii=False)[:120]}"
+                elif fa[k] != fb[k]: line = f"  ~ {k}: {json.dumps(fa[k], ensure_ascii=False)[:60]} → {json.dumps(fb[k], ensure_ascii=False)[:60]}"
+                else: continue
+                if shown == 0: print(f"~ {n}:")
+                if shown < a.limit: print(line)
+                shown += 1
+            if shown > a.limit: print(f"  … {shown - a.limit} more")
+        else:
+            print(f"~ {n}: bytes differ ({len(A[n])} → {len(B[n])} bytes)")
+    print("identical" if same else "different")
+    return 0 if same else 1
+
+
 def cmd_info(a):
     m = read_manifest(a.cof)
     c = m.get("completeness") or compute_completeness(m)
@@ -748,6 +796,8 @@ def main(argv=None) -> int:
     pt.add_argument("--out-cof", help="output .cof with --into-card (default: in place)"); pt.set_defaults(fn=cmd_psyche_text)
     s = sub.add_parser("unpack", help=".cof → folder"); s.add_argument("cof"); s.add_argument("-o", "--out"); s.set_defaults(fn=cmd_unpack)
     s = sub.add_parser("info", help="summary of a .cof"); s.add_argument("cof"); s.set_defaults(fn=cmd_info)
+    s = sub.add_parser("diff", help="what differs between two .cof files or folders (members, bytes, JSON keys); exit 1 when different"); s.add_argument("a"); s.add_argument("b")
+    s.add_argument("--limit", type=int, default=40, help="lines shown per JSON member"); s.set_defaults(fn=cmd_diff)
     s = sub.add_parser("tokens", help="token estimate per block"); s.add_argument("path"); s.set_defaults(fn=cmd_tokens)
     s = sub.add_parser("embed-text", help="write a text (.md/.txt) into a PNG as iTXt 'Description' — readable by the builder (personality + appearance)"); s.add_argument("png"); s.add_argument("text"); s.add_argument("-o", "--out"); s.set_defaults(fn=cmd_embed_text)
     s = sub.add_parser("read-text", help="show the descriptive text embedded in an image (PNG/JPEG: iTXt, XMP, EXIF)"); s.add_argument("image"); s.set_defaults(fn=cmd_read_text)
