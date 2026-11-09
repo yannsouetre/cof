@@ -19,6 +19,8 @@ Eight steps, in the order of the left column:
 
 Only the name, fictional or real, the morphology and the rights are required. The easy version handles only a simple character (one card, photos, one voice): a richer file stays in the advanced version.
 
+Every list (characters, each element category including Skills and files, memories, psyche, presets) has a ☰ List / ▦ Tiles switch in its fold bar. In tiles, every folded card has the same size: « + » top-left, the code top-right, then its picture (a preset shows the top of its main photo, the face of its default look), then the name, cut with « … » when long; a click opens the card full width. Every image preview has a 🔍 in its top-right corner that shows the image full screen (Escape, × or a click outside closes it).
+
 ## 2. Categories and variants
 
 Elements are sorted into 8 categories: Personality, Appearance, Identity weights (LoRA), 3D, Voice, Postures, Motion, Files. In each category you add **variants**, each of one type: face, body, hairstyle, garment, place…
