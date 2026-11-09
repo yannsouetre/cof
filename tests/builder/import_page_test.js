@@ -156,8 +156,8 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
     const ex = await v.evaluate(() => ({ tab, presets: Object.keys(M.presets).length, name: M.name, mem: Object.keys(M.elements.memories.variants).length }));
     check(ex.name === "Wren Calloway" && ex.presets === 4 && ex.mem === 4 && ex.tab === "memories", "« Example: Wren » opens the sample on its memories graph: four looks (presets), one period and three conversations (" + JSON.stringify(ex) + ")");
     await v.setInputFiles("#file", path.join(WORK, "wren-mine.cof")); await v.waitForTimeout(1200);
-    const strip = await v.evaluate(() => { const ax = document.querySelector(".mgstrip .mgaxis"); return ax ? ax.textContent : ""; });
-    check(/2022/.test(strip) && /n\.d\./.test(strip), "the time strip draws the Character.AI period from 2022 and keeps its conversations in « n.d. » (" + strip.replace(/\s+/g, " ").trim() + ")");
+    const strip = await v.evaluate(() => { const ax = document.querySelector(".mgstrip .mgaxis"), u = document.querySelector(".mgstrip .mgund"); return { ax: ax ? ax.textContent : "", band: u ? u.dataset.tip : "" }; });
+    check(/2022/.test(strip.ax) && !/n\.d\./.test(strip.ax) && /3 undated/.test(strip.band) && /Character\.AI/.test(strip.band), "the time strip draws the Character.AI period from 2022 and its three conversations as an undated band under it, not in « n.d. » (1.2.2: " + strip.band + ")");
     const pop = await v.evaluate(async () => { const x = document.createElement("button"); x.dataset.memtext = "ev2"; x.dataset.memaid = "a-mem-ev2-chat-2"; document.body.appendChild(x); x.click(); x.remove(); await new Promise(r => setTimeout(r, 500));
       const open = { dlg: document.getElementById("memTextPop").open, locked: getComputedStyle(document.documentElement).overflow === "hidden", contain: getComputedStyle(document.querySelector("#memTextPop .pbody")).overscrollBehaviorY === "contain" };
       { const ev = new WheelEvent("wheel", { deltaY: 120, bubbles: true, cancelable: true }); document.querySelector("#memTextPop .pbody").dispatchEvent(ev); open.stopped = ev.defaultPrevented; }
