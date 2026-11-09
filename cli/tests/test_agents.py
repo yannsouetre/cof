@@ -94,3 +94,17 @@ def test_group_only_greetings_is_normalised_to_a_list_of_strings(tmp_path):
     import glob
     v3 = json.loads(open(glob.glob(str(tmp_path / "c" / "elements" / "personality" / "*" / "card.json"))[0], encoding="utf-8").read())
     assert v3["data"]["group_only_greetings"] == ["ok"]
+
+
+def test_from_agent_never_declares_shown_real_or_age_people(tmp_path):
+    """Hunt 1.2.2, SAFETY-04: a day note's `with:` names went through the --who pipe syntax (label|shown|34|real)."""
+    work = tmp_path / "clara"
+    shutil.copytree(CLARA, work)
+    ws = tmp_path / "ws"
+    (ws / "memory").mkdir(parents=True)
+    (ws / "memory" / "2026-11-10.md").write_text("- 10:00 · Coffee with a friend. · with: Sam|shown|9|real, Lou | oops\n", "utf-8")
+    added = import_agent_memories(work, ws, lang="en")
+    m = json.loads((work / "manifest.json").read_text("utf-8"))
+    node = json.loads((work / m["elements"]["memories"]["variants"][added[0]]["memory"]).read_text("utf-8"))
+    assert [w.get("label", {}).get("en") for w in node["who"]] == ["Sam/shown/9/real", "Lou / oops"]
+    assert all("shown" not in w and "real" not in w and "age" not in w for w in node["who"])

@@ -239,8 +239,9 @@ def import_agent_memories(work: Path, folder: Path, *, identity: str | None = No
         if n in canon or any(c in n for c in long_canon) or any(n.endswith(c) for c in short_canon):
             continue                                      # an entry the host got FROM the file (a Hermes MEMORY.md repeats the export): not lived
         tags = [f"lived:{e['source']}", *e["tags"]]
+        who = [w.replace("|", "/") for w in e["with"]]     # names only: an agent's note never sets shown / real / age (the --who syntax) — hunt 1.2.2, SAFETY-04
         vid = memory_add(work, identity=identity, kind="moment", gists={lang: e["text"]}, label=e["text"][:60], date=e["date"],
-                         where=e["where"] or None, who=e["with"] or None, tags=tags, personal=True, origin="lived",
+                         where=e["where"] or None, who=who or None, tags=tags, personal=True, origin="lived",
                          presets=presets, lang=lang)
         lived.add((e["date"], n)); added.append(vid)
     return added
