@@ -60,3 +60,37 @@ def test_from_agent_adds_lived_personal_memories_once(tmp_path):
     assert node["tags"] == ["lived:openclaw", "alps"] and node["gist"] == {"en": "Saw the Alps from the train."}
     r = subprocess.run([sys.executable, "-m", "cof_cli.cli", "validate", str(work)], capture_output=True, text=True, cwd=ROOT / "cli")
     assert r.returncode == 0, r.stdout[-800:]
+
+
+def test_hermes_loop_does_not_duplicate_what_the_host_got_from_the_file(tmp_path):
+    """Hunt 1.2.2, CLI-01: a Hermes MEMORY.md repeats the export; re-importing it must add nothing. CLI-04: the same fact on two
+    days is two memories. CLI-07: a lived memory's Hermes entry says its when, not its text twice."""
+    work = tmp_path / "clara"
+    shutil.copytree(CLARA, work)
+    ws = tmp_path / "ws"
+    (ws / "memory").mkdir(parents=True)
+    (ws / "memory" / "2026-11-08.md").write_text("- 09:12 · Fed the cat. · tags: cat\n", "utf-8")
+    (ws / "memory" / "2026-11-09.md").write_text("- 09:12 · Fed the cat. · tags: cat\n", "utf-8")
+    (ws / "memory" / "2026-13-45.md").write_text("- 09:12 · Not a day. · tags: x\n", "utf-8")   # CLI-05: skipped, not fatal
+    added = import_agent_memories(work, ws, lang="en")
+    assert len(added) == 2                                            # one per day, the bad file ignored
+    export_hermes(work, tmp_path / "h", keep_personal=True)
+    mem = (tmp_path / "h" / "memories" / "MEMORY.md").read_text("utf-8")
+    assert "2026-11-08: Fed the cat." in mem and "Fed the cat. (2026-11-08): Fed the cat." not in mem
+    assert import_agent_memories(work, tmp_path / "h", lang="en") == []   # the export, read back: nothing new
+
+
+def test_agents_md_follows_the_character_gender(tmp_path):
+    from cof_cli.agents import agents_md
+    assert "he presents" in agents_md("Ulrich", gender="male") and "his author" in agents_md("Ulrich", gender="male")
+    assert "they present," in agents_md("Zed") and "she presents" in agents_md("Clara", gender="female")
+
+
+def test_group_only_greetings_is_normalised_to_a_list_of_strings(tmp_path):
+    from cof_cli.convert import card_to_cof_dir
+    card = {"spec": "chara_card_v3", "spec_version": "3.0", "data": {"name": "N", "description": "d", "personality": "p", "scenario": "s",
+            "first_mes": "hi", "mes_example": "", "group_only_greetings": ["ok", 3, None]}}
+    card_to_cof_dir(card, tmp_path / "c", age=30)
+    import glob
+    v3 = json.loads(open(glob.glob(str(tmp_path / "c" / "elements" / "personality" / "*" / "card.json"))[0], encoding="utf-8").read())
+    assert v3["data"]["group_only_greetings"] == ["ok"]

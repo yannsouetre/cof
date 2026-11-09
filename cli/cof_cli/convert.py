@@ -254,7 +254,8 @@ def card_to_cof_dir(card: dict, dest: Path, *, png: bytes | None = None, age: in
 
     v3 = {**card, "spec": "chara_card_v3", "spec_version": "3.0"}
     v3.setdefault("data", {}).setdefault("extensions", {})
-    v3["data"].setdefault("group_only_greetings", [])      # a V2 card relabelled V3: the one V3 field the spec says MUST be present (SPEC_V3 § group_only_greetings)
+    g = v3["data"].get("group_only_greetings")               # a V2 card relabelled V3: the one V3 field the spec says MUST be present (SPEC_V3 § group_only_greetings)
+    v3["data"]["group_only_greetings"] = [x for x in g if isinstance(x, str)] if isinstance(g, list) else []
     (pdir / "card.json").write_text(json.dumps(v3, ensure_ascii=False, indent=2) + "\n", "utf-8")
 
     elements = {"personality": {"variants": {"p1": {"kind": "card", "label": data.get("name") or "Personality", "language": language, "card": "elements/personality/p1/card.json"}}}}
@@ -553,6 +554,6 @@ def export_agent(src: Path, out: Path, preset: str | None = None, keep_personal:
     (out / "COF.md").write_text("\n".join(note) + "\n", "utf-8")
     if not (out / "AGENTS.md").is_file():          # OpenClaw reads AGENTS.md every session: without it the agent has no instruction to write memory (8 Nov. 2026)
         from .agents import agents_md
-        (out / "AGENTS.md").write_text(agents_md(ident.get("name") or manifest.get("name") or "the character"), "utf-8")
+        (out / "AGENTS.md").write_text(agents_md(ident.get("name") or manifest.get("name") or "the character", gender=ident.get("gender")), "utf-8")
         done["agents_md"] = True
     return done

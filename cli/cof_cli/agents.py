@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -25,14 +26,15 @@ AXIS = re.compile(r"\s*·\s*(with|where|tags|avec|où|étiquettes)\s*:\s*", re.I
 
 
 # ----------------------------------------------------------------------------- AGENTS.md (OpenClaw)
-def agents_md(name: str, lang: str = "en") -> str:
+def agents_md(name: str, lang: str = "en", gender: str | None = None) -> str:
     """The operating notes OpenClaw reads at the start of every session. Without them the agent has no instruction to
     write memory at all; with them, its daily notes come back into the .cof through `cof memory add --from-agent`."""
+    subj, poss = {"female": ("she", "her"), "male": ("he", "his")}.get(gender or "", ("they", "their"))   # RFC 0003 gender → pronouns
     return "\n".join([
         f"# AGENTS.md — operating notes for {name}",
         "",
         f"This workspace was exported from a Character Open File (.cof). `SOUL.md` says who {name} is, `IDENTITY.md` how",
-        "she presents, `MEMORY.md` what she remembers (curated by her author), `COF.md` what her author allows, `skills/` what she knows how to do.",
+        f"{subj} present{'s' if subj != 'they' else ''}, `MEMORY.md` what {subj} remember{'s' if subj != 'they' else ''} (curated by {poss} author), `COF.md` what {poss} author allows, `skills/` what {subj} know{'s' if subj != 'they' else ''} how to do.",
         "",
         "## Memory",
         "",
@@ -140,7 +142,12 @@ def _memory_entries(src: Path, pid: str | None, keep_personal: bool) -> list[tup
         lang, text = gist_text(manifest, vid, node, pid)
         when = when_label(rv.get("kind"), node, lang)
         label = rv.get("label") or vid
-        out.append((int(node.get("salience") or 50), f"{label}" + (f" ({when})" if when else "") + f": {text.strip()}"))
+        t = text.strip()
+        if t.lower().startswith(label.strip().rstrip("…").lower()[:40]):      # a lived memory's label is the start of its text: say the when, not the text twice
+            entry = (f"{when}: " if when else "") + t
+        else:
+            entry = f"{label}" + (f" ({when})" if when else "") + f": {t}"
+        out.append((int(node.get("salience") or 50), entry))
     return out
 
 
@@ -156,6 +163,11 @@ def parse_agent_dir(folder: Path) -> list[dict]:
         for f in sorted(mem.glob("*.md")):
             m = re.fullmatch(r"(\d{4}-\d{2}-\d{2})", f.stem)
             if not m:
+                continue
+            try:
+                datetime.strptime(m.group(1), "%Y-%m-%d")
+            except ValueError:
+                print(f"WARN   {f.name}: not a date — day note skipped", file=sys.stderr)
                 continue
             for line in f.read_text("utf-8", errors="replace").splitlines():
                 mm = NOTE_LINE.match(line)
@@ -176,7 +188,11 @@ def parse_agent_dir(folder: Path) -> list[dict]:
             e = _split_axes(text)
             if not e["text"]:
                 continue
-            e.update(source="hermes", file="memories/MEMORY.md", date=datetime.fromtimestamp(hm.stat().st_mtime, timezone.utc).strftime("%Y-%m-%d"), time="")
+            day = datetime.fromtimestamp(hm.stat().st_mtime, timezone.utc).strftime("%Y-%m-%d")
+            md = re.match(r"(\d{4}-\d{2}-\d{2})(?: \d{2}:\d{2})?:\s+(.+)$", e["text"], re.S)   # an entry that starts with its day (a lived memory exported by cof)
+            if md:
+                day, e["text"] = md.group(1), md.group(2).strip()
+            e.update(source="hermes", file="memories/MEMORY.md", date=day, time="")
             out.append(e)
     return out
 
@@ -203,21 +219,36 @@ def import_agent_memories(work: Path, folder: Path, *, identity: str | None = No
     from .memories import load_nodes
     from .selfdesc import memory_add
     manifest = json.loads((work / "manifest.json").read_text("utf-8"))
-    known = {next(iter((n.get("gist") or {}).values()), "").strip() for n in load_nodes(work, manifest).values() if n.get("origin") == "lived"}
+    lived: set[tuple[str, str]] = set(); canon: set[str] = set()
+    for n in load_nodes(work, manifest).values():
+        for g in (n.get("gist") or {}).values():
+            if n.get("origin") == "lived":
+                lived.add(((n.get("when") or {}).get("date") or "", _norm(g)))
+            else:
+                canon.add(_norm(g))
+    long_canon = [c for c in canon if len(c) >= 24]; short_canon = [c for c in canon if 8 <= len(c) < 24]
     entries = [e for e in parse_agent_dir(folder) if not source or e["source"] == source]
     if not entries:
         raise ValueError(f"{folder}: nothing to import (memory/YYYY-MM-DD.md notes or memories/MEMORY.md entries)")
     lang = lang or _guess_lang(manifest)
     added = []
     for e in entries:
-        if e["text"] in known:
+        n = _norm(e["text"])
+        if (e["date"], n) in lived:                       # the same fact on the same day: already there (re-import is idempotent)
             continue
+        if n in canon or any(c in n for c in long_canon) or any(n.endswith(c) for c in short_canon):
+            continue                                      # an entry the host got FROM the file (a Hermes MEMORY.md repeats the export): not lived
         tags = [f"lived:{e['source']}", *e["tags"]]
         vid = memory_add(work, identity=identity, kind="moment", gists={lang: e["text"]}, label=e["text"][:60], date=e["date"],
                          where=e["where"] or None, who=e["with"] or None, tags=tags, personal=True, origin="lived",
                          presets=presets, lang=lang)
-        known.add(e["text"]); added.append(vid)
+        lived.add((e["date"], n)); added.append(vid)
     return added
+
+
+def _norm(s: str) -> str:
+    """Text as compared for the re-import: case, spaces and punctuation set aside."""
+    return re.sub(r"[^\w]+", " ", (s or "").lower()).strip()
 
 
 def _guess_lang(manifest: dict) -> str:
