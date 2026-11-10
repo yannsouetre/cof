@@ -15,7 +15,7 @@ G["fr"] = [
          "<b>7 · Contrôles</b> — ce qui manque ou ne colle pas.",
          "<b>8 · Build</b> — le fichier .cof final."]),
  ("p", "Seuls le nom, fictif ou réel, la morphologie et les droits sont obligatoires. La version facile ne gère qu'un personnage simple (une fiche, des photos, une voix) : un fichier plus riche reste en version avancée."),
- ("p", "Chaque liste (personnages, chaque catégorie d'éléments dont Compétences et fichiers, souvenirs, psyché, presets) a un sélecteur ☰ Liste / ▦ Tuiles dans sa barre de pliage. En tuiles, chaque carte repliée a la même taille : « + » en haut à gauche, le code en haut à droite, puis son image (un preset montre le haut de sa photo principale, le visage de son look par défaut), puis le nom, coupé par « … » s'il est long, et dessous la sorte d'un souvenir ou d'un nœud de psyché ; un clic ouvre la carte en pleine largeur. Chaque aperçu d'image a une 🔍 en haut à droite qui montre l'image en plein écran (Échap, × ou un clic à côté la ferment)."),
+ ("p", "Chaque liste (personnages, chaque catégorie d'éléments dont Compétences et fichiers, souvenirs, psyché, presets) a un sélecteur ☰ Liste / ▦ Tuiles dans sa barre de pliage. En tuiles, chaque carte repliée a la même taille : « + » en haut à gauche, le code en haut à droite, puis son image (un preset montre le haut de sa photo principale, le visage de son look par défaut), puis le nom, coupé par « … » s'il est long, et dessous la sorte d'un souvenir ou d'un nœud de psyché ; un clic ouvre la carte en pleine largeur. Chaque aperçu d'image a une 🔍 en haut à droite qui montre l'image en plein écran (Échap, × ou un clic à côté la ferment). Une carte sans image garde la même place : un cadre un peu plus clair marqué en filigrane « COF élément », « COF souvenir », « COF nœud », « COF preset » ou « COF personnage », sans 🔍."),
  ("p", "<b>Créer, c'est d'abord choisir la sorte</b> : « + Ajouter une déclinaison » demande le type, « + Ajouter un souvenir » demande moment ou période, « + Ajouter un nœud » demande l'une des onze sortes de nœuds, dans une petite fenêtre. Ce choix est fait une fois pour toutes : la carte l'affiche (icône et libellé) mais ne le change plus — pour une autre sorte, créez une autre carte."),
 ]),
 ("Catégories et déclinaisons", [
@@ -79,7 +79,7 @@ G["fr"] = [
          "Le contenu intime va uniquement dans sa déclinaison « intime », isolée et ignorée par défaut par les lecteurs."]),
 ]),
 ("Contrôles et build", [
- ("ul", ["<b>Contrôles</b> : la complétude (ce qui manque à chaque preset) et la cohérence (ce qui ne colle pas). Les avertissements ne bloquent jamais ; seules les erreurs empêchent le build.",
+ ("ul", ["<b>Contrôles</b> : la complétude (ce qui manque à chaque preset) et la cohérence (ce qui ne colle pas). Les avertissements ne bloquent jamais ; seules les erreurs empêchent le build. Sous les résultats viennent la cohérence par IA, les priorités, puis une fiche par preset (score /100, niveau, couches, cibles prêtes), toutes de la même taille.",
          "<b>Contrôle IA</b> (facultatif) : vous choisissez l'IA (adresse, clé, modèle). Elle vérifie que le preset décrit un seul personnage cohérent et que chaque déclinaison montre une seule chose. Les images partent vers cette IA ; la clé n'est pas enregistrée.",
          "<b>Build</b> : choisissez la taille et la compression des images, puis téléchargez le .cof. Ouvrez-le dans l'explorateur COF pour vérifier le résultat.",
          "<b>Ouvrir un fichier et le reconstruire</b> (builder 0.14.2) : le builder ne change que ce que ses formulaires montrent. Tout le reste de ce qu'il a lu est réécrit tel quel — les champs qu'il ne modélise pas (<code>story</code>, <code>lorebook</code>, les <code>tags</code> d'une déclinaison, <code>derived</code>, les <code>profiles</code> de jetons, le <code>spec</code> d'un vêtement), les clés inconnues à tous les niveaux, les fichiers d'une déclinaison qu'il ne régénère pas (<code>story.md</code>, <code>outfit.json</code>, <code>face.json</code>…), <code>rights/</code> et les autres fichiers racine, les anciens champs d'un <code>psyche.json</code> (contradictions, traits personnalisés, horizons des objectifs, intensités des peurs), et l'id d'asset d'un LoRA lié. Ce que vous supprimez dans le builder disparaît du fichier ; ce que vous n'avez jamais vu est gardé. La mineure <code>cof</code> déclarée ne descend jamais. Une image venue avec le fichier est gardée telle quelle, sauf si l'étape Build demande de la réencoder."]),
@@ -98,7 +98,7 @@ G["en"] = [
          "<b>7 · Checks</b> — what is missing or does not fit.",
          "<b>8 · Build</b> — the final .cof file."]),
  ("p", "Only the name, fictional or real, the morphology and the rights are required. The easy version handles only a simple character (one card, photos, one voice): a richer file stays in the advanced version."),
- ("p", "Every list (characters, each element category including Skills and files, memories, psyche, presets) has a ☰ List / ▦ Tiles switch in its fold bar. In tiles, every folded card has the same size: « + » top-left, the code top-right, then its picture (a preset shows the top of its main photo, the face of its default look), then the name, cut with « … » when long, and under it the kind of a memory or a psyche node; a click opens the card full width. Every image preview has a 🔍 in its top-right corner that shows the image full screen (Escape, × or a click outside closes it)."),
+ ("p", "Every list (characters, each element category including Skills and files, memories, psyche, presets) has a ☰ List / ▦ Tiles switch in its fold bar. In tiles, every folded card has the same size: « + » top-left, the code top-right, then its picture (a preset shows the top of its main photo, the face of its default look), then the name, cut with « … » when long, and under it the kind of a memory or a psyche node; a click opens the card full width. Every image preview has a 🔍 in its top-right corner that shows the image full screen (Escape, × or a click outside closes it). A card without a picture keeps the same place: a slightly lighter frame watermarked « COF element », « COF memory », « COF node », « COF preset » or « COF character », with no 🔍."),
  ("p", "<b>Creating starts with the kind</b>: « + Add a variant » asks for the type, « + Add a memory » for moment or period, « + Add a node » for one of the eleven node kinds, in a small window. The choice is made once and for all: the card shows it (icon and label) but no longer changes it — for another kind, create another card."),
 ]),
 ("Categories and variants", [
@@ -162,7 +162,7 @@ G["en"] = [
          "Intimate content goes only in its \"intimate\" variant, kept apart and ignored by readers by default."]),
 ]),
 ("Checks and build", [
- ("ul", ["<b>Checks</b>: completeness (what each preset lacks) and coherence (what does not fit). Warnings never block; only errors prevent the build.",
+ ("ul", ["<b>Checks</b>: completeness (what each preset lacks) and coherence (what does not fit). Warnings never block; only errors prevent the build. Under the results come the AI coherence check, the priorities, then one recap per preset (score /100, level, layers, ready targets), all the same size.",
          "<b>AI check</b> (optional): you choose the AI (address, key, model). It checks that the preset describes one consistent character and that each variant shows one thing. The images are sent to that AI; the key is not saved.",
          "<b>Build</b>: choose the image size and compression, then download the .cof. Open it in the COF explorer to check the result.",
          "<b>Opening a file and building it again</b> (builder 0.14.2): the builder only changes what its forms show. Everything else it read is written back as it was — fields it does not model (<code>story</code>, <code>lorebook</code>, variant <code>tags</code>, <code>derived</code>, token <code>profiles</code>, a clothing <code>spec</code>), unknown keys at every level, the files of a variant it does not regenerate (<code>story.md</code>, <code>outfit.json</code>, <code>face.json</code>…), <code>rights/</code> and other root files, the older fields of a <code>psyche.json</code> (contradictions, custom traits, goal horizons, fear intensities), and the asset id of a linked LoRA. What you delete in the builder is gone from the file; what you never saw is kept. The declared <code>cof</code> minor never goes down. An image that came with the file is kept as it is unless you ask the build step to re-encode it."]),
@@ -181,7 +181,7 @@ G["de"] = [
          "<b>7 · Prüfungen</b> — was fehlt oder nicht passt.",
          "<b>8 · Build</b> — die fertige .cof-Datei."]),
  ("p", "Pflicht sind nur Name, fiktiv oder real, Morphologie und Rechte. Die einfache Version kann nur eine einfache Figur (eine Karte, Fotos, eine Stimme): eine reichere Datei bleibt in der erweiterten Version."),
- ("p", "Jede Liste (Figuren, jede Elementkategorie einschließlich Skills und Dateien, Erinnerungen, Psyche, Presets) hat in ihrer Faltleiste einen Umschalter ☰ Liste / ▦ Kacheln. In Kacheln hat jede eingeklappte Karte dieselbe Größe: « + » oben links, der Code oben rechts, dann ihr Bild (ein Preset zeigt den oberen Teil seines Hauptfotos, das Gesicht seines Standard-Looks), dann der Name, bei Überlänge mit « … » gekürzt, und darunter die Art einer Erinnerung oder eines Psyche-Knotens; ein Klick öffnet die Karte in voller Breite. Jede Bildvorschau hat oben rechts eine 🔍, die das Bild im Vollbild zeigt (Escape, × oder ein Klick daneben schließt es)."),
+ ("p", "Jede Liste (Figuren, jede Elementkategorie einschließlich Skills und Dateien, Erinnerungen, Psyche, Presets) hat in ihrer Faltleiste einen Umschalter ☰ Liste / ▦ Kacheln. In Kacheln hat jede eingeklappte Karte dieselbe Größe: « + » oben links, der Code oben rechts, dann ihr Bild (ein Preset zeigt den oberen Teil seines Hauptfotos, das Gesicht seines Standard-Looks), dann der Name, bei Überlänge mit « … » gekürzt, und darunter die Art einer Erinnerung oder eines Psyche-Knotens; ein Klick öffnet die Karte in voller Breite. Jede Bildvorschau hat oben rechts eine 🔍, die das Bild im Vollbild zeigt (Escape, × oder ein Klick daneben schließt es). Eine Karte ohne Bild behält denselben Platz: ein etwas hellerer Rahmen mit dem Wasserzeichen « COF-Element », « COF-Erinnerung », « COF-Knoten », « COF-Preset » oder « COF-Figur », ohne 🔍."),
  ("p", "<b>Anlegen beginnt mit der Art</b>: « + Variante hinzufügen » fragt nach dem Typ, « + Erinnerung hinzufügen » nach Moment oder Periode, « + Knoten hinzufügen » nach einer der elf Knotenarten, in einem kleinen Fenster. Die Wahl gilt ein für alle Mal: Die Karte zeigt sie (Symbol und Bezeichnung), ändert sie aber nicht mehr — für eine andere Art eine andere Karte anlegen."),
 ]),
 ("Kategorien und Varianten", [
@@ -245,7 +245,7 @@ G["de"] = [
          "Intime Inhalte gehören nur in ihre Variante „intim“, getrennt gehalten und von Lesern standardmäßig ignoriert."]),
 ]),
 ("Prüfungen und Build", [
- ("ul", ["<b>Prüfungen</b>: Vollständigkeit (was jedem Preset fehlt) und Kohärenz (was nicht passt). Warnungen blockieren nie; nur Fehler verhindern den Build.",
+ ("ul", ["<b>Prüfungen</b>: Vollständigkeit (was jedem Preset fehlt) und Kohärenz (was nicht passt). Warnungen blockieren nie; nur Fehler verhindern den Build. Unter den Ergebnissen folgen die KI-Kohärenzprüfung, die Prioritäten und dann eine Übersicht pro Preset (Punktzahl /100, Stufe, Ebenen, bereite Ziele), alle gleich groß.",
          "<b>KI-Prüfung</b> (optional): Sie wählen die KI (Adresse, Schlüssel, Modell). Sie prüft, dass das Preset eine stimmige Figur beschreibt und jede Variante genau eine Sache zeigt. Die Bilder gehen an diese KI; der Schlüssel wird nicht gespeichert.",
          "<b>Build</b>: Bildgröße und Kompression wählen, dann die .cof herunterladen. Zur Kontrolle im COF-Explorer öffnen.",
          "<b>Eine Datei öffnen und neu bauen</b> (Builder 0.14.2): Der Builder ändert nur, was seine Formulare zeigen. Alles andere, was er gelesen hat, wird unverändert zurückgeschrieben — Felder, die er nicht modelliert (<code>story</code>, <code>lorebook</code>, die <code>tags</code> einer Variante, <code>derived</code>, Token-<code>profiles</code>, der <code>spec</code> eines Kleidungsstücks), unbekannte Schlüssel auf jeder Ebene, die Dateien einer Variante, die er nicht neu erzeugt (<code>story.md</code>, <code>outfit.json</code>, <code>face.json</code>…), <code>rights/</code> und andere Wurzeldateien, die älteren Felder einer <code>psyche.json</code> (Widersprüche, eigene Merkmale, Zielhorizonte, Angstintensitäten) und die Asset-ID eines verknüpften LoRA. Was Sie im Builder löschen, verschwindet aus der Datei; was Sie nie gesehen haben, bleibt erhalten. Die deklarierte <code>cof</code>-Nebenversion sinkt nie. Ein Bild, das mit der Datei kam, bleibt unverändert, außer der Build-Schritt soll es neu kodieren."]),
@@ -264,7 +264,7 @@ G["es"] = [
          "<b>7 · Controles</b> — lo que falta o no encaja.",
          "<b>8 · Build</b> — el archivo .cof final."]),
  ("p", "Solo son obligatorios el nombre, ficticio o real, la morfología y los derechos. La versión fácil solo gestiona un personaje sencillo (una ficha, fotos, una voz): un archivo más rico se queda en la versión avanzada."),
- ("p", "Cada lista (personajes, cada categoría de elementos incluida Competencias y archivos, recuerdos, psique, presets) tiene un selector ☰ Lista / ▦ Mosaico en su barra de plegado. En mosaico, cada tarjeta plegada tiene el mismo tamaño: « + » arriba a la izquierda, el código arriba a la derecha, luego su imagen (un preset muestra la parte superior de su foto principal, la cara de su look por defecto), luego el nombre, cortado con « … » si es largo, y debajo el tipo de un recuerdo o de un nodo de psique; un clic abre la tarjeta a todo el ancho. Cada vista previa de imagen tiene una 🔍 arriba a la derecha que muestra la imagen a pantalla completa (Escape, × o un clic fuera la cierran)."),
+ ("p", "Cada lista (personajes, cada categoría de elementos incluida Competencias y archivos, recuerdos, psique, presets) tiene un selector ☰ Lista / ▦ Mosaico en su barra de plegado. En mosaico, cada tarjeta plegada tiene el mismo tamaño: « + » arriba a la izquierda, el código arriba a la derecha, luego su imagen (un preset muestra la parte superior de su foto principal, la cara de su look por defecto), luego el nombre, cortado con « … » si es largo, y debajo el tipo de un recuerdo o de un nodo de psique; un clic abre la tarjeta a todo el ancho. Cada vista previa de imagen tiene una 🔍 arriba a la derecha que muestra la imagen a pantalla completa (Escape, × o un clic fuera la cierran). Una tarjeta sin imagen conserva el mismo sitio: un marco algo más claro con la marca de agua « elemento COF », « recuerdo COF », « nodo COF », « preset COF » o « personaje COF », sin 🔍."),
  ("p", "<b>Crear empieza por el tipo</b>: « + Añadir una variante » pide el tipo, « + Añadir un recuerdo » momento o periodo, « + Añadir un nodo » uno de los once tipos de nodo, en una pequeña ventana. La elección se hace de una vez por todas: la tarjeta la muestra (icono y etiqueta) pero ya no la cambia; para otro tipo, cree otra tarjeta."),
 ]),
 ("Categorías y variantes", [
@@ -328,7 +328,7 @@ G["es"] = [
          "El contenido íntimo va solo en su variante «íntima», aislada e ignorada por defecto por los lectores."]),
 ]),
 ("Controles y build", [
- ("ul", ["<b>Controles</b>: la completitud (lo que le falta a cada preset) y la coherencia (lo que no encaja). Los avisos nunca bloquean; solo los errores impiden el build.",
+ ("ul", ["<b>Controles</b>: la completitud (lo que le falta a cada preset) y la coherencia (lo que no encaja). Los avisos nunca bloquean; solo los errores impiden el build. Bajo los resultados vienen la coherencia por IA, las prioridades y luego una ficha por preset (puntuación /100, nivel, capas, destinos listos), todas del mismo tamaño.",
          "<b>Control por IA</b> (opcional): usted elige la IA (dirección, clave, modelo). Comprueba que el preset describe un solo personaje coherente y que cada variante muestra una sola cosa. Las imágenes se envían a esa IA; la clave no se guarda.",
          "<b>Build</b>: elija el tamaño y la compresión de las imágenes y descargue el .cof. Ábralo en el explorador COF para comprobar el resultado.",
          "<b>Abrir un archivo y volver a construirlo</b> (builder 0.14.2): el builder solo cambia lo que muestran sus formularios. Todo lo demás que leyó se vuelve a escribir tal cual — los campos que no modela (<code>story</code>, <code>lorebook</code>, los <code>tags</code> de una variante, <code>derived</code>, los <code>profiles</code> de tokens, el <code>spec</code> de una prenda), las claves desconocidas en todos los niveles, los archivos de una variante que no regenera (<code>story.md</code>, <code>outfit.json</code>, <code>face.json</code>…), <code>rights/</code> y los demás archivos raíz, los campos antiguos de un <code>psyche.json</code> (contradicciones, rasgos personalizados, horizontes de objetivos, intensidades de miedos) y el id de asset de un LoRA enlazado. Lo que borra en el builder desaparece del archivo; lo que nunca vio se conserva. La versión menor <code>cof</code> declarada nunca baja. Una imagen que venía con el archivo se conserva tal cual, salvo que el paso Build pida recodificarla."]),
@@ -347,7 +347,7 @@ G["zh"] = [
          "<b>7 · 检查</b>——缺少什么、哪里不一致。",
          "<b>8 · 构建</b>——最终的 .cof 文件。"]),
  ("p", "只有名称、虚构或真实、形态和权利是必填的。简易版只处理简单角色（一张角色卡、照片、一个声音）：内容更丰富的文件留在高级版。"),
- ("p", "每个列表（角色、包括“技能与文件”在内的每个元素类别、记忆、心理、预设）的折叠栏中都有 ☰ 列表 / ▦ 磁贴 切换。磁贴视图中，每张折叠的卡片大小相同：左上角是 « + »，右上角是代码，然后是图片（预设显示其主照片的上部，即默认造型的脸），再是名称（过长时以 « … » 截断），记忆或心理节点在名称下方显示其类别；点击即可全宽打开卡片。每个图片预览的右上角都有一个 🔍，可全屏显示图片（Esc、× 或点击外部即可关闭）。"),
+ ("p", "每个列表（角色、包括“技能与文件”在内的每个元素类别、记忆、心理、预设）的折叠栏中都有 ☰ 列表 / ▦ 磁贴 切换。磁贴视图中，每张折叠的卡片大小相同：左上角是 « + »，右上角是代码，然后是图片（预设显示其主照片的上部，即默认造型的脸），再是名称（过长时以 « … » 截断），记忆或心理节点在名称下方显示其类别；点击即可全宽打开卡片。每个图片预览的右上角都有一个 🔍，可全屏显示图片（Esc、× 或点击外部即可关闭）。没有图片的卡片保留同样的位置：一个稍浅的框，带有水印「COF 元素」「COF 记忆」「COF 节点」「COF 预设」或「COF 角色」，没有 🔍。"),
  ("p", "<b>创建从选择类别开始</b>：« + 添加变体 » 询问类型，« + 添加记忆 » 询问瞬间或时期，« + 添加节点 » 询问十一种节点类别之一，都在一个小窗口中完成。这一选择一经做出便不再更改：卡片会显示它（图标和名称），但不能再修改——需要其他类别时，请新建一张卡片。"),
 ]),
 ("类别与变体", [
@@ -411,7 +411,7 @@ G["zh"] = [
          "私密内容只能放在其“私密”变体中，单独存放，阅读器默认忽略。"]),
 ]),
 ("检查与构建", [
- ("ul", ["<b>检查</b>：完整度（每个预设缺少什么）和一致性（哪里不一致）。警告从不阻止；只有错误会阻止构建。",
+ ("ul", ["<b>检查</b>：完整度（每个预设缺少什么）和一致性（哪里不一致）。警告从不阻止；只有错误会阻止构建。结果下方依次是 AI 一致性检查、优先级，然后是每个预设的概要卡（得分 /100、等级、层、已就绪的目标），大小全部相同。",
          "<b>AI 检查</b>（可选）：由您选择 AI（地址、密钥、模型）。它检查预设是否描述了一个一致的角色，以及每个变体是否只展示一件事物。图片会发送给该 AI；密钥不会被保存。",
          "<b>构建</b>：选择图片尺寸和压缩方式，然后下载 .cof。在 COF 浏览器中打开以检查结果。",
          "<b>打开文件并重新构建</b>（builder 0.14.2）：builder 只改动其表单所显示的内容。它读到的其余一切都按原样写回——它不建模的字段（<code>story</code>、<code>lorebook</code>、变体的 <code>tags</code>、<code>derived</code>、令牌 <code>profiles</code>、服装的 <code>spec</code>）、各层级的未知键、它不重新生成的变体文件（<code>story.md</code>、<code>outfit.json</code>、<code>face.json</code>…）、<code>rights/</code> 及其他根目录文件、<code>psyche.json</code> 的旧字段（矛盾、自定义特质、目标期限、恐惧强度），以及所链接 LoRA 的资源 id。您在 builder 中删除的内容会从文件中消失；您从未看到的内容会被保留。声明的 <code>cof</code> 次版本号绝不会降低。随文件而来的图片保持原样，除非您在构建步骤中要求重新编码。"]),
@@ -430,7 +430,7 @@ G["ja"] = [
          "<b>7 · チェック</b> — 足りないもの、合わないもの。",
          "<b>8 · ビルド</b> — 完成した .cof ファイル。"]),
  ("p", "必須なのは名前、架空か実在か、形態、権利だけです。かんたん版はシンプルなキャラクター（カード 1 枚、写真、声 1 つ）だけを扱います。より豊かなファイルは詳細版のままです。"),
- ("p", "どのリスト（キャラクター、「スキルとファイル」を含む各要素カテゴリ、記憶、心理、プリセット）にも、折りたたみバーに ☰ リスト / ▦ タイル の切替があります。タイルでは折りたたんだカードはすべて同じ大きさです。左上に « + »、右上にコード、続いて画像（プリセットはメイン写真の上部、つまり既定のルックの顔）、そして名前（長いときは « … » で省略）、その下に記憶や心理ノードの種類。クリックするとカードが全幅で開きます。画像プレビューには右上に 🔍 があり、画像を全画面で表示します（Esc、× または外側のクリックで閉じます）。"),
+ ("p", "どのリスト（キャラクター、「スキルとファイル」を含む各要素カテゴリ、記憶、心理、プリセット）にも、折りたたみバーに ☰ リスト / ▦ タイル の切替があります。タイルでは折りたたんだカードはすべて同じ大きさです。左上に « + »、右上にコード、続いて画像（プリセットはメイン写真の上部、つまり既定のルックの顔）、そして名前（長いときは « … » で省略）、その下に記憶や心理ノードの種類。クリックするとカードが全幅で開きます。画像プレビューには右上に 🔍 があり、画像を全画面で表示します（Esc、× または外側のクリックで閉じます）。画像のないカードも同じ場所を保ち、少し明るい枠に「COF 要素」「COF 記憶」「COF ノード」「COF プリセット」「COF キャラクター」と透かしのように表示されます（🔍 はありません）。"),
  ("p", "<b>作成はまず種類を選ぶことから</b>：「+ バリアントを追加」はタイプを、「+ 記憶を追加」は瞬間か期間かを、「+ ノードを追加」は 11 種類のノードのいずれかを、小さなウィンドウで尋ねます。選んだ種類は以後変わりません。カードには表示されます（アイコンと名前）が、変更はできません。別の種類にするには別のカードを作成してください。"),
 ]),
 ("カテゴリーとバリアント", [
@@ -494,7 +494,7 @@ G["ja"] = [
          "プライベートな内容は専用の「プライベート」バリアントにのみ入れ、分離され、リーダーは既定で無視します。"]),
 ]),
 ("チェックとビルド", [
- ("ul", ["<b>チェック</b>：完成度（各プリセットに足りないもの）と一貫性（合わないもの）。警告はブロックしません。ビルドを止めるのはエラーだけです。",
+ ("ul", ["<b>チェック</b>：完成度（各プリセットに足りないもの）と一貫性（合わないもの）。警告はブロックしません。ビルドを止めるのはエラーだけです。結果の下に AI による一貫性チェック、優先順位、そしてプリセットごとの概要カード（スコア /100、レベル、レイヤー、準備済みのターゲット）が続き、どれも同じ大きさです。",
          "<b>AI チェック</b>（任意）：AI（アドレス、キー、モデル）を選びます。プリセットが一貫した 1 人のキャラクターを表しているか、各バリアントが 1 つのものだけを見せているかを確認します。画像はその AI に送られます。キーは保存されません。",
          "<b>ビルド</b>：画像のサイズと圧縮を選び、.cof をダウンロード。COF エクスプローラーで開いて結果を確認します。",
          "<b>ファイルを開いて再ビルドする</b>（builder 0.14.2）：builder はフォームに表示されるものだけを変更します。読み込んだそれ以外のものはすべてそのまま書き戻されます——モデル化していないフィールド（<code>story</code>、<code>lorebook</code>、バリアントの <code>tags</code>、<code>derived</code>、トークンの <code>profiles</code>、衣服の <code>spec</code>）、あらゆる階層の未知のキー、再生成しないバリアントのファイル（<code>story.md</code>、<code>outfit.json</code>、<code>face.json</code>…）、<code>rights/</code> とその他のルートファイル、<code>psyche.json</code> の旧フィールド（矛盾、独自の特性、目標の期間、恐れの強さ）、リンクされた LoRA のアセット id。builder で削除したものはファイルから消え、一度も見なかったものは保持されます。宣言された <code>cof</code> のマイナー版は下がりません。ファイルに含まれていた画像は、ビルド手順で再エンコードを指定しない限りそのまま保持されます。"]),

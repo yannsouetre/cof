@@ -13,7 +13,7 @@ Four test agents competed, each on a territory, to break the 1.2.2 candidate (br
 | 3 | Safety red team | 4 | 32.5 |
 | 4 | Explorer | 5 | 20 |
 
-27 findings (26 distinct: BUILDER-05 and SAFETY-03 are the same defect, points shared). 20 fixed before release (one in ComfyUI-COF), 5 put to the project's decision, 1 documentation fix. No false positive. The notebook replay added two fixes (R2: the Checks list, psyche derivation loops).
+27 findings (26 distinct: BUILDER-05 and SAFETY-03 are the same defect, points shared). 22 fixed before release (one in ComfyUI-COF), 3 put to the project's decision, 1 documentation fix. No false positive. The notebook replay added two fixes (R2: the Checks list, psyche derivation loops).
 
 ## Findings
 
@@ -29,7 +29,7 @@ Four test agents competed, each on a territory, to break the 1.2.2 candidate (br
 | CLI-02 | major | **decision** | `export --format agent` writes memories marked `disclosure: secret` into `MEMORY.md` without an opt-in (the Hermes export drops them). Not changed: a secret is what the character does not tell, and the agent needs it to play the character — but the workspace is a plain folder. Proposal: keep them, and say so in `AGENTS.md`; or drop them unless `--keep-personal`. |
 | EXPLORER-03 | minor | fixed | The undated band's tooltip overflowed the page at 390 px (scrollWidth 422 EN, 465 DE); narrow bands were untappable. `max-width: min(60vw, 28rem)`, wrapped; `.mgund { min-width: 8px }`. |
 | EXPLORER-04 | minor | fixed | The band has `role=button` but Space did not activate it. Space accepted, with `preventDefault`. |
-| EXPLORER-01 | minor | **decision** | Undated bands of nested or overlapping periods are stacked on the same row and hide each other (the period lines get lanes, the bands do not). Proposal: give each band the lane of its period, or draw the wider band first and the narrower above it. |
+| EXPLORER-01 | minor | fixed | Undated bands of nested or overlapping periods were stacked on the same row and hid each other (the period lines get lanes, the bands did not). Decided on 10 November: each band takes the lane of its period; the band is also lower (≤ 10 px) and drawn behind the year bars. |
 | BUILDER-02 | minor | fixed | `metadata["@context"]` was overwritten: extra JSON-LD prefixes lost while their prefixed keys stayed (`schema:version` unbound). The loaded context is kept, only a missing `dc` is added; the `dc:creator` array is kept when its first entry is unchanged. |
 | BUILDER-06 | minor | fixed | An untouched round trip invented content: a `visemes.json` (ARKit-52) on every motion `clips` variant, a `psyche.json` for a card that had none, card goal and fear ids replaced by their texts. `visemes.json` only for a new variant or one that had it (kept via `_vis`); no `psyche.json` from a card without one unless its psyche fields were edited; the ids of `extensions.cof` kept while the form is unchanged. |
 | BUILDER-07 | minor | fixed | A preset's own list equal to the inherited one was dropped on an untouched build, and one was added. `declaredSlot` / `inheritedSlot`: a list the file declared is written as declared, none is added. (`psyche_test` asserted the old behaviour and was adapted.) |
@@ -41,7 +41,7 @@ Four test agents competed, each on a territory, to break the 1.2.2 candidate (br
 | CLI-07 | minor | fixed | Hermes `MEMORY.md` entries of lived memories read « text (60 chars, cut mid-word) (date): text ». Lived entries are `when: text`. |
 | CLI-09 | minor | fixed | The ComfyUI-COF test suite failed on a clean checkout: `test_refmod_and_lora` needs `tests/samples/refmod.cof`, a local file that is not tracked. The test is skipped when the file is absent (21 passed, 1 skipped); the README says so. |
 | SAFETY-04 | minor | fixed | `memory add --from-agent` passed the agent's free-text `with:` names through the `--who` mini-syntax (`LABEL\|shown\|AGE\|real`): a day note could declare shown people, ages and real persons, and any other `\|` aborted the import. Names are sanitised (`\|` → `/`) and never parsed. |
-| EXPLORER-02 | cosmetic | **decision** | The band (up to 18 px of the 40 px strip) overlays tall year bars and intercepts a drag-select started on it. Proposal: reserve the band's height in `barMax`, forward `pointerdown` to the strip. |
+| EXPLORER-02 | cosmetic | fixed | The band (up to 18 px of the 40 px strip) overlaid tall year bars. Same change: the band is capped at 10 px and drawn behind the bars. |
 | CLI-08 | cosmetic | fixed | `cli/README.md` omitted `AGENTS.md` in the `export --format agent` line and listed a `memories/` folder the export does not write. |
 | BUILDER-09 | design | **decision** | The List / Tiles choice is one setting for all element categories (key `cof-view-elPanel`), while memories, psyche, presets and characters each remember theirs. Proposal: key it per category (`cof-view-elPanel-<cat>`), or document it as one setting for the step. |
 | EXPLORER-05 | design | **decision** | A period with only a start (`from`, no `to`) gets a one-year band: its undated moments sit under a one-year stub. Proposal: an open-ended period extends to the end of the axis, or the band is labelled « from 2005 ». |
@@ -58,7 +58,7 @@ On an untouched round trip the builder still changes, on purpose: `identities`, 
 
 1. **SAFETY-01, warning or error.** The non-conformant paths are dropped at load and listed; the build goes on and writes a clean file. Making it an error would only stop the user from saving the rest of the file. Kept as a warning unless decided otherwise.
 2. **CLI-02, secret memories in the agent workspace** (above).
-3. **EXPLORER-01 / 02 / 05**, the undated band's lanes, height and open-ended periods (above): display choices on a feature decided on 8 November.
+3. **EXPLORER-05**, open-ended periods (above); EXPLORER-01 and 02 were decided on 10 November (band lower, behind the bars, one lane per period).
 4. **BUILDER-09**, one tile setting per category or per step.
 
 ## Tests added
