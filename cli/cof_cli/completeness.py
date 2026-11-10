@@ -1,10 +1,10 @@
-"""Completeness KPI (v0.5) — per preset, from categories/kinds. Derived assets never count."""
+"""Completeness KPI (v0.6) — per preset, from categories/kinds. Derived assets never count."""
 from __future__ import annotations
 
 import json
 from pathlib import Path
 
-from .model import asset_index, by_kind, default_preset_id, first, preset_identity, preset_ids, resolved
+from .model import asset_index, by_kind, default_preset_id, first, preset_identity, preset_ids, resolve_preset_slots, resolved
 
 WEIGHTS = {"identity": 0.10, "personality": 0.20, "appearance": 0.20, "physique": 0.05,
            "voice": 0.15, "volume": 0.10, "motion": 0.05, "rights": 0.15}
@@ -46,7 +46,11 @@ def compute_preset(manifest: dict, pid: str | None, src: Path | None = None) -> 
     elif p and p.get("kind") == "description":
         n = len(p.get("text") or "")
         s += 35 + 15 * (n >= 400) + 10 * (n >= 1500)        # a rich free-text sheet is usable for chat (≥ 50)
-    s += 15 * bool(p and p.get("psyche"))
+    # psyche 15: the 1.0 sheet (psyche.json) of the personality variant, or — COF 1.2, RFC 0004, where the 1.0 lists are deprecated
+    # in favour of nodes — at least one psyche node held by the preset (slots.psyche through extends); not cumulative
+    held = set(resolve_preset_slots(m, pid).get("psyche") or []) if pid else set()
+    nodes = (((m.get("elements") or {}).get("psyche") or {}).get("variants") or {})
+    s += 15 * bool((p and p.get("psyche")) or any(v in nodes for v in held))
     L["personality"] = min(100, s)
 
     f = first(r, "appearance", "face"); fi = imgs(f)

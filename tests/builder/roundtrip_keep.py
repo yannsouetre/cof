@@ -39,6 +39,8 @@ with sync_playwright() as p:
     # hunt 1.2.2 BUILDER-05: a dangling derives_from is a Checks error; deleting p1 (p2 derives from it) and f1 (source of a derived asset) leaves nothing dangling
     dang = page.evaluate("""() => { const v = S.elements.personality.variants; const k = JSON.stringify(v); v.p2.derives_from = 'zz';
         const n = runChecks().filter(i => i.sev === 'error' && /derives_from/.test(i.msg) && /zz/.test(i.msg)).length; S.elements.personality.variants = JSON.parse(k); return n }""")
+    # 10 Nov.: an edited card is serialised again (not its original bytes) — the description of p2 changes before the second build
+    page.evaluate("() => { S.elements.personality.variants.p2.card.description = 'Edited for the round trip.' }")
     gone = page.evaluate("""() => { purgeVariant('personality', 'p1'); purgeVariant('appearance', 'f1');
         return { p2: S.elements.personality.variants.p2?.derives_from ?? null, canny: S.assets.some(a => a.id === 'a-head-front-canny'), errors: runChecks().filter(i => i.sev === 'error').map(i => i.msg) } }""")
     OUT2 = OUT.with_name(OUT.stem + ".del.cof")
@@ -128,6 +130,21 @@ md = json.loads(zipfile.ZipFile(OUT2).read("manifest.json"))
 check("derives_from" not in md["elements"]["personality"]["variants"]["p2"] and not any(a.get("source") == "a-head-front" for a in md["assets"]) and "elements/appearance/f1/head.front.canny.png" not in zipfile.ZipFile(OUT2).namelist(), "rebuilt file after the deletion: no dangling pointer, no orphan derived file")
 r2 = subprocess.run([sys.executable, "-m", "cof_cli.cli", "validate", str(OUT2)], capture_output=True, text=True)
 check(r2.returncode == 0, "cof validate accepts the file rebuilt after the deletion (BUILDER-05)" + ("" if r2.returncode == 0 else "\n" + r2.stdout[-1500:]))
+# 10 Nov.: untouched JSON files come back byte for byte (keepOrigBytes); an edited one is written anew
+for path in ("elements/personality/p2/card.json", "elements/voice/v1/profile.json", "elements/memories/ev1/memory.json", "elements/psyche/val1/psyche-node.json"):
+    check(same(path), f"{path} byte-identical after the untouched round trip")
+z2 = zipfile.ZipFile(OUT2)
+c2 = z2.read("elements/personality/p2/card.json")
+check(c2 != zi.read("elements/personality/p2/card.json") and json.loads(c2)["data"]["description"] == "Edited for the round trip.", "an edited card is serialised again (bytes differ, new description)")
+check(z2.read("elements/voice/v1/profile.json") == zi.read("elements/voice/v1/profile.json"), "the untouched voice profile stays byte-identical in the second build")
+# 10 Nov.: the builder's completeness is cof-cli's (docs/completeness-rules.md) — the default-preset score written equals what cof validate reports
+rv = subprocess.run([sys.executable, "-m", "cof_cli.cli", "validate", str(OUT)], capture_output=True, text=True)
+import re
+mv = re.search(r"^completeness: (\d+)/100", rv.stdout, re.M)
+check(mv is not None and int(mv.group(1)) == m["completeness"]["score"], f"cof validate reports the stored default-preset score ({mv and mv.group(1)} vs {m['completeness']['score']}, layers {m['completeness']['layers']})")
+mp = re.search(r"^presets:\s+(.*)$", rv.stdout, re.M)
+cli_p = dict((x.split()[0], int(x.split()[1])) for x in mp.group(1).split(",")) if mp else {}
+check(cli_p == {pid: v["completeness"]["score"] for pid, v in m["presets"].items()}, f"cof validate reports every preset's stored score ({cli_p})")
 check(not errors, "no page errors")
 r = subprocess.run([sys.executable, "-m", "cof_cli.cli", "validate", str(OUT)], capture_output=True, text=True)
 check(r.returncode == 0, "cof validate accepts the rebuilt file" + ("" if r.returncode == 0 else "\n" + r.stdout[-1500:]))
