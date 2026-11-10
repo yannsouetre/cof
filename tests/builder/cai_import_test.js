@@ -81,18 +81,19 @@ const b64 = f => fs.readFileSync(f).toString("base64");
   const errs = await page.evaluate(() => [...document.querySelectorAll("#issueList li.err")].map(li => li.textContent));
   check(errs.length === 0, "checks before the build: no error " + errs.join(" | "));
   const build = async out => { await page.evaluate(() => { window.__dl.length = 0; go("build"); }); await page.click("#btnBuild"); for (let i = 0; i < 300; i++) { if (await page.evaluate(() => window.__dl.some(b => b.type === "application/vnd.cof.character+zip"))) break; if (await page.evaluate(() => document.querySelector("#dlg").classList.contains("on"))) { console.log("     (build dialog: " + (await page.evaluate(() => document.querySelector("#dlg .dbody").innerText)).slice(0, 160).replace(/\n/g, " ") + ")"); await page.click("#dlg.on .dbtns .primary"); } await page.waitForTimeout(300); } const b = await page.evaluate(async () => { const b = window.__dl.filter(x => x.type === "application/vnd.cof.character+zip").pop(); const u = new Uint8Array(await b.arrayBuffer()); let s = ""; for (let i = 0; i < u.length; i += 32768) s += String.fromCharCode.apply(null, u.subarray(i, i + 32768)); return btoa(s); }); fs.writeFileSync(out, Buffer.from(b, "base64")); };
-  const o1 = path.join(WORK, "shared.cof"); await build(o1);
-  let m = readMan(o1); let names = zipNames(o1);
-  check(!m.elements.memories && !names.some(n => n.startsWith("elements/memories/")), "build (default): no personal memory, no transcript in the shared file");
-  check(m.tags.ip.original === false && m.tags.manual.includes("content-unreviewed"), "build: tags.ip.original false, content-unreviewed kept");
-  let v = validate(o1); check(v.status === 0, "build (default): cof validate OK " + (v.status ? v.stdout.split("\n").filter(l => /ERROR/.test(l)).join(" | ") : ""));
-  await page.evaluate(() => { go("build"); const c = document.querySelector("#b_mem_droppers"); if (c && c.checked) c.click(); });
+  check(await page.evaluate(() => { go("build"); return !document.querySelector("#b_mem_droppers")?.checked; }), "after an import, the personal purge is unticked: the user's own conversations stay by default (10 Nov.)");
   const o2 = path.join(WORK, "mine.cof"); await build(o2);
-  m = readMan(o2); names = zipNames(o2);
+  let m = readMan(o2); let names = zipNames(o2);
   check(Object.keys(m.elements.memories?.variants || {}).length === 6 && names.filter(n => /elements\/memories\/ev\d+\/chat-\d+\.md$/.test(n)).length === 4, "build (keep personal): 2 periods, 4 conversations and their transcripts");
   const cards = names.filter(n => /personality\/.*card\.json$/.test(n)).map(n => py(["-c", "import sys,zipfile;print(zipfile.ZipFile(sys.argv[1]).read(sys.argv[2]).decode())", o2, n]).stdout).join("");
   check(!/chat_history|avatar_data_url/.test(cards), "build: no card carries a conversation, even when personal data are kept");
-  v = validate(o2); check(v.status === 0, "build (keep personal): cof validate OK " + (v.status ? v.stdout.split("\n").filter(l => /ERROR/.test(l)).join(" | ") : ""));
+  let v = validate(o2); check(v.status === 0, "build (keep personal): cof validate OK " + (v.status ? v.stdout.split("\n").filter(l => /ERROR/.test(l)).join(" | ") : ""));
+  await page.evaluate(() => { go("build"); const c = document.querySelector("#b_mem_droppers"); if (c && !c.checked) c.click(); });
+  const o1 = path.join(WORK, "shared.cof"); await build(o1);
+  m = readMan(o1); names = zipNames(o1);
+  check(!m.elements.memories && !names.some(n => n.startsWith("elements/memories/")), "build (purge ticked): no personal memory, no transcript in the shared file");
+  check(m.tags.ip.original === false && m.tags.manual.includes("content-unreviewed"), "build: tags.ip.original false, content-unreviewed kept");
+  v = validate(o1); check(v.status === 0, "build (purge ticked): cof validate OK " + (v.status ? v.stdout.split("\n").filter(l => /ERROR/.test(l)).join(" | ") : ""));
 
   /* 6. the Personality step: a chat under any key leaves the card; the avatar's base64 stays as it is */
   await page.reload(); await page.waitForTimeout(800);
