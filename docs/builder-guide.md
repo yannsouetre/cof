@@ -19,7 +19,7 @@ Eight steps, in the order of the left column:
 
 Only the name, fictional or real, the morphology and the rights are required. The easy version handles only a simple character (one card, photos, one voice): a richer file stays in the advanced version.
 
-Every list (characters, each element category including Skills and files, memories, psyche, presets) has a ☰ List / ▦ Tiles switch in its fold bar. In tiles, every folded card has the same size: « + » top-left, the code top-right, then its picture (a preset shows the top of its main photo, the face of its default look), then the name, cut with « … » when long, and under it the kind of a memory or a psyche node; a click opens the card full width. Every image preview has a 🔍 in its top-right corner that shows the image full screen (Escape, × or a click outside closes it). A card without a picture keeps the same place: a slightly lighter frame watermarked « COF element », « COF memory », « COF node », « COF preset » or « COF character », with no 🔍. An element variant shows its type, cut with « … » when long, and its « delete » button on one line; in tiles every card starts folded, even the only one in a list.
+Every list (characters, each element category including Skills and files, memories, psyche, presets) has a ☰ List / ▦ Tiles switch in its fold bar. In tiles, every folded card has the same size: « + » top-left, the code top-right, then its picture (a preset shows the top of its main photo, the face of its default look), then the name, cut with « … » when long, and under it the kind of a memory or a psyche node; a click opens the card full width. Every image preview has a 🔍 in its top-right corner that shows the image full screen (Escape, × or a click outside closes it). A card without a picture keeps the same place: a slightly lighter frame watermarked « COF element », « COF memory », « COF node », « COF preset » or « COF character », with no 🔍. An element variant shows its type, cut with « … » when long, and its « delete » button on one line; in tiles every card starts folded, even the only one in a list. The choice is remembered for each list, and in the Elements step for each category: Appearance in tiles and Personality as a list stay so from one visit to the next.
 
 **Creating starts with the kind**: « + Add a variant » asks for the type, « + Add a memory » for moment or period, « + Add a node » for one of the eleven node kinds, in a small window. The choice is made once and for all: the card shows it (icon and label) but no longer changes it — for another kind, create another card.
 
@@ -41,7 +41,7 @@ Elements are sorted into 8 categories: Personality, Appearance, Identity weights
 
 ## 4. Memories
 
-The character's past, node by node. A **moment** (green ●, code `ev`) is a point in time, a **period** (purple ■, code `ep`) a span; a moment can belong to a period (“part-of” link).
+The character's past, node by node. A **moment** (green ●, code `ev`) is a point in time, a **period** (purple ■, code `ep`) a span; a moment can belong to a period (“part-of” link). A period with no end runs to the end of the explorer's time bar, one with no start from its start, the open edge fading out; the card says so under the From / To fields.
 
 - **The gist**: a few first-person sentences in the character's primary language; other languages are optional (an English agent reads the English gist).
 - **When, where, with whom**: an age or a date, a place in words or one of the character's places, the people present — and who is **shown** in the media.

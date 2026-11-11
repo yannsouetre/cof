@@ -400,9 +400,11 @@ def memory_objects(manifest: dict, node: dict, lang: str) -> list[str]:
     return out
 
 
-def memory_section(src: Path, manifest: dict, pid: str | None, keep_personal: bool = False) -> tuple[str, list[tuple[str, dict, dict]], int]:
+def memory_section(src: Path, manifest: dict, pid: str | None, keep_personal: bool = False, keep_secrets: bool = False, stats: dict | None = None) -> tuple[str, list[tuple[str, dict, dict]], int]:
     """The "Memories" section of MEMORY.md (RFC 0002 § 6.4): canon gists in timeline order, each with its
-    when-marker, disclosure and fidelity. Returns (markdown, [(vid, variant, node)] exported, personal nodes dropped)."""
+    when-marker, disclosure and fidelity. Returns (markdown, [(vid, variant, node)] exported, personal nodes dropped).
+    `disclosure: secret` nodes stay behind unless `keep_secrets` (hunt 1.2.2 CLI-02, decided B): an agent talks;
+    their count goes to `stats["secret_dropped"]` when a dict is given."""
     from .memories import gist_text, load_nodes, preset_memories, text_in, timeline, when_label
     from .model import resolve_variant
     from .model import variant_owner
@@ -411,12 +413,17 @@ def memory_section(src: Path, manifest: dict, pid: str | None, keep_personal: bo
     if not vids:
         return "", [], 0
     dropped = 0
+    secret_dropped = 0
     kept = []
     for vid in timeline(manifest, nodes, vids):
         node = nodes[vid]
         if node.get("visibility") == "personal" and not keep_personal:
             dropped += 1; continue
+        if node.get("disclosure") == "secret" and not keep_secrets:
+            secret_dropped += 1; continue              # a secret never leaves with an agent that talks, unless asked (CLI-02)
         kept.append((vid, resolve_variant(manifest, "memories", vid) or {}, node))
+    if stats is not None:
+        stats["secret_dropped"] = secret_dropped
     if not kept:
         return "", [], dropped
     lines = ["## Memories", "",
@@ -465,13 +472,14 @@ def memory_section(src: Path, manifest: dict, pid: str | None, keep_personal: bo
     return "\n".join(lines).rstrip() + "\n", kept, dropped
 
 
-def export_agent(src: Path, out: Path, preset: str | None = None, keep_personal: bool = False, keep_dangerous: bool = False) -> dict:
+def export_agent(src: Path, out: Path, preset: str | None = None, keep_personal: bool = False, keep_dangerous: bool = False, keep_secrets: bool = False) -> dict:
     """A ready-to-use agent workspace from one preset: SOUL.md, IDENTITY.md, avatar, skills/<name>/,
     memories at the root, documents in docs/, and COF.md (rights and provenance the agent host must honour).
     With a `memories` category (1.1): MEMORY.md = the host memory file (files/memory) followed by the canon gists in
     timeline order, and memories/<id>/ holding the media of non-explicit nodes (RFC 0002 § 6.4).
     With a `psyche` category (1.2): SOUL.md gains "Who she is" from the preset's nodes; personal nodes stay behind unless
-    `keep_personal`, `dangerous` nodes unless `keep_dangerous` — an agent acts (RFC 0004 § 3 septies)."""
+    `keep_personal`, `dangerous` nodes unless `keep_dangerous` — an agent acts (RFC 0004 § 3 septies).
+    Memories of `disclosure: secret` are not written unless `keep_secrets`; with it, AGENTS.md says they are never told."""
     import shutil
     from .model import asset_index, default_preset_id, effective_permissions, preset_identity, resolved
     manifest = json.loads((src / "manifest.json").read_text("utf-8"))
@@ -510,8 +518,11 @@ def export_agent(src: Path, out: Path, preset: str | None = None, keep_personal:
                 dest.mkdir(parents=True, exist_ok=True); shutil.copy(src / safe_rel(a["path"]), dest / Path(a["path"]).name)
                 done["memories" if kind == "memory" else "documents"].append(Path(a["path"]).name)
     # memories category (1.1): MEMORY.md = host memory file (if any) + the canon gists; media of non-explicit nodes
-    section, kept, dropped = memory_section(src, manifest, pid, keep_personal)
+    mst: dict = {}
+    section, kept, dropped = memory_section(src, manifest, pid, keep_personal, keep_secrets, mst)
     done["memory_nodes"], done["personal_dropped"] = len(kept), dropped
+    done["secret_dropped"] = mst.get("secret_dropped", 0)
+    done["secret_kept"] = sum(1 for _, _, n in kept if n.get("disclosure") == "secret")
     from .psyche import load_nodes as load_psyche, select_nodes
     psy_kept, pst = select_nodes(manifest, load_psyche(src, manifest), pid, keep_personal, keep_dangerous)
     done["psyche_nodes"] = len(psy_kept); done["psyche_personal_dropped"] = pst["personal_dropped"]; done["dangerous_dropped"] = pst["dangerous_dropped"]
@@ -556,4 +567,10 @@ def export_agent(src: Path, out: Path, preset: str | None = None, keep_personal:
         from .agents import agents_md
         (out / "AGENTS.md").write_text(agents_md(ident.get("name") or manifest.get("name") or "the character", gender=ident.get("gender")), "utf-8")
         done["agents_md"] = True
+    if keep_secrets and done["secret_kept"]:
+        from .agents import SECRETS_LINE
+        am = out / "AGENTS.md"
+        txt = am.read_text("utf-8") if am.is_file() else ""
+        if SECRETS_LINE not in txt:
+            am.write_text(txt.rstrip("\n") + "\n\n" + SECRETS_LINE + "\n", "utf-8")
     return done

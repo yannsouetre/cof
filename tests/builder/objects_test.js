@@ -109,6 +109,23 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
   check(has(/memories\.ev4\.what\[2\].*appearance\/c1.*clothing/) && !has(/✖ memories\.ev4\.what\[2\]/) && !has(/ev4\.what\[3\]/) && has(/memories\.ev6\.who\[\d\]/), "warnings: an item that is not an accessory, a real person who is not a character; nothing on a valid entry");
   await page.evaluate(() => { S.memories.ev4.node.what = [{ label: { fr: "la clé" } }]; S.memories.ev6.node.who.pop(); if (!S.memories.ev6.node.who.length) delete S.memories.ev6.node.who; });
 
+  /* ---- EXPLORER-05 decided A (11 Nov.): the period card says where an open-ended period is drawn ---- */
+  await page.evaluate(() => go("memories")); await unfold("ep1");
+  const hint = () => page.evaluate(c => { const h = document.querySelector(c + " [data-mopen]"); return h ? h.dataset.mopen + "|" + h.textContent : ""; }, card("ep1"));
+  check(await hint() === "", "period card: no open-end hint when both bounds are set");
+  await setE(card("ep1") + ' [data-mw="to.age"]', ""); await page.waitForTimeout(150);
+  check(await hint() === "end|Pas de fin : la période s'étend jusqu'au bout de la frise", "period card: no « À » → the open-end hint");
+  await setE(card("ep1") + ' [data-mw="to.age"]', "28"); await setE(card("ep1") + ' [data-mw="from.age"]', ""); await page.waitForTimeout(150);
+  check(await hint() === "start|Pas de début : la période part du début de la frise", "period card: no « De » → the open-start hint");
+  await setE(card("ep1") + ' [data-mw="to.age"]', ""); await page.waitForTimeout(150);
+  check(await hint() === "", "period card: neither bound → undated, no hint");
+  await setE(card("ep1") + ' [data-mw="from.age"]', "24"); await setE(card("ep1") + ' [data-mw="to.age"]', "28");
+  check(await page.evaluate(() => JSON.stringify(S.memories.ep1.node.when.from) + JSON.stringify(S.memories.ep1.node.when.to)) === '{"age":{"value":24,"unit":"years"}}{"age":{"value":28,"unit":"years"}}', "period card: bounds restored");
+  for (const l of ["en", "de", "es", "zh", "ja"]) check(await page.evaluate(l => ["Pas de fin : la période s'étend jusqu'au bout de la frise", "Pas de début : la période part du début de la frise"].every(k => I18N[l][k] && I18N[l][k] !== k), l), "i18n " + l + ": the open-period hints are translated");
+  await page.evaluate(() => setLang("en")); await setE(card("ep1") + ' [data-mw="to.age"]', ""); await page.waitForTimeout(150);
+  check(await hint() === "end|No end date: the period extends to the end of the timeline", "period card (en): " + await hint());
+  await setE(card("ep1") + ' [data-mw="to.age"]', "28"); await page.evaluate(() => setLang("fr"));
+
   /* ---- a cast file, 1.1: the minor and the other character's elements ---- */
   await open(duo); await page.evaluate(() => go("memories"));
   const duoInfo = await page.evaluate(() => { const own = Object.keys(S.memories).map(v => [v, memOwner(v)]); return { own, clara: own.find(([, i]) => i === "clara-mercier")?.[0] }; });

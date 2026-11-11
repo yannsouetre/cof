@@ -13,7 +13,7 @@ Four test agents competed, each on a territory, to break the 1.2.2 candidate (br
 | 3 | Safety red team | 4 | 32.5 |
 | 4 | Explorer | 5 | 20 |
 
-27 findings (26 distinct: BUILDER-05 and SAFETY-03 are the same defect, points shared). 22 fixed before release (one in ComfyUI-COF), 3 put to the project's decision, 1 documentation fix. No false positive. The notebook replay added two fixes (R2: the Checks list, psyche derivation loops).
+27 findings (26 distinct: BUILDER-05 and SAFETY-03 are the same defect, points shared). 22 fixed before release (one in ComfyUI-COF), 3 put to the project's decision (decided and implemented on 11 November), 1 documentation fix. No false positive. The notebook replay added two fixes (R2: the Checks list, psyche derivation loops).
 
 ## Findings
 
@@ -26,7 +26,7 @@ Four test agents competed, each on a territory, to break the 1.2.2 candidate (br
 | BUILDER-01 | major | fixed | An untouched round trip emptied the root `languages` (and the language tags) when the personality variants carry no `language`. The declared list is kept in its order; a language the build needs is appended; none is removed (there is no form for it). |
 | BUILDER-05 / SAFETY-03 | major | fixed | Deleting a variant left a dangling `derives_from` on the variants derived from it and the derived maps (canny, lineart, softedge) of its photos — the deleted child's silhouette stayed in the file, and `cof validate` refused it; the builder's Checks said nothing. `purgeVariant` reparents the children (to the deleted variant's own parent, or nothing) and drops orphan derived assets with their files, to a fixpoint; the Checks report a dangling `derives_from` and a derived asset without its source as errors. |
 | CLI-01 | major | fixed | The Hermes loop (`export --format hermes` → `memory add --from-agent --agent-source hermes`) re-imported the exported canon memories, and the already-lived ones, as new personal lived memories. Dedup on (date, normalised text) plus containment against the file's canon gists. |
-| CLI-02 | major | **decision** | `export --format agent` writes memories marked `disclosure: secret` into `MEMORY.md` without an opt-in (the Hermes export drops them). Not changed: a secret is what the character does not tell, and the agent needs it to play the character — but the workspace is a plain folder. Proposal: keep them, and say so in `AGENTS.md`; or drop them unless `--keep-personal`. |
+| CLI-02 | major | **decided B** | `export --format agent` writes memories marked `disclosure: secret` into `MEMORY.md` without an opt-in (the Hermes export drops them). Not changed: a secret is what the character does not tell, and the agent needs it to play the character — but the workspace is a plain folder. Proposal: keep them, and say so in `AGENTS.md`; or drop them unless `--keep-personal`. **Decided B (Yann, 11 Nov.)**: left out of both agent formats by default, `--keep-secrets` writes them with a line in `AGENTS.md` (Hermes: `SOUL.md`); the CLI counts what it left out. |
 | EXPLORER-03 | minor | fixed | The undated band's tooltip overflowed the page at 390 px (scrollWidth 422 EN, 465 DE); narrow bands were untappable. `max-width: min(60vw, 28rem)`, wrapped; `.mgund { min-width: 8px }`. |
 | EXPLORER-04 | minor | fixed | The band has `role=button` but Space did not activate it. Space accepted, with `preventDefault`. |
 | EXPLORER-01 | minor | fixed | Undated bands of nested or overlapping periods were stacked on the same row and hid each other (the period lines get lanes, the bands did not). Decided on 10 November: first one lane per band, then, the result being unreadable, the band was replaced by a small grey dot in the middle of each period line (hover: count; click: window) and the time bar got a resizable frame. |
@@ -43,8 +43,8 @@ Four test agents competed, each on a territory, to break the 1.2.2 candidate (br
 | SAFETY-04 | minor | fixed | `memory add --from-agent` passed the agent's free-text `with:` names through the `--who` mini-syntax (`LABEL\|shown\|AGE\|real`): a day note could declare shown people, ages and real persons, and any other `\|` aborted the import. Names are sanitised (`\|` → `/`) and never parsed. |
 | EXPLORER-02 | cosmetic | fixed | The band (up to 18 px of the 40 px strip) overlaid tall year bars. Gone with the band: the dot sits on the period line, not on the bars. |
 | CLI-08 | cosmetic | fixed | `cli/README.md` omitted `AGENTS.md` in the `export --format agent` line and listed a `memories/` folder the export does not write. |
-| BUILDER-09 | design | **decision** | The List / Tiles choice is one setting for all element categories (key `cof-view-elPanel`), while memories, psyche, presets and characters each remember theirs. Proposal: key it per category (`cof-view-elPanel-<cat>`), or document it as one setting for the step. |
-| EXPLORER-05 | design | **decision** | A period with only a start (`from`, no `to`) gets a one-year band: its undated moments sit under a one-year stub. Proposal: an open-ended period extends to the end of the axis, or the band is labelled « from 2005 ». |
+| BUILDER-09 | design | **decided A** | The List / Tiles choice is one setting for all element categories (key `cof-view-elPanel`), while memories, psyche, presets and characters each remember theirs. Proposal: key it per category (`cof-view-elPanel-<cat>`), or document it as one setting for the step. **Decided A (Yann, 11 Nov.)**: `cof-view-elPanel-<cat>`, default list, the former key seeds every category once. |
+| EXPLORER-05 | design | **decided A** | A period with only a start (`from`, no `to`) gets a one-year band: its undated moments sit under a one-year stub. Proposal: an open-ended period extends to the end of the axis, or the band is labelled « from 2005 ». **Decided A (Yann, 11 Nov.)**: only `from` → to the axis end, only `to` → from the axis start, open edge faded, tooltip « from 2016, open »; computed at render time; hint in the builder's period card. |
 
 ### Replay of the test notebook (TESTER-1.2.2, on 9e3bce1)
 
@@ -60,10 +60,12 @@ On an untouched round trip the builder still changes, on purpose: `identities`, 
 
 ## Decisions put to the project
 
-1. **SAFETY-01, warning or error.** The non-conformant paths are dropped at load and listed; the build goes on and writes a clean file. Making it an error would only stop the user from saving the rest of the file. Kept as a warning unless decided otherwise.
-2. **CLI-02, secret memories in the agent workspace** (above).
-3. **EXPLORER-05**, open-ended periods (above); EXPLORER-01 and 02 were decided on 10 November (the band became a dot on the period line; resizable time bar).
-4. **BUILDER-09**, one tile setting per category or per step.
+Taken by Yann on 11 November and implemented the same day:
+
+1. **SAFETY-01, warning or error — decided A: a warning.** The non-conformant paths are dropped at load and listed; the build goes on and writes a clean file. Making it an error would only stop the user from saving the rest of the file.
+2. **CLI-02, secret memories in the agent workspace — decided B.** By default no `disclosure: secret` memory is written to an agent workspace (OpenClaw `--format agent`, as Hermes already did); `cof export` prints « N secret memories left out (use --keep-secrets to include them) ». `--keep-secrets` (both formats) writes them, marked `secret` (Hermes: « (secret) » before the entry), and adds one line to `AGENTS.md` (Hermes: `SOUL.md`): these are secrets the character never reveals. A psyche stance about a secret memory reads « a private matter » in `SOUL.md`. `--keep-personal` unchanged. Tests: `cli/tests/test_agents.py` (default leaves out, flag includes, notice printed, Hermes default unchanged).
+3. **EXPLORER-05, open-ended periods — decided A.** A period with only `from` extends to the end of the time axis, one with only `to` starts at the axis start; the open end fades to transparent over the last 8 % of the 4 px line (an open start has no start tick); the line's tooltip says « from 2016, open » / « until 2012, open » in the six languages; the extent is computed at render time from the dates, nothing stored, so a date added in the builder redraws it at once; the grey dot of the period's undated memories sits in the middle of the drawn extent; a period with neither date keeps today's behaviour (undated). The builder's period card shows a muted hint under its From / To fields when exactly one bound is set. EXPLORER-01 and 02 were decided on 10 November (the band became a dot on the period line; resizable time bar).
+4. **BUILDER-09, one tile setting per category — decided A.** Key `cof-view-elPanel-<cat>`, switching tabs restores each category's view, default list; the former `cof-view-elPanel` seeds every category once, then is removed. Tests: `tests/builder/images_test.js` (migration, Apparence tiles + Personnalité list across a reload, fold-all in tiles).
 
 ## Tests added
 

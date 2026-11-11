@@ -108,3 +108,48 @@ def test_from_agent_never_declares_shown_real_or_age_people(tmp_path):
     node = json.loads((work / m["elements"]["memories"]["variants"][added[0]]["memory"]).read_text("utf-8"))
     assert [w.get("label", {}).get("en") for w in node["who"]] == ["Sam/shown/9/real", "Lou / oops"]
     assert all("shown" not in w and "real" not in w and "age" not in w for w in node["who"])
+
+
+def _clara_with_a_secret(tmp_path):
+    work = tmp_path / "clara"
+    shutil.copytree(CLARA, work)
+    r = subprocess.run([sys.executable, "-m", "cof_cli.cli", "memory", "add", str(work), "--gist", "en=I burned the letter from my brother before anyone read it.",
+                        "--label", "The burned letter", "--date", "2015", "--disclosure", "secret", "--origin", "authored", "--salience", "90"],
+                       capture_output=True, text=True, cwd=ROOT / "cli")
+    assert r.returncode == 0, r.stdout + r.stderr
+    return work
+
+
+def test_agent_export_leaves_secret_memories_out_unless_asked(tmp_path):
+    """Hunt 1.2.2, CLI-02 decided B (11 Nov. 2026): a secret memory is not written to an agent workspace by default;
+    --keep-secrets writes it and AGENTS.md says it is never revealed; the CLI says how many were left out."""
+    from cof_cli.agents import SECRETS_LINE
+    work = _clara_with_a_secret(tmp_path)
+    done = export_agent(work, tmp_path / "ws")
+    assert done["secret_dropped"] == 1 and done["secret_kept"] == 0
+    assert "burned the letter" not in (tmp_path / "ws" / "MEMORY.md").read_text("utf-8")
+    assert SECRETS_LINE not in (tmp_path / "ws" / "AGENTS.md").read_text("utf-8")
+    done = export_agent(work, tmp_path / "ws2", keep_secrets=True)
+    assert done["secret_dropped"] == 0 and done["secret_kept"] == 1
+    mem = (tmp_path / "ws2" / "MEMORY.md").read_text("utf-8")
+    assert "burned the letter" in mem and "The burned letter  ·  2015 · secret" in mem
+    assert (tmp_path / "ws2" / "AGENTS.md").read_text("utf-8").count(SECRETS_LINE) == 1
+    r = subprocess.run([sys.executable, "-m", "cof_cli.cli", "export", str(work), "--format", "agent", "-o", str(tmp_path / "ws3")], capture_output=True, text=True, cwd=ROOT / "cli")
+    assert r.returncode == 0 and "1 secret memories left out (use --keep-secrets to include them)" in r.stdout, r.stdout + r.stderr
+    r = subprocess.run([sys.executable, "-m", "cof_cli.cli", "export", str(work), "--format", "agent", "--keep-secrets", "-o", str(tmp_path / "ws4")], capture_output=True, text=True, cwd=ROOT / "cli")
+    assert r.returncode == 0 and "secret memories left out" not in r.stdout and "burned the letter" in (tmp_path / "ws4" / "MEMORY.md").read_text("utf-8")
+
+
+def test_hermes_export_secrets_unchanged_by_default_and_kept_on_request(tmp_path):
+    from cof_cli.agents import SECRETS_LINE
+    work = _clara_with_a_secret(tmp_path)
+    base = export_hermes(CLARA, tmp_path / "h0")
+    done = export_hermes(work, tmp_path / "h")
+    assert done["hermes_memory_entries"] == base["hermes_memory_entries"] and done["secret_dropped"] == 1
+    assert (tmp_path / "h" / "memories" / "MEMORY.md").read_text("utf-8") == (tmp_path / "h0" / "memories" / "MEMORY.md").read_text("utf-8")
+    assert SECRETS_LINE.split(" (in")[0] not in (tmp_path / "h" / "SOUL.md").read_text("utf-8")
+    export_hermes(work, tmp_path / "h2", keep_secrets=True)
+    assert "(secret) The burned letter (2015): I burned the letter" in (tmp_path / "h2" / "memories" / "MEMORY.md").read_text("utf-8")
+    assert "(in `memories/MEMORY.md`) are secrets the character never reveals" in (tmp_path / "h2" / "SOUL.md").read_text("utf-8")
+    r = subprocess.run([sys.executable, "-m", "cof_cli.cli", "export", str(work), "--format", "hermes", "-o", str(tmp_path / "h3")], capture_output=True, text=True, cwd=ROOT / "cli")
+    assert r.returncode == 0 and "1 secret memories left out (use --keep-secrets to include them)" in r.stdout, r.stdout + r.stderr

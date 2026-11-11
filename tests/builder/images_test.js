@@ -102,6 +102,28 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
   check(V2.want1 && !V2.want1.media && !V2.want1.nudity && !V2.want1.age, "all-audiences: want1 keeps its words and loses its images, nudity and age");
   check(V2.val2.media.length === 1 && V2.contra1.media[0] === "a-ac-x1", "all-audiences: ordinary illustrations stay");
   check(!m2.assets.some(a => a.path && a.path.startsWith("elements/psyche/want1/")), "all-audiences: want1's files are gone");
+  /* BUILDER-09 decided A (11 Nov.): one List / Tiles setting per element category, `cof-view-elPanel-<cat>`, default list; the former shared key seeds every category once */
+  const CATS8 = ["personality", "appearance", "identity_weights", "volume3d", "voice", "posture", "motion", "files"];
+  const tab = async cat => { await page.evaluate(c => { go("elements"); curCat = c; renderTabs(); renderPanel(); }, cat); await page.waitForTimeout(120); };
+  const panel = () => page.evaluate(() => { const P = document.getElementById("elPanel"); const cards = [...P.querySelectorAll(":scope > .variant")].filter(d => d.querySelector(":scope > h4")); return { tiles: P.classList.contains("tiles"), on: P.querySelector(":scope > .foldbar .viewsw button.on")?.dataset.view, n: cards.length, folded: cards.filter(d => d.classList.contains("folded")).length, imgs: cards.filter(d => d.querySelector(".tileimg img")).length }; });
+  await page.evaluate(cs => { for (const c of cs) localStorage.removeItem("cof-view-elPanel-" + c); localStorage.setItem("cof-view-elPanel", "tiles"); }, CATS8);
+  await tab("personality");
+  const mig = await page.evaluate(cs => ({ old: localStorage.getItem("cof-view-elPanel"), per: cs.map(c => localStorage.getItem("cof-view-elPanel-" + c)) }), CATS8);
+  check(mig.old === null && mig.per.every(v => v === "tiles") && (await panel()).tiles, "view: the former shared key seeds the eight categories once, then is removed (" + mig.per.join(",") + ")");
+  await page.evaluate(cs => { for (const c of cs) localStorage.removeItem("cof-view-elPanel-" + c); }, CATS8);
+  await tab("voice"); check(!(await panel()).tiles, "view: a category never set opens as a list");
+  await tab("appearance"); await page.click("#elPanel > .foldbar .viewsw [data-view=tiles]"); await page.waitForTimeout(100);
+  await tab("personality"); await page.click("#elPanel > .foldbar .viewsw [data-view=list]"); await page.waitForTimeout(100);
+  let pa = await panel(); check(!pa.tiles && pa.on === "list", "view: Personnalité as a list after Apparence was set to tiles");
+  await tab("appearance"); pa = await panel(); check(pa.tiles && pa.on === "tiles" && pa.folded === pa.n && pa.n > 0, `view: back on Apparence, tiles restored, every card folded (${pa.folded}/${pa.n}, ${pa.imgs} with a picture)`);
+  check(await page.evaluate(() => [...document.querySelectorAll("#elPanel > .variant.folded > h4 > .tileimg")].every(t => t.querySelector("img") || (t.classList.contains("ph") && t.dataset.ph === "COF élément"))), "view: every tile has its picture or its « COF élément » placeholder");
+  await page.click("#elPanel > .foldbar [data-fa='0']"); pa = await panel(); check(pa.folded === 0 && pa.tiles, "view: « Tout déplier » still works in tiles");
+  await page.click("#elPanel > .foldbar [data-fa='1']"); pa = await panel(); check(pa.folded === pa.n, "view: « Tout replier » still works in tiles");
+  await page.reload({ waitUntil: "load" }); await page.evaluate(() => setMode("advanced")); await open(clara);
+  await tab("appearance"); const r1 = await panel(); await tab("personality"); const r2 = await panel();
+  check(r1.tiles && !r2.tiles && r2.on === "list", "view: after a reload, Apparence in tiles and Personnalité as a list are both remembered");
+  check(await page.evaluate(() => localStorage.getItem("cof-view-elPanel") === null && localStorage.getItem("cof-view-elPanel-appearance") === "tiles" && localStorage.getItem("cof-view-elPanel-personality") === "list"), "view: keys cof-view-elPanel-appearance = tiles, -personality = list, no shared key");
+  await page.screenshot({ path: path.join(WORK, "view-personality-list.png") }); await tab("appearance"); await page.screenshot({ path: path.join(WORK, "view-appearance-tiles.png") });
   /* six languages */
   for (const l of ["en", "de", "es", "zh", "ja"]) { const ok2 = await page.evaluate(l => { const d = I18N[l]; return d["Illustration"] && ["Glissez des images ici ou cliquez — elles sont ajoutées au fichier comme nouveaux assets", "1 recommandée : la première remplace l'icône ; plus de 3 → un souvenir conviendrait mieux", "icône du nœud"].every(k => d[k] && d[k] !== k); }, l); check(ok2, "i18n " + l + ": the illustration words are translated"); }
   check(errors.length === 0, "no page errors" + (errors.length ? ": " + errors.slice(0, 3).join(" | ") : ""));

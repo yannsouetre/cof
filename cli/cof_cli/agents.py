@@ -26,6 +26,10 @@ AXIS = re.compile(r"\s*·\s*(with|where|tags|avec|où|étiquettes)\s*:\s*", re.I
 
 
 # ----------------------------------------------------------------------------- AGENTS.md (OpenClaw)
+SECRETS_LINE = ("Memories marked `secret` (in `MEMORY.md`) are secrets the character never reveals: "
+                "they shape what you say, you never tell them, hint at them or confirm them.")
+
+
 def agents_md(name: str, lang: str = "en", gender: str | None = None) -> str:
     """The operating notes OpenClaw reads at the start of every session. Without them the agent has no instruction to
     write memory at all; with them, its daily notes come back into the .cof through `cof memory add --from-agent`."""
@@ -79,15 +83,16 @@ def hermes_memory(entries: list[tuple[int, str]], limit: int = HERMES_MEMORY_CHA
     return text, len(entries) - len(kept)
 
 
-def export_hermes(src: Path, out: Path, preset: str | None = None, keep_personal: bool = False, keep_dangerous: bool = False) -> dict:
+def export_hermes(src: Path, out: Path, preset: str | None = None, keep_personal: bool = False, keep_dangerous: bool = False, keep_secrets: bool = False) -> dict:
     """A Hermes Agent profile folder (to use as $HERMES_HOME, or to copy into one): SOUL.md (with the identity lines),
-    memories/MEMORY.md (`§` entries within the host's limit), skills/, COF.md, README-COF.md. Built on export_agent."""
+    memories/MEMORY.md (`§` entries within the host's limit), skills/, COF.md, README-COF.md. Built on export_agent.
+    Secret memories stay behind unless `keep_secrets`; with it their entries carry `(secret)` and SOUL.md says they are never told."""
     import shutil
     import tempfile
     from .convert import export_agent
     with tempfile.TemporaryDirectory(prefix="cof-hermes-") as td:
         ws = Path(td) / "ws"
-        done = export_agent(src, ws, preset, keep_personal=keep_personal, keep_dangerous=keep_dangerous)
+        done = export_agent(src, ws, preset, keep_personal=keep_personal, keep_dangerous=keep_dangerous, keep_secrets=keep_secrets)
         out.mkdir(parents=True, exist_ok=True)
         soul = (ws / "SOUL.md").read_text("utf-8").rstrip() + "\n"
         ident = (ws / "IDENTITY.md").read_text("utf-8") if (ws / "IDENTITY.md").is_file() else ""
@@ -95,8 +100,10 @@ def export_hermes(src: Path, out: Path, preset: str | None = None, keep_personal
         if block:
             head, _, rest = soul.partition("\n")
             soul = head + "\n\n" + block + "\n" + rest.lstrip("\n")
+        entries = _memory_entries(src, preset, keep_personal, keep_secrets)
+        if keep_secrets and done.get("secret_kept"):        # Hermes has no AGENTS.md: SOUL.md is what it reads every session
+            soul = soul.rstrip("\n") + "\n\n" + SECRETS_LINE.replace("(in `MEMORY.md`)", "(in `memories/MEMORY.md`)") + "\n"
         (out / "SOUL.md").write_text(soul, "utf-8")
-        entries = _memory_entries(src, preset, keep_personal)
         text, dropped = hermes_memory(entries)
         (out / "memories").mkdir(exist_ok=True)
         (out / "memories" / "MEMORY.md").write_text(text + ("\n" if text else ""), "utf-8")
@@ -123,7 +130,7 @@ def export_hermes(src: Path, out: Path, preset: str | None = None, keep_personal
         return done
 
 
-def _memory_entries(src: Path, pid: str | None, keep_personal: bool) -> list[tuple[int, str]]:
+def _memory_entries(src: Path, pid: str | None, keep_personal: bool, keep_secrets: bool = False) -> list[tuple[int, str]]:
     """(salience, 'label (when): gist') per canon memory of the preset, timeline order."""
     from .memories import gist_text, load_nodes, preset_memories, timeline, when_label
     from .model import default_preset_id, resolve_variant
@@ -136,8 +143,9 @@ def _memory_entries(src: Path, pid: str | None, keep_personal: bool) -> list[tup
         node = nodes[vid]
         if node.get("visibility") == "personal" and not keep_personal:
             continue
-        if node.get("disclosure") == "secret":
-            continue                                   # a secret never leaves with an agent that talks
+        secret = node.get("disclosure") == "secret"
+        if secret and not keep_secrets:
+            continue                                   # a secret never leaves with an agent that talks, unless asked (CLI-02)
         rv = resolve_variant(manifest, "memories", vid) or {}
         lang, text = gist_text(manifest, vid, node, pid)
         when = when_label(rv.get("kind"), node, lang)
@@ -147,6 +155,8 @@ def _memory_entries(src: Path, pid: str | None, keep_personal: bool) -> list[tup
             entry = (f"{when}: " if when else "") + t
         else:
             entry = f"{label}" + (f" ({when})" if when else "") + f": {t}"
+        if secret:
+            entry = "(secret) " + entry
         out.append((int(node.get("salience") or 50), entry))
     return out
 

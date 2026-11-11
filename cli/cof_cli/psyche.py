@@ -167,6 +167,7 @@ def soul_section(manifest: dict, nodes: dict[str, dict], pid: str | None, keep_p
     if not keep_personal:
         hidden = {f"psyche/{v}" for v, n in nodes.items() if n.get("visibility") == "personal"}
         hidden |= {f"memories/{v}" for v, n in (memory_nodes or {}).items() if n.get("visibility") == "personal"}
+    hidden |= {f"memories/{v}" for v, n in (memory_nodes or {}).items() if n.get("disclosure") == "secret"}   # a stance never names a secret memory (hunt 1.2.2 CLI-02)
     if not vids:
         return "", stats
     me = preset_owner(manifest, pid)                       # the section's language: the preset's personality, else the character's, else the file's first
