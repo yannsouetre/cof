@@ -109,7 +109,7 @@ cof export clara.cof --format png -o clara.png     # → PNG card (chara + ccv3 
 ## 开放，但有纪律
 COF 有意保持灵活：几乎一切都是可选的，未知的键在往返转换中得以保留，还有明确的“逃生通道”——不含贴图的 3D 文件（`self_contained: false`）、以链接代替嵌入的 LoRA 权重、自定义的 `x-` 类别。这种开放只有在**对放入内容保持纪律**时才能奏效：验证器会拦截不安全或已损坏的内容（未成年人与亲密内容、缺失的哈希值、无法解析的引用、未声明的可执行文件……），对有风险的内容发出警告（可能失效的链接、无贴图的 3D、缺失的文字稿……），并且每位作者——无论是人、工具还是 AI 智能体——在发布前都要执行 [spec § 11.4](spec/SPEC.md) 中的一致性审查：年龄、身份、风格、声音、语言、权利、来源。
 
-**网站统计。** 本项目的网页（`yannsouetre.github.io` 上的首页、记忆页面、浏览器、builder）会加载一个不使用 cookie 的访问计数器 [GoatCounter](https://www.goatcounter.com)：仅统计页面浏览量和来源，不收集个人数据，也不涉及你打开的文件——这些文件从不离开你的网页浏览器。浏览器或 builder 的本地副本从不加载它。
+**网站统计。** 本项目的网页（`yannsouetre.github.io` 上的首页、记忆页面、浏览器、builder、Character.AI 导入页面）会加载一个不使用 cookie 的访问计数器 [GoatCounter](https://www.goatcounter.com)：仅统计页面浏览量和来源，不收集个人数据，也不涉及你打开的文件——这些文件从不离开你的网页浏览器。浏览器或 builder 的本地副本从不加载它。
 
 ## 仓库结构
 | 文件夹 | 内容 |

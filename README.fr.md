@@ -80,7 +80,7 @@ Un casting voyage ensemble, et chaque personnage garde son apparence, sa voix, s
 
 **Dans ComfyUI** : les nœuds [ComfyUI-COF](https://github.com/yannsouetre/ComfyUI-COF) chargent les images, le prompt, le LoRA, la voix, les poses et les clips de mouvement d'un preset, en appliquant ses droits et ses règles d'âge.
 
-**Statistiques du site.** Les pages web du projet (accueil, pages des souvenirs, explorateur, builder sur `yannsouetre.github.io`) chargent un compteur de visites sans cookie, [GoatCounter](https://www.goatcounter.com) : pages vues et sites d'origine seulement, aucune donnée personnelle, rien des fichiers que vous ouvrez — qui ne quittent jamais votre navigateur. Une copie locale de l'explorateur ou du builder ne le charge jamais.
+**Statistiques du site.** Les pages web du projet (accueil, pages des souvenirs, explorateur, builder, page d'import Character.AI sur `yannsouetre.github.io`) chargent un compteur de visites sans cookie, [GoatCounter](https://www.goatcounter.com) : pages vues et sites d'origine seulement, aucune donnée personnelle, rien des fichiers que vous ouvrez — qui ne quittent jamais votre navigateur. Une copie locale de l'explorateur ou du builder ne le charge jamais.
 
 ## Contenu du dépôt
 | Dossier | Contenu |
