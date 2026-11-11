@@ -1,4 +1,4 @@
-# COF 1.2.2 — release notes (DATE_TBD)
+# COF 1.2.2 — release notes (15 November 2026)
 
 **Open, edit, build: nothing else moves.** A tooling release: no change to the format — a 1.2.2 tool reads and writes exactly the files a 1.2.0 tool does, `cof: "1.2"` stays what a file declares.
 
@@ -34,6 +34,12 @@ The 1.2.0 notes carried a known issue: opening an existing file in the builder a
 - `cof import` of a V2 card relabelled V3 now writes `group_only_greetings` (the V3 spec says MUST).
 - **`cof diff a.cof b.cof`** — what differs between two files or folders (records with an `id`, such as assets, are matched by id, not by position): members on one side only, members whose bytes differ, and the flattened JSON keys added, removed or changed; exit code 1 when different. The tool of the round-trip promise: open a file in the builder, build it again, `cof diff` the two.
 - The PyPI workflow skips a version that already exists.
+
+## Next
+
+- **1.2.3 — planned for 29 November 2026** (tooling only): a **COF player** — a standalone page that lets a character live with the user's own API key, picks the memories and psyche nodes that matter for the moment (a weighted selection, specified for every host), illustrates the scene, and writes what was lived back into an augmented `.cof`, every purge and both hard rules applied; the builder in **assisted** and **automatic** modes with a starter kit of free placeholder media; the card and `.charx` exports carry the psyche (H5-09); the `rule` node protected against injection and secrets handled alike in memories and psyche (H5-10, H5-11).
+- **1.2.4 — December 2026**: a public gallery of about thirty starter characters (CC BY 4.0; adults and non-humans only, no real person, no franchise), Clara at 5 000 memories, the follow-ups of the comments on RFC 0004 and 0005 (open until 22 November), and the **RFC « professional profile »** published for comments.
+- **1.3 — January 2027**: COF Pro (the professional profile, a builder mode, an example company character), `until` on relations, a reference date for the canon, spoken languages. **1.4 — February 2027**: the rest of the hunt follow-ups, tile and table views in both tools, the recap video regenerated from one source. Then an MCP server and a portable authoring kit, the ecosystem (SillyTavern, Blender, references for video models, a desktop builder).
 
 ## Credits
 
