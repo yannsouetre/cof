@@ -15,7 +15,7 @@ OUT = ROOT / "compare"
 BASE = "https://yannsouetre.github.io/cof/compare/"
 LANGS = ["en", "fr", "de", "es", "zh", "ja"]
 HTML_LANG = {"zh": "zh-Hans"}
-SYM = {"y": "✓", "p": "~", "n": "✕", "c": "↗", "g": "○"}
+SYM = {"y": "✓", "p": "~", "n": "✕", "c": "→", "g": "○"}
 COLKEYS = ["cof", "v2", "v3", "md", "af", "mem", "vrm"]
 FONT_URL = ("https://fonts.googleapis.com/css2?family=Michroma&family=Cormorant+Garamond:ital,wght@1,500"
             "&family=Bricolage+Grotesque:wght@700;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400"
@@ -85,6 +85,7 @@ code{font-family:var(--mono);font-size:.84em;background:var(--chip);padding:1px 
 .legend span{display:inline-flex;align-items:center;gap:8px}
 .mk{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:8px;font:600 14px/1 var(--mono);flex:0 0 auto;font-style:normal}
 .mk.y,.mk.c{background:rgba(76,194,168,.18);color:var(--teal);border:1px solid rgba(76,194,168,.45)}
+.mk.c{font:600 19px/1 var(--sans)}
 .mk.p{background:rgba(224,165,74,.16);color:var(--warn);border:1px solid rgba(224,165,74,.45)}
 .mk.n{background:rgba(240,122,114,.14);color:var(--coral);border:1px solid rgba(240,122,114,.4)}
 .mk.g{background:rgba(147,163,158,.12);color:var(--muted);border:1px dashed rgba(147,163,158,.5)}
@@ -157,7 +158,7 @@ def table(T):
 
 def page(lang, T):
     css = CSS.replace("%CJK%", CJK.get(lang, ""))
-    carried = '<i class="mk c" style="width:20px;height:20px;font-size:11px">↗</i>'
+    carried = '<i class="mk c" style="width:22px;height:22px;font-size:15px">→</i>'
     cards = lambda arr, cls: "".join(f'<div class="card {cls}"><p class="t">{c["t"]}</p><p>{c["p"]}</p></div>' for c in arr)
     legend = "".join(f'<span><i class="mk {k}">{SYM[k]}</i> {T["legend"][k]}</span>' for k in "ypncg")
     return f"""<!doctype html>
