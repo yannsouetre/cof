@@ -10,7 +10,7 @@
 <a href="https://github.com/yannsouetre/ComfyUI-COF"><img src="docs/img/btn-comfyui.png" alt="ComfyUI ノード" width="250"></a>
 </p>
 <p align="center">
-<a href="https://yannsouetre.github.io/cof/"><img src="docs/img/btn-read-format.png" alt="読む：COF、1ページでわかるフォーマット" width="330"></a>&nbsp;&nbsp;
+<a href="https://yannsouetre.github.io/cof/index.ja.html"><img src="docs/img/btn-read-format.png" alt="読む：COF、1ページでわかるフォーマット" width="330"></a>&nbsp;&nbsp;
 <a href="https://yannsouetre.github.io/cof/compare/index.ja.html"><img src="docs/img/btn-read-compare.png" alt="読む：ファイルに何が入るか — 他のフォーマットとの比較" width="330"></a>
 </p>
 <p align="center">

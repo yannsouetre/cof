@@ -1,0 +1,185 @@
+{
+ "meta": {
+  "title": "COF — Character Open File",
+  "description": "Un seul fichier ouvert pour un personnage IA : personnalité, apparence, voix, 3D, mouvement, souvenirs, une psyché, fichiers d'agent — avec ses droits et son consentement intégrés.",
+  "og_title": "COF — Character Open File",
+  "og_description": "Des personnages IA complets dans un seul fichier ouvert — portables, avec leurs droits."
+ },
+ "top": {
+  "crumb": "· Character Open File · 1.2",
+  "share": "partager ↗",
+  "copy": "copier le lien",
+  "copied": "copié ✓",
+  "email": "E-mail",
+  "share_aria": "Partager cette page",
+  "lang_aria": "Langue"
+ },
+ "hero": {
+  "h1": "Character Open File",
+  "sub": "Des personnages IA complets dans un seul fichier ouvert — portables, avec leurs droits.",
+  "kicker": "COF · UN FORMAT OUVERT"
+ },
+ "lede": "Un format de fichier ouvert qui réunit tout ce qui définit un personnage IA — personnalité, apparence, voix, 3D, mouvement, skills d'agent, souvenirs et une psyché — <b>avec ses droits et son consentement intégrés</b>. Le même fichier s'ouvre dans une application de conversation, un générateur d'images, ComfyUI, un moteur de jeu ou un agent.",
+ "status": "<b>Actuellement : 1.2.2</b>, 15 novembre 2026 — le builder garde tout ce qu'il ne modélise pas, hôtes d'agent dans <code>cof-cli</code> (une mémoire, deux foyers), souvenirs non datés dans l'explorateur (<a href=\"https://github.com/yannsouetre/cof/blob/main/docs/release-notes-1.2.2.md\">notes</a>). Avant : 1.2.1, 8 novembre — import Character.AI ; 1.2, 8 novembre — une psyché ; 1.1, 30 octobre — les souvenirs ; 1.0, 17 octobre. Tout fichier 1.x reste valide et lisible par tout outil 1.x.",
+ "cta": {
+  "explore": "Explorer un .cof →",
+  "build": "En créer un dans votre navigateur",
+  "comfy": "Nœuds ComfyUI",
+  "github": "Source sur GitHub"
+ },
+ "clip_caption": "60 secondes, avec le son. Clara Mercier et Martien sont des personnages d'exemple COF fictifs (images générées par IA).",
+ "h_new": "Nouveautés",
+ "cards_new": [
+  {
+   "href": "compare/",
+   "t": "Qu'est-ce qui tient dans le fichier ?",
+   "p": "COF comparé, fonction par fonction, à Character Card V2 et V3 / .charx, au Markdown d'agent, à Letta Agent File, à MacPaw Portable Memory et à VRM — y compris pour ce que COF ne fait pas."
+  },
+  {
+   "href": "import/",
+   "t": "Sauvegardez vos bots Character.AI",
+   "p": "COF 1.2.1 : votre personnage, et vos conversations comme ses souvenirs privés, dans un seul fichier ouvert — puis une apparence, une voix, des presets, une psyché. Tout se passe dans votre navigateur."
+  },
+  {
+   "href": "psyche/",
+   "t": "Les personnages IA ont désormais une vie intérieure",
+   "p": "COF 1.2 : une psyché que l'on peut lire, modifier et emporter avec soi — chaque conviction reliée au souvenir qui l'a fait naître."
+  },
+  {
+   "href": "psyche/how-many.html",
+   "t": "Combien de convictions font une personne ?",
+   "p": "Ce que la psychologie a compté à la place, un simulateur pour tester vos propres chiffres, et ce que valent le Big Five, les types Myers-Briggs, l'Enneagram et l'astrologie."
+  },
+  {
+   "href": "memories/",
+   "t": "Les personnages IA ont désormais des souvenirs",
+   "p": "COF 1.1 : les moments et les périodes d'une vie, ce qu'ils ont fait ressentir, ce qu'ils gardent pour eux, ce qui s'efface."
+  },
+  {
+   "href": "memories/how-much.html",
+   "t": "Combien pourrait peser une vie ?",
+   "p": "Combien de souvenirs une personne garde, combien d'octets ils occuperaient, et un calculateur pour tester les hypothèses."
+  }
+ ],
+ "h_work": "À l'œuvre",
+ "work_intro": "Deux courts films réalisés pour la 1.2.2, avec de vrais fichiers et de vrais outils, sans mise en scène.",
+ "films": [
+  {
+   "src": "docs/media/cof-demo-agents.mp4",
+   "poster": "docs/img/cof-demo-agents.jpg",
+   "t": "Une mémoire, deux foyers",
+   "p": "Clara est exportée vers OpenClaw et répond à partir des souvenirs que porte son fichier. Quand on lui apprend quelque chose de nouveau, l'agent écrit une note ; <code>cof memory add</code> la ramène dans son fichier sous forme de souvenir vécu et personnel. Exportée vers Hermes, qui ne l'avait jamais rencontrée, elle se souvient du train de ce matin."
+  },
+  {
+   "src": "docs/media/cof-demo-psyche.mp4",
+   "poster": "docs/img/cof-demo-psyche.jpg",
+   "t": "Qui elle est",
+   "p": "Un personnage est plus qu'un prompt. Sa psyché — onze types de nœuds, chacun relié au souvenir, à la personne ou au lieu dont il vient — explorée, rejouée dans le temps, écrite dans le builder, puis transformée en <code>SOUL.md</code> que lit un agent."
+  }
+ ],
+ "sections": [
+  {
+   "id": "contents",
+   "h": "Ce que contient un .cof",
+   "img": "docs/img/cof-contents.png",
+   "alt": "Un .cof contient personnalité, apparence, voix, poses et mouvement, poids d'identité, 3D, fichiers d'agent et droits",
+   "p": "Une archive ZIP avec un manifeste : l'identité du personnage, ses éléments en huit catégories — personnalité (une Character Card V3 à l'intérieur, une psyché, du texte libre), apparence, poids d'identité, 3D, voix, postures, mouvement, souvenirs —, une bibliothèque de fichiers d'agent, et ses droits. Presque tout est facultatif ; ce qui y entre est vérifié."
+  },
+  {
+   "id": "presets",
+   "h": "Toutes les versions, un seul fichier",
+   "img": "docs/img/cof-presets.jpg",
+   "alt": "Clara Mercier à 29 ans, en style manga, à 65 ans et en combattante d'un futur proche : quatre presets d'un même fichier",
+   "p": "Un <b>preset</b> est une combinaison prête à l'emploi : une personnalité, une apparence, une voix, un âge. Changez de langue ou d'âge, et le reste suit."
+  },
+  {
+   "id": "memories",
+   "h": "Un passé, pas seulement une description",
+   "img": "docs/img/cof-memories.jpg",
+   "alt": "Le graphe des souvenirs de Clara à 65 ans dans l'explorateur : une période, neuf moments sur un axe du temps, les personnes et les lieux qui s'y rattachent",
+   "p": "Les moments et les périodes d'une vie, chacun avec quand, où, avec qui, ce qui a été ressenti alors et aujourd'hui, la netteté avec laquelle il revient, et ce que le personnage préférerait taire. Ce qu'il vit avec un utilisateur est réécrit dans le même fichier — et part avec lui. <a href=\"memories/\">En savoir plus</a>."
+  },
+  {
+   "id": "psyche",
+   "h": "Une vie intérieure, et ce à quoi elle tient",
+   "img": "docs/img/cof-psyche.jpg",
+   "alt": "Le graphe de la psyché de Clara dans l'explorateur : valeurs, désirs, peurs, croyances et une blessure, regroupés sous les souvenirs dont ils viennent",
+   "p": "Valeurs, croyances, désirs, peurs, blessures, goûts et habitudes sous forme de graphe de nœuds courts, chacun avec une force, une durée et le souvenir dont il vient. Personnes, lieux et objets sont nommés une fois, partagés par souvenirs et psyché. <a href=\"psyche/\">En savoir plus</a>."
+  },
+  {
+   "id": "rights",
+   "h": "Ses droits voyagent avec lui",
+   "img": "docs/img/cof-rights.jpg",
+   "alt": "Une carte de droits : clonage de voix non, entraînement non, redistribution non, usage commercial personnel et non lucratif, mention IA oui",
+   "p": "Les permissions, le consentement lorsqu'une personne réelle est représentée, et la provenance font partie du fichier. Chaque preset déclare un âge ; nudité ou contenu intime avec un mineur rend un fichier invalide, pas seulement étiqueté."
+  },
+  {
+   "id": "cast",
+   "h": "Plusieurs personnages, un seul fichier",
+   "img": "docs/img/cof-cast.jpg",
+   "alt": "Clara Mercier et Martien, deux personnages dans un fichier, chacun avec ses propres droits",
+   "p": "Une distribution voyage ensemble, et chaque personnage garde sa propre apparence, sa voix, ses presets et ses droits."
+  },
+  {
+   "id": "tools",
+   "h": "Créé une fois. Utilisé partout.",
+   "img": "docs/img/cof-tools.png",
+   "alt": "Créer avec le builder, un agent IA ou un import ; utiliser dans l'explorateur, ComfyUI, les applications de conversation et les agents",
+   "p": "Créez avec le builder, un agent IA ou un import ; utilisez-le dans l'explorateur, ComfyUI, les applications de conversation et les hôtes d'agent. <code>cof validate</code> vérifie les âges, les droits, les hashes et les scripts."
+  }
+ ],
+ "tools_cards": [
+  {
+   "href": "builder/",
+   "img": "docs/img/cof-builder.jpg",
+   "alt": "Le builder COF avec Clara Mercier chargée",
+   "t": "Builder",
+   "p": "Déposez des photos, une carte et un échantillon de voix ; obtenez un <code>.cof</code>. Hors ligne, dans votre navigateur."
+  },
+  {
+   "href": "viewer/",
+   "img": "docs/img/cof-explorer.jpg",
+   "alt": "L'explorateur COF affichant les presets de Clara Mercier",
+   "t": "Explorateur",
+   "p": "Ouvrez n'importe quel <code>.cof</code> : presets, apparences, voix, poses, souvenirs, psyché, droits. En lecture seule."
+  }
+ ],
+ "h_cai": "Vous venez de Character.AI ?",
+ "cai": "Déposez votre export CAI Tools ou PersonaText, vérifiez trois choses, téléchargez un seul <code>.cof</code> : votre personnage, et vos conversations comme ses souvenirs, gardés privés. Puis allez plus loin qu'une sauvegarde — une apparence, une voix, des presets, une psyché. Tout se passe dans votre navigateur. <a href=\"import/\">Sauvegarder vos personnages →</a>",
+ "h_embrace": "Intégrer, pas remplacer",
+ "embrace": "Un <code>.cof</code> contient une Character Card V3 valide et exporte une carte PNG <code>ccv3</code>, un JSON de carte, <code>SOUL.md</code> / <code>IDENTITY.md</code>, un espace de travail OpenClaw et un profil Hermes ; un avatar VRM à l'intérieur reste un simple fichier. Les outils existants n'ont rien à réécrire. <a href=\"compare/\">Ce qui tient dans le fichier, comparé →</a>",
+ "h_more": "En savoir plus",
+ "cards_more": [
+  {
+   "href": "https://github.com/yannsouetre/cof/blob/main/spec/SPEC.md",
+   "t": "Spécification",
+   "p": "Le texte normatif, en anglais et en français."
+  },
+  {
+   "href": "https://github.com/yannsouetre/cof/blob/main/docs/IMPLEMENTING.md",
+   "t": "Implémenter COF",
+   "p": "Lecture, écriture, droits, sécurité, conformité."
+  },
+  {
+   "href": "https://github.com/yannsouetre/cof/tree/main/spec/examples",
+   "t": "Exemples",
+   "p": "Neuf personnages conformes, du texte seul à un fichier phare à douze presets."
+  },
+  {
+   "href": "https://github.com/yannsouetre/cof/blob/main/skills/cof-author/SKILL.md",
+   "t": "Pour les agents IA",
+   "p": "La skill <code>cof-author</code> : un agent crée et valide un .cof."
+  },
+  {
+   "href": "https://github.com/yannsouetre/cof/blob/main/docs/roadmap.md",
+   "t": "Feuille de route",
+   "p": "Prochainement : un lecteur, la création assistée, une galerie de personnages de départ, un profil professionnel."
+  },
+  {
+   "href": "https://github.com/yannsouetre/cof/blob/main/CHANGELOG.md",
+   "t": "Journal des modifications",
+   "p": "Chaque version, ce qui a changé et pourquoi."
+  }
+ ],
+ "footer": "Character Open File, par Yann Souetre — un format ouvert pour les personnages IA, avec leurs droits. Spécification CC BY 4.0 · schémas et vocabulaires CC0 · code MIT · <a href=\"https://github.com/yannsouetre/cof/blob/main/docs/brand.md\">Identité visuelle</a> · <a href=\"https://github.com/yannsouetre/cof\">Source sur GitHub</a>. Un compteur de visites sans cookies (GoatCounter) compte les pages vues sur ce site, jamais les fichiers que vous ouvrez."
+}

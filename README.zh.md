@@ -10,7 +10,7 @@
 <a href="https://github.com/yannsouetre/ComfyUI-COF"><img src="docs/img/btn-comfyui.png" alt="ComfyUI 节点" width="250"></a>
 </p>
 <p align="center">
-<a href="https://yannsouetre.github.io/cof/"><img src="docs/img/btn-read-format.png" alt="阅读：COF，一页看懂的格式" width="330"></a>&nbsp;&nbsp;
+<a href="https://yannsouetre.github.io/cof/index.zh.html"><img src="docs/img/btn-read-format.png" alt="阅读：COF，一页看懂的格式" width="330"></a>&nbsp;&nbsp;
 <a href="https://yannsouetre.github.io/cof/compare/index.zh.html"><img src="docs/img/btn-read-compare.png" alt="阅读：文件里装得下什么？COF 与其他格式的对比" width="330"></a>
 </p>
 <p align="center">

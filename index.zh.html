@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>COF — Character Open File</title>
+<meta name="description" content="一个开放文件承载一个 AI 角色：性格、外貌、声音、3D、动作、记忆、心理、智能体文件——并内置其权利与同意。">
+<meta property="og:title" content="COF — Character Open File">
+<meta property="og:description" content="完整的 AI 角色装在一个开放文件中——可携带，并附带其权利。">
+<meta property="og:image" content="https://yannsouetre.github.io/cof/docs/img/cof-social.jpg">
+<meta property="og:image:width" content="1280"><meta property="og:image:height" content="640">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://yannsouetre.github.io/cof/docs/img/cof-social.jpg">
+<link rel="canonical" href="https://yannsouetre.github.io/cof/index.zh.html">
+<link rel="alternate" hreflang="en" href="https://yannsouetre.github.io/cof/">
+<link rel="alternate" hreflang="fr" href="https://yannsouetre.github.io/cof/index.fr.html">
+<link rel="alternate" hreflang="de" href="https://yannsouetre.github.io/cof/index.de.html">
+<link rel="alternate" hreflang="es" href="https://yannsouetre.github.io/cof/index.es.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://yannsouetre.github.io/cof/index.zh.html">
+<link rel="alternate" hreflang="ja" href="https://yannsouetre.github.io/cof/index.ja.html">
+<link rel="alternate" hreflang="x-default" href="https://yannsouetre.github.io/cof/">
+<link rel="icon" type="image/svg+xml" href="builder/icon/cof-icon-dark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Michroma&family=Cormorant+Garamond:ital,wght@1,500&family=Bricolage+Grotesque:wght@700;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d1312;--night:#070b12;--panel:#18201f;--line:#2a3533;--ink:#eef3f1;--muted:#93a39e;--teal:#4cc2a8;--deep:#0f6b5c;--mint:#bfeee2;--violet:#a98ae8;--coral:#f07a72;--warn:#e0a54a;--chip:#1f2927;--col:860px;
+--sans:"IBM Plex Sans","Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;--head:"Bricolage Grotesque",var(--sans)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:var(--teal)}
+.hero{position:relative;background:var(--night);background-image:radial-gradient(1200px 500px at 70% -10%,rgba(76,194,168,.18),transparent 60%),radial-gradient(800px 400px at 10% 110%,rgba(169,138,232,.14),transparent 60%);border-bottom:1px solid var(--line)}
+.top{display:flex;align-items:center;gap:12px;padding:22px clamp(20px,5vw,64px);font:500 14px/1 var(--mono);color:var(--mint);letter-spacing:.06em}
+.top svg{width:28px;height:28px;border-radius:7px;flex:0 0 auto}
+.top a{color:inherit;text-decoration:none}.top>span{opacity:.7}
+.top .langs{margin-left:auto;display:flex;gap:2px;letter-spacing:.04em}
+.top .langs a{font:500 11px/1 var(--mono);color:var(--mint);opacity:.6;padding:6px 6px;border-radius:6px;border:1px solid transparent}
+.top .langs a:hover{opacity:1}.top .langs a.on{opacity:1;color:var(--teal);border-color:rgba(255,255,255,.18)}
+.share{margin-left:0;position:relative;letter-spacing:0}
+.share summary{list-style:none;cursor:pointer;font:500 12px/1 var(--mono);letter-spacing:.06em;color:var(--mint);opacity:.75;padding:6px 8px;border:1px solid transparent;border-radius:8px}
+.share summary::-webkit-details-marker{display:none}
+.share summary:hover,.share[open] summary{opacity:1;border-color:rgba(255,255,255,.18)}
+.share menu{position:absolute;right:0;top:calc(100% + 6px);margin:0;padding:6px;list-style:none;background:#0d1312;border:1px solid rgba(255,255,255,.14);border-radius:10px;min-width:11em;z-index:5;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.share menu a,.share menu button{display:block;width:100%;text-align:left;font:500 12px/1 var(--mono);letter-spacing:.04em;color:#dfe7e4;background:none;border:0;padding:8px 10px;border-radius:6px;text-decoration:none;cursor:pointer}
+.share menu a:hover,.share menu button:hover{background:rgba(255,255,255,.08);color:#fff}
+@media (max-width:640px){.top{flex-wrap:wrap;row-gap:6px}.top .share{margin-left:auto}.top .langs{order:9;flex-basis:100%;margin-left:0;gap:4px;padding-left:40px}.top .langs a{padding:5px 6px;font-size:10px}}
+@media (max-width:480px){.top>span{display:none}}
+.hero .text{padding:clamp(36px,8vh,84px) clamp(20px,5vw,64px) clamp(44px,8vh,80px);max-width:1200px}
+h1{font:400 clamp(20px,3.4vw,42px)/1.25 Michroma,"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;letter-spacing:.2em;text-transform:uppercase;margin:0 0 18px;color:#ece8e0}
+html[lang=ja] h1,html[lang=zh-Hans] h1{letter-spacing:.12em;text-transform:none}
+.rule{width:88px;height:1px;background:var(--mint);opacity:.8;margin:0 0 18px}
+.sub{font:italic 500 clamp(21px,2.4vw,30px)/1.3 "Cormorant Garamond","Noto Sans SC","PingFang SC","Microsoft YaHei",Georgia,serif;color:#e4dfd6;margin:0;max-width:760px}
+html[lang=ja] .sub,html[lang=zh-Hans] .sub{font-style:normal;font-size:clamp(18px,2vw,24px)}
+.kicker{position:absolute;right:clamp(20px,5vw,64px);bottom:18px;font:500 11px/1 var(--mono);letter-spacing:.18em;color:var(--mint);opacity:.6}
+main{max-width:1240px;margin:0 auto;padding:40px clamp(16px,4vw,40px) 80px}
+.prose{max-width:var(--col)}
+.lede{font-size:21px;line-height:1.5;color:#dfe7e4}
+h2{font:400 clamp(17px,2vw,21px)/1.4 Michroma,"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--mint);margin:72px 0 22px;padding-top:28px;border-top:1px solid var(--line)}
+html[lang=ja] h2,html[lang=zh-Hans] h2{letter-spacing:.1em;text-transform:none}
+h3{font:700 18px/1.3 var(--head);margin:28px 0 8px}
+p{margin:10px 0}
+code{font-family:var(--mono);font-size:.84em;background:var(--chip);padding:1px 5px;border-radius:4px}
+.legend{display:flex;flex-wrap:wrap;gap:10px 18px;margin:18px 0 8px;font-size:14px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.mk{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:8px;font:600 14px/1 var(--mono);flex:0 0 auto;font-style:normal}
+.mk.y,.mk.c{background:rgba(76,194,168,.18);color:var(--teal);border:1px solid rgba(76,194,168,.45)}
+.mk.c{font:600 19px/1 var(--sans)}
+.mk.p{background:rgba(224,165,74,.16);color:var(--warn);border:1px solid rgba(224,165,74,.45)}
+.mk.n{background:rgba(240,122,114,.14);color:var(--coral);border:1px solid rgba(240,122,114,.4)}
+.mk.g{background:rgba(147,163,158,.12);color:var(--muted);border:1px dashed rgba(147,163,158,.5)}
+.twrap{position:relative;overflow:auto;border:1px solid var(--line);border-radius:16px;background:var(--panel);margin:14px 0 10px}
+table{border-collapse:separate;border-spacing:0;width:100%;min-width:1040px;font-size:14px}
+thead th{position:sticky;top:0;z-index:3;background:#121a18;color:var(--ink);text-align:left;padding:14px 12px 10px;border-bottom:1px solid var(--line);vertical-align:bottom;font:700 14px/1.25 var(--head)}
+thead th small{display:block;font:400 11.5px/1.35 var(--sans);color:var(--muted);margin-top:5px;letter-spacing:0}
+thead th:first-child{z-index:4}
+th.cof{color:var(--mint)}
+thead th.cof{background:linear-gradient(180deg,rgba(15,107,92,.45),rgba(15,107,92,.2)),#121a18}
+tbody th{position:sticky;left:0;z-index:2;background:var(--panel);text-align:left;font-weight:500;padding:10px 12px;border-bottom:1px solid var(--line);min-width:230px;max-width:300px;color:var(--ink)}
+tbody th small{display:block;color:var(--muted);font-size:12px;line-height:1.35;margin-top:2px;font-weight:400}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top;min-width:112px}
+td.cof{background:rgba(15,107,92,.10)}
+td .note{display:block;font-size:11.5px;line-height:1.35;color:var(--muted);margin-top:4px;max-width:150px}
+tr.grp th,tr.grp td{position:sticky;left:0;background:#0f1715;color:var(--teal);font:700 13px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;padding:16px 12px 8px;border-bottom:1px solid var(--line)}
+tr.grp th{z-index:2}tr.grp.soon th{color:var(--muted)}
+tr.rep th,tr.rep td{background:#0f1715;border-bottom:1px solid var(--line);padding:4px 10px 10px;font:700 12.5px/1.3 var(--head);color:var(--ink)}
+tr.rep th{position:sticky;left:0;z-index:2;color:var(--muted);font-weight:500;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+tr.rep td.cof{color:var(--mint);background:linear-gradient(180deg,rgba(15,107,92,.25),rgba(15,107,92,.12)),#0f1715}
+tr:hover td{background:rgba(255,255,255,.025)}tr:hover td.cof{background:rgba(15,107,92,.16)}
+tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
+.tools{display:flex;gap:10px 22px;flex-wrap:wrap;align-items:center;margin:0 0 6px;font-size:13.5px;color:var(--muted)}
+.tools label{display:inline-flex;align-items:center;gap:6px;cursor:pointer}.tools input{accent-color:var(--teal)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:14px 0}
+.card{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:var(--panel)}
+.card .t{font:700 18px/1.3 var(--head);margin:0 0 6px;color:var(--teal)}
+.card.w .t{color:var(--warn)}
+.card p{margin:6px 0;font-size:15px;color:#d6dedb}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin:22px 0 0}
+.cta a{display:inline-block;padding:11px 18px;border-radius:999px;text-decoration:none;font:600 15px var(--sans);border:1px solid var(--line);color:var(--ink);background:var(--chip)}
+.cta a.pri{background:var(--deep);border-color:var(--deep);color:#fff}.cta a:hover{border-color:var(--teal)}
+.src{font-size:14px;color:var(--muted)}.src li{margin:4px 0}
+footer{border-top:1px solid var(--line);margin-top:40px;padding:28px clamp(20px,5vw,64px) 48px;color:var(--muted);font-size:14px;line-height:1.6}
+footer .mark{font:400 13px/1 Michroma,sans-serif;letter-spacing:.3em;color:var(--mint);margin-bottom:10px}
+@media (max-width:720px){body{font-size:16px}.lede{font-size:18px}td .note{max-width:none}tbody th{min-width:180px;max-width:200px}}
+
+.grid{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.status{font-size:15px;color:var(--muted);border-left:2px solid var(--deep);padding:2px 0 2px 14px;margin:18px 0 0}
+.status b{color:var(--ink);font-weight:600}
+.cta{margin:26px 0 8px}
+figure{margin:18px 0 8px}
+figure video,figure img,.film video{width:100%;display:block;border-radius:18px;border:1px solid var(--line);background:#000}
+figcaption{color:var(--muted);font-size:14.5px;margin-top:10px}
+a.card{display:block;color:inherit;text-decoration:none}a.card:hover{border-color:var(--teal)}
+.films{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;margin:14px 0}
+.film .t{font:700 18px/1.3 var(--head);color:var(--teal);margin:12px 0 4px}
+.film p{margin:0;font-size:15px;color:#d6dedb}
+.sec{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:26px;align-items:center}
+.sec.flip{grid-template-columns:minmax(0,1fr) minmax(0,1.35fr)}
+.sec.flip figure{order:2}
+.sec p{font-size:16.5px;color:#d6dedb;margin:0}
+.sec.wide{grid-template-columns:1fr}
+.shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin:18px 0}
+.shots a.card img{width:100%;display:block;border-radius:10px;margin:0 0 10px;border:1px solid var(--line)}
+.box{border:1px solid var(--line);border-radius:14px;padding:18px 20px;background:var(--panel)}
+.box p{margin:0;color:#d6dedb}
+@media (max-width:820px){.sec,.sec.flip{grid-template-columns:1fr}.sec.flip figure{order:0}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="top"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="#0f6b5c"/><path d="M20 24h24M20 32h18M20 40h24" stroke="#bfeee2" stroke-width="4" stroke-linecap="round"/><circle cx="46" cy="32" r="4" fill="#4cc2a8"/></svg><a href="./">COF</a><span>· Character Open File · 1.2</span><nav class="langs" aria-label="语言"><a href="./" hreflang="en" lang="en">EN</a><a href="index.fr.html" hreflang="fr" lang="fr">FR</a><a href="index.de.html" hreflang="de" lang="de">DE</a><a href="index.es.html" hreflang="es" lang="es">ES</a><a href="index.zh.html" hreflang="zh-Hans" lang="zh" class="on" aria-current="page">ZH</a><a href="index.ja.html" hreflang="ja" lang="ja">JA</a></nav><details class="share" data-share><summary aria-label="分享此页面">分享 ↗</summary><menu><li><button type="button" data-copy>复制链接</button></li><li><a data-net="x" target="_blank" rel="noopener">X / Twitter</a></li><li><a data-net="linkedin" target="_blank" rel="noopener">LinkedIn</a></li><li><a data-net="bluesky" target="_blank" rel="noopener">Bluesky</a></li><li><a data-net="reddit" target="_blank" rel="noopener">Reddit</a></li><li><a data-net="mail">邮件</a></li></menu></details></div>
+  <div class="text">
+    <h1>Character Open File</h1>
+    <div class="rule"></div>
+    <p class="sub">完整的 AI 角色装在一个开放文件中——可携带，并附带其权利。</p>
+  </div>
+  <div class="kicker">COF · 一种开放格式</div>
+</header>
+
+<main>
+<div class="prose">
+<p class="lede">一种开放文件格式，把定义一个 AI 角色的一切打包在一起——性格、外貌、声音、3D、动作、智能体技能、记忆和心理——<b>并内置其权利与同意</b>。同一个文件可以在聊天应用、图像生成器、ComfyUI、游戏引擎或智能体中打开。</p>
+<p class="status"><b>当前版本：1.2.2</b>，2026年11月15日——Builder保留它未建模的一切内容；<code>cof-cli</code> 支持智能体宿主（一份记忆，两个家）；浏览器显示无日期的记忆（<a href="https://github.com/yannsouetre/cof/blob/main/docs/release-notes-1.2.2.md">发布说明</a>）。此前：1.2.1，11月8日——Character.AI 导入；1.2，11月8日——心理；1.1，10月30日——记忆；1.0，10月17日。每个 1.x 文件都保持有效，并可由每个 1.x 工具读取。</p>
+<div class="cta">
+  <a class="pri" href="viewer/">查看一个 .cof →</a>
+  <a href="builder/">在浏览器中构建一个</a>
+  <a href="https://github.com/yannsouetre/ComfyUI-COF">ComfyUI 节点</a>
+  <a href="https://github.com/yannsouetre/cof">GitHub 上的源代码</a>
+</div>
+</div>
+
+<figure id="clip"><video src="docs/media/cof-clip.mp4" poster="docs/img/cof-poster.jpg" controls preload="metadata" playsinline></video>
+<figcaption>60 秒，有声音。Clara Mercier 和 Martien 是虚构的 COF 示例角色（图片由 AI 生成）。</figcaption></figure>
+
+<h2 id="new">新内容</h2>
+<div class="grid"><a class="card t" href="compare/index.zh.html"><p class="t">文件里装得下什么？</p><p>COF 与 Character Card V2 和 V3 / .charx、智能体 Markdown、Letta Agent File、MacPaw Portable Memory 及 VRM 的逐项对比——也包括 COF 不做的事。</p></a><a class="card t" href="import/"><p class="t">保存你的 Character.AI 角色</p><p>COF 1.2.1：你的角色，以及作为其私密记忆的对话，装在一个开放文件中——然后加上外貌、声音、预设和心理。一切都在你的浏览器中完成。</p></a><a class="card t" href="psyche/index.zh.html"><p class="t">AI 角色如今有了内心世界</p><p>COF 1.2：一个可以阅读、编辑并随身携带的心理——每条信条都关联到形成它的那段记忆。</p></a><a class="card t" href="psyche/how-many.zh.html"><p class="t">多少条信条，才构成一个人？</p><p>心理学实际统计过的是什么，一个用来检验你自己数字的模拟器，以及 Big Five、Myers-Briggs 类型、Enneagram 和占星术各有几分价值。</p></a><a class="card t" href="memories/index.zh.html"><p class="t">AI 角色如今有了记忆</p><p>COF 1.1：一生中的时刻与时期，当时的感受，角色藏在心里的事，以及逐渐淡去的事。</p></a><a class="card t" href="memories/how-much.zh.html"><p class="t">一生能有多重？</p><p>一个人拥有多少记忆，它们会占用多少字节，以及一个用来检验这些假设的计算器。</p></a></div>
+
+<h2 id="work">实际运行</h2>
+<p class="prose">为 1.2.2 制作的两部短片，使用真实的文件和真实的工具，没有任何摆拍。</p>
+<div class="films"><div class="film"><video src="docs/media/cof-demo-agents.mp4" poster="docs/img/cof-demo-agents.jpg" controls preload="none" playsinline></video><p class="t">一份记忆，两个家</p><p>Clara 被导出到 OpenClaw，依据她的文件所携带的记忆作答。听到新的事情后，智能体写下一条笔记；<code>cof memory add</code> 把它作为一段亲历的个人记忆带回她的文件。再导出到从未见过她的 Hermes，她记得今天早上的那趟火车。</p></div><div class="film"><video src="docs/media/cof-demo-psyche.mp4" poster="docs/img/cof-demo-psyche.jpg" controls preload="none" playsinline></video><p class="t">她是谁</p><p>一个角色不只是一段提示词。她的心理——十一种节点，每个节点都关联到其来源的记忆、人物或地点——在浏览器中浏览，随时间回放，在 Builder 中撰写，再转换为智能体读取的 <code>SOUL.md</code>。</p></div></div>
+
+<h2 id="contents">一个 .cof 里有什么</h2>
+<div class="sec wide"><figure><img src="docs/img/cof-contents.png" alt="一个 .cof 包含性格、外貌、声音、姿势与动作、身份权重、3D、智能体文件和权利" loading="lazy"></figure><p>一个带清单的 ZIP 归档：角色的身份；分为八个类别的元素——性格（内含一张 Character Card V3、心理、自由文本）、外貌、身份权重、3D、声音、姿势、动作、记忆；一个智能体文件库；以及其权利。几乎所有内容都是可选的；放入的内容都会经过检查。</p></div>
+<h2 id="presets">每个版本，一个文件</h2>
+<div class="sec flip"><figure><img src="docs/img/cof-presets.jpg" alt="29 岁的 Clara Mercier、漫画风格、65 岁以及近未来战斗者：同一文件的四个预设" loading="lazy"></figure><p><b>预设</b>是一个可直接使用的组合：一种性格、一种外貌、一种声音、一个年龄。切换语言或年龄，其余部分随之改变。</p></div>
+<h2 id="memories">一段过去，而不只是一段描述</h2>
+<div class="sec"><figure><img src="docs/img/cof-memories.jpg" alt="浏览器中 65 岁 Clara 的记忆图：一个时期、时间轴上的九个时刻，以及它们关联的人物和地点" loading="lazy"></figure><p>一生中的时刻与时期，每一段都记录何时、何地、与谁、当时和现在的感受、回想起来有多清晰，以及角色宁愿不说的内容。它与用户共同经历的事会写回同一个文件——并随文件一起带走。<a href="memories/index.zh.html">了解更多</a>。</p></div>
+<h2 id="psyche">内心世界，以及它所坚持的东西</h2>
+<div class="sec flip"><figure><img src="docs/img/cof-psyche.jpg" alt="浏览器中 Clara 的心理图：价值观、愿望、恐惧、信念和一道创伤，按其来源的记忆分组" loading="lazy"></figure><p>价值观、信念、愿望、恐惧、创伤、喜好和习惯构成一张由简短节点组成的图，每个节点都有强度、时间跨度和其来源的记忆。人物、地点和物品只命名一次，由记忆和心理共享。<a href="psyche/index.zh.html">了解更多</a>。</p></div>
+<h2 id="rights">权利随角色同行</h2>
+<div class="sec"><figure><img src="docs/img/cof-rights.jpg" alt="一张权利卡：声音克隆否，训练否，再分发否，商业用途仅限个人和非营利，AI 披露是" loading="lazy"></figure><p>许可、描绘真实人物时的同意以及来源都是文件的一部分。每个预设都声明一个年龄；涉及未成年人的裸露或亲密内容会使文件无效，而不仅仅是被标记。</p></div>
+<h2 id="cast">多个角色，一个文件</h2>
+<div class="sec flip"><figure><img src="docs/img/cof-cast.jpg" alt="Clara Mercier 和 Martien，同一文件中的两个角色，各有自己的权利" loading="lazy"></figure><p>一组角色一起流转，每个角色都保留自己的外貌、声音、预设和权利。</p></div>
+<h2 id="tools">制作一次，随处使用。</h2>
+<div class="sec wide"><figure><img src="docs/img/cof-tools.png" alt="用Builder、AI 智能体或导入来创建；在浏览器、ComfyUI、聊天应用和智能体中使用" loading="lazy"></figure><p>用Builder、AI 智能体或导入来创建；在浏览器、ComfyUI、聊天应用和智能体宿主中使用。<code>cof validate</code> 检查年龄、权利、哈希值和脚本。</p></div>
+<div class="shots"><a class="card" href="builder/"><img src="docs/img/cof-builder.jpg" alt="载入了 Clara Mercier 的 COF Builder" loading="lazy"><p class="t">Builder</p><p>放入照片、一张卡片和一段声音样本，得到一个 <code>.cof</code>。离线，在你的浏览器中运行。</p></a><a class="card" href="viewer/"><img src="docs/img/cof-explorer.jpg" alt="显示 Clara Mercier 预设的 COF 浏览器" loading="lazy"><p class="t">浏览器</p><p>打开任意 <code>.cof</code>：预设、外貌、声音、姿势、记忆、心理、权利。只读。</p></a></div>
+
+<h2 id="character-ai">从 Character.AI 过来？</h2>
+<div class="box prose"><p>放入你的 CAI Tools 或 PersonaText 导出文件，检查三项内容，下载一个 <code>.cof</code>：你的角色，以及作为其记忆的对话，保持私密。然后让它不止是一份备份——加上外貌、声音、预设和心理。一切都在你的浏览器中完成。<a href="import/">保存你的角色 →</a></p></div>
+
+<h2 id="embrace">兼容，而非取代</h2>
+<p class="prose">一个 <code>.cof</code> 包含一张有效的 Character Card V3，并可导出为 <code>ccv3</code> PNG 卡片、卡片 JSON、<code>SOUL.md</code> / <code>IDENTITY.md</code>、OpenClaw 工作区和 Hermes 配置档案；其中的 VRM 虚拟形象是一个普通文件。现有工具无需重写任何内容。<a href="compare/index.zh.html">文件里装得下什么，对比一览 →</a></p>
+
+<h2 id="more">了解更多</h2>
+<div class="grid"><a class="card t" href="https://github.com/yannsouetre/cof/blob/main/spec/SPEC.md"><p class="t">规范</p><p>规范性文本，有英文版和法文版。</p></a><a class="card t" href="https://github.com/yannsouetre/cof/blob/main/docs/IMPLEMENTING.md"><p class="t">实现 COF</p><p>读取、写入、权利、安全、一致性。</p></a><a class="card t" href="https://github.com/yannsouetre/cof/tree/main/spec/examples"><p class="t">示例</p><p>九个符合规范的角色，从纯文本到含十二个预设的旗舰示例。</p></a><a class="card t" href="https://github.com/yannsouetre/cof/blob/main/skills/cof-author/SKILL.md"><p class="t">面向 AI 智能体</p><p><code>cof-author</code> 技能：由智能体构建并验证一个 .cof。</p></a><a class="card t" href="https://github.com/yannsouetre/cof/blob/main/docs/roadmap.md"><p class="t">路线图</p><p>下一步：播放器、辅助创建、入门角色库、专业配置档案。</p></a><a class="card t" href="https://github.com/yannsouetre/cof/blob/main/CHANGELOG.md"><p class="t">更新日志</p><p>每个版本改了什么，以及原因。</p></a></div>
+</main>
+
+<footer>
+  <div class="mark">COF</div>
+  Character Open File，作者 Yann Souetre——一种面向 AI 角色、附带其权利的开放格式。规范 CC BY 4.0 · 模式与词表 CC0 · 代码 MIT · <a href="https://github.com/yannsouetre/cof/blob/main/docs/brand.md">视觉识别</a> · <a href="https://github.com/yannsouetre/cof">GitHub 上的源代码</a>。一个不使用 Cookie 的访问计数器（GoatCounter）统计本站的页面浏览量，绝不统计你打开的文件。
+</footer>
+
+<script>
+(function(){const d=document.querySelector("[data-share]");if(!d)return;const url=(document.querySelector('link[rel=canonical]')||{}).href||location.href.split("#")[0],title=document.title,u=encodeURIComponent(url),t=encodeURIComponent(title);
+const H={x:"https://twitter.com/intent/tweet?url="+u+"&text="+t,linkedin:"https://www.linkedin.com/sharing/share-offsite/?url="+u,bluesky:"https://bsky.app/intent/compose?text="+t+"%20"+u,reddit:"https://www.reddit.com/submit?url="+u+"&title="+t,mail:"mailto:?subject="+t+"&body="+u};
+d.querySelectorAll("[data-net]").forEach(a=>a.href=H[a.dataset.net]);const c=d.querySelector("[data-copy]"),c0=c.textContent;c.onclick=async()=>{try{await navigator.clipboard.writeText(url);c.textContent="\u5df2\u590d\u5236 \u2713"}catch(e){prompt("Copy this link:",url)}setTimeout(()=>{c.textContent=c0;d.open=false},1200)};
+document.addEventListener("click",e=>{if(!d.contains(e.target))d.open=false});document.addEventListener("keydown",e=>{if(e.key==="Escape")d.open=false})})();
+</script>
+<!-- Visit counter: GoatCounter (no cookies, no personal data). Loaded only on the public site, never from a local copy or another host; it counts page views and referrers, never the files you open. -->
+<script>(function(){if(location.hostname!=="yannsouetre.github.io")return;var s=document.createElement("script");s.async=true;s.src="https://gc.zgo.at/count.js";s.setAttribute("data-goatcounter","https://syanngpt.goatcounter.com/count");document.body.appendChild(s)})();</script>
+</body>
+</html>

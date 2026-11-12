@@ -1,0 +1,185 @@
+{
+ "meta": {
+  "title": "COF — Character Open File",
+  "description": "一个开放文件承载一个 AI 角色：性格、外貌、声音、3D、动作、记忆、心理、智能体文件——并内置其权利与同意。",
+  "og_title": "COF — Character Open File",
+  "og_description": "完整的 AI 角色装在一个开放文件中——可携带，并附带其权利。"
+ },
+ "top": {
+  "crumb": "· Character Open File · 1.2",
+  "share": "分享 ↗",
+  "copy": "复制链接",
+  "copied": "已复制 ✓",
+  "email": "邮件",
+  "share_aria": "分享此页面",
+  "lang_aria": "语言"
+ },
+ "hero": {
+  "h1": "Character Open File",
+  "sub": "完整的 AI 角色装在一个开放文件中——可携带，并附带其权利。",
+  "kicker": "COF · 一种开放格式"
+ },
+ "lede": "一种开放文件格式，把定义一个 AI 角色的一切打包在一起——性格、外貌、声音、3D、动作、智能体技能、记忆和心理——<b>并内置其权利与同意</b>。同一个文件可以在聊天应用、图像生成器、ComfyUI、游戏引擎或智能体中打开。",
+ "status": "<b>当前版本：1.2.2</b>，2026年11月15日——Builder保留它未建模的一切内容；<code>cof-cli</code> 支持智能体宿主（一份记忆，两个家）；浏览器显示无日期的记忆（<a href=\"https://github.com/yannsouetre/cof/blob/main/docs/release-notes-1.2.2.md\">发布说明</a>）。此前：1.2.1，11月8日——Character.AI 导入；1.2，11月8日——心理；1.1，10月30日——记忆；1.0，10月17日。每个 1.x 文件都保持有效，并可由每个 1.x 工具读取。",
+ "cta": {
+  "explore": "查看一个 .cof →",
+  "build": "在浏览器中构建一个",
+  "comfy": "ComfyUI 节点",
+  "github": "GitHub 上的源代码"
+ },
+ "clip_caption": "60 秒，有声音。Clara Mercier 和 Martien 是虚构的 COF 示例角色（图片由 AI 生成）。",
+ "h_new": "新内容",
+ "cards_new": [
+  {
+   "href": "compare/",
+   "t": "文件里装得下什么？",
+   "p": "COF 与 Character Card V2 和 V3 / .charx、智能体 Markdown、Letta Agent File、MacPaw Portable Memory 及 VRM 的逐项对比——也包括 COF 不做的事。"
+  },
+  {
+   "href": "import/",
+   "t": "保存你的 Character.AI 角色",
+   "p": "COF 1.2.1：你的角色，以及作为其私密记忆的对话，装在一个开放文件中——然后加上外貌、声音、预设和心理。一切都在你的浏览器中完成。"
+  },
+  {
+   "href": "psyche/",
+   "t": "AI 角色如今有了内心世界",
+   "p": "COF 1.2：一个可以阅读、编辑并随身携带的心理——每条信条都关联到形成它的那段记忆。"
+  },
+  {
+   "href": "psyche/how-many.html",
+   "t": "多少条信条，才构成一个人？",
+   "p": "心理学实际统计过的是什么，一个用来检验你自己数字的模拟器，以及 Big Five、Myers-Briggs 类型、Enneagram 和占星术各有几分价值。"
+  },
+  {
+   "href": "memories/",
+   "t": "AI 角色如今有了记忆",
+   "p": "COF 1.1：一生中的时刻与时期，当时的感受，角色藏在心里的事，以及逐渐淡去的事。"
+  },
+  {
+   "href": "memories/how-much.html",
+   "t": "一生能有多重？",
+   "p": "一个人拥有多少记忆，它们会占用多少字节，以及一个用来检验这些假设的计算器。"
+  }
+ ],
+ "h_work": "实际运行",
+ "work_intro": "为 1.2.2 制作的两部短片，使用真实的文件和真实的工具，没有任何摆拍。",
+ "films": [
+  {
+   "src": "docs/media/cof-demo-agents.mp4",
+   "poster": "docs/img/cof-demo-agents.jpg",
+   "t": "一份记忆，两个家",
+   "p": "Clara 被导出到 OpenClaw，依据她的文件所携带的记忆作答。听到新的事情后，智能体写下一条笔记；<code>cof memory add</code> 把它作为一段亲历的个人记忆带回她的文件。再导出到从未见过她的 Hermes，她记得今天早上的那趟火车。"
+  },
+  {
+   "src": "docs/media/cof-demo-psyche.mp4",
+   "poster": "docs/img/cof-demo-psyche.jpg",
+   "t": "她是谁",
+   "p": "一个角色不只是一段提示词。她的心理——十一种节点，每个节点都关联到其来源的记忆、人物或地点——在浏览器中浏览，随时间回放，在 Builder 中撰写，再转换为智能体读取的 <code>SOUL.md</code>。"
+  }
+ ],
+ "sections": [
+  {
+   "id": "contents",
+   "h": "一个 .cof 里有什么",
+   "img": "docs/img/cof-contents.png",
+   "alt": "一个 .cof 包含性格、外貌、声音、姿势与动作、身份权重、3D、智能体文件和权利",
+   "p": "一个带清单的 ZIP 归档：角色的身份；分为八个类别的元素——性格（内含一张 Character Card V3、心理、自由文本）、外貌、身份权重、3D、声音、姿势、动作、记忆；一个智能体文件库；以及其权利。几乎所有内容都是可选的；放入的内容都会经过检查。"
+  },
+  {
+   "id": "presets",
+   "h": "每个版本，一个文件",
+   "img": "docs/img/cof-presets.jpg",
+   "alt": "29 岁的 Clara Mercier、漫画风格、65 岁以及近未来战斗者：同一文件的四个预设",
+   "p": "<b>预设</b>是一个可直接使用的组合：一种性格、一种外貌、一种声音、一个年龄。切换语言或年龄，其余部分随之改变。"
+  },
+  {
+   "id": "memories",
+   "h": "一段过去，而不只是一段描述",
+   "img": "docs/img/cof-memories.jpg",
+   "alt": "浏览器中 65 岁 Clara 的记忆图：一个时期、时间轴上的九个时刻，以及它们关联的人物和地点",
+   "p": "一生中的时刻与时期，每一段都记录何时、何地、与谁、当时和现在的感受、回想起来有多清晰，以及角色宁愿不说的内容。它与用户共同经历的事会写回同一个文件——并随文件一起带走。<a href=\"memories/\">了解更多</a>。"
+  },
+  {
+   "id": "psyche",
+   "h": "内心世界，以及它所坚持的东西",
+   "img": "docs/img/cof-psyche.jpg",
+   "alt": "浏览器中 Clara 的心理图：价值观、愿望、恐惧、信念和一道创伤，按其来源的记忆分组",
+   "p": "价值观、信念、愿望、恐惧、创伤、喜好和习惯构成一张由简短节点组成的图，每个节点都有强度、时间跨度和其来源的记忆。人物、地点和物品只命名一次，由记忆和心理共享。<a href=\"psyche/\">了解更多</a>。"
+  },
+  {
+   "id": "rights",
+   "h": "权利随角色同行",
+   "img": "docs/img/cof-rights.jpg",
+   "alt": "一张权利卡：声音克隆否，训练否，再分发否，商业用途仅限个人和非营利，AI 披露是",
+   "p": "许可、描绘真实人物时的同意以及来源都是文件的一部分。每个预设都声明一个年龄；涉及未成年人的裸露或亲密内容会使文件无效，而不仅仅是被标记。"
+  },
+  {
+   "id": "cast",
+   "h": "多个角色，一个文件",
+   "img": "docs/img/cof-cast.jpg",
+   "alt": "Clara Mercier 和 Martien，同一文件中的两个角色，各有自己的权利",
+   "p": "一组角色一起流转，每个角色都保留自己的外貌、声音、预设和权利。"
+  },
+  {
+   "id": "tools",
+   "h": "制作一次，随处使用。",
+   "img": "docs/img/cof-tools.png",
+   "alt": "用Builder、AI 智能体或导入来创建；在浏览器、ComfyUI、聊天应用和智能体中使用",
+   "p": "用Builder、AI 智能体或导入来创建；在浏览器、ComfyUI、聊天应用和智能体宿主中使用。<code>cof validate</code> 检查年龄、权利、哈希值和脚本。"
+  }
+ ],
+ "tools_cards": [
+  {
+   "href": "builder/",
+   "img": "docs/img/cof-builder.jpg",
+   "alt": "载入了 Clara Mercier 的 COF Builder",
+   "t": "Builder",
+   "p": "放入照片、一张卡片和一段声音样本，得到一个 <code>.cof</code>。离线，在你的浏览器中运行。"
+  },
+  {
+   "href": "viewer/",
+   "img": "docs/img/cof-explorer.jpg",
+   "alt": "显示 Clara Mercier 预设的 COF 浏览器",
+   "t": "浏览器",
+   "p": "打开任意 <code>.cof</code>：预设、外貌、声音、姿势、记忆、心理、权利。只读。"
+  }
+ ],
+ "h_cai": "从 Character.AI 过来？",
+ "cai": "放入你的 CAI Tools 或 PersonaText 导出文件，检查三项内容，下载一个 <code>.cof</code>：你的角色，以及作为其记忆的对话，保持私密。然后让它不止是一份备份——加上外貌、声音、预设和心理。一切都在你的浏览器中完成。<a href=\"import/\">保存你的角色 →</a>",
+ "h_embrace": "兼容，而非取代",
+ "embrace": "一个 <code>.cof</code> 包含一张有效的 Character Card V3，并可导出为 <code>ccv3</code> PNG 卡片、卡片 JSON、<code>SOUL.md</code> / <code>IDENTITY.md</code>、OpenClaw 工作区和 Hermes 配置档案；其中的 VRM 虚拟形象是一个普通文件。现有工具无需重写任何内容。<a href=\"compare/\">文件里装得下什么，对比一览 →</a>",
+ "h_more": "了解更多",
+ "cards_more": [
+  {
+   "href": "https://github.com/yannsouetre/cof/blob/main/spec/SPEC.md",
+   "t": "规范",
+   "p": "规范性文本，有英文版和法文版。"
+  },
+  {
+   "href": "https://github.com/yannsouetre/cof/blob/main/docs/IMPLEMENTING.md",
+   "t": "实现 COF",
+   "p": "读取、写入、权利、安全、一致性。"
+  },
+  {
+   "href": "https://github.com/yannsouetre/cof/tree/main/spec/examples",
+   "t": "示例",
+   "p": "九个符合规范的角色，从纯文本到含十二个预设的旗舰示例。"
+  },
+  {
+   "href": "https://github.com/yannsouetre/cof/blob/main/skills/cof-author/SKILL.md",
+   "t": "面向 AI 智能体",
+   "p": "<code>cof-author</code> 技能：由智能体构建并验证一个 .cof。"
+  },
+  {
+   "href": "https://github.com/yannsouetre/cof/blob/main/docs/roadmap.md",
+   "t": "路线图",
+   "p": "下一步：播放器、辅助创建、入门角色库、专业配置档案。"
+  },
+  {
+   "href": "https://github.com/yannsouetre/cof/blob/main/CHANGELOG.md",
+   "t": "更新日志",
+   "p": "每个版本改了什么，以及原因。"
+  }
+ ],
+ "footer": "Character Open File，作者 Yann Souetre——一种面向 AI 角色、附带其权利的开放格式。规范 CC BY 4.0 · 模式与词表 CC0 · 代码 MIT · <a href=\"https://github.com/yannsouetre/cof/blob/main/docs/brand.md\">视觉识别</a> · <a href=\"https://github.com/yannsouetre/cof\">GitHub 上的源代码</a>。一个不使用 Cookie 的访问计数器（GoatCounter）统计本站的页面浏览量，绝不统计你打开的文件。"
+}

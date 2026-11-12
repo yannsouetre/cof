@@ -1,0 +1,185 @@
+{
+ "meta": {
+  "title": "COF — Character Open File",
+  "description": "AIキャラクターのためのひとつのオープンファイル。性格、外見、声、3D、モーション、記憶、心理、エージェント用ファイルを、権利と同意の情報とともに収めます。",
+  "og_title": "COF — Character Open File",
+  "og_description": "AIキャラクターのすべてを、ひとつのオープンファイルに。持ち運べて、権利もともに運びます。"
+ },
+ "top": {
+  "crumb": "· Character Open File · 1.2",
+  "share": "共有 ↗",
+  "copy": "リンクをコピー",
+  "copied": "コピーしました ✓",
+  "email": "メール",
+  "share_aria": "このページを共有",
+  "lang_aria": "言語"
+ },
+ "hero": {
+  "h1": "Character Open File",
+  "sub": "AIキャラクターのすべてを、ひとつのオープンファイルに。持ち運べて、権利もともに運びます。",
+  "kicker": "COF · オープンフォーマット"
+ },
+ "lede": "AIキャラクターを形づくるすべて、つまり性格、外見、声、3D、モーション、エージェントスキル、記憶、心理を、<b>権利と同意の情報を組み込んだうえで</b>ひとつにまとめるオープンなファイルフォーマットです。同じファイルを、チャットアプリ、画像生成ツール、ComfyUI、ゲームエンジン、エージェントで開けます。",
+ "status": "<b>現在：1.2.2</b>（2026年11月15日）。ビルダーは自分が扱わない要素もすべて保持し、<code>cof-cli</code>にエージェントホストを追加（ひとつの記憶、ふたつの居場所）、エクスプローラーで日付のない記憶を表示できるようになりました（<a href=\"https://github.com/yannsouetre/cof/blob/main/docs/release-notes-1.2.2.md\">リリースノート</a>）。これまで：1.2.1（11月8日）Character.AIからのインポート、1.2（11月8日）心理、1.1（10月30日）記憶、1.0（10月17日）。1.xのファイルはすべて有効なまま、1.xのどのツールでも読めます。",
+ "cta": {
+  "explore": ".cofを見てみる →",
+  "build": "ブラウザで作る",
+  "comfy": "ComfyUIノード",
+  "github": "GitHubのソース"
+ },
+ "clip_caption": "60秒、音声付き。Clara MercierとMartienは架空のCOFサンプルキャラクターです（画像はAI生成）。",
+ "h_new": "新着",
+ "cards_new": [
+  {
+   "href": "compare/",
+   "t": "ファイルに何が入るか",
+   "p": "COFを、Character Card V2とV3 / .charx、エージェント用Markdown、Letta Agent File、MacPaw Portable Memory、VRMと機能ごとに比較します。COFがしないことも含めて。"
+  },
+  {
+   "href": "import/",
+   "t": "Character.AIのボットを保存する",
+   "p": "COF 1.2.1：キャラクターと、その個人的な記憶としての会話を、ひとつのオープンファイルに。さらに外見、声、プリセット、心理を加えられます。処理はすべてブラウザ内で行われます。"
+  },
+  {
+   "href": "psyche/",
+   "t": "AIキャラクターに内面が宿る",
+   "p": "COF 1.2：読んで、編集して、持ち運べる心理。すべての確信が、それを生んだ記憶に結びついています。"
+  },
+  {
+   "href": "psyche/how-many.html",
+   "t": "人をつくるのに、確信はいくつ必要か",
+   "p": "心理学が代わりに数えてきたもの、自分の数値を試せるシミュレーター、そしてBig Five、Myers-Briggsのタイプ、Enneagram、占星術にどれほどの価値があるか。"
+  },
+  {
+   "href": "memories/",
+   "t": "AIキャラクターに記憶が宿る",
+   "p": "COF 1.1：人生の瞬間と期間、そのとき何を感じたか、何を胸にしまっておくか、何が薄れていくか。"
+  },
+  {
+   "href": "memories/how-much.html",
+   "t": "ひとつの人生は、どれほどの重さになるのか？",
+   "p": "人はいくつの記憶を持っているのか、それは何バイトになるのか、そして仮説を試せる計算機。"
+  }
+ ],
+ "h_work": "実際の動作",
+ "work_intro": "1.2.2のために作った2本の短い動画です。実際のファイルと実際のツールを使い、演出はしていません。",
+ "films": [
+  {
+   "src": "docs/media/cof-demo-agents.mp4",
+   "poster": "docs/img/cof-demo-agents.jpg",
+   "t": "ひとつの記憶、ふたつの居場所",
+   "p": "ClaraをOpenClawに書き出すと、ファイルが運ぶ記憶をもとに答えます。新しいことを伝えるとエージェントがメモを書き、<code>cof memory add</code>がそれを体験した個人的な記憶としてファイルに戻します。一度も会ったことのないHermesに書き出しても、彼女は今朝の電車のことを覚えています。"
+  },
+  {
+   "src": "docs/media/cof-demo-psyche.mp4",
+   "poster": "docs/img/cof-demo-psyche.jpg",
+   "t": "彼女は何者か",
+   "p": "キャラクターはプロンプト以上のものです。11種類のノードからなり、それぞれが由来する記憶、人物、場所に結びついた彼女の心理を、探索し、時間に沿って再生し、ビルダーで書き、エージェントが読む<code>SOUL.md</code>に変換します。"
+  }
+ ],
+ "sections": [
+  {
+   "id": "contents",
+   "h": ".cofの中身",
+   "img": "docs/img/cof-contents.png",
+   "alt": ".cofは性格、外見、声、ポーズとモーション、アイデンティティの重み、3D、エージェント用ファイル、権利を収めます",
+   "p": "マニフェスト付きのZIPアーカイブです。キャラクターのアイデンティティ、8つのカテゴリーに分かれた要素（性格〔内部にCharacter Card V3、心理、自由記述〕、外見、アイデンティティの重み、3D、声、姿勢、モーション、記憶）、エージェント用ファイルのライブラリ、そして権利を収めます。ほとんどの要素は任意で、収めたものは検証されます。"
+  },
+  {
+   "id": "presets",
+   "h": "すべてのバージョンを、ひとつのファイルに",
+   "img": "docs/img/cof-presets.jpg",
+   "alt": "29歳、マンガ風、65歳、近未来の戦闘員としてのClara Mercier：ひとつのファイルの4つのプリセット",
+   "p": "<b>プリセット</b>は、すぐ使える組み合わせです。ひとつの性格、ひとつの外見、ひとつの声、ひとつの年齢。言語や年齢を切り替えると、ほかの要素もそれに合わせて変わります。"
+  },
+  {
+   "id": "memories",
+   "h": "説明だけでなく、過去を",
+   "img": "docs/img/cof-memories.jpg",
+   "alt": "エクスプローラーに表示された65歳のClaraの記憶グラフ：ひとつの期間、時間軸上の9つの瞬間、それらが結びつく人物と場所",
+   "p": "人生の瞬間と期間。それぞれに、いつ、どこで、誰と、当時と今どう感じているか、どれほど鮮明に思い出されるか、そしてキャラクターが話したくないことを記録します。ユーザーとともに体験したことは同じファイルに書き戻され、ファイルとともに持ち出されます。<a href=\"memories/\">詳しく読む</a>。"
+  },
+  {
+   "id": "psyche",
+   "h": "内面と、それが手放さないもの",
+   "img": "docs/img/cof-psyche.jpg",
+   "alt": "エクスプローラーに表示されたClaraの心理のグラフ：価値観、欲求、恐れ、信念、ひとつの傷が、それぞれの由来となる記憶の下にまとめられています",
+   "p": "価値観、信念、欲求、恐れ、傷、好み、習慣を、短いノードのグラフとして表します。各ノードは強さ、期間、由来する記憶を持ちます。人物、場所、物は一度だけ命名し、記憶と心理で共有します。<a href=\"psyche/\">詳しく読む</a>。"
+  },
+  {
+   "id": "rights",
+   "h": "権利もともに運ぶ",
+   "img": "docs/img/cof-rights.jpg",
+   "alt": "権利カード：声のクローン不可、学習不可、再配布不可、商用利用は個人・非営利のみ、AIであることの開示あり",
+   "p": "許諾、実在の人物を描く場合の同意、出所はファイルの一部です。すべてのプリセットは年齢を宣言します。未成年を含む裸体や親密な内容は、タグが付くだけでなくファイルそのものが無効になります。"
+  },
+  {
+   "id": "cast",
+   "h": "複数のキャラクターを、ひとつのファイルに",
+   "img": "docs/img/cof-cast.jpg",
+   "alt": "ひとつのファイルに収められたClara MercierとMartien、それぞれが独自の権利を持ちます",
+   "p": "キャストはまとめて運ばれ、各キャラクターはそれぞれの外見、声、プリセット、権利を保ちます。"
+  },
+  {
+   "id": "tools",
+   "h": "一度作れば、どこでも使える。",
+   "img": "docs/img/cof-tools.png",
+   "alt": "ビルダー、AIエージェント、インポートで作成し、エクスプローラー、ComfyUI、チャットアプリ、エージェントで使用",
+   "p": "ビルダー、AIエージェント、インポートで作成し、エクスプローラー、ComfyUI、チャットアプリ、エージェントホストで使えます。<code>cof validate</code>は年齢、権利、ハッシュ、スクリプトを検査します。"
+  }
+ ],
+ "tools_cards": [
+  {
+   "href": "builder/",
+   "img": "docs/img/cof-builder.jpg",
+   "alt": "Clara Mercierを読み込んだCOFビルダー",
+   "t": "ビルダー",
+   "p": "写真、カード、音声サンプルをドロップすると、<code>.cof</code>ができあがります。オフラインで、ブラウザ内で動作します。"
+  },
+  {
+   "href": "viewer/",
+   "img": "docs/img/cof-explorer.jpg",
+   "alt": "Clara Mercierのプリセットを表示したCOFエクスプローラー",
+   "t": "エクスプローラー",
+   "p": "どの<code>.cof</code>でも開けます。プリセット、外見、声、ポーズ、記憶、心理、権利。閲覧専用です。"
+  }
+ ],
+ "h_cai": "Character.AIから移る方へ",
+ "cai": "CAI ToolsまたはPersonaTextのエクスポートをドロップし、3つの項目を確認して、<code>.cof</code>をひとつダウンロードします。キャラクターと、非公開の記憶として保存された会話が入っています。そこからバックアップ以上のものに育てられます。外見、声、プリセット、心理。処理はすべてブラウザ内で行われます。<a href=\"import/\">キャラクターを保存する →</a>",
+ "h_embrace": "置き換えず、取り込む",
+ "embrace": "<code>.cof</code>は有効なCharacter Card V3を内包し、<code>ccv3</code> PNGカード、カードJSON、<code>SOUL.md</code> / <code>IDENTITY.md</code>、OpenClawのワークスペース、Hermesのプロファイルを書き出せます。内部のVRMアバターはそのままのファイルです。既存のツールは何も書き直す必要がありません。<a href=\"compare/\">ファイルに何が入るか、比較する →</a>",
+ "h_more": "さらに読む",
+ "cards_more": [
+  {
+   "href": "https://github.com/yannsouetre/cof/blob/main/spec/SPEC.md",
+   "t": "仕様",
+   "p": "規範となる本文。英語とフランス語。"
+  },
+  {
+   "href": "https://github.com/yannsouetre/cof/blob/main/docs/IMPLEMENTING.md",
+   "t": "COFを実装する",
+   "p": "読み込み、書き込み、権利、セキュリティ、適合性。"
+  },
+  {
+   "href": "https://github.com/yannsouetre/cof/tree/main/spec/examples",
+   "t": "サンプル",
+   "p": "仕様に適合した9つのキャラクター。テキストのみのものから、12のプリセットを持つ代表例まで。"
+  },
+  {
+   "href": "https://github.com/yannsouetre/cof/blob/main/skills/cof-author/SKILL.md",
+   "t": "AIエージェント向け",
+   "p": "<code>cof-author</code>スキル：エージェントが.cofを作成し、検証します。"
+  },
+  {
+   "href": "https://github.com/yannsouetre/cof/blob/main/docs/roadmap.md",
+   "t": "ロードマップ",
+   "p": "次の予定：プレーヤー、作成支援、スターターキャラクターのギャラリー、プロフェッショナル向けプロファイル。"
+  },
+  {
+   "href": "https://github.com/yannsouetre/cof/blob/main/CHANGELOG.md",
+   "t": "変更履歴",
+   "p": "すべてのリリースについて、何がなぜ変わったか。"
+  }
+ ],
+ "footer": "Character Open File、作者Yann Souetre。権利とともにAIキャラクターを運ぶオープンフォーマットです。仕様はCC BY 4.0 · スキーマと語彙はCC0 · コードはMIT · <a href=\"https://github.com/yannsouetre/cof/blob/main/docs/brand.md\">ビジュアルアイデンティティ</a> · <a href=\"https://github.com/yannsouetre/cof\">GitHubのソース</a>。このサイトでは、Cookieを使わない訪問カウンター（GoatCounter）がページの閲覧数を数えます。あなたが開くファイルは数えません。"
+}

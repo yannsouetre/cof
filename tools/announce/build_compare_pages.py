@@ -285,7 +285,10 @@ def main():
         if empty:
             print(f"{lang}: {len(empty)} empty values, e.g. {empty[:3]}")
         if not checking:
-            (OUT / file_for(lang)).write_text(page(lang, T), encoding="utf-8")
+            out = page(lang, T)
+            if lang != "en":   # the home page exists in every language too
+                out = out.replace('href="../"', f'href="../index.{lang}.html"')
+            (OUT / file_for(lang)).write_text(out, encoding="utf-8")
             print(f"{lang}: {file_for(lang)} written")
     sys.exit(0 if ok else 1)
 

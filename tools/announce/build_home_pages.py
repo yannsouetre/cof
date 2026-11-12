@@ -65,6 +65,19 @@ a.card{display:block;color:inherit;text-decoration:none}a.card:hover{border-colo
 """
 
 
+LOCAL = {"compare/": "compare/index.{l}.html", "psyche/": "psyche/index.{l}.html", "psyche/how-many.html": "psyche/how-many.{l}.html",
+         "memories/": "memories/index.{l}.html", "memories/how-much.html": "memories/how-much.{l}.html"}
+
+
+def localize(out, lang):
+    """Internal links to pages that exist in every language point at the same language."""
+    if lang == "en":
+        return out
+    for a, b in LOCAL.items():
+        out = out.replace(f'href="{a}"', f'href="{b.format(l=lang)}"')
+    return out
+
+
 def page(lang, T):
     css = BASE_CSS.replace("%CJK%", CJK.get(lang, "")) + EXTRA_CSS
     card = lambda c, cls="t": f'<a class="card {cls}" href="{c["href"]}"><p class="t">{c["t"]}</p><p>{c["p"]}</p></a>'
@@ -185,7 +198,7 @@ def main():
         if bad or links or empty:
             ok = False; print(f"{lang}: keys {bad[:5]} links {links[:5]} empty {empty[:5]}")
         if not checking:
-            (ROOT / file_for(lang)).write_text(page(lang, T), encoding="utf-8")
+            (ROOT / file_for(lang)).write_text(localize(page(lang, T), lang), encoding="utf-8")
             print(f"{lang}: {file_for(lang)} written")
     sys.exit(0 if ok else 1)
 
