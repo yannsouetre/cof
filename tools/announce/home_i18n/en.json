@@ -1,0 +1,185 @@
+{
+ "meta": {
+  "title": "COF — Character Open File",
+  "description": "One open file for an AI character: personality, looks, voice, 3D, motion, memories, a psyche, agent files — with its rights and consent built in.",
+  "og_title": "COF — Character Open File",
+  "og_description": "Complete AI characters in one open file — portable, with their rights."
+ },
+ "top": {
+  "crumb": "· Character Open File · 1.2",
+  "share": "share ↗",
+  "copy": "copy link",
+  "copied": "copied ✓",
+  "email": "Email",
+  "share_aria": "Share this page",
+  "lang_aria": "Language"
+ },
+ "hero": {
+  "h1": "Character Open File",
+  "sub": "Complete AI characters in one open file — portable, with their rights.",
+  "kicker": "COF · AN OPEN FORMAT"
+ },
+ "lede": "An open file format that bundles everything that defines an AI character — personality, looks, voice, 3D, motion, agent skills, memories and a psyche — <b>with its rights and consent built in</b>. The same file opens in a chat app, an image generator, ComfyUI, a game engine or an agent.",
+ "status": "<b>Now: 1.2.2</b>, 15 November 2026 — the builder keeps everything it does not model, agent hosts in <code>cof-cli</code> (one memory, two homes), undated memories in the explorer (<a href=\"https://github.com/yannsouetre/cof/blob/main/docs/release-notes-1.2.2.md\">notes</a>). Before: 1.2.1, 8 November — Character.AI import; 1.2, 8 November — a psyche; 1.1, 30 October — memories; 1.0, 17 October. Every 1.x file stays valid and readable by every 1.x tool.",
+ "cta": {
+  "explore": "Explore a .cof →",
+  "build": "Build one in your browser",
+  "comfy": "ComfyUI nodes",
+  "github": "Source on GitHub"
+ },
+ "clip_caption": "60 seconds, with sound. Clara Mercier and Martien are fictional COF example characters (AI-generated images).",
+ "h_new": "What's new",
+ "cards_new": [
+  {
+   "href": "compare/",
+   "t": "What fits in the file?",
+   "p": "COF compared, feature by feature, with Character Card V2 and V3 / .charx, agent Markdown, Letta Agent File, MacPaw Portable Memory and VRM — including what COF does not do."
+  },
+  {
+   "href": "import/",
+   "t": "Save your Character.AI bots",
+   "p": "COF 1.2.1: your character, and your conversations as its private memories, in one open file — then looks, a voice, presets, a psyche. Everything happens in your browser."
+  },
+  {
+   "href": "psyche/",
+   "t": "AI characters now have an inner life",
+   "p": "COF 1.2: a psyche you can read, edit and take with you — every conviction tied to the memory that made it."
+  },
+  {
+   "href": "psyche/how-many.html",
+   "t": "How many convictions make a person?",
+   "p": "What psychology has counted instead, a simulator to test your own numbers, and what the Big Five, Myers-Briggs types, the Enneagram and astrology are worth."
+  },
+  {
+   "href": "memories/",
+   "t": "AI characters now have memories",
+   "p": "COF 1.1: moments and periods of a life, what they felt, what they keep to themselves, what fades."
+  },
+  {
+   "href": "memories/how-much.html",
+   "t": "How much could a life weigh?",
+   "p": "How many memories a person holds, how many bytes they would take, and a calculator to test the hypotheses."
+  }
+ ],
+ "h_work": "See it at work",
+ "work_intro": "Two short films made for 1.2.2, with real files and real tools, nothing staged.",
+ "films": [
+  {
+   "src": "docs/media/cof-demo-agents.mp4",
+   "poster": "docs/img/cof-demo-agents.jpg",
+   "t": "One memory, two homes",
+   "p": "Clara is exported to OpenClaw and answers from the memories her file carries. Told something new, the agent writes a note; <code>cof memory add</code> brings it back into her file as a lived, personal memory. Exported to Hermes, which had never met her, she remembers this morning's train."
+  },
+  {
+   "src": "docs/media/cof-demo-psyche.mp4",
+   "poster": "docs/img/cof-demo-psyche.jpg",
+   "t": "Who she is",
+   "p": "A character is more than a prompt. Her psyche — eleven kinds of nodes, each tied to the memory, person or place it comes from — explored, played through time, written in the builder, then turned into the <code>SOUL.md</code> an agent reads."
+  }
+ ],
+ "sections": [
+  {
+   "id": "contents",
+   "h": "What's in a .cof",
+   "img": "docs/img/cof-contents.png",
+   "alt": "A .cof holds personality, looks, voice, poses and motion, identity weights, 3D, agent files and rights",
+   "p": "A ZIP archive with a manifest: the character's identity, its elements in eight categories — personality (a Character Card V3 inside, a psyche, free text), appearance, identity weights, 3D, voice, postures, motion, memories — a library of agent files, and its rights. Almost everything is optional; what goes in is checked."
+  },
+  {
+   "id": "presets",
+   "h": "Every version, one file",
+   "img": "docs/img/cof-presets.jpg",
+   "alt": "Clara Mercier at 29, in manga style, at 65 and as a near-future combatant: four presets of one file",
+   "p": "A <b>preset</b> is a ready-to-use combination: one personality, one look, one voice, one age. Switch the language or the age, and the rest follows."
+  },
+  {
+   "id": "memories",
+   "h": "A past, not just a description",
+   "img": "docs/img/cof-memories.jpg",
+   "alt": "The explorer's memory graph of Clara at 65: a period, nine moments on a time axis, the people and places they link to",
+   "p": "Moments and periods of a life, each with when, where, with whom, how it felt then and now, how clearly it comes back, and what the character would rather not tell. What it lives with a user is written back into the same file — and leaves with it. <a href=\"memories/\">Read more</a>."
+  },
+  {
+   "id": "psyche",
+   "h": "An inner life, and what it holds on to",
+   "img": "docs/img/cof-psyche.jpg",
+   "alt": "The explorer's psyche graph of Clara: values, wants, fears, beliefs and a wound, grouped under the memories they come from",
+   "p": "Values, beliefs, wants, fears, wounds, tastes and habits as a graph of short nodes, each with a strength, a time span and the memory it comes from. People, places and objects are named once, shared by memories and psyche. <a href=\"psyche/\">Read more</a>."
+  },
+  {
+   "id": "rights",
+   "h": "Its rights travel with it",
+   "img": "docs/img/cof-rights.jpg",
+   "alt": "A rights card: voice cloning no, training no, redistribution no, commercial use personal and non-profit, AI disclosure yes",
+   "p": "Permissions, consent when a real person is depicted, and provenance are part of the file. Every preset declares an age; nudity or intimate content with a minor makes a file invalid, not merely tagged."
+  },
+  {
+   "id": "cast",
+   "h": "Several characters, one file",
+   "img": "docs/img/cof-cast.jpg",
+   "alt": "Clara Mercier and Martien, two characters in one file, each with its own rights",
+   "p": "A cast travels together, and each character keeps its own looks, voice, presets and rights."
+  },
+  {
+   "id": "tools",
+   "h": "Make it once. Use it everywhere.",
+   "img": "docs/img/cof-tools.png",
+   "alt": "Create with the builder, an AI agent or an import; use in the explorer, ComfyUI, chat apps and agents",
+   "p": "Create with the builder, an AI agent or an import; use it in the explorer, ComfyUI, chat apps and agent hosts. <code>cof validate</code> checks ages, rights, hashes and scripts."
+  }
+ ],
+ "tools_cards": [
+  {
+   "href": "builder/",
+   "img": "docs/img/cof-builder.jpg",
+   "alt": "The COF builder with Clara Mercier loaded",
+   "t": "Builder",
+   "p": "Drop photos, a card and a voice sample; get a <code>.cof</code>. Offline, in your browser."
+  },
+  {
+   "href": "viewer/",
+   "img": "docs/img/cof-explorer.jpg",
+   "alt": "The COF explorer showing Clara Mercier's presets",
+   "t": "Explorer",
+   "p": "Open any <code>.cof</code>: presets, looks, voices, poses, memories, psyche, rights. Read-only."
+  }
+ ],
+ "h_cai": "Coming from Character.AI?",
+ "cai": "Drop your CAI Tools or PersonaText export, check three things, download one <code>.cof</code>: your character, and your conversations as its memories, kept private. Then take it further than a backup — looks, a voice, presets, a psyche. Everything happens in your browser. <a href=\"import/\">Save your characters →</a>",
+ "h_embrace": "Embrace, don't replace",
+ "embrace": "A <code>.cof</code> contains a valid Character Card V3 and exports to a <code>ccv3</code> PNG card, a card JSON, <code>SOUL.md</code> / <code>IDENTITY.md</code>, an OpenClaw workspace and a Hermes profile; a VRM avatar inside is a plain file. Existing tools have nothing to rewrite. <a href=\"compare/\">What fits in the file, compared →</a>",
+ "h_more": "Read more",
+ "cards_more": [
+  {
+   "href": "https://github.com/yannsouetre/cof/blob/main/spec/SPEC.md",
+   "t": "Specification",
+   "p": "The normative text, in English and French."
+  },
+  {
+   "href": "https://github.com/yannsouetre/cof/blob/main/docs/IMPLEMENTING.md",
+   "t": "Implementing COF",
+   "p": "Reading, writing, rights, security, conformance."
+  },
+  {
+   "href": "https://github.com/yannsouetre/cof/tree/main/spec/examples",
+   "t": "Examples",
+   "p": "Nine conformant characters, from text only to a twelve-preset flagship."
+  },
+  {
+   "href": "https://github.com/yannsouetre/cof/blob/main/skills/cof-author/SKILL.md",
+   "t": "For AI agents",
+   "p": "The <code>cof-author</code> skill: an agent builds and validates a .cof."
+  },
+  {
+   "href": "https://github.com/yannsouetre/cof/blob/main/docs/roadmap.md",
+   "t": "Roadmap",
+   "p": "Next: a player, assisted creation, a gallery of starter characters, a professional profile."
+  },
+  {
+   "href": "https://github.com/yannsouetre/cof/blob/main/CHANGELOG.md",
+   "t": "Changelog",
+   "p": "Every release, what changed and why."
+  }
+ ],
+ "footer": "Character Open File, by Yann Souetre — an open format for AI characters, with their rights. Spec CC BY 4.0 · schemas and vocabularies CC0 · code MIT · <a href=\"https://github.com/yannsouetre/cof/blob/main/docs/brand.md\">Visual identity</a> · <a href=\"https://github.com/yannsouetre/cof\">Source on GitHub</a>. A cookie-free visit counter (GoatCounter) counts page views on this site, never the files you open."
+}
