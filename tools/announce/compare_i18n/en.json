@@ -1,0 +1,1905 @@
+{
+ "meta": {
+  "title": "What fits in the file? — COF compared with character and memory formats",
+  "description": "Feature by feature: Character Open File (COF) compared with Character Card V2, Character Card V3 / .charx, agent Markdown (SOUL.md), Letta Agent File, MacPaw Portable Memory and VRM 1.0 — what each format carries, what it drops, and what COF does not try to do.",
+  "og_title": "What fits in the file? COF compared",
+  "og_description": "One table: personality, looks, voice, 3D, memories, psyche, rights and safety across seven formats AI characters travel in."
+ },
+ "top": {
+  "crumb": "· Character Open File · 1.2",
+  "share": "share ↗",
+  "copy": "copy link",
+  "copied": "copied ✓",
+  "email": "Email",
+  "share_aria": "Share this page",
+  "lang_aria": "Language"
+ },
+ "hero": {
+  "h1": "What fits in the file?",
+  "sub": "An AI character travels in many files — a card, a Markdown soul, an avatar, a memory bundle. One table of what each of them carries, and what it drops on the way.",
+  "kicker": "COF · CHARACTER OPEN FILE"
+ },
+ "lede": "Nobody chose this. Role-play apps settled on the character card; agent frameworks on Markdown files; VTubers on VRM; memory projects on their own bundles. Each format is good at its layer and blind to the others, so a character that lives in several places exists as several files that drift apart. <b>COF</b> is the container that holds them together — a ZIP with a manifest, open, with rules about ages, rights and consent. This page compares it with the formats it embraces, feature by feature, including the ones COF does not have.",
+ "intro": "Seven formats, as published: <b>Character Card V2</b> (the <code>chara</code> PNG and its JSON, the de-facto standard of SillyTavern and its kin), <b>Character Card V3 / <code>.charx</code></b> (its 2024 successor, a ZIP with assets), <b>agent Markdown</b> (<code>SOUL.md</code>, <code>IDENTITY.md</code>, <code>AGENTS.md</code> as OpenClaw and Hermes read them), <b>Letta Agent File <code>.af</code></b> (a serialized stateful agent), <b>MacPaw Portable Memory <code>.mem</code></b> (a user-owned memory bundle, 2026) and <b>VRM 1.0</b> (the humanoid avatar on glTF, with the only mature permission block). Read as columns: what a file in that format can say about a character <em>on its own</em>, without the application that made it.",
+ "h_table": "The table",
+ "legend": {
+  "y": "native: the format has a field or a rule for it",
+  "p": "partly: text only, an opaque file, or a convention without a schema",
+  "n": "no",
+  "c": "carried: COF keeps the other format's file inside, unchanged",
+  "g": "planned for COF, with its version"
+ },
+ "labels": {
+  "y": "yes",
+  "p": "partly",
+  "n": "no",
+  "c": "carried",
+  "g": "planned"
+ },
+ "tools": {
+  "onlydiff": "hide the rows where every format agrees",
+  "shownotes": "show the notes under the marks"
+ },
+ "feature": "Feature",
+ "hint": "Hover a mark to read its note. A green mark means the format <em>defines</em> the thing; whether a given application uses it is another matter — most apps read a fraction of any format, COF included.",
+ "cols": [
+  {
+   "n": "COF",
+   "s": "1.2 · ZIP + manifest · spec CC BY 4.0, tools MIT"
+  },
+  {
+   "n": "Character Card V2",
+   "s": "PNG tEXt / JSON · 2023 · SillyTavern & co."
+  },
+  {
+   "n": "Character Card V3 / .charx",
+   "s": "JSON, PNG or ZIP · 2024 · MIT"
+  },
+  {
+   "n": "Agent Markdown",
+   "s": "SOUL.md, IDENTITY.md, AGENTS.md · OpenClaw, Hermes"
+  },
+  {
+   "n": "Letta Agent File",
+   "s": ".af JSON · Apache-2.0"
+  },
+  {
+   "n": "MacPaw Portable Memory",
+   "s": ".mem bundle (JSONL) · 1.1 · MIT"
+  },
+  {
+   "n": "VRM 1.0",
+   "s": "GLB + VRMC_vrm · humanoid avatar"
+  }
+ ],
+ "groups": [
+  {
+   "name": "The character",
+   "soon": false,
+   "rows": [
+    {
+     "name": "Text personality",
+     "sub": "description, prompts, scenario",
+     "cells": [
+      [
+       "y",
+       "a Character Card V3 inside, plus free text"
+      ],
+      [
+       "y",
+       ""
+      ],
+      [
+       "y",
+       ""
+      ],
+      [
+       "y",
+       "free Markdown"
+      ],
+      [
+       "y",
+       "persona block"
+      ],
+      [
+       "p",
+       "a core / persona item, text"
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "Example dialogue and greetings",
+     "sub": "",
+     "cells": [
+      [
+       "c",
+       "in the embedded card"
+      ],
+      [
+       "y",
+       ""
+      ],
+      [
+       "y",
+       "plus group greetings"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "Lorebook / world info",
+     "sub": "entries triggered by keywords",
+     "cells": [
+      [
+       "c",
+       "in the embedded card, or lorebook.json"
+      ],
+      [
+       "y",
+       ""
+      ],
+      [
+       "y",
+       "decorators, regex"
+      ],
+      [
+       "p",
+       "plain files the agent may read"
+      ],
+      [
+       "p",
+       "blocks and sources, no triggers"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "Several presets from one file",
+     "sub": "work / all audiences, ages, languages, styles",
+     "cells": [
+      [
+       "y",
+       "named combinations with their own age and coherence report"
+      ],
+      [
+       "n",
+       "one file per version"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "Several characters in one file",
+     "sub": "a cast, with relations",
+     "cells": [
+      [
+       "y",
+       "identities, relations declared once, inverses computed"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "p",
+       "group greetings only"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "p",
+       "groups of agents, no relations"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "Gender, nickname, archetype, narrative role",
+     "sub": "",
+     "cells": [
+      [
+       "y",
+       "RFC 0003"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "p",
+       "nickname"
+      ],
+      [
+       "p",
+       "free text"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "Languages",
+     "sub": "the same character in several languages",
+     "cells": [
+      [
+       "y",
+       "per-language text in cards, gists and nodes; tools in six languages"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "p",
+       "multilingual creator notes"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Looks and body",
+   "soon": false,
+   "rows": [
+    {
+     "name": "Reference images: face, body, angles",
+     "sub": "several views, character sheets",
+     "cells": [
+      [
+       "y",
+       "views with subject, angle, framing, style; sheets with regions"
+      ],
+      [
+       "n",
+       "the PNG is the only picture"
+      ],
+      [
+       "p",
+       "icon, background, user icon"
+      ],
+      [
+       "p",
+       "an avatar path or URL"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       "references only, no bytes"
+      ],
+      [
+       "p",
+       "a 1024² thumbnail"
+      ]
+     ]
+    },
+    {
+     "name": "Expressions",
+     "sub": "",
+     "cells": [
+      [
+       "y",
+       "expression images, tagged"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "y",
+       "emotion sprites, named"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "y",
+       "18 presets, incl. visemes"
+      ]
+     ]
+    },
+    {
+     "name": "Outfits",
+     "sub": "",
+     "cells": [
+      [
+       "y",
+       "outfit variants, per preset"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "3D model",
+     "sub": "VRM, GLB, splats, printable mesh",
+     "cells": [
+      [
+       "c",
+       "kept as a file, with textures declared, plus prints and splats"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "p",
+       "a 3d/ folder, no schema"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "y",
+       "it is the model"
+      ]
+     ]
+    },
+    {
+     "name": "Rig and facial deformation",
+     "sub": "",
+     "cells": [
+      [
+       "c",
+       "whatever the carried VRM / GLB defines"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "y",
+       "humanoid bones, spring bones"
+      ]
+     ]
+    },
+    {
+     "name": "Poses and motion",
+     "sub": "OpenPose, clips, motion signature",
+     "cells": [
+      [
+       "y",
+       "posture library, clips with rig and fps, LMA attitude"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "p",
+       "VRMA animations are a separate file"
+      ]
+     ]
+    },
+    {
+     "name": "Voice",
+     "sub": "samples with transcript, voice profile",
+     "cells": [
+      [
+       "y",
+       "samples, transcripts, profile, engine artifacts, cloning permission"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "p",
+       "an audio/ folder, no schema"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "Identity weights",
+     "sub": "LoRA, reference latents, with their base model",
+     "cells": [
+      [
+       "y",
+       "safetensors only, base model mandatory, sources kept"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "p",
+       "an ai/ folder, no schema"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Memories and inner life",
+   "soon": false,
+   "rows": [
+    {
+     "name": "Memories as dated events",
+     "sub": "when, where, with whom, how it felt",
+     "cells": [
+      [
+       "y",
+       "RFC 0002: moments and periods, age or date, feelings then and now, clarity"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "p",
+       "lorebook entries, undated"
+      ],
+      [
+       "p",
+       "a MEMORY.md of day notes"
+      ],
+      [
+       "p",
+       "text blocks with a size limit; no passages"
+      ],
+      [
+       "y",
+       "episodes: eventTime, actors, importance"
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "Media attached to a memory",
+     "sub": "",
+     "cells": [
+      [
+       "y",
+       "images, sound, short video, inside the file"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "p",
+       "a reference and a hash, no bytes"
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "Links between memories",
+     "sub": "before / after, part of, same event, because",
+     "cells": [
+      [
+       "y",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "y",
+       "typed links with a weight"
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "A psyche: values, beliefs, wants, fears",
+     "sub": "each with a strength, a stability, a span",
+     "cells": [
+      [
+       "y",
+       "RFC 0004: a graph of nodes"
+      ],
+      [
+       "n",
+       "adjectives in prose"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       "prose"
+      ],
+      [
+       "n",
+       "prose in the persona block"
+      ],
+      [
+       "p",
+       "facts with a validity span, no kinds"
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "The reason behind a conviction",
+     "sub": "a fear points to the memory that made it",
+     "cells": [
+      [
+       "y",
+       "because links from nodes to memories"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "p",
+       "lineage of a fact to its episodes"
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "Time",
+     "sub": "the character at 20 and at 45",
+     "cells": [
+      [
+       "y",
+       "since / until on nodes, periods on memories, age per preset"
+      ],
+      [
+       "n",
+       "one snapshot"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "p",
+       "valid-from / valid-to on facts"
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "People, places and objects",
+     "sub": "named once, shared by memories and psyche",
+     "cells": [
+      [
+       "y",
+       "RFC 0005"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "p",
+       "entities and edges, derived"
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "Visibility and disclosure",
+     "sub": "canon vs personal; secret, guarded",
+     "cells": [
+      [
+       "y",
+       "purged on export; secrets left out of agent exports by default"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       "a block is read whole"
+      ],
+      [
+       "p",
+       "a free sensitivity string; scope RFC pending"
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "Write-back of what was lived",
+     "sub": "the host adds memories to the file",
+     "cells": [
+      [
+       "y",
+       "cof memory add, from OpenClaw or Hermes notes, idempotent"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "p",
+       "the agent writes notes, nothing imports them"
+      ],
+      [
+       "y",
+       "the agent state is the file"
+      ],
+      [
+       "y",
+       "ingestion with provenance"
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "Agent skills",
+     "sub": "SKILL.md and its files",
+     "cells": [
+      [
+       "y",
+       "files library, kind skill"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "y",
+       "skills/ folder"
+      ],
+      [
+       "y",
+       "skills[]"
+      ],
+      [
+       "p",
+       "procedures"
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Rights and safety",
+   "soon": false,
+   "rows": [
+    {
+     "name": "Permissions on the character",
+     "sub": "commercial use, redistribution, training, voice cloning",
+     "cells": [
+      [
+       "y",
+       "permissions in the manifest, applied by the tools"
+      ],
+      [
+       "n",
+       "creator and tags"
+      ],
+      [
+       "p",
+       "creator, source"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "y",
+       "the meta block: 14 permission fields"
+      ]
+     ]
+    },
+    {
+     "name": "Licence per asset",
+     "sub": "",
+     "cells": [
+      [
+       "y",
+       "SPDX per asset"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "p",
+       "one licence URL for the model"
+      ]
+     ]
+    },
+    {
+     "name": "Real-person consent",
+     "sub": "record, scope, proofs, revocation",
+     "cells": [
+      [
+       "y",
+       "rights/ folder; intimate scope and voice cloning need it"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "p",
+       "avatar permission: author only, explicit, everyone"
+      ]
+     ]
+    },
+    {
+     "name": "Declared age and minor protection",
+     "sub": "",
+     "cells": [
+      [
+       "y",
+       "age per preset; nudity or intimate content with a minor = invalid file"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "p",
+       "sexual usage switch, no age"
+      ]
+     ]
+    },
+    {
+     "name": "Content tags and audiences",
+     "sub": "",
+     "cells": [
+      [
+       "y",
+       "tags.content, all-audiences export, intimate never neutral"
+      ],
+      [
+       "p",
+       "tags"
+      ],
+      [
+       "p",
+       "tags"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "p",
+       "sensitivity"
+      ],
+      [
+       "p",
+       "violent / sexual usage flags"
+      ]
+     ]
+    },
+    {
+     "name": "Provenance",
+     "sub": "created, modified, source, AI-generated",
+     "cells": [
+      [
+       "y",
+       "append-only source[], dates, IPTC digital source type, C2PA sidecar"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "y",
+       "source[], creation and modification dates"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "y",
+       "typed provenance on items"
+      ],
+      [
+       "p",
+       "authors, copyright"
+      ]
+     ]
+    },
+    {
+     "name": "Integrity",
+     "sub": "hashes, no executable content",
+     "cells": [
+      [
+       "y",
+       "sha256 per asset, pickles refused, executables declared or refused, safe paths"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       "a code/ folder is allowed"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "y",
+       "CHECKSUMS, tombstones, audit log"
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "Signatures",
+     "sub": "",
+     "cells": [
+      [
+       "p",
+       "optional manifest signature in the spec (JWS); no tool signs yet"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "y",
+       "optional Ed25519"
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Tooling and interchange",
+   "soon": false,
+   "rows": [
+    {
+     "name": "Open specification with schemas and a validator",
+     "sub": "",
+     "cells": [
+      [
+       "y",
+       "spec, JSON Schemas per version, cof validate"
+      ],
+      [
+       "p",
+       "a spec, no validator"
+      ],
+      [
+       "p",
+       "a spec and TypeScript types"
+      ],
+      [
+       "n",
+       "conventions"
+      ],
+      [
+       "p",
+       "Pydantic models in the SDK"
+      ],
+      [
+       "y",
+       "spec, schemas, mem validate"
+      ],
+      [
+       "y",
+       "spec, schemas"
+      ]
+     ]
+    },
+    {
+     "name": "Unknown fields survive a round trip",
+     "sub": "",
+     "cells": [
+      [
+       "y",
+       "x- keys and categories kept by cof-cli and the builder"
+      ],
+      [
+       "p",
+       "extensions"
+      ],
+      [
+       "y",
+       "extensions, SHOULD keep"
+      ],
+      [
+       "y",
+       "it is text"
+      ],
+      [
+       "n",
+       "no version field, migrations pending"
+      ],
+      [
+       "y",
+       "ext on episodes"
+      ],
+      [
+       "y",
+       "glTF extras"
+      ]
+     ]
+    },
+    {
+     "name": "Imports the others",
+     "sub": "",
+     "cells": [
+      [
+       "y",
+       "V2 / V3 PNG and JSON, Character.AI exports, OpenClaw and Hermes notes"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "y",
+       "V2"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "Exports to the others",
+     "sub": "",
+     "cells": [
+      [
+       "y",
+       "ccv3 PNG, card JSON, SOUL.md / IDENTITY.md, agent workspace, Hermes profile"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "y",
+       "PNG, JSON, CHARX"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "Self-describing file",
+     "sub": "a note inside that says what it holds",
+     "cells": [
+      [
+       "y",
+       "COF.md written in every file"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "p",
+       "manifest"
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "Reference tools, offline, in a browser",
+     "sub": "",
+     "cells": [
+      [
+       "y",
+       "builder, explorer, cof-cli, ComfyUI nodes"
+      ],
+      [
+       "n",
+       "apps"
+      ],
+      [
+       "n",
+       "apps"
+      ],
+      [
+       "n",
+       "agents"
+      ],
+      [
+       "n",
+       "a server"
+      ],
+      [
+       "p",
+       "SDKs"
+      ],
+      [
+       "n",
+       "viewers"
+      ]
+     ]
+    },
+    {
+     "name": "Fits in a single PNG",
+     "sub": "",
+     "cells": [
+      [
+       "n",
+       "it exports one"
+      ],
+      [
+       "y",
+       ""
+      ],
+      [
+       "y",
+       "PNG or APNG"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "Runs the agent",
+     "sub": "tools, rules, model config, history",
+     "cells": [
+      [
+       "n",
+       "by design: executableContent none"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "p",
+       "scripts in extensions"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "y",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Planned for COF",
+   "soon": true,
+   "rows": [
+    {
+     "name": "Psyche carried by the card export",
+     "sub": "the PNG and .charx exports render the psyche as text",
+     "cells": [
+      [
+       "g",
+       "1.2.3 · 29 Nov 2026"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": ".charx export and import",
+     "sub": "",
+     "cells": [
+      [
+       "g",
+       "1.2.3 (cof-cli) · 1.4 (builder)"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "y",
+       "it is .charx"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "Weighted selection of memories and nodes",
+     "sub": "what the model receives for this moment, specified for every host",
+     "cells": [
+      [
+       "g",
+       "1.2.3"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       "recall is the service's, not the file's"
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "A reference player",
+     "sub": "converse, pick, illustrate, write the lived back into the file",
+     "cells": [
+      [
+       "g",
+       "1.2.3"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "y",
+       "a Letta server"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "Assisted and automatic creation",
+     "sub": "from a few lines, with the user's own API key, or a free starter kit of placeholder media",
+     "cells": [
+      [
+       "g",
+       "1.2.3"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "A public gallery of starter characters",
+     "sub": "CC BY 4.0, adults and non-humans only",
+     "cells": [
+      [
+       "g",
+       "1.2.4 · December 2026"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "Relations with an end, a reference date for the canon, spoken languages",
+     "sub": "",
+     "cells": [
+      [
+       "g",
+       "1.3 · January 2027"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "A professional profile",
+     "sub": "job sheet, knowledge, signed skills, data policy, AI disclosure",
+     "cells": [
+      [
+       "g",
+       "1.3 · January 2027"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "Tile and table views in the tools",
+     "sub": "",
+     "cells": [
+      [
+       "g",
+       "1.4 · February 2027"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    },
+    {
+     "name": "Signatures and certification",
+     "sub": "an attestation on the canonical manifest",
+     "cells": [
+      [
+       "g",
+       "2027"
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "n",
+       ""
+      ],
+      [
+       "y",
+       "optional Ed25519"
+      ],
+      [
+       "n",
+       ""
+      ]
+     ]
+    }
+   ]
+  }
+ ],
+ "h_not": "What COF does not try to do",
+ "cards_not": [
+  {
+   "t": "Fit in a single PNG",
+   "p": "A card is a picture you can post anywhere, and it stays a picture. A <code>.cof</code> is an archive. It <em>exports</em> a <code>ccv3</code> PNG (and soon a <code>.charx</code>), but the file itself needs a tool that opens ZIPs — every tool does."
+  },
+  {
+   "t": "Run the agent",
+   "p": "Letta's <code>.af</code> ships the tools, the tool rules, the model configuration and the message history. COF ships the character and declares <code>executableContent: none</code>. What runs it is the host's business, on purpose."
+  },
+  {
+   "t": "Define a rig",
+   "p": "VRM defines the bones and the expressions. COF carries a VRM or a GLB as a file, with its rights and its textures, and adds the poses, the clips and the voice around it. The rig stays VRM's."
+  },
+  {
+   "t": "Prove a deletion",
+   "p": "MacPaw's <code>.mem</code> writes tombstones and an audit log, so a forgotten memory can be shown to have been forgotten everywhere. COF purges on export (<code>cof extract</code>) and keeps no trace of it — yet."
+  }
+ ],
+ "h_only": "What only COF does, today",
+ "cards_only": [
+  {
+   "t": "Presets",
+   "p": "One file, several ready-to-use combinations: the same character at 29 and at 65, for work and for everyone, in French and in Japanese. Other formats need one file per version, and the versions drift."
+  },
+  {
+   "t": "A past and an inner life, with a <em>why</em>",
+   "p": "Dated memories with who, where, what and how it felt; a psyche of values, beliefs, wants and fears, each tied to the memory it comes from, with a strength and a time span. Agent formats keep prose; memory formats keep events; neither keeps the link between the two."
+  },
+  {
+   "t": "Rules a validator enforces",
+   "p": "Every preset declares an age; nudity or intimate content with a minor makes the file invalid, not merely tagged. A real person needs a consent record. Executables, pickles and unsafe paths are refused. Nobody has to trust the author's good faith."
+  },
+  {
+   "t": "Write-back from the host",
+   "p": "What the character lived in OpenClaw, in Hermes or in a chat comes back into the same file as new, personal memories (<code>cof memory add</code>) — and leaves with the user. One character, two homes, one memory."
+  }
+ ],
+ "h_embrace": "Embrace, don't replace",
+ "embrace1": "The point of the table is not that COF wins the most ticks. It is that <b>COF does not ask anyone to abandon anything</b>: a <code>.cof</code> contains a valid Character Card V3, exports a <code>ccv3</code> PNG, a card JSON, <code>SOUL.md</code> / <code>IDENTITY.md</code> and a whole agent workspace, and keeps a VRM as a plain file. The formats in the other columns are its inputs and its outputs. Where COF has no equivalent — a rig, a runtime, a signed deletion — the right move is to carry the other format, and the table says so with a ${CARRIED}.",
+ "embrace2": "The grey rows are promises with a date, not features. They come from the public <a href=\"https://github.com/yannsouetre/cof/blob/main/docs/roadmap.md\">roadmap</a>; the RFCs that change the format are open for comments before they ship.",
+ "cta": {
+  "build": "Build one",
+  "explore": "Explore Clara",
+  "spec": "Read the spec",
+  "impl": "Implement it"
+ },
+ "h_sources": "Sources",
+ "sources": [
+  "Character Card V2 — the <code>chara_card_v2</code> specification (SillyTavern, Risu, Chub) and its PNG <code>tEXt chara</code> embedding.",
+  "Character Card V3 / CHARX — <a href=\"https://github.com/kwaroran/character-card-spec-v3\">kwaroran/character-card-spec-v3</a>, <code>SPEC_V3.md</code> (MIT): assets, <code>creator_notes_multilingual</code>, <code>source[]</code>, dates, <code>group_only_greetings</code>, the <code>embeded://assets/</code> folders.",
+  "Agent Markdown — OpenClaw's <code>SOUL.md</code> / <code>IDENTITY.md</code>, Hermes Agent profiles, the <code>AGENTS.md</code> convention; what COF writes is documented in <a href=\"https://github.com/yannsouetre/cof/blob/main/docs/release-notes-1.2.2.md\">the 1.2.2 notes</a>.",
+  "Letta Agent File — <a href=\"https://github.com/letta-ai/agent-file\">letta-ai/agent-file</a> (Apache-2.0) and the <code>AgentFileSchema</code> of the <code>letta</code> package: <code>agents, groups, blocks, files, sources, tools, mcp_servers, skills</code>; no passages, no format version field.",
+  "MacPaw Portable Memory — <a href=\"https://github.com/MacPaw/portable-memory\">MacPaw/portable-memory</a> (MIT), format 1.1: episodes, resources by reference, tombstones, <code>CHECKSUMS</code>, optional Ed25519 signatures; RFC 0001–0003 towards 1.2.",
+  "VRM 1.0 — <a href=\"https://github.com/vrm-c/vrm-specification\">vrm-c/vrm-specification</a>: humanoid bones, 18 expression presets, the <code>meta</code> permission block (avatar permission, violent and sexual usage, commercial use, redistribution, modification, credit).",
+  "COF — <a href=\"https://github.com/yannsouetre/cof/blob/main/spec/SPEC.md\">spec 1.2</a>, <a href=\"https://github.com/yannsouetre/cof/tree/main/rfcs\">RFC 0002–0006</a>, <a href=\"https://github.com/yannsouetre/cof/blob/main/docs/roadmap.md\">roadmap</a>. Corrections welcome through the <a href=\"https://github.com/yannsouetre/cof/issues\">issues</a>: a wrong mark in this table is a bug."
+ ],
+ "footer": "Character Open File — an open format for AI characters, with their rights. Specification CC BY 4.0, tools MIT. Formats named here belong to their authors; this comparison reads their published specifications, as of November 2026. <a href=\"https://github.com/yannsouetre/cof\">Source on GitHub</a> · <a href=\"../\">About the format</a>"
+}

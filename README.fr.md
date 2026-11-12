@@ -10,6 +10,10 @@
 <a href="https://github.com/yannsouetre/ComfyUI-COF"><img src="docs/img/btn-comfyui-fr.png" alt="Nœuds ComfyUI" width="250"></a>
 </p>
 <p align="center">
+<a href="https://yannsouetre.github.io/cof/"><img src="docs/img/btn-read-format-fr.png" alt="Lire : COF, le format en une page" width="330"></a>&nbsp;&nbsp;
+<a href="https://yannsouetre.github.io/cof/compare/index.fr.html"><img src="docs/img/btn-read-compare-fr.png" alt="Lire : ce qui tient dans le fichier — COF comparé aux autres formats" width="330"></a>
+</p>
+<p align="center">
 <a href="https://yannsouetre.github.io/cof/psyche/index.fr.html"><img src="docs/img/btn-read-psyche-fr.png" alt="Lire : les personnages IA ont une vie intérieure" width="330"></a>&nbsp;&nbsp;
 <a href="https://yannsouetre.github.io/cof/psyche/how-many.fr.html"><img src="docs/img/btn-read-howmany-fr.png" alt="Lire : combien de convictions font une personne ?" width="330"></a>
 </p>
