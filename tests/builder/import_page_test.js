@@ -306,6 +306,28 @@ const server = http.createServer((q, s) => { let f = path.join(ROOT, decodeURICo
     await page.context().close();
   }
 
+  /* 8. the visit counter (11 Nov): a GoatCounter pixel, only on the public site, once when the page opens, never with a file;
+        the security rule still forbids every connection (connect-src 'none'); the counter's host is the only outside address */
+  {
+    const html = fs.readFileSync(path.join(ROOT, "import", "index.html"), "utf8");
+    const csp = (html.match(/http-equiv="Content-Security-Policy" content="([^"]+)"/) || [])[1] || "";
+    const outsideHosts = (csp.match(/https?:\/\/[^\s;]+/g) || []);
+    check(/connect-src 'none'/.test(csp) && /form-action 'none'/.test(csp) && outsideHosts.join() === "https://syanngpt.goatcounter.com", "the security rule: no connection, no form, the counter's pixel the only outside address (" + outsideHosts.join(" ") + ")");
+    const ctx = await browser.newContext({ acceptDownloads: true }); const page = await ctx.newPage(); const hits = [], others = [];
+    await ctx.route("https://yannsouetre.github.io/**", r => { const u = new URL(r.request().url()); let f = path.join(ROOT, u.pathname.replace(/^\/cof\//, "/")); if (f.endsWith("/")) f += "index.html"; try { r.fulfill({ status: 200, contentType: mime[path.extname(f)] || "application/octet-stream", body: fs.readFileSync(f) }) } catch (e) { r.fulfill({ status: 404, body: "" }) } });
+    await ctx.route("https://syanngpt.goatcounter.com/**", r => { hits.push(r.request().url()); r.fulfill({ status: 200, contentType: "image/gif", body: Buffer.from("R0lGODlhAQABAAAAACw=", "base64") }) });
+    page.on("request", r => { const u = r.url(); if (/^https?:/.test(u) && !u.startsWith("https://yannsouetre.github.io/") && !u.startsWith("https://syanngpt.goatcounter.com/")) others.push(u) });
+    await page.goto("https://yannsouetre.github.io/cof/import/", { referer: "https://www.reddit.com/" }); await page.waitForTimeout(500);
+    const q = hits[0] ? new URL(hits[0]).searchParams : new URLSearchParams();
+    check(hits.length === 1 && q.get("p") === "/cof/import/" && /Character\.AI/.test(q.get("t") || "") && /reddit/.test(q.get("r") || ""), "on the public site the page is counted once, as /cof/import/, with its referrer (" + (hits[0] || "no hit") + ")");
+    await page.setInputFiles("#file", [path.join(FX, "caitools-card.png"), path.join(FX, "Wren_Calloway_TavernHistory.zip")]); await page.waitForFunction(() => window.cofImport.ST.ready, null, { timeout: 15000 });
+    await page.fill("#age", "30"); const dl = page.waitForEvent("download"); await page.click("#dlMine"); await (await dl).path();
+    check(hits.length === 1 && others.length === 0, "dropping files and downloading sends nothing more (" + hits.length + " hit, " + others.length + " other)");
+    const foot = await page.evaluate(() => document.querySelector("footer").textContent);
+    check(/visit counter \(GoatCounter\) counts page views, never your files/.test(foot), "the footer says the counter is there, and what it counts");
+    await ctx.close();
+  }
+
   await browser.close(); server.close();
   console.log(ok ? "\nALL OK" : "\nFAILURES"); process.exit(ok ? 0 : 1);
 })().catch(e => { console.error(e); process.exit(1); });
