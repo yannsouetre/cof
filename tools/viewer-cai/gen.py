@@ -49,12 +49,12 @@ BASE_OG = """<meta property="og:type" content="website">
 <meta property="og:title" content="COF Explorer — open a character file">
 <meta property="og:description" content="Presets, looks, voices, memories, psyche and rights of a .cof, in your browser. Nothing leaves your machine.">
 <meta property="og:url" content="https://yannsouetre.github.io/cof/viewer/">
-<meta property="og:image" content="https://yannsouetre.github.io/cof/viewer/og-explorer.jpg">
+<meta property="og:image" content="https://yannsouetre.github.io/cof/viewer/og-explorer.jpg?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="COF Explorer — Clara Mercier's file open, in dark theme">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://yannsouetre.github.io/cof/viewer/og-explorer.jpg">
+<meta name="twitter:image" content="https://yannsouetre.github.io/cof/viewer/og-explorer.jpg?v=2">
 """   # exactly the block of viewer/index.html, an anchor like the others
 
 OG = ("\n<meta property=\"og:type\" content=\"website\">"
