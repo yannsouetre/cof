@@ -1,6 +1,9 @@
 // Share cards (1200 × 630) for the builder and the explorer: a fresh screenshot of each tool in dark theme, Clara loaded,
 // set in a card drawn like psyche/img/og-psyche.jpg and import/og-import.jpg (title, rule, tagline, footer line).
 //   node tools/og-cards/make.js [repo-root]        → builder/og-builder.jpg, viewer/og-explorer.jpg
+// Rule for every communication visual: NO age under 18 on screen, and no face of a variant under 18. Clara's example has a childhood
+// variant (it is there to show the age rules), so both captures drop every item that states an age under 18 before the shot
+// (the preset rows, the age chip, the variant tile, the summary line « from age 12 … »), and the script stops if one is left.
 // Needs playwright, python with cof-cli importable from cli/ (packs spec/examples/10-clara-mercier for the builder shot).
 const { chromium } = require("playwright"); const fs = require("fs"), path = require("path"), http = require("http"), os = require("os"), { spawnSync } = require("child_process");
 const ROOT = path.resolve(process.argv[2] || path.join(__dirname, "..", "..")); const WORK = fs.mkdtempSync(path.join(os.tmpdir(), "og-"));
@@ -25,6 +28,20 @@ html,body{margin:0;width:1200px;height:630px;overflow:hidden;background:#0c1311;
 <div class="t">${title}</div><div class="r"></div><div class="s">${tagline}</div>
 <div class="f">COF · CHARACTER OPEN FILE · ${VER}</div></body></html>`;
 
+/* an age under 18 as the tools write it: « 12 ans », « age 12 », « at 12 », « à 12 ans », « de 12 à 65 ans » */
+const MINOR = String.raw`(?:\b(?:age|aged|at|âge|de|à)\s*(?:1[0-7]|[0-9])\b|\b(?:1[0-7]|[0-9])\s*(?:ans|years?|yo)\b)`;
+/* removes, in the page, the smallest listed block that states a minor's age; returns what was removed */
+const dropMinors = ([re, sel]) => { const R = new RegExp(re, "i"), gone = [];
+  for (const e of document.querySelectorAll(sel)) { const t = (e.innerText || "") + " " + [...e.querySelectorAll("input")].map(i => (i.dataset.k === "age" ? "age " : "") + i.value).join(" ");
+    if (R.test(t)) { gone.push(t.replace(/\s+/g, " ").trim().slice(0, 40)); e.remove(); } } return gone; };
+/* what is still visible in the window and states a minor's age (texts and field values) */
+const leftMinors = (re) => { const R = new RegExp(re, "i"), out = [], seen = e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < innerHeight; };
+  const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); while (w.nextNode()) { const n = w.currentNode; if (R.test(n.textContent) && n.parentElement && seen(n.parentElement)) out.push(n.textContent.trim().slice(0, 40)); }
+  for (const i of document.querySelectorAll("input,textarea")) if (seen(i) && R.test((i.dataset.k === "age" ? "age " : "") + i.value)) out.push("field: " + i.value.slice(0, 40)); return out; };
+const noMinor = async (page, sel, what) => { const gone = await page.evaluate(dropMinors, [MINOR, sel]); await page.waitForTimeout(300);
+  const left = await page.evaluate(leftMinors, MINOR); console.log(what + ": removed " + gone.length + " item(s) stating an age under 18" + (gone.length ? " (" + gone.join(" ; ") + ")" : ""));
+  if (left.length) throw new Error(what + ": an age under 18 is still on screen: " + left.join(" ; ")); };
+
 (async () => {
   await new Promise(r => server.listen(0, r)); const BASE = `http://localhost:${server.address().port}`;
   const browser = await chromium.launch({ args: ["--disable-dev-shm-usage"] });
@@ -32,6 +49,7 @@ html,body{margin:0;width:1200px;height:630px;overflow:hidden;background:#0c1311;
   let page = await browser.newPage({ viewport: { width: 1280, height: 860 }, deviceScaleFactor: 1 });
   await page.addInitScript(() => { try { localStorage.setItem("cof-theme", "dark"); localStorage.setItem("cofv-lang", "en"); } catch (e) {} });
   await page.goto(`${BASE}/viewer/`, { waitUntil: "load" }); await page.click("#btnClara"); await page.waitForTimeout(4000);
+  await noMinor(page, "button.chip, button.pcard, .hero p.text", "explorer");
   await page.screenshot({ path: path.join(WORK, "explorer.png") });
   // 2. the builder, dark, Clara 1.2 loaded, elements step (the tiles)
   const clara = path.join(WORK, "clara12.cof");
@@ -47,7 +65,8 @@ html,body{margin:0;width:1200px;height:630px;overflow:hidden;background:#0c1311;
   await page.waitForTimeout(600); await page.click("#nav button[data-step=elements]"); await page.waitForTimeout(800);
   await page.getByRole("button", { name: /Appearance/ }).first().click(); await page.waitForTimeout(900);   /* the looks: tiles with faces */
   await page.evaluate(() => { const t = document.querySelector("#elPanel .tiles"); if (t) window.scrollTo(0, t.getBoundingClientRect().top + scrollY - 250); });
-  await page.waitForTimeout(500); await page.screenshot({ path: path.join(WORK, "builder.png") });
+  await page.waitForTimeout(500); await noMinor(page, "#elPanel .variant", "builder");
+  await page.screenshot({ path: path.join(WORK, "builder.png") });
   // 3. the cards
   const out = [["builder/og-builder.jpg", "Build a character file", "Looks, voice, memories, psyche and rights — a .cof built in your browser, offline. Nothing is uploaded.", "builder.png", 150],
                ["viewer/og-explorer.jpg", "Open a character file", "Presets, looks, voices, memories, psyche and rights of a .cof, in your browser. Nothing leaves your machine.", "explorer.png", 0]];
